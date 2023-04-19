@@ -210,7 +210,10 @@ export function constructDateRange(params) {
         setParam.month = QUARTERS[setParam.quarter].coveredMonths[0];
         delete setParam.quarter;
     }
-    const date = referenceMoment.set(setParam).plus(plusParam || {});
+    const date = referenceMoment
+        .set(setParam)
+        .plus(plusParam || {})
+        .setZone("utc", { keepLocalTime: true });
     // compute domain
     const leftDate = date.startOf(granularity);
     const rightDate = date.endOf(granularity);

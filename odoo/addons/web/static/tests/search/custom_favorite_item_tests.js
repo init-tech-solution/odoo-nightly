@@ -20,7 +20,7 @@ import {
     validateSearch,
 } from "./helpers";
 
-import { Component, xml } from "@odoo/owl";
+const { Component, xml } = owl;
 const serviceRegistry = registry.category("services");
 
 /**

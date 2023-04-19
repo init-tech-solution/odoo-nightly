@@ -134,9 +134,6 @@ class IrQWeb(models.AbstractModel):
         directives.insert(index, 'install')
         return directives
 
-    def _get_template_cache_keys(self):
-        return super()._get_template_cache_keys() + ['snippet_lang']
-
 
 #------------------------------------------------------
 # QWeb fields

@@ -26,8 +26,7 @@ export class QWebPlugin {
         }
     }
     cleanForSave(editable) {
-        for (const node of editable.querySelectorAll('[data-oe-t-group], [data-oe-t-inline], [data-oe-t-selectable], [data-oe-t-group-active]')) {
-            node.removeAttribute('data-oe-t-group-active');
+        for (const node of editable.querySelectorAll('[data-oe-t-group]')) {
             node.removeAttribute('data-oe-t-group');
             node.removeAttribute('data-oe-t-inline');
             node.removeAttribute('data-oe-t-selectable');

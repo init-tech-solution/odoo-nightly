@@ -2,7 +2,7 @@
 
 import { SERVICES_METADATA } from "@web/env";
 
-import { status, useComponent, useEffect, useRef, onWillUnmount } from "@odoo/owl";
+const { status, useComponent, useEffect, useRef, onWillUnmount } = owl;
 
 /**
  * This file contains various custom hooks.
@@ -164,20 +164,14 @@ export function useListener(eventName, querySelector, handler, options = {}) {
 // -----------------------------------------------------------------------------
 // useService
 // -----------------------------------------------------------------------------
-function _protectMethod(component, fn) {
-    return function (...args) {
-        if (status(component) === "destroyed") {
-            return Promise.reject(new Error("Component is destroyed"));
-        }
 
-        const prom = Promise.resolve(fn.call(this, ...args));
-        const protectedProm = prom.then((result) =>
-            status(component) === "destroyed" ? new Promise(() => {}) : result
-        );
-        return Object.assign(protectedProm, {
-            abort: prom.abort,
-            cancel: prom.cancel,
-        });
+function _protectMethod(component, fn) {
+    return async function (...args) {
+        if (status(component) === "destroyed") {
+            throw new Error("Component is destroyed");
+        }
+        const result = await fn.call(this, ...args);
+        return status(component) === "destroyed" ? new Promise(() => {}) : result;
     };
 }
 

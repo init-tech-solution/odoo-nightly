@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, toRaw } from "@odoo/owl";
+const { Component, toRaw } = owl;
 
 export class DomainSelectorControlPanel extends Component {
     deleteNode() {

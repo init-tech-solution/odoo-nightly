@@ -50,7 +50,7 @@ wTourUtils.registerWebsitePreviewTour('edit_menus', {
     },
     {
         content: "Click on Edit Menu",
-        trigger: 'iframe .o_edit_menu_popover a.js_edit_menu',
+        trigger: '.o_edit_menu_popover a.js_edit_menu',
     },
     {
         content: "Trigger the link dialog (click 'Add Menu Item')",
@@ -95,7 +95,7 @@ wTourUtils.registerWebsitePreviewTour('edit_menus', {
     },
     {
         content: "Click on Edit Link",
-        trigger: 'iframe .o_edit_menu_popover a.o_we_edit_link',
+        trigger: '.o_edit_menu_popover a.o_we_edit_link',
     },
     {
         content: "Change the label",
@@ -123,7 +123,7 @@ wTourUtils.registerWebsitePreviewTour('edit_menus', {
     },
     {
         content: "Click on the popover Edit Menu button",
-        trigger: 'iframe .o_edit_menu_popover a.js_edit_menu',
+        trigger: '.o_edit_menu_popover a.js_edit_menu',
     },
     {
         content: "Click on the dialog Edit Menu button",

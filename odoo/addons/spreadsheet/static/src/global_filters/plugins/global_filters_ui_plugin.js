@@ -3,8 +3,12 @@
 /**
  * @typedef {import("@spreadsheet/data_sources/metadata_repository").Field} Field
  * @typedef {import("./global_filters_core_plugin").GlobalFilter} GlobalFilter
- * @typedef {import("./global_filters_core_plugin").FieldMatching} FieldMatching
- 
+ *
+ * @typedef {Object} FieldMatching
+ * @property {string} chain
+ * @property {string} type Type of the last field of the chain
+ * @property {number} [offset] offset to apply to the field (for date filters)
+ *
  */
 
 import { _t } from "@web/core/l10n/translation";
@@ -40,7 +44,7 @@ const MONTHS = {
     december: { value: 12, granularity: "month" },
 };
 
-const { UuidGenerator, createEmptyExcelSheet } = spreadsheet.helpers;
+const { UuidGenerator } = spreadsheet.helpers;
 const uuidGenerator = new UuidGenerator();
 
 export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
@@ -131,9 +135,6 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
     getGlobalFilterDomain(filterId, fieldMatching) {
         /** @type {GlobalFilter} */
         const filter = this.getters.getGlobalFilter(filterId);
-        if (!filter) {
-            return new Domain();
-        }
         switch (filter.type) {
             case "text":
                 return this._getTextDomain(filter, fieldMatching);
@@ -156,13 +157,7 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
 
         const value = filterId in this.values ? this.values[filterId].value : filter.defaultValue;
 
-        const preventAutomaticValue =
-            this.values[filterId] &&
-            this.values[filterId].value &&
-            this.values[filterId].value.preventAutomaticValue;
-        const defaultsToCurrentPeriod = !preventAutomaticValue && filter.defaultsToCurrentPeriod;
-
-        if (filter.type === "date" && isEmpty(value) && defaultsToCurrentPeriod) {
+        if (filter.type === "date" && isEmpty(value) && filter.defaultsToCurrentPeriod) {
             return this._getValueOfCurrentPeriod(filterId);
         }
 
@@ -304,7 +299,7 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
                 value = "";
                 break;
             case "date":
-                value = { yearOffset: undefined, preventAutomaticValue: true };
+                value = { yearOffset: undefined };
                 break;
             case "relation":
                 value = [];
@@ -325,14 +320,14 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
      * @param {GlobalFilter} filter
      * @param {FieldMatching} fieldMatching
      *
-     * @returns {Domain}
+     * @returns {Domain|undefined}
      */
     _getDateDomain(filter, fieldMatching) {
+        if (!this.isGlobalFilterActive(filter.id)) {
+            return undefined;
+        }
         let granularity;
         const value = this.getGlobalFilterValue(filter.id);
-        if (!value || !fieldMatching.chain) {
-            return new Domain();
-        }
         const field = fieldMatching.chain;
         const type = fieldMatching.type;
         const offset = fieldMatching.offset || 0;
@@ -381,12 +376,12 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
      * @param {GlobalFilter} filter
      * @param {FieldMatching} fieldMatching
      *
-     * @returns {Domain}
+     * @returns {Domain|undefined}
      */
     _getTextDomain(filter, fieldMatching) {
         const value = this.getGlobalFilterValue(filter.id);
         if (!value || !fieldMatching.chain) {
-            return new Domain();
+            return undefined;
         }
         const field = fieldMatching.chain;
         return new Domain([[field, "ilike", value]]);
@@ -400,12 +395,12 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
      * @param {GlobalFilter} filter
      * @param {FieldMatching} fieldMatching
      *
-     * @returns {Domain}
+     * @returns {Domain|undefined}
      */
     _getRelationDomain(filter, fieldMatching) {
         const values = this.getGlobalFilterValue(filter.id);
         if (!values || values.length === 0 || !fieldMatching.chain) {
-            return new Domain();
+            return undefined;
         }
         const field = fieldMatching.chain;
         return new Domain([[field, "in", values]]);
@@ -440,10 +435,17 @@ export default class GlobalFiltersUIPlugin extends spreadsheet.UIPlugin {
             row++;
         }
         data.sheets.push({
-            ...createEmptyExcelSheet(uuidGenerator.uuidv4(), _t("Active Filters")),
+            id: uuidGenerator.uuidv4(),
+            name: "Active Filters",
             cells,
             colNumber: 2,
             rowNumber: this.getters.getGlobalFilters().length + 1,
+            cols: {},
+            rows: {},
+            merges: [],
+            figures: [],
+            conditionalFormats: [],
+            charts: [],
         });
     }
 }

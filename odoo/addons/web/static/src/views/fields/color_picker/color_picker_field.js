@@ -4,7 +4,7 @@ import { ColorList } from "@web/core/colorlist/colorlist";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "../standard_field_props";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class ColorPickerField extends Component {
     get canToggle() {

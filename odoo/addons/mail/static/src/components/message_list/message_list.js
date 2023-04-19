@@ -232,9 +232,9 @@ export class MessageList extends Component {
         if (!messageListView.exists()) {
             return;
         }
-        const { lastMessageListViewItem } = messageListView.threadViewOwner;
-        if (lastMessageListViewItem && lastMessageListViewItem.isPartiallyVisible()) {
-            messageListView.threadViewOwner.handleVisibleMessage(lastMessageListViewItem.message);
+        const { lastMessageView } = messageListView.threadViewOwner;
+        if (lastMessageView && lastMessageView.component && lastMessageView.component.isPartiallyVisible()) {
+            messageListView.threadViewOwner.handleVisibleMessage(lastMessageView.message);
         }
     }
 

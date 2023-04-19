@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useEffect, useRef } from "@odoo/owl";
+const { Component, useState, useEffect, useRef } = owl;
 
 export class SettingsApp extends Component {
     setup() {

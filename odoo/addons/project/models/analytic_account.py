@@ -40,7 +40,7 @@ class AccountAnalyticAccount(models.Model):
             "views": [[kanban_view_id, "kanban"], [False, "form"]],
             "domain": [['analytic_account_id', '=', self.id]],
             "context": {"create": False},
-            "name": _("Projects"),
+            "name": "Projects",
         }
         if len(self.project_ids) == 1:
             result['views'] = [(False, "form")]

@@ -132,7 +132,6 @@ export class GraphModel extends Model {
         if ("measure" in params) {
             const metaData = this._buildMetaData(params);
             await this._fetchDataPoints(metaData);
-            this.useSampleModel = false;
         } else {
             await this.race.getCurrentProm();
             this.metaData = Object.assign({}, this.metaData, params);
@@ -163,13 +162,6 @@ export class GraphModel extends Model {
         metaData.measure = context.graph_measure || metaData.measure;
         metaData.mode = context.graph_mode || metaData.mode;
         metaData.groupBy = groupBy.length ? groupBy : this.initialGroupBy;
-        if (metaData.mode !== "pie") {
-            metaData.order = "graph_order" in context ? context.graph_order : metaData.order;
-            metaData.stacked = "graph_stacked" in context ? context.graph_stacked : metaData.stacked;
-            if (metaData.mode === "line") {
-                metaData.cumulated = "graph_cumulated" in context ? context.graph_cumulated : metaData.cumulated;
-            }
-        }
 
         this._normalize(metaData);
 
@@ -365,13 +357,18 @@ export class GraphModel extends Model {
     _isValidData(dataPoints) {
         const { mode } = this.metaData;
         let somePositive = false;
+        let someNegative = false;
         if (mode === "pie") {
             for (const dataPt of dataPoints) {
                 if (dataPt.value > 0) {
                     somePositive = true;
+                } else if (dataPt.value < 0) {
+                    someNegative = true;
                 }
             }
-            return somePositive;
+            if (someNegative && somePositive) {
+                return false;
+            }
         }
         return true;
     }
@@ -531,19 +528,10 @@ export class GraphModel extends Model {
      * @protected
      */
     async _prepareData() {
-        let processedDataPoints = this._getProcessedDataPoints();
+        const processedDataPoints = this._getProcessedDataPoints();
         this.data = null;
-        if (this._isValidData(processedDataPoints) && this.metaData.mode === 'pie') {
-            const positiveValues = [];
-            for (const dataPt of processedDataPoints) {
-                if (dataPt.value > 0) {
-                    positiveValues.push(dataPt);
-                }
-            }
-            processedDataPoints = positiveValues;
-        } else if(this.metaData.mode === 'pie') {
-            processedDataPoints = [];
+        if (this._isValidData(processedDataPoints)) {
+            this.data = this._getData(processedDataPoints);
         }
-        this.data = this._getData(processedDataPoints);
     }
 }

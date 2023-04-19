@@ -56,7 +56,7 @@ import { ConnectionAbortedError } from "@web/core/network/rpc_service";
 import { CustomFavoriteItem } from "@web/search/favorite_menu/custom_favorite_item";
 import { standaloneAdapter } from "web.OwlCompatibility";
 
-import { Component, onMounted, xml } from "@odoo/owl";
+const { Component, onMounted, xml } = owl;
 
 const actionRegistry = registry.category("actions");
 const serviceRegistry = registry.category("services");
@@ -210,7 +210,6 @@ export async function addLegacyMockEnvironment(env, legacyParams = {}) {
 
     if (legacyParams.withLegacyMockServer) {
         const adapter = standaloneAdapter({ Component });
-        registerCleanup(() => adapter.__owl__.app.destroy());
         adapter.env = legacyEnv;
         const W = Widget.extend({ do_push_state() {} });
         const widget = new W(adapter);

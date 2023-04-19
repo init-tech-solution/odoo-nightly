@@ -3,7 +3,6 @@
 import { globalFiltersFieldMatchers } from "../../src/global_filters/plugins/global_filters_core_plugin";
 import { createSpreadsheetWithChart } from "../utils/chart";
 import { addGlobalFilter, setGlobalFilterValue } from "../utils/commands";
-import { patchDate } from "@web/../tests/helpers/utils";
 
 async function addChartGlobalFilter(model) {
     const chartId = model.getters.getChartIds(model.getters.getActiveSheetId())[0];
@@ -63,7 +62,7 @@ QUnit.module("spreadsheet > Global filters chart", {}, () => {
         );
         model.updateMode("dashboard");
         let computedDomain = model.getters.getChartDataSource(chartId).getComputedDomain();
-        assert.deepEqual(computedDomain, []);
+        assert.equal(computedDomain.length, 0);
         await setGlobalFilterValue(model, {
             id: "42",
             value: { yearOffset: -1 },
@@ -99,7 +98,6 @@ QUnit.module("spreadsheet > Global filters chart", {}, () => {
     });
 
     QUnit.test("field matching is removed when filter is deleted", async function (assert) {
-        patchDate(2022, 6, 10, 0, 0, 0);
         const { model } = await createSpreadsheetWithChart();
         await addChartGlobalFilter(model);
         const [filter] = model.getters.getGlobalFilters();
@@ -109,11 +107,6 @@ QUnit.module("spreadsheet > Global filters chart", {}, () => {
             type: "date",
         };
         assert.deepEqual(model.getters.getChartFieldMatch(chartId)[filter.id], matching);
-        assert.deepEqual(model.getters.getChartDataSource(chartId).getComputedDomain(), [
-            "&",
-            ["date", ">=", "2021-01-01"],
-            ["date", "<=", "2021-12-31"],
-        ]);
         model.dispatch("REMOVE_GLOBAL_FILTER", {
             id: filter.id,
         });
@@ -122,16 +115,9 @@ QUnit.module("spreadsheet > Global filters chart", {}, () => {
             undefined,
             "it should have removed the chart and its fieldMatching and datasource altogether"
         );
-        assert.deepEqual(model.getters.getChartDataSource(chartId).getComputedDomain(), []);
         model.dispatch("REQUEST_UNDO");
         assert.deepEqual(model.getters.getChartFieldMatch(chartId)[filter.id], matching);
-        assert.deepEqual(model.getters.getChartDataSource(chartId).getComputedDomain(), [
-            "&",
-            ["date", ">=", "2021-01-01"],
-            ["date", "<=", "2021-12-31"],
-        ]);
         model.dispatch("REQUEST_REDO");
         assert.deepEqual(model.getters.getChartFieldMatch(chartId)[filter.id], undefined);
-        assert.deepEqual(model.getters.getChartDataSource(chartId).getComputedDomain(), []);
     });
 });

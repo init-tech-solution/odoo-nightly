@@ -3,7 +3,7 @@
 import { registry } from "@web/core/registry";
 import { FloatField } from "../float/float_field";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 export class FloatFactorField extends Component {
     get factor() {
         return this.props.factor;

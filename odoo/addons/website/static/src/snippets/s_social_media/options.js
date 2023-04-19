@@ -7,10 +7,6 @@ import {_t} from 'web.core';
 
 let dbSocialValues;
 let dbSocialValuesProm;
-const clearDbSocialValuesCache = () => {
-    dbSocialValuesProm = undefined;
-    dbSocialValues = undefined;
-};
 
 options.registry.SocialMedia = options.Class.extend({
     /**
@@ -355,5 +351,4 @@ options.registry.SocialMedia = options.Class.extend({
 
 export default {
     SocialMedia: options.registry.SocialMedia,
-    clearDbSocialValuesCache,
 };

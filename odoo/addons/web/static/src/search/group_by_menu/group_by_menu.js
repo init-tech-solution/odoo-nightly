@@ -1,13 +1,13 @@
 /** @odoo-module **/
 
 import { Dropdown } from "@web/core/dropdown/dropdown";
-import { SearchDropdownItem } from "@web/search/search_dropdown_item/search_dropdown_item";
+import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { CustomGroupByItem } from "./custom_group_by_item";
 import { FACET_ICONS, GROUPABLE_TYPES } from "../utils/misc";
 import { sortBy } from "@web/core/utils/arrays";
 import { useBus } from "@web/core/utils/hooks";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class GroupByMenu extends Component {
     setup() {
@@ -48,12 +48,8 @@ export class GroupByMenu extends Component {
      * @returns {boolean}
      */
     validateField(fieldName, field) {
-        const { sortable, store, type } = field;
-        return (
-            (type === "many2many" ? store : sortable) &&
-            fieldName !== "id" &&
-            GROUPABLE_TYPES.includes(type)
-        );
+        const { sortable, type } = field;
+        return fieldName !== "id" && sortable && GROUPABLE_TYPES.includes(type);
     }
 
     /**
@@ -77,7 +73,7 @@ export class GroupByMenu extends Component {
     }
 }
 
-GroupByMenu.components = { CustomGroupByItem, Dropdown, DropdownItem: SearchDropdownItem };
+GroupByMenu.components = { CustomGroupByItem, Dropdown, DropdownItem };
 GroupByMenu.template = "web.GroupByMenu";
 GroupByMenu.defaultProps = {
     showActiveItems: true,

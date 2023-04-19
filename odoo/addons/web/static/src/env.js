@@ -2,7 +2,7 @@
 
 import { registry } from "./core/registry";
 
-import { EventBus } from "@odoo/owl";
+const { EventBus } = owl;
 
 // -----------------------------------------------------------------------------
 // Types

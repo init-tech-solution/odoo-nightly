@@ -6,6 +6,7 @@ import logging
 from freezegun import freeze_time
 from lxml import etree
 
+from odoo import tools
 from odoo.tests import tagged
 from odoo.addons.l10n_it_edi.tests.common import TestItEdi, patch_proxy_user
 from odoo.addons.l10n_it_edi.tools.remove_signature import remove_signature
@@ -42,7 +43,8 @@ class TestItEdiImport(TestItEdi):
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super().setUpClass(chart_template_ref='l10n_it.l10n_it_chart_template_generic',
+                           edi_format_ref='l10n_it_edi.edi_fatturaPA')
 
         # Build test data.
         # invoice_filename1 is used for vendor bill receipts tests
@@ -73,6 +75,13 @@ class TestItEdiImport(TestItEdi):
             ('normal_1', 'IT01234567890_FPR01.xml'),
             ('signed', 'IT01234567890_FPR01.xml.p7m'),
         ]}
+
+    @classmethod
+    def _get_test_file_content(cls, filename):
+        """ Get the content of a test file inside this module """
+        path = 'l10n_it_edi/tests/expected_xmls/' + filename
+        with tools.file_open(path, mode='rb') as test_file:
+            return test_file.read()
 
     # -----------------------------
     #
@@ -119,11 +128,9 @@ class TestItEdiImport(TestItEdi):
         # In order for the cron function to progress to the point that it imports, we cannot be in demo mode
         self.proxy_user._get_demo_state.return_value = 'unit_test'
 
-        # TODO: we need to see it does not apply to non-test companies which it does right now (missing security rule on client user)
-
-        #self.edi_format.with_context({'test_skip_commit': True}).sudo()._cron_receive_fattura_pa()
+        self.edi_format.with_context({'test_skip_commit': True})._cron_receive_fattura_pa()
         # There should be one attachement with this filename
-        #attachment = self.env['ir.attachment'].search([('name', '=', self.invoice_filename2)])
-        #self.assertEqual(len(attachment), 1)
-        #invoice = self.env['account.move'].search([('payment_reference', '=', 'TWICE_TEST')])
-        #self.assertEqual(len(invoice), 1)
+        attachment = self.env['ir.attachment'].search([('name', '=', self.invoice_filename2)])
+        self.assertEqual(len(attachment), 1)
+        invoice = self.env['account.move'].search([('payment_reference', '=', 'TWICE_TEST')])
+        self.assertEqual(len(invoice), 1)

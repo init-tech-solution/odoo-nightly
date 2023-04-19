@@ -10,10 +10,6 @@ import { RELATIVE_DATE_RANGE_TYPES } from "@spreadsheet/helpers/constants";
 
 const { DateTime } = luxon;
 
-/**
- * @typedef {import("@spreadsheet/global_filters/plugins/global_filters_core_plugin").FieldMatching} FieldMatching
- */
-
 export function checkFiltersTypeValueCombination(type, value) {
     if (value !== undefined) {
         switch (type) {
@@ -25,7 +21,7 @@ export function checkFiltersTypeValueCombination(type, value) {
             case "date":
                 if (typeof value === "string") {
                     const expectedValues = RELATIVE_DATE_RANGE_TYPES.map((val) => val.type);
-                    if (value && !expectedValues.includes(value)) {
+                    if (!expectedValues.includes(value)) {
                         return CommandResult.InvalidValueTypeCombination;
                     }
                 } else if (typeof value !== "object" || Array.isArray(value)) {
@@ -40,20 +36,6 @@ export function checkFiltersTypeValueCombination(type, value) {
                 break;
         }
     }
-    return CommandResult.Success;
-}
-
-/**
- *
- * @param {Record<string, FieldMatching>} fieldMatchings
- */
-export function checkFilterFieldMatching(fieldMatchings) {
-    for (const fieldMatch of Object.values(fieldMatchings)) {
-        if (fieldMatch.offset && (!fieldMatch.chain || !fieldMatch.type)) {
-            return CommandResult.InvalidFieldMatch;
-        }
-    }
-
     return CommandResult.Success;
 }
 
@@ -127,14 +109,11 @@ export function getRelativeDateDomain(now, offset, rangeType, fieldName, fieldTy
     return new Domain(["&", [fieldName, ">=", leftBound], [fieldName, "<=", rightBound]]);
 }
 
-/**
- * Returns a list of time options to choose from according to the requested
+/*
+ * Return a list of time options to choose from according to the requested
  * type. Each option contains its (translated) description.
- * see getPeriodOptions
- *
- *
+ * @see getPeriodOptions
  * @param {string} type "month" | "quarter" | "year"
- *
  * @returns {Array<Object>}
  */
 export function dateOptions(type) {

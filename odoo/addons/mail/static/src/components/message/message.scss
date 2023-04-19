@@ -25,7 +25,6 @@
         // may impact the bullet point (at least it does on Safari).
         max-width: 100%;
         overflow-x: auto;
-        overflow-y: hidden;
 
         // overflow: auto can break rendering of next element of a frequent broken Outlook 365
         // warning table. If detected, we prevent the issue by removing flotation.
@@ -87,6 +86,8 @@
 }
 
 // Used to hide buttons on rating emails in chatter
-.o_Chatter .o_Message_content [summary~="o_mail_notification"] {
+// FIXME: should use a better approach for not having such buttons
+// in chatter of such messages, but keep having them in emails.
+.o_Message_content [summary~="o_mail_notification"] {
     display: none;
 }

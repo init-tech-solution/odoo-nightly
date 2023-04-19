@@ -27,12 +27,7 @@ import LivechatButton from '@im_livechat/legacy/widgets/livechat_button';
     _prepareGetSessionParameters() {
         const parameters = this._super(...arguments);
 
-        const { publicLivechat } = this.messaging.publicLivechatGlobal;
-        if (publicLivechat && publicLivechat.isTemporary && !publicLivechat.data.chatbot_script_id) {
-            return parameters;
-        } else if (publicLivechat && publicLivechat.data.chatbot_script_id) {
-            parameters.chatbot_script_id = publicLivechat.data.chatbot_script_id;
-        } else if (this.messaging.publicLivechatGlobal.chatbot.isActive) {
+        if (this.messaging.publicLivechatGlobal.chatbot.isActive) {
             parameters.chatbot_script_id = this.messaging.publicLivechatGlobal.chatbot.scriptId;
         }
 

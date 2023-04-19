@@ -4,17 +4,17 @@
 import { loadJS } from "@web/core/assets";
 import { _lt } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
-import { useBus, useService } from "@web/core/utils/hooks";
 import { formatText } from "../formatters";
 import { standardFieldProps } from "../standard_field_props";
+import { getCookie } from "web.utils.cookies";
 
-import { Component, onWillStart, onWillUpdateProps, useEffect, useRef } from "@odoo/owl";
+const { Component, onWillStart, onWillUpdateProps, useEffect, useRef } = owl;
+const colorSchemeCookie = getCookie("color_scheme");
 
 export class AceField extends Component {
     setup() {
         this.aceEditor = null;
         this.editorRef = useRef("editor");
-        this.cookies = useService("cookie");
 
         onWillStart(async () => {
             await loadJS("/web/static/lib/ace/ace.js");
@@ -37,11 +37,6 @@ export class AceField extends Component {
             },
             () => [this.editorRef.el]
         );
-
-        useBus(this.env.bus, "RELATIONAL_MODEL:WILL_SAVE_URGENTLY", () => this.commitChanges());
-        useBus(this.env.bus, "RELATIONAL_MODEL:NEED_LOCAL_CHANGES", ({ detail }) =>
-            detail.proms.push(this.commitChanges())
-        );
     }
 
     get aceSession() {
@@ -53,7 +48,7 @@ export class AceField extends Component {
         this.aceEditor.setOptions({
             maxLines: Infinity,
             showPrintMargin: false,
-            theme: this.cookies.current.color_scheme === "dark" ? "ace/theme/monokai" : "",
+            theme: (colorSchemeCookie && colorSchemeCookie === "dark" ? 'ace/theme/monokai' : ''),
         });
         this.aceEditor.$blockScrolling = true;
 
@@ -63,7 +58,7 @@ export class AceField extends Component {
             useSoftTabs: true,
         });
 
-        this.aceEditor.on("blur", this.commitChanges.bind(this));
+        this.aceEditor.on("blur", this.onBlur.bind(this));
     }
 
     updateAce({ mode, readonly, value }) {
@@ -100,12 +95,9 @@ export class AceField extends Component {
         }
     }
 
-    commitChanges() {
+    onBlur() {
         if (!this.props.readonly) {
-            const value = this.aceSession.getValue();
-            if (this.props.value !== value) {
-                return this.props.update(value);
-            }
+            this.props.update(this.aceSession.getValue());
         }
     }
 }

@@ -252,7 +252,6 @@ export class MockServer {
         }
         const editableView = editable && this._editableNode(doc, modelName);
         const onchangeAbleView = this._onchangeAbleView(doc);
-        const modifiersFromModel = this._modifiersFromModel(doc);
         const inTreeView = ["tree", "list"].includes(doc.tagName);
         const inFormView = doc.tagName === "form";
         // mock _postprocess_access_rights
@@ -287,8 +286,7 @@ export class MockServer {
                 }
                 const defaultValues = {};
                 const stateExceptions = {}; // what is this ?
-
-                modifiersFromModel.forEach((attr) => {
+                (editableView && modifiersNames || ["invisible"]).forEach((attr) => {
                     stateExceptions[attr] = [];
                     defaultValues[attr] = !!field[attr];
                 });
@@ -469,7 +467,7 @@ export class MockServer {
             case "form":
                 return true;
             case "tree":
-                return node.getAttribute("editable") || node.getAttribute("multi_edit");
+                return !!node.getAttribute("editable");
             case "field": {
                 const fname = node.getAttribute("name");
                 const field = this.models[modelName].fields[fname];
@@ -491,19 +489,13 @@ export class MockServer {
     _onchangeAbleView(node) {
         if (node.tagName === "form") {
             return true;
-        } else if (node.tagName === "tree") {
-            return true;
-        } else if (node.tagName === "kanban") {
+        }
+        else if (node.tagName === "tree") {
             return true;
         }
-    }
-
-    _modifiersFromModel(node) {
-        const modifiersNames = ["invisible"];
-        if (["kanban", "tree", "form"].includes(node.tagName)) {
-            modifiersNames.push(...["readonly", "required"]);
+        else if (node.tagName === "kanban") {
+            return true;
         }
-        return modifiersNames;
     }
 
     /**
@@ -1001,9 +993,7 @@ export class MockServer {
             } else if (type === "datetime") {
                 const date = deserializeDateTime(val);
                 if (aggregateFunction === "hour") {
-                    // The year is added to the format because is needed to correctly compute the
-                    // domain and the range (startDate and endDate).
-                    return date.toFormat("HH:00 dd MMM yyyy");
+                    return date.toFormat("HH:00 dd MMM");
                 } else if (aggregateFunction === "day") {
                     return date.toFormat("yyyy-MM-dd");
                 } else if (aggregateFunction === "week") {
@@ -1095,11 +1085,12 @@ export class MockServer {
                         let startDate, endDate;
                         switch (dateRange) {
                             case "hour": {
-                                startDate = parseDateTime(value, { format: "HH:00 dd MMM yyyy" });
+                                try {
+                                    startDate = parseDateTime(value, { format: "HH dd MMM" });
+                                } catch {
+                                    startDate = parseDateTime(value, { format: "HH:00 dd MMM" });
+                                }
                                 endDate = startDate.plus({ hours: 1 });
-                                // Remove the year from the result value of the group. It was needed
-                                // to compute the startDate and endDate.
-                                group[gbField] = startDate.toFormat("HH:00 dd MMM");
                                 break;
                             }
                             case "day": {
@@ -1235,17 +1226,7 @@ export class MockServer {
         const data = {};
         for (const group of groups) {
             const records = this.getRecords(modelName, group.__domain || []);
-            let groupByValue = group[groupBy]; // always technical value here
-
-            // special case for bool values: rpc call response with capitalized strings
-            if (!(groupByValue in data)) {
-                if (groupByValue === true) {
-                    groupByValue = "True";
-                } else if (groupByValue === false) {
-                    groupByValue = "False";
-                }
-            }
-
+            const groupByValue = group[groupBy]; // always technical value here
             if (!(groupByValue in data)) {
                 data[groupByValue] = {};
                 for (const key in progressBar.colors) {

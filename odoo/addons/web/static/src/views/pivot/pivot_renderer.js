@@ -7,7 +7,7 @@ import { formatPercentage } from "@web/views/fields/formatters";
 import { PivotGroupByMenu } from "@web/views/pivot/pivot_group_by_menu";
 import fieldUtils from "web.field_utils";
 
-import { Component, onWillUpdateProps, useRef } from "@odoo/owl";
+const { Component, onWillUpdateProps, useRef } = owl;
 const formatters = registry.category("formatters");
 
 export class PivotRenderer extends Component {

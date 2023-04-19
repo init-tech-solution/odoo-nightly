@@ -3,7 +3,7 @@
 import { sprintf } from "../utils/strings";
 import { FileUploadProgressBar } from "./file_upload_progress_bar";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class FileUploadProgressRecord extends Component {
     getProgressTexts() {

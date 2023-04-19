@@ -6,12 +6,11 @@ import odoo.tests
 from datetime import timedelta
 
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
-from odoo.addons.website_event_sale.tests.common import TestWebsiteEventSaleCommon
 from odoo.fields import Datetime
 
 
 @odoo.tests.common.tagged('post_install', '-at_install')
-class TestUi(HttpCaseWithUserDemo, TestWebsiteEventSaleCommon):
+class TestUi(HttpCaseWithUserDemo):
 
     def setUp(self):
         super().setUp()
@@ -125,6 +124,4 @@ class TestUi(HttpCaseWithUserDemo, TestWebsiteEventSaleCommon):
 
         self.start_tour("/", 'event_buy_last_ticket')
 
-    def test_pricelists_different_currencies(self):
-        self.start_tour("/", 'event_sale_pricelists_different_currencies', login='admin')
     # TO DO - add public test with new address when convert to web.tour format.

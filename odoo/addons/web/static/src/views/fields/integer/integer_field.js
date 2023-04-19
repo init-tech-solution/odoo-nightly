@@ -8,7 +8,7 @@ import { useInputField } from "../input_field_hook";
 import { standardFieldProps } from "../standard_field_props";
 import { useNumpadDecimal } from "../numpad_decimal_hook";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class IntegerField extends Component {
     setup() {

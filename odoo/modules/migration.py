@@ -69,13 +69,14 @@ class MigrationManager(object):
             for path in odoo.upgrade.__path__:
                 upgrade_path = opj(path, pkg)
                 if os.path.exists(upgrade_path):
-                    yield upgrade_path
+                    return upgrade_path
+            return None
 
         def get_scripts(path):
             if not path:
                 return {}
             return {
-                version: glob.glob(opj(path, version, '*.py'))
+                version: glob.glob1(opj(path, version), '*.py')
                 for version in os.listdir(path)
                 if os.path.isdir(opj(path, version))
             }
@@ -88,13 +89,8 @@ class MigrationManager(object):
             self.migrations[pkg.name] = {
                 'module': get_scripts(get_resource_path(pkg.name, 'migrations')),
                 'module_upgrades': get_scripts(get_resource_path(pkg.name, 'upgrades')),
+                'upgrade': get_scripts(_get_upgrade_path(pkg.name)),
             }
-
-            scripts = defaultdict(list)
-            for p in _get_upgrade_path(pkg.name):
-                for v, s in get_scripts(p).items():
-                    scripts[v].extend(s)
-            self.migrations[pkg.name]["upgrade"] = scripts
 
     def migrate_module(self, pkg, stage):
         assert stage in ('pre', 'post', 'end')
@@ -133,16 +129,26 @@ class MigrationManager(object):
             """ return a list of migration script files
             """
             m = self.migrations[pkg.name]
+            lst = []
 
-            return sorted(
-                (
-                    f
-                    for k in m
-                    for f in m[k].get(version, [])
-                    if os.path.basename(f).startswith(f"{stage}-")
-                ),
-                key=os.path.basename,
-            )
+            mapping = {
+                'module': opj(pkg.name, 'migrations'),
+                'module_upgrades': opj(pkg.name, 'upgrades'),
+            }
+
+            for path in odoo.upgrade.__path__:
+                if os.path.exists(opj(path, pkg.name)):
+                    mapping['upgrade'] = opj(path, pkg.name)
+                    break
+
+            for x in mapping:
+                if version in m.get(x):
+                    for f in m[x][version]:
+                        if not f.startswith(stage + '-'):
+                            continue
+                        lst.append(opj(mapping[x], version, f))
+            lst.sort()
+            return lst
 
         installed_version = getattr(pkg, 'load_version', pkg.installed_version) or ''
         parsed_installed_version = parse_version(installed_version)

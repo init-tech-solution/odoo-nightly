@@ -4,7 +4,7 @@ import { Dialog } from "../core/dialog/dialog";
 import { patch } from "@web/core/utils/patch";
 import OwlDialog from "web.OwlDialog";
 
-import { useEffect } from "@odoo/owl";
+const { useEffect } = owl;
 
 /**
  * This is a patch of the new Dialog class.

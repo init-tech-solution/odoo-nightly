@@ -640,14 +640,7 @@ var FieldMany2One = AbstractField.extend({
             domain.push(['id', 'not in', blackListedIds]);
         }
 
-        if (this.lastNameSearch) {
-            this.lastNameSearch.catch((reason) => {
-                // the last rpc name_search will be aborted, so we want to ignore its rejection
-                reason.event.preventDefault();
-            })
-            this.lastNameSearch.abort(false)
-        }
-        this.lastNameSearch = this._rpc({
+        const nameSearch = this._rpc({
             model: this.field.relation,
             method: "name_search",
             kwargs: {
@@ -658,7 +651,7 @@ var FieldMany2One = AbstractField.extend({
                 context,
             }
         });
-        const results = await this.orderer.add(this.lastNameSearch);
+        const results = await this.orderer.add(nameSearch);
 
         // Format results to fit the options dropdown
         let values = results.map((result) => {
@@ -840,7 +833,7 @@ var FieldMany2One = AbstractField.extend({
      * @private
      */
     _onInputFocusout: function () {
-        if (!this.floating || this.$input.val() === "") {
+        if (!this.floating) {
             return;
         }
         const firstValue = this.suggestions.find(s => s.id);

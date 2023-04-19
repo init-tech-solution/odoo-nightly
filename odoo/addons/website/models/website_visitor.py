@@ -205,12 +205,14 @@ class WebsiteVisitor(models.Model):
         :return: a tuple containing the visitor id and the upsert result (either
             `inserted` or `updated).
         """
+        country_code = request.geoip.get('country_code')
+        country_id = request.env['res.country'].sudo().search([
+            ('code', '=', country_code)
+        ], limit=1).id if country_code else None
         create_values = {
             'access_token': access_token,
             'lang_id': request.lang.id,
-            # Note that it's possible for the GEOIP database to return a country
-            # code which is unknown in Odoo
-            'country_code': request.geoip.get('country_code'),
+            'country_id': country_id,
             'website_id': request.website.id,
             'timezone': self._get_visitor_timezone() or None,
             'write_uid': self.env.uid,
@@ -220,17 +222,15 @@ class WebsiteVisitor(models.Model):
             # used instead as the token.
             'partner_id': None if len(str(access_token)) == 32 else access_token,
         }
+
         query = """
             INSERT INTO website_visitor (
                 partner_id, access_token, last_connection_datetime, visit_count, lang_id,
-                website_id, timezone, write_uid, create_uid, write_date, create_date, country_id)
+                country_id, website_id, timezone, write_uid, create_uid, write_date, create_date)
             VALUES (
                 %(partner_id)s, %(access_token)s, now() at time zone 'UTC', 1, %(lang_id)s,
-                %(website_id)s, %(timezone)s, %(create_uid)s, %(write_uid)s,
-                now() at time zone 'UTC', now() at time zone 'UTC', (
-                    SELECT id FROM res_country WHERE code = %(country_code)s
-                )
-            )
+                %(country_id)s, %(website_id)s, %(timezone)s, %(create_uid)s, %(write_uid)s,
+                now() at time zone 'UTC', now() at time zone 'UTC')
             ON CONFLICT (access_token)
             DO UPDATE SET
                 last_connection_datetime=excluded.last_connection_datetime,

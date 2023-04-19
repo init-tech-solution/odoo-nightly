@@ -24,7 +24,7 @@ which executes its directive but doesn't generate any output in and of
 itself.
 
 To create new XML template, please see :doc:`QWeb Templates documentation
-<https://www.odoo.com/documentation/16.0/developer/reference/frontend/qweb.html>`
+<https://www.odoo.com/documentation/master/developer/reference/frontend/qweb.html>`
 
 Rendering process
 =================
@@ -406,24 +406,13 @@ _SAFE_QWEB_OPCODES = _EXPR_OPCODES.union(to_opcodes([
     'CALL_METHOD', 'LOAD_METHOD',
 
     'GET_ITER', 'FOR_ITER', 'YIELD_VALUE',
-    'JUMP_FORWARD', 'JUMP_ABSOLUTE', 'JUMP_BACKWARD',
+    'JUMP_FORWARD', 'JUMP_ABSOLUTE',
     'JUMP_IF_FALSE_OR_POP', 'JUMP_IF_TRUE_OR_POP', 'POP_JUMP_IF_FALSE', 'POP_JUMP_IF_TRUE',
 
     'LOAD_NAME', 'LOAD_ATTR',
     'LOAD_FAST', 'STORE_FAST', 'UNPACK_SEQUENCE',
     'STORE_SUBSCR',
     'LOAD_GLOBAL',
-    # Following opcodes were added in 3.11 https://docs.python.org/3/whatsnew/3.11.html#new-opcodes
-    'RESUME',
-    'CALL',
-    'PRECALL',
-    'POP_JUMP_FORWARD_IF_FALSE',
-    'PUSH_NULL',
-    'POP_JUMP_FORWARD_IF_TRUE', 'KW_NAMES',
-    'FORMAT_VALUE', 'BUILD_STRING',
-    'RETURN_GENERATOR',
-    'POP_JUMP_BACKWARD_IF_FALSE',
-    'SWAP',
 ])) - _BLACKLIST
 
 

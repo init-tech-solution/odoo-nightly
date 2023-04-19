@@ -5,7 +5,7 @@ import { useService } from "@web/core/utils/hooks";
 import { SettingsContainer } from "../settings/settings_container";
 import { Setting } from "../settings/setting";
 
-import { Component, onWillStart } from "@odoo/owl";
+const { Component, onWillStart } = owl;
 
 /**
  * Widget in the settings that handles the "Developer Tools" section.

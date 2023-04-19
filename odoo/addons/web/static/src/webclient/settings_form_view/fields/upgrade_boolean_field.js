@@ -34,9 +34,4 @@ export class UpgradeBooleanField extends BooleanField {
     }
 }
 UpgradeBooleanField.isUpgradeField = true;
-UpgradeBooleanField.additionalClasses = [
-    ...UpgradeBooleanField.additionalClasses || [],
-    "o_field_boolean",
-];
-
 registry.category("fields").add("upgrade_boolean", UpgradeBooleanField);

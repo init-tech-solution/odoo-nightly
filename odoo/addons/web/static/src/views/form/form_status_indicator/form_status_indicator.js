@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class FormStatusIndicator extends Component {
     get displayButtons() {
@@ -12,7 +12,7 @@ export class FormStatusIndicator extends Component {
             return this.props.model.root.isValid ? "dirty" : "invalid";
         } else if (!this.props.model.root.isValid) {
             return "invalid";
-        } else if (this.props.model.root.isDirty || this.props.fieldIsDirty) {
+        } else if (this.props.model.root.isDirty) {
             return "dirty";
         } else {
             return "saved";
@@ -32,5 +32,4 @@ FormStatusIndicator.props = {
     save: Function,
     discard: Function,
     isDisabled: Boolean,
-    fieldIsDirty: Boolean,
 };

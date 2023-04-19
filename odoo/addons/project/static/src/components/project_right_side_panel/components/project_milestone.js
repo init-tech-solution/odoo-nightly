@@ -3,7 +3,7 @@
 import { formatDate } from "@web/core/l10n/dates";
 import { useService } from '@web/core/utils/hooks';
 
-const { Component, useState, onWillUpdateProps, status } = owl;
+const { Component, useState, onWillUpdateProps } = owl;
 const { DateTime } = luxon;
 
 export class ProjectMilestone extends Component {
@@ -59,10 +59,8 @@ export class ProjectMilestone extends Component {
                 title: this.env._t("Milestone"),
             }, {
                 onClose: async () => {
-                    if (status(this) === "mounted") {
-                        await this.props.load();
-                        this.write_mutex = false;
-                    }
+                    await this.props.load();
+                    this.write_mutex = false;
                 },
             });
         }

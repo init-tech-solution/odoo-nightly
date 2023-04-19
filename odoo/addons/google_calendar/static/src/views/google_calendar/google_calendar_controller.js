@@ -20,9 +20,9 @@ patch(AttendeeCalendarController.prototype, "google_calendar_google_calendar_con
         );
         const syncResult = await this.model.syncGoogleCalendar();
         if (syncResult.status === "need_auth") {
-            window.location.assign(syncResult.url);
+            this.configureCalendarProviderSync("google");
         } else if (syncResult.status === "need_config_from_admin") {
-            if (this.isSystemUser) {
+            if (Number.isInteger(syncResult.action)) {
                 this.dialog.add(ConfirmationDialog, {
                     title: this.env._t("Configuration"),
                     body: this.env._t("The Google Synchronization needs to be configured before you can use it, do you want to do it now?"),

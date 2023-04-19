@@ -23,7 +23,6 @@ registerModel({
                 this.update({
                     dataCategories: insert({
                         name: category.name,
-                        displayName: category.displayName,
                         title: category.title,
                         sortId: category.sortId,
                         emojiCount,

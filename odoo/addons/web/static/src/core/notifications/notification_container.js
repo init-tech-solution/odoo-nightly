@@ -3,7 +3,7 @@
 import { Notification } from "./notification";
 import { Transition } from "@web/core/transition";
 
-import { Component, xml, useState } from "@odoo/owl";
+const { Component, xml, useState } = owl;
 
 export class NotificationContainer extends Component {
     setup() {

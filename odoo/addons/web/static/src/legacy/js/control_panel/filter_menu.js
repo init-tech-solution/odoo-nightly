@@ -2,7 +2,7 @@ odoo.define('web.FilterMenu', function (require) {
     "use strict";
 
     const { Dropdown } = require("@web/core/dropdown/dropdown");
-    const { SearchDropdownItem } = require("@web/search/search_dropdown_item/search_dropdown_item");
+    const { DropdownItem } = require("@web/core/dropdown/dropdown_item");
     const CustomFilterItem = require('web.CustomFilterItem');
     const { FACET_ICONS } = require("web.searchUtils");
     const { useModel } = require('web.Model');
@@ -52,6 +52,7 @@ odoo.define('web.FilterMenu', function (require) {
         }
     }
 
+    FilterMenu.components = { CustomFilterItem };
     FilterMenu.defaultProps = {
         class: "",
     };
@@ -60,7 +61,7 @@ odoo.define('web.FilterMenu', function (require) {
         class: { String, optional: true },
     };
     FilterMenu.template = "web.legacy.FilterMenu";
-    FilterMenu.components = { CustomFilterItem, Dropdown, DropdownItem: SearchDropdownItem };
+    FilterMenu.components = { CustomFilterItem, Dropdown, DropdownItem };
 
     return FilterMenu;
 });

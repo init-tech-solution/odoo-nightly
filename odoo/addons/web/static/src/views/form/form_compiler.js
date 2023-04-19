@@ -31,7 +31,10 @@ function appendAttf(el, attr, string) {
 function appendToExpr(expr, string) {
     const re = /{{.*}}/;
     const oldString = re.exec(expr);
-    return oldString ? `${oldString} {{${string} }}` : `{{${string} }}`;
+    if (oldString) {
+        string = `${oldString} ${string}`;
+    }
+    return `{{${string} }}`;
 }
 
 /**
@@ -70,6 +73,13 @@ export class FormCompiler extends ViewCompiler {
     }
 
     createLabelFromField(fieldId, fieldName, fieldString, label, params) {
+        const props = {
+            id: `'${fieldId}'`,
+            fieldName: `'${fieldName}'`,
+            record: `props.record`,
+            fieldInfo: `props.archInfo.fieldNodes['${fieldId}']`,
+            className: `"${label.className}"`,
+        };
         let labelText = label.textContent || fieldString;
         if (label.hasAttribute("data-no-label")) {
             labelText = toStringExpression("");
@@ -79,11 +89,7 @@ export class FormCompiler extends ViewCompiler {
                 : `props.record.fields['${fieldName}'].string`;
         }
         const formLabel = createElement("FormLabel", {
-            id: `'${fieldId}'`,
-            fieldName: `'${fieldName}'`,
-            record: `props.record`,
-            fieldInfo: `props.archInfo.fieldNodes['${fieldId}']`,
-            className: `"${label.className}"`,
+            "t-props": objectToString(props),
             string: labelText,
         });
         const condition = label.getAttribute("t-if");
@@ -206,7 +212,6 @@ export class FormCompiler extends ViewCompiler {
             dynamicLabel(label);
         }
         this.encounteredFields[fieldName] = dynamicLabel;
-        field.setAttribute("setDirty", `props.setFieldAsDirty`);
         return field;
     }
 
@@ -324,7 +329,7 @@ export class FormCompiler extends ViewCompiler {
                     ? child.getAttribute("nolabel") !== "1"
                     : true;
                 slotContent = this.compileNode(child, { ...params, currentSlot: mainSlot }, false);
-                if (slotContent && addLabel && !isOuterGroup && !isTextNode(slotContent)) {
+                if (addLabel && !isOuterGroup && !isTextNode(slotContent)) {
                     itemSpan = itemSpan === 1 ? itemSpan + 1 : itemSpan;
                     const fieldName = child.getAttribute("name");
                     const fieldId = slotContent.getAttribute("id") || fieldName;
@@ -370,20 +375,7 @@ export class FormCompiler extends ViewCompiler {
 
                 const groupClassExpr = `scope && scope.className`;
                 if (isComponentNode(slotContent)) {
-                    if (getTag(slotContent) === "FormLabel") {
-                        mainSlot.prepend(
-                            createElement("t", {
-                                "t-set": "addClass",
-                                "t-value": groupClassExpr,
-                            })
-                        );
-                        combineAttributes(
-                            slotContent,
-                            "className",
-                            `(addClass ? " " + addClass : "")`,
-                            `+`
-                        );
-                    } else if (getTag(child, true) !== "button") {
+                    if (getTag(child, true) !== "button") {
                         if (slotContent.hasAttribute("class")) {
                             mainSlot.prepend(
                                 createElement("t", {
@@ -609,7 +601,7 @@ export class FormCompiler extends ViewCompiler {
         sheetBG.className = "o_form_sheet_bg";
 
         const sheetFG = createElement("div");
-        sheetFG.className = "o_form_sheet position-relative clearfix";
+        sheetFG.className = "o_form_sheet position-relative";
 
         append(sheetBG, sheetFG);
         for (const child of el.childNodes) {

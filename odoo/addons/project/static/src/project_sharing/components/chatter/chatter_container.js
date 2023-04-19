@@ -71,7 +71,12 @@ export class ChatterContainer extends Component {
     }
 
     onWillUpdateProps(nextProps) {
-        this.initChatter(this.messagesParams(nextProps));
+        if (nextProps.resId) {
+            this.initChatter(this.messagesParams(nextProps));
+        } else {
+            this.state.messages = [];
+            this.options = {};
+        }
     }
 
     async onChangePage(page) {
@@ -80,17 +85,12 @@ export class ChatterContainer extends Component {
     }
 
     async initChatter(params) {
-        if (params.res_id && params.res_model) {
-            const chatterData = await this.rpc(
-                '/mail/chatter_init',
-                params,
-            );
-            this.state.messages = this.preprocessMessages(chatterData.messages);
-            this.options = chatterData.options;
-        } else {
-            this.state.messages = [];
-            this.options = {};
-        }
+        const chatterData = await this.rpc(
+            '/mail/chatter_init',
+            params,
+        );
+        this.state.messages = this.preprocessMessages(chatterData.messages);
+        this.options = chatterData.options;
     }
 
     async fetchMessages() {

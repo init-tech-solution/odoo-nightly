@@ -15,9 +15,8 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { KanbanRenderer } from "@web/views/kanban/kanban_renderer";
 import { ListRenderer } from "@web/views/list/list_renderer";
 import { evalDomain } from "@web/views/utils";
-import { _lt } from "@web/core/l10n/translation";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class X2ManyField extends Component {
     setup() {
@@ -86,7 +85,6 @@ export class X2ManyField extends Component {
             activeActions: this.activeActions,
             onSelected: (resIds) => saveRecord(resIds),
             onCreateEdit: ({ context }) => this._openRecord({ context }),
-            onUnselect: this.isMany2Many ? false : () => saveRecord(),
         });
 
         this.selectCreate = (params) => {
@@ -185,7 +183,6 @@ export class X2ManyField extends Component {
         props.archInfo = { ...archInfo, columns };
         props.cycleOnTab = false;
         props.editable = !this.props.readonly && editable;
-        props.readonly = this.props.readonly;
         props.nestedKeyOptionalFieldsData = this.nestedKeyOptionalFieldsData;
         props.onAdd = (params) => {
             params.editable =
@@ -233,11 +230,10 @@ export class X2ManyField extends Component {
 X2ManyField.components = { Pager, KanbanRenderer, ListRenderer };
 X2ManyField.props = {
     ...standardFieldProps,
-    addLabel: { type: String, optional: true },
-    editable: { type: String, optional: true },
+    addLabel: { type: "string", optional: true },
+    editable: { type: "string", optional: true },
 };
-X2ManyField.supportedTypes = ["one2many", "many2many"];
-X2ManyField.displayName = _lt("Relational table");
+X2ManyField.supportedTypes = ["one2many"];
 X2ManyField.template = "web.X2ManyField";
 X2ManyField.useSubView = true;
 X2ManyField.extractProps = ({ attrs }) => {

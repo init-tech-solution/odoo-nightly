@@ -14,6 +14,7 @@ const messagesContain = (text) => `div.o_thread_message_content:contains("${text
 
 tour.register('website_livechat_chatbot_flow_tour', {
     test: true,
+    url: '/',
 }, [{
     trigger: messagesContain("Hello! I'm a bot!"),
     async run() {
@@ -150,8 +151,5 @@ tour.register('website_livechat_chatbot_flow_tour', {
     }
 }, {
     trigger: messagesContain("Ok bye!"),
-}, {
-    // wait for chatbot script to finish.
-    trigger: '.o_livechat_chatbot_restart',
-}
-]);
+    run: () => {}  // last step is displayed
+}]);

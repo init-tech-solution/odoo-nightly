@@ -2,7 +2,7 @@
 
 import { useService } from "@web/core/utils/hooks";
 
-import { Component, onMounted, useRef } from "@odoo/owl";
+const { Component, onMounted, useRef } = owl;
 
 /**
  * Custom file input

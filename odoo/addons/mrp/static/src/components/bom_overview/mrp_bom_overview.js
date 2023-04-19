@@ -5,12 +5,13 @@ import { useService } from "@web/core/utils/hooks";
 import { BomOverviewControlPanel } from "../bom_overview_control_panel/mrp_bom_overview_control_panel";
 import { BomOverviewTable } from "../bom_overview_table/mrp_bom_overview_table";
 
-const { Component, EventBus, onWillStart, useSubEnv, useState } = owl;
+const { Component, EventBus, onMounted, onWillStart, onWillUnmount, useState } = owl;
 
 export class BomOverviewComponent extends Component {
     setup() {
         this.orm = useService("orm");
         this.actionService = useService("action");
+        this.bus = new EventBus();
 
         this.variants = [];
         this.warehouses = [];
@@ -34,13 +35,27 @@ export class BomOverviewComponent extends Component {
             bomQuantity: null,
         });
 
-        useSubEnv({
-            overviewBus: new EventBus(),
-        });
-
         onWillStart(async () => {
             await this.getWarehouses();
             await this.initBomData();
+        });
+
+        onMounted(() => {
+            this.bus.addEventListener("change-fold", (ev) => this._onChangeFolded(ev.detail));
+            this.bus.addEventListener("change-display", (ev) => this._onChangeDisplay(ev.detail));
+            this.bus.addEventListener("change-quantity", (ev) => this._onChangeBomQuantity(ev.detail));
+            this.bus.addEventListener("change-variant", (ev) => this._onChangeVariant(ev.detail));
+            this.bus.addEventListener("change-warehouse", (ev) => this._onChangeWarehouse(ev.detail));
+            this.bus.addEventListener("print", (ev) => this._onClickPrint(ev.detail));
+        });
+
+        onWillUnmount(() => {
+            this.bus.removeEventListener("change-fold", (ev) => this._onChangeFolded(ev.detail));
+            this.bus.removeEventListener("change-display", (ev) => this._onChangeDisplay(ev.detail));
+            this.bus.removeEventListener("change-quantity", (ev) => this._onChangeBomQuantity(ev.detail));
+            this.bus.removeEventListener("change-variant", (ev) => this._onChangeVariant(ev.detail));
+            this.bus.removeEventListener("change-warehouse", (ev) => this._onChangeWarehouse(ev.detail));
+            this.bus.removeEventListener("print", (ev) => this._onClickPrint(ev.detail));
         });
     }
 
@@ -87,38 +102,39 @@ export class BomOverviewComponent extends Component {
 
     //---- Handlers ----
 
-    onChangeFolded(foldInfo) {
+    _onChangeFolded(foldInfo) {
         const { ids, isFolded } = foldInfo;
         const operation = isFolded ? "delete" : "add";
         ids.forEach(id => this.unfoldedIds[operation](id));
     }
 
-    onChangeDisplay(displayInfo) {
-        this.state.showOptions[displayInfo] = !this.state.showOptions[displayInfo];
+    _onChangeDisplay(displayInfo) {
+        const { type, value } = displayInfo;
+        this.state.showOptions[type] = value;
     }
 
-    async onChangeBomQuantity(newQuantity) {
+    async _onChangeBomQuantity(newQuantity) {
         if (this.state.bomQuantity != newQuantity) {
             this.state.bomQuantity = newQuantity;
             await this.getBomData();
         }
     }
     
-    async onChangeVariant(variantId) {
+    async _onChangeVariant(variantId) {
         if (this.state.currentVariantId != variantId) {
             this.state.currentVariantId = variantId;
             await this.getBomData();
         }
     }
 
-    async onChangeWarehouse(warehouseId) {
+    async _onChangeWarehouse(warehouseId) {
         if (this.state.currentWarehouse.id != warehouseId) {
             this.state.currentWarehouse = this.warehouses.find(wh => wh.id == warehouseId);
             await this.getBomData();
         }
     }
 
-    async onClickPrint(printAll) {
+    async _onClickPrint(printAll) {
         return this.actionService.doAction({
             type: "ir.actions.report",
             report_type: "qweb-pdf",

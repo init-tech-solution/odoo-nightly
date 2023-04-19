@@ -63,7 +63,7 @@ import { debounce, setRecurringAnimationFrame } from "@web/core/utils/timing";
  * @property {Function} helpers.execHandler
  */
 
-import { useEffect, useEnv, useExternalListener, onWillUnmount, reactive } from "@odoo/owl";
+const { useEffect, useEnv, useExternalListener, onWillUnmount, reactive } = owl;
 
 const DEFAULT_ACCEPTED_PARAMS = {
     enable: ["boolean", "function"],
@@ -411,14 +411,6 @@ export function makeDraggableHook(hookParams = {}) {
                 ) {
                     return;
                 }
-
-                // In FireFox: elements with `overflow: hidden` will prevent mouseenter and mouseleave
-                // events from firing on elements underneath them. This is the case when dragging a card
-                // by the `.o_kanban_record_headings` element. In such cases, we can prevent the default
-                // action on the mousedown event to allow mouse events to fire properly.
-                // https://bugzilla.mozilla.org/show_bug.cgi?id=1352061
-                // https://bugzilla.mozilla.org/show_bug.cgi?id=339293
-                ev.preventDefault();
 
                 ctx.currentContainer = ctx.ref.el;
                 ctx.currentElement = ev.target.closest(ctx.elementSelector);

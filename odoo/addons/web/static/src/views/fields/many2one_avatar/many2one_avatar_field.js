@@ -3,7 +3,7 @@
 import { registry } from "@web/core/registry";
 import { Many2OneField } from "../many2one/many2one_field";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class Many2OneAvatarField extends Component {}
 

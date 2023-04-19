@@ -15,7 +15,7 @@ import { OnboardingBanner } from "@web/views/onboarding_banner";
 import { View } from "@web/views/view";
 import { actionService } from "@web/webclient/actions/action_service";
 
-import { Component, onWillStart, onWillUpdateProps, useState, xml } from "@odoo/owl";
+const { Component, onWillStart, onWillUpdateProps, useState, xml } = owl;
 
 const serviceRegistry = registry.category("services");
 const viewRegistry = registry.category("views");
@@ -1425,7 +1425,7 @@ QUnit.module("Views", (hooks) => {
                     });
                     assert.deepEqual(domain, [[0, "=", 1]]);
                     assert.deepEqual(groupBy, ["birthday"]);
-                    assert.deepEqual(orderBy, [{name: "bar", asc: true}]);
+                    assert.deepEqual(orderBy, ["bar"]);
                 }
             }
             ToyController.template = xml`<div/>`;
@@ -1439,7 +1439,7 @@ QUnit.module("Views", (hooks) => {
                 domain: [[0, "=", 1]],
                 groupBy: ["birthday"],
                 context: { key: "val" },
-                orderBy: [{name: "bar", asc: true}],
+                orderBy: ["bar"],
             };
             await mount(View, target, { env, props });
         }
@@ -1593,7 +1593,7 @@ QUnit.module("Views", (hooks) => {
                     });
                     assert.deepEqual(domain, ["&", [0, "=", 1], [1, "=", 1]]);
                     assert.deepEqual(groupBy, ["name"]);
-                    assert.deepEqual(orderBy, [{name: "bar", asc: true}]);
+                    assert.deepEqual(orderBy, ["bar"]);
                 }
             }
             ToyController.template = xml`<div/>`;
@@ -1607,7 +1607,7 @@ QUnit.module("Views", (hooks) => {
                 domain: [[0, "=", 1]],
                 groupBy: ["birthday"],
                 context: { search_default_filter: 1, search_default_group_by: 1 },
-                orderBy: [{name: "bar", asc: true}],
+                orderBy: ["bar"],
             };
             await mount(View, target, { env, props });
         }

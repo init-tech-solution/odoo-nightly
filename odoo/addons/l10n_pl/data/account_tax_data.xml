@@ -216,33 +216,6 @@
       ]"/>
             <field name="tax_group_id" ref="tax_group_vat_0"/>
         </record>
-        <record id="vs_zwrot_podróżnych_0" model="account.tax.template">
-            <field name="chart_template_id" ref="pl_chart_template"/>
-            <field name="name">0% Zwrot podróżnych</field>
-            <field name="description">0%</field>
-            <field name="amount">0</field>
-            <field name="amount_type">percent</field>
-            <field name="type_tax_use">sale</field>
-            <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
-                  (0,0, {
-                      'repartition_type': 'base',
-                      'plus_report_expression_ids': [ref('account_tax_report_line_towary_art_129_tag')],
-                  }),
-                  (0,0, {
-                      'repartition_type': 'tax',
-                  }),
-                        ]"/>
-                    <field name="refund_repartition_line_ids" eval="[(5, 0, 0),
-                  (0,0, {
-                      'repartition_type': 'base',
-                      'minus_report_expression_ids': [ref('account_tax_report_line_towary_art_129_tag')],
-                  }),
-                  (0,0, {
-                      'repartition_type': 'tax',
-                  }),
-            ]"/>
-            <field name="tax_group_id" ref="tax_group_vat_0"/>
-        </record>
         <record id="vs_kraj_zw" model="account.tax.template">
             <field name="chart_template_id" ref="pl_chart_template"/>
             <field name="name">VAT-ZW</field>
@@ -277,7 +250,6 @@
             <field name="amount">23</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -309,7 +281,6 @@
             <field name="amount">22</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -583,7 +554,6 @@
             <field name="amount">23</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -615,7 +585,6 @@
             <field name="amount">22</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -738,7 +707,6 @@
             <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">consu</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -766,7 +734,6 @@
             <field name="amount">23.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">consu</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -803,7 +770,7 @@
       ]"/>
             <field name="tax_group_id" ref="tax_group_vat_0"/>
         </record>
-        <!-- European Union -->
+        <!-- Eurpean Union -->
         <!-- =========================================================== -->
         <record id="vs_unia" model="account.tax.template">
             <field name="chart_template_id" ref="pl_chart_template"/>
@@ -812,7 +779,6 @@
             <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">consu</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -840,7 +806,6 @@
             <field name="amount">23.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">consu</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -884,7 +849,6 @@
             <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -912,7 +876,6 @@
             <field name="amount">23.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -958,7 +921,6 @@
             <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">consu</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -986,7 +948,6 @@
             <field name="amount">23.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">consu</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -1030,7 +991,6 @@
             <field name="amount">0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',
@@ -1058,7 +1018,6 @@
             <field name="amount">23.00</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="tax_scope">service</field>
             <field name="invoice_repartition_line_ids" eval="[(5, 0, 0),
           (0,0, {
               'repartition_type': 'base',

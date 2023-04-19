@@ -63,22 +63,12 @@ registerModel({
             ev.preventDefault();
             this.update({ isDraggingInside: false });
             if (this._isDragSourceExternalFile(ev.dataTransfer)) {
-                const files = ev.dataTransfer.files;
                 if (this.chatterOwner) {
-                    const chatter = this.chatterOwner;
-                    if (chatter.isTemporary) {
-                        const saved = await chatter.doSaveRecord();
-                        if (!saved) {
-                            return;
-                        }
-                        chatter.update({ createNewRecordFiles: files });
-                        return;
-                    }
-                    await chatter.fileUploader.uploadFiles(files);
+                    await this.chatterOwner.fileUploader.uploadFiles(ev.dataTransfer.files);
                     return;
                 }
                 if (this.composerViewOwner) {
-                    await this.composerViewOwner.fileUploader.uploadFiles(files);
+                    await this.composerViewOwner.fileUploader.uploadFiles(ev.dataTransfer.files);
                     return;
                 }
             }

@@ -63,6 +63,12 @@ export class BomOverviewLine extends Component {
         });
     }
 
+    onToggleFolded() {
+        if (this.props.parentId) {
+            this.props.bus.trigger(`toggle-fold-${this.props.parentId}`, this.identifier);
+        }
+    }
+
     //---- Getters ----
 
     get data() {
@@ -146,7 +152,9 @@ export class BomOverviewLine extends Component {
 
 BomOverviewLine.template = "mrp.BomOverviewLine";
 BomOverviewLine.props = {
+    bus: Object,
     isFolded: { type: Boolean, optional: true },
+    parentId: { type: String, optional: true },
     showOptions: {
         type: Object,
         shape: {
@@ -160,9 +168,7 @@ BomOverviewLine.props = {
     },
     currentWarehouseId: { type: Number, optional: true },
     data: Object,
-    toggleFolded: { type: Function, optional: true },
 };
 BomOverviewLine.defaultProps = {
     isFolded: true,
-    toggleFolded: () => {},
 };

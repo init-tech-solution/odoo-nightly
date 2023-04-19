@@ -941,7 +941,7 @@ registerModel({
             this.update({
                 isCurrentPartnerTyping: false,
                 orderedTypingMembers: newOrderedTypingMembers,
-                typingMembers: memberOfCurrentUser ? unlink(memberOfCurrentUser) : undefined,
+                typingMembers: unlink(memberOfCurrentUser),
             });
             // Notify typing status to other members.
             if (immediateNotify) {

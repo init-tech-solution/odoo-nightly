@@ -42,7 +42,10 @@ publicWidget.registry.SaleUpdateLineButton = publicWidget.Widget.extend({
      * @param {Object} data: contains order html details
      */
     _refreshOrderUI(data){
-        window.location.reload();
+        const $saleTemplate = $(data['sale_template']);
+        if ($saleTemplate.length) {
+            this.$('#portal_sale_content').html($saleTemplate);
+        }
     },
 
     /**

@@ -22,7 +22,6 @@ const LinkPopoverWidget = Widget.extend({
         this.options = options;
         this.target = target;
         this.$target = $(target);
-        this.container = this.options.container || this.target.ownerDocument.body;
         this.href = this.$target.attr('href'); // for template
         this._dp = new DropPrevious();
     },
@@ -38,15 +37,7 @@ const LinkPopoverWidget = Widget.extend({
         this.$fullUrl = this.$('.o_we_full_url');
 
         // Copy onclick handler
-        // ClipboardJS uses "instanceof" to verify the elements passed to its
-        // constructor. Unfortunately, when the element is within an iframe,
-        // instanceof is not behaving the same across all browsers.
-        const containerWindow = this.container.ownerDocument.defaultView;
-        let _ClipboardJS = ClipboardJS;
-        if (this.$copyLink[0] instanceof containerWindow.HTMLElement) {
-            _ClipboardJS = containerWindow.ClipboardJS;
-        }
-        const clipboard = new _ClipboardJS(
+        const clipboard = new ClipboardJS(
             this.$copyLink[0],
             {text: () => this.target.href} // Absolute href
         );
@@ -57,12 +48,14 @@ const LinkPopoverWidget = Widget.extend({
                 message: _t("Link copied to clipboard."),
             });
         });
+        const targetWindow = this.target.ownerDocument.defaultView;
+        const popoverContainer = targetWindow.frameElement ? targetWindow.frameElement.parentElement : targetWindow.document.body;
 
         // init tooltips & popovers
         this.$('[data-bs-toggle="tooltip"]').tooltip({
             delay: 0,
             placement: 'bottom',
-            container: this.container,
+            container: popoverContainer,
         });
         const tooltips = [];
         for (const el of this.$('[data-bs-toggle="tooltip"]').toArray()) {
@@ -81,7 +74,7 @@ const LinkPopoverWidget = Widget.extend({
             // 5. Close when the user click somewhere on the page (not being the link or the popover content)
             trigger: 'manual',
             boundary: 'viewport',
-            container: this.container,
+            container: popoverContainer,
         })
         .on('show.bs.popover.link_popover', () => {
             this.options.wysiwyg.odooEditor.observerUnactive('show.bs.popover');
@@ -242,8 +235,8 @@ const LinkPopoverWidget = Widget.extend({
     _resetPreview(url) {
         this.$previewFaviconImg.addClass('d-none');
         this.$previewFaviconFa.removeClass('d-none fa-question-circle-o fa-envelope-o fa-phone').addClass('fa-globe');
-        this.$urlLink.add(this.$fullUrl).text(url || _t('No URL specified')).attr('href', url || null);
-        this.$fullUrl.addClass('d-none').removeClass('o_we_webkit_box');
+        this.$urlLink.text(url || _t('No URL specified')).attr('href', url || null);
+        this.$fullUrl.text(url).addClass('d-none').removeClass('o_we_webkit_box');
     },
 
     //--------------------------------------------------------------------------

@@ -10,7 +10,7 @@ import {
 } from "@web/views/utils";
 import { getTooltipInfo } from "./field_tooltip";
 
-import { Component, xml } from "@odoo/owl";
+const { Component, xml } = owl;
 
 const viewRegistry = registry.category("views");
 const fieldRegistry = registry.category("fields");
@@ -298,4 +298,4 @@ Field.parseFieldNode = function (node, models, modelName, viewType, jsClass) {
 Field.forbiddenAttributeNames = {
     decorations: `You cannot use the "decorations" attribute name as it is used as generated prop name for the composite decoration-<something> attributes.`,
 };
-Field.defaultProps = { fieldInfo: {}, setDirty: () => {} };
+Field.defaultProps = { fieldInfo: {} };

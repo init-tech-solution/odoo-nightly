@@ -2,7 +2,7 @@
 
 import { pick } from "@web/core/utils/objects";
 
-import { Component, useRef } from "@odoo/owl";
+const { Component, useRef } = owl;
 
 /**
  * @param {Object} params

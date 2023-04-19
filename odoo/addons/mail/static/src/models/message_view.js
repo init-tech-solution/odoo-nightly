@@ -74,11 +74,7 @@ registerModel({
          */
         onClickAuthorAvatar(ev) {
             markEventHandled(ev, 'Message.ClickAuthorAvatar');
-            if (!this.message.author || !this.hasAuthorClickable) {
-                return;
-            }
             if (!this.hasAuthorOpenChat) {
-                this.message.author.openProfile();
                 return;
             }
             this.message.author.openChat();
@@ -88,11 +84,7 @@ registerModel({
          */
         onClickAuthorName(ev) {
             markEventHandled(ev, 'Message.ClickAuthorName');
-            if (!this.message.author || !this.hasAuthorClickable) {
-                return;
-            }
-            if (!this.hasAuthorOpenChat) {
-                this.message.author.openProfile();
+            if (!this.message.author) {
                 return;
             }
             this.message.author.openChat();
@@ -123,8 +115,8 @@ registerModel({
                 this.highlight();
                 this.update({ doHighlight: clear() });
             }
-            if (this.messageListViewItemOwner && this.messageListViewItemOwner.threadViewOwnerAsLastMessageListViewItem && this.messageListViewItemOwner.isPartiallyVisible()) {
-                this.messageListViewItemOwner.threadViewOwnerAsLastMessageListViewItem.handleVisibleMessage(this.message);
+            if (this.threadViewOwnerAsLastMessageView && this.component && this.component.isPartiallyVisible()) {
+                this.threadViewOwnerAsLastMessageView.handleVisibleMessage(this.message);
             }
         },
         onHighlightTimerTimeout() {
@@ -218,11 +210,7 @@ registerModel({
         }),
         authorTitleText: attr({
             compute() {
-                return this.hasAuthorOpenChat
-                    ? this.env._t("Open chat")
-                    : this.hasAuthorClickable
-                        ? this.env._t("Open profile")
-                        : '';
+                return this.hasAuthorOpenChat ? this.env._t("Open chat") : '';
             },
         }),
         clockWatcher: one('ClockWatcher', {
@@ -327,11 +315,6 @@ registerModel({
                     return false;
                 }
                 return true;
-            },
-        }),
-        hasAuthorClickable: attr({
-            compute() {
-                return this.hasAuthorOpenChat;
             },
         }),
         /**
@@ -564,6 +547,14 @@ registerModel({
                 return this.message.author && this.message.author.isImStatusSet ? {} : clear();
             },
             inverse: 'messageViewOwner',
+        }),
+        /**
+         * States whether this message view is the last one of its thread view.
+         * Computed from inverse relation.
+         */
+        threadViewOwnerAsLastMessageView: one('ThreadView', {
+            inverse: 'lastMessageView',
+            readonly: true,
         }),
     },
 });

@@ -51,7 +51,6 @@ function clickAndCheck(blockID, expected) {
 window.focusBlurSnippetsResult = [];
 
 tour.register('focus_blur_snippets', {
-    test: true,
     url: '/?enable_editor=1',
 }, [
     {

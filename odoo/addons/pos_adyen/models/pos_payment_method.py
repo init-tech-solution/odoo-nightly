@@ -32,19 +32,12 @@ class PosPaymentMethod(models.Model):
         for payment_method in self:
             if not payment_method.adyen_terminal_identifier:
                 continue
-            # sudo() to search all companies
-            existing_payment_method = self.sudo().search([('id', '!=', payment_method.id),
+            existing_payment_method = self.search([('id', '!=', payment_method.id),
                                                    ('adyen_terminal_identifier', '=', payment_method.adyen_terminal_identifier)],
                                                   limit=1)
             if existing_payment_method:
-                if existing_payment_method.company_id == payment_method.company_id:
-                    raise ValidationError(_('Terminal %s is already used on payment method %s.')
+                raise ValidationError(_('Terminal %s is already used on payment method %s.')
                                       % (payment_method.adyen_terminal_identifier, existing_payment_method.display_name))
-                else:
-                    raise ValidationError(_('Terminal %s is already used in company %s on payment method %s.')
-                                          % (payment_method.adyen_terminal_identifier,
-                                             existing_payment_method.company_id.name,
-                                             existing_payment_method.display_name))
 
     def _get_adyen_endpoints(self):
         return {

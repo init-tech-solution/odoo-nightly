@@ -7,7 +7,7 @@ import { registry } from "@web/core/registry";
 import { debounce } from "@web/core/utils/timing";
 import { ErrorHandler } from "@web/core/utils/components";
 
-import { Component, onWillDestroy, onWillUnmount, useExternalListener, useEffect, useRef } from "@odoo/owl";
+const { Component, onWillDestroy, onWillUnmount, useExternalListener, useEffect, useRef } = owl;
 const systrayRegistry = registry.category("systray");
 
 const getBoundingClientRect = Element.prototype.getBoundingClientRect;

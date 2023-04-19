@@ -5,7 +5,7 @@ import { _t } from "@web/core/l10n/translation";
 import { unique } from "@web/core/utils/arrays";
 import { useService } from "@web/core/utils/hooks";
 
-import { Component, useState, onWillStart } from "@odoo/owl";
+const { Component, useState, onWillStart } = owl;
 
 class ResConfigInviteUsers extends Component {
     setup() {

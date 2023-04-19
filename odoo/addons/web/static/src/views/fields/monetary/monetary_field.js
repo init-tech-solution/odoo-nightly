@@ -9,25 +9,23 @@ import { useNumpadDecimal } from "../numpad_decimal_hook";
 import { standardFieldProps } from "../standard_field_props";
 import { session } from "@web/session";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class MonetaryField extends Component {
     setup() {
         useInputField({
             getValue: () => this.formattedValue,
             refName: "numpadDecimal",
-            parse: parseMonetary,
+            parse: (v) => parseMonetary(v, { currencyId: this.currencyId }),
         });
         useNumpadDecimal();
     }
 
     get currencyId() {
-        const currencyField =
-            this.props.currencyField ||
-            this.props.record.fields[this.props.name].currency_field ||
-            "currency_id";
-        const currency = this.props.record.data[currencyField];
-        return currency && currency[0];
+        return this.props.currencyField
+            ? this.props.record.data[this.props.currencyField][0]
+            : (this.props.record.data.currency_id && this.props.record.data.currency_id[0]) ||
+                  undefined;
     }
     get currency() {
         if (!isNaN(this.currencyId) && this.currencyId in session.currencies) {
@@ -41,8 +39,8 @@ export class MonetaryField extends Component {
     }
 
     get currencyDigits() {
-        if (this.props.useFieldDigits) {
-            return this.props.record.fields[this.props.name].digits;
+        if (this.props.digits) {
+            return this.props.digits;
         }
         if (!this.currency) {
             return null;
@@ -67,7 +65,7 @@ MonetaryField.props = {
     ...standardFieldProps,
     currencyField: { type: String, optional: true },
     inputType: { type: String, optional: true },
-    useFieldDigits: { type: Boolean, optional: true },
+    digits: { type: Array, optional: true },
     hideSymbol: { type: Boolean, optional: true },
     placeholder: { type: String, optional: true },
 };
@@ -83,7 +81,7 @@ MonetaryField.extractProps = ({ attrs }) => {
     return {
         currencyField: attrs.options.currency_field,
         inputType: attrs.type,
-        useFieldDigits: attrs.options.field_digits,
+        digits: [16, 2], // FIXME WOWL
         hideSymbol: attrs.options.no_symbol,
         placeholder: attrs.placeholder,
     };

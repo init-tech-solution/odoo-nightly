@@ -93,7 +93,10 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             mockRPC: async function (route, args) {
                 if (args.method === "spreadsheet_fetch_debit_credit") {
                     assert.step("spreadsheet_fetch_debit_credit");
-                    return [{ debit: 142, credit: 26 }];
+                    return [
+                        { debit: 42, credit: 16 },
+                        { debit: 100, credit: 10 },
+                    ];
                 }
             },
         });
@@ -149,7 +152,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2022"),
-                    codes: ["100"],
+                    code: "100",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -157,7 +160,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("01/2022"),
-                    codes: ["100"],
+                    code: "100",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -165,7 +168,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("Q2/2022"),
-                    codes: ["100"],
+                    code: "100",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -173,7 +176,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2021"),
-                    codes: ["10"],
+                    code: "10",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -181,7 +184,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2021"),
-                    codes: ["5"],
+                    code: "5",
                     companyId: 2,
                     includeUnposted: true,
                 })
@@ -189,7 +192,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("05/04/2022"),
-                    codes: ["5"],
+                    code: "5",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -197,7 +200,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2022"),
-                    codes: ["5"],
+                    code: "5",
                     companyId: null,
                     includeUnposted: false,
                 })
@@ -205,7 +208,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("05/05/2022"),
-                    codes: ["100"],
+                    code: "100",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -235,7 +238,15 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2022"),
-                    codes: ["100", "200"],
+                    code: "100",
+                    companyId: null,
+                    includeUnposted: true,
+                })
+            ),
+            JSON.stringify(
+                camelToSnakeObject({
+                    dateRange: parseAccountingDate("2022"),
+                    code: "200",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -268,7 +279,15 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2022"),
-                    codes: ["100104", "200104"],
+                    code: "100104",
+                    companyId: null,
+                    includeUnposted: true,
+                })
+            ),
+            JSON.stringify(
+                camelToSnakeObject({
+                    dateRange: parseAccountingDate("2022"),
+                    code: "200104",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -308,7 +327,7 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2022"),
-                    codes: ["100"],
+                    code: "100",
                     companyId: null,
                     includeUnposted: true,
                 })
@@ -317,7 +336,15 @@ QUnit.module("spreadsheet_account > Accounting", { beforeEach }, () => {
             JSON.stringify(
                 camelToSnakeObject({
                     dateRange: parseAccountingDate("2022"),
-                    codes: ["100104", "200104"],
+                    code: "100104",
+                    companyId: null,
+                    includeUnposted: true,
+                })
+            ),
+            JSON.stringify(
+                camelToSnakeObject({
+                    dateRange: parseAccountingDate("2022"),
+                    code: "200104",
                     companyId: null,
                     includeUnposted: true,
                 })

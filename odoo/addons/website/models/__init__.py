@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from . import assets
-from . import base_partner_merge
 from . import ir_actions_server
 from . import ir_asset
 from . import ir_attachment

@@ -17,10 +17,8 @@ import {
 } from "./utils/dates";
 import { FACET_ICONS } from "./utils/misc";
 
-import { EventBus, toRaw } from "@odoo/owl";
+const { EventBus, toRaw } = owl;
 const { DateTime } = luxon;
-
-/** @typedef {import("../views/relational_model").OrderTerm} OrderTerm */
 
 /**
  * @typedef {Object} ComparisonDomain
@@ -40,7 +38,7 @@ const { DateTime } = luxon;
  * @property {Context} context
  * @property {DomainListRepr} domain
  * @property {string[]} groupBy
- * @property {OrderTerm[]} orderBy
+ * @property {string[]} orderBy
  * @property {boolean} [useSampleModel] to remove?
  */
 
@@ -200,7 +198,7 @@ export class SearchModel extends EventBus {
      * @param {string[]} [config.groupBy=[]]
      * @param {boolean} [config.loadIrFilters=false]
      * @param {boolean} [config.display.searchPanel=true]
-     * @param {OrderTerm[]} [config.orderBy=[]]
+     * @param {string[]} [config.orderBy=[]]
      * @param {string[]} [config.searchMenuTypes=["filter", "groupBy", "favorite"]]
      * @param {Object} [config.state]
      */
@@ -217,7 +215,7 @@ export class SearchModel extends EventBus {
         const { comparison, context, domain, groupBy, hideCustomGroupBy, orderBy } = config;
 
         this.globalComparison = comparison;
-        this.globalContext = toRaw(Object.assign({}, context));
+        this.globalContext = toRaw(context || {});
         this.globalDomain = domain || [];
         this.globalGroupBy = groupBy || [];
         this.globalOrderBy = orderBy || [];
@@ -378,14 +376,14 @@ export class SearchModel extends EventBus {
      * @param {Object} [config.context={}]
      * @param {Array} [config.domain=[]]
      * @param {string[]} [config.groupBy=[]]
-     * @param {OrderTerm[]} [config.orderBy=[]]
+     * @param {string[]} [config.orderBy=[]]
      */
     async reload(config = {}) {
         this._reset();
 
         const { comparison, context, domain, groupBy, orderBy } = config;
 
-        this.globalContext = Object.assign({}, context);
+        this.globalContext = context || {};
         this.globalDomain = domain || [];
         this.globalComparison = comparison;
         this.globalGroupBy = groupBy || [];
@@ -498,7 +496,7 @@ export class SearchModel extends EventBus {
     }
 
     /**
-     * @returns {OrderTerm[]}
+     * @returns {string[]}
      */
     get orderBy() {
         if (!this._orderBy) {
@@ -1124,7 +1122,7 @@ export class SearchModel extends EventBus {
                 groupNumber: this.nextGroupNumber,
                 description: filter.description,
                 domain: filter.domain,
-                isDefault: "is_default" in filter ? filter.is_default : true,
+                isDefault: true,
                 type: "filter",
             };
         });
@@ -1803,7 +1801,7 @@ export class SearchModel extends EventBus {
     }
 
     /**
-     * @returns {OrderTerm[]}
+     * @returns {string[]}
      */
     _getOrderBy() {
         const groups = this._getGroups();
@@ -1817,7 +1815,8 @@ export class SearchModel extends EventBus {
                 }
             }
         }
-        return orderBy.length ? orderBy : this.globalOrderBy;
+        orderBy = orderBy.length ? orderBy : this.globalOrderBy;
+        return typeof orderBy === "string" ? [orderBy] : orderBy;
     }
 
     /**

@@ -1,10 +1,10 @@
 /** @odoo-module */
 
-import { RPCErrorDialog } from "@web/core/errors/error_dialogs";
+import { ErrorDialog } from "@web/core/errors/error_dialogs";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
-export class BaseAutomationErrorDialog extends RPCErrorDialog {
+export class BaseAutomationErrorDialog extends ErrorDialog {
     setup() {
         super.setup(...arguments);
         const { id, name } = this.props.data.context.base_automation;
@@ -49,7 +49,6 @@ export class BaseAutomationErrorDialog extends RPCErrorDialog {
             views: [[false, "form"]],
             type: "ir.actions.act_window",
             view_mode: "form",
-            target: "new",
         });
         this.props.close();
     }

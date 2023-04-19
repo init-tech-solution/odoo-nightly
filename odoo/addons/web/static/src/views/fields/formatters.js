@@ -8,7 +8,7 @@ import { escape, intersperse, nbsp, sprintf } from "@web/core/utils/strings";
 import { isBinarySize } from "@web/core/utils/binary";
 import { session } from "@web/session";
 
-import { markup } from "@odoo/owl";
+const { markup } = owl;
 
 // -----------------------------------------------------------------------------
 // Helpers
@@ -229,29 +229,24 @@ export function formatFloatTime(value, options = {}) {
         return "";
     }
     const isNegative = value < 0;
-    value = Math.abs(value);
-
-    let hour = Math.floor(value);
-    const milliSecLeft = Math.round(value * 3600000) - hour * 3600000;
-    // Although looking quite overkill, the following lines ensures that we do
-    // not have float issues while still considering that 59s is 00:00.
-    let min = milliSecLeft / 60000;
-    if (options.displaySeconds) {
-        min = Math.floor(min);
-    } else {
-        min = Math.round(min);
+    if (isNegative) {
+        value = Math.abs(value);
     }
+    let hour = Math.floor(value);
+    // Although looking quite overkill, the following line ensures that we do
+    // not have float issues while still considering that 59s is 00:00.
+    let min = Math.floor((Math.round((value % 1) * 100) / 100) * 60);
     if (min === 60) {
         min = 0;
         hour = hour + 1;
     }
-    min = String(min).padStart(2, "0");
+    min = `${min}`.padStart(2, "0");
     if (!options.noLeadingZeroHour) {
-        hour = String(hour).padStart(2, "0");
+        hour = `${hour}`.padStart(2, "0");
     }
     let sec = "";
     if (options.displaySeconds) {
-        sec = ":" + String(Math.floor((milliSecLeft % 60000) / 1000)).padStart(2, "0");
+        sec = ":" + `${Math.round((value % 1) * 3600) - min * 60}`.padStart(2, "0");
     }
     return `${isNegative ? "-" : ""}${hour}:${min}${sec}`;
 }
@@ -367,7 +362,7 @@ export function formatMonetary(value, options = {}) {
         currencyId = Array.isArray(dataValue) ? dataValue[0] : dataValue;
     }
     const currency = session.currencies[currencyId];
-    const digits = options.digits || (currency && currency.digits);
+    const digits = (currency && currency.digits) || options.digits;
 
     let formattedValue;
     if (options.humanReadable) {
@@ -452,10 +447,6 @@ export function formatText(value) {
     return value || "";
 }
 
-export function formatJson(value) {
-    return (value && JSON.stringify(value)) || "";
-}
-
 registry
     .category("formatters")
     .add("binary", formatBinary)
@@ -468,7 +459,6 @@ registry
     .add("float_time", formatFloatTime)
     .add("html", (value) => value)
     .add("integer", formatInteger)
-    .add("json", formatJson)
     .add("many2one", formatMany2one)
     .add("many2one_reference", formatInteger)
     .add("one2many", formatX2many)

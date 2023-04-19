@@ -7,7 +7,7 @@ import { getColor } from "../colors";
 import { useCalendarPopover, useFullCalendar } from "../hooks";
 import { CalendarYearPopover } from "./calendar_year_popover";
 
-import { Component, useEffect, useRef, onRendered } from "@odoo/owl";
+const { Component, useEffect, useRef, onRendered } = owl;
 
 export class CalendarYearRenderer extends Component {
     setup() {
@@ -35,7 +35,8 @@ export class CalendarYearRenderer extends Component {
 
     get options() {
         return {
-            columnHeaderFormat: "EEEEE",
+            columnHeaderFormat: (info) =>
+                luxon.DateTime.fromJSDate(info.date.marker).toFormat("EEEEE"),
             contentHeight: 0,
             dateClick: this.onDateClick,
             dayRender: this.onDayRender,
@@ -103,7 +104,7 @@ export class CalendarYearRenderer extends Component {
         };
     }
     openPopover(target, date, records) {
-        this.popover.open(target, this.getPopoverProps(date, records), "o_cw_popover");
+        this.popover.open(target, this.getPopoverProps(date, records));
     }
     unselect() {
         for (const fc of Object.values(this.fcs)) {

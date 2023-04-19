@@ -11,7 +11,7 @@ import { GroupByMenu } from "../group_by_menu/group_by_menu";
 import { SearchBar } from "../search_bar/search_bar";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 
-import { Component, useState, onMounted, useExternalListener, useRef, useEffect } from "@odoo/owl";
+const { Component, useState, onMounted, useExternalListener, useRef, useEffect } = owl;
 
 const MAPPING = {
     filter: FilterMenu,

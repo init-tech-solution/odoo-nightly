@@ -2,20 +2,22 @@
 
 import { _lt } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
+import { useAutofocus } from "@web/core/utils/hooks";
 import { useNumpadDecimal } from "../numpad_decimal_hook";
 import { parseFloat } from "../parsers";
 import { standardFieldProps } from "../standard_field_props";
 
-import { Component, onWillUpdateProps, useRef, useState } from "@odoo/owl";
+const { Component, onWillUpdateProps, useRef, useState, useExternalListener } = owl;
 const formatters = registry.category("formatters");
 const parsers = registry.category("parsers");
 
 export class ProgressBarField extends Component {
     setup() {
         useNumpadDecimal();
+        useAutofocus({ refName: "maxValue", selectAll: true });
+        useAutofocus({ refName: "currentValue", selectAll: true });
+        useExternalListener(document.body, "click", this.onClickAway, { capture: true });
         this.root = useRef("numpadDecimal");
-        this.maxValueRef = useRef("maxValue");
-        this.currentValueRef = useRef("currentValue");
         this.state = useState({
             currentValue: this.getCurrentValue(this.props),
             maxValue: this.getMaxValue(this.props),
@@ -26,14 +28,14 @@ export class ProgressBarField extends Component {
                 currentValue: this.getCurrentValue(nextProps),
                 maxValue: this.getMaxValue(nextProps),
             });
+            if (nextProps.readonly) {
+                this.state.isEditing = false;
+            }
         });
     }
 
     get isCurrentValueInteger() {
         return this.state.currentValue % 1 === 0;
-    }
-    get isEditable() {
-        return this.props.isEditable && !this.props.readonly;
     }
     get isMaxValueInteger() {
         return this.state.maxValue % 1 === 0;
@@ -59,11 +61,11 @@ export class ProgressBarField extends Component {
         return 100;
     }
 
-    formatCurrentValue(humanReadable = !this.state.isEditing) {
+    formatCurrentValue(humanReadable = false) {
         const formatter = formatters.get(this.isCurrentValueInteger ? "integer" : "float");
         return formatter(this.state.currentValue, { humanReadable });
     }
-    formatMaxValue(humanReadable = !this.state.isEditing) {
+    formatMaxValue(humanReadable = false) {
         const formatter = formatters.get(this.isMaxValueInteger ? "integer" : "float");
         return formatter(this.state.maxValue, { humanReadable });
     }
@@ -86,17 +88,6 @@ export class ProgressBarField extends Component {
             this.props.record.save();
         }
     }
-    onInputBlur() {
-        if (
-            document.activeElement !== this.maxValueRef.el &&
-            document.activeElement !== this.currentValueRef.el
-        ) {
-            this.state.isEditing = false;
-        }
-    }
-    onInputFocus() {
-        this.state.isEditing = true;
-    }
     onMaxValueChange(ev) {
         let parsedValue;
         try {
@@ -115,6 +106,21 @@ export class ProgressBarField extends Component {
             this.props.record.save();
         }
     }
+
+    onClick() {
+        if (this.props.isEditable && (!this.props.readonly || this.props.isEditableInReadonly)) {
+            this.state.isEditing = true;
+        }
+    }
+    /**
+     * @param {MouseEvent} ev
+     */
+    onClickAway(ev) {
+        if (this.root.el && !this.root.el.contains(ev.target)) {
+            this.state.isEditing = false;
+        }
+    }
+
     onCurrentValueInput(ev) {
         const parser = parsers.get(this.isCurrentValueInteger ? "integer" : "float");
         try {
@@ -139,6 +145,7 @@ ProgressBarField.props = {
     maxValueField: { type: [String, Number], optional: true },
     currentValueField: { type: String, optional: true },
     isEditable: { type: Boolean, optional: true },
+    isEditableInReadonly: { type: Boolean, optional: true },
     isCurrentValueEditable: { type: Boolean, optional: true },
     isMaxValueEditable: { type: Boolean, optional: true },
     title: { type: String, optional: true },
@@ -152,7 +159,10 @@ ProgressBarField.extractProps = ({ attrs }) => {
         maxValueField: attrs.options.max_value,
         currentValueField: attrs.options.current_value,
         isEditable: !attrs.options.readonly && attrs.options.editable,
-        isCurrentValueEditable: attrs.options.editable && !attrs.options.edit_max_value,
+        isEditableInReadonly: attrs.options.editable_readonly,
+        isCurrentValueEditable:
+            attrs.options.editable &&
+            (!attrs.options.edit_max_value || attrs.options.edit_current_value),
         isMaxValueEditable: attrs.options.editable && attrs.options.edit_max_value,
         title: attrs.title,
     };

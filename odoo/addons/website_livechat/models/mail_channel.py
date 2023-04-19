@@ -20,7 +20,7 @@ class MailChannel(models.Model):
          """
         super().channel_pin(pinned=pinned)
         if self.livechat_active and not self.message_ids:
-            self.sudo().unlink()
+            self.unlink()
 
     def channel_info(self):
         """

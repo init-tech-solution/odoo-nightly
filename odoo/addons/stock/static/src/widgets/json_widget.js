@@ -4,22 +4,18 @@ import { registry } from "@web/core/registry";
 import { _lt } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 
-const { Component, onWillStart, onWillUpdateProps } = owl;
+const { Component, onWillStart } = owl;
 
-export class JsonPopOver extends Component {
-    
-    setup(){
-        this.jsonValue = JSON.parse(this.props.value);
-        onWillUpdateProps(nextProps => {
-            this.jsonValue = JSON.parse(nextProps.value);
-        });
+export class JsonPpopOver extends Component {
+    setup() {
+        this.props = { ...this.props, ...JSON.parse(this.props.value) };
     }
 }
 
-JsonPopOver.displayName = _lt("Json Popup");
-JsonPopOver.supportedTypes = ["char"];
+JsonPpopOver.displayName = _lt("Json Popup");
+JsonPpopOver.supportedTypes = ["char"];
 
-export class PopOverLeadDays extends JsonPopOver {
+export class PopOverLeadDays extends JsonPpopOver {
     setup() {
         super.setup();
         const user = useService("user");
@@ -43,14 +39,14 @@ export class PopOverLeadDays extends JsonPopOver {
 
     _formatQty(field) {
         return this.displayUOM
-            ? `${this.jsonValue[field]} ${this.jsonValue.product_uom_name}`
-            : this.jsonValue[field];
+            ? `${this.props[field]} ${this.props.product_uom_name}`
+            : this.props[field];
     }
 }
 
-PopOverLeadDays.template = "stock.leadDays";
+PopOverLeadDays.template = "stock.leadDaysPopOver";
 
-export class ReplenishmentHistoryWidget extends JsonPopOver {}
+export class ReplenishmentHistoryWidget extends JsonPpopOver {}
 ReplenishmentHistoryWidget.template = "stock.replenishmentHistory";
 
 registry.category("fields").add("lead_days_widget", PopOverLeadDays);

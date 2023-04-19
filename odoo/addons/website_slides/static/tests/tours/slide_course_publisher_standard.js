@@ -65,8 +65,7 @@ wTourUtils.registerWebsitePreviewTour('course_publisher_standard', {
     trigger: 'iframe img.o_wslides_course_pict',
     run: function () {
         const $imgCorgi = $('.o_website_preview iframe').contents().find('img.o_wslides_course_pict');
-        const expectedImageUrlRegex=/GoldWinnerPembrookeWelshCorgi.jpg/;
-        if (expectedImageUrlRegex.test($imgCorgi.attr('src'))) {
+        if ($imgCorgi.attr('src').endsWith('GoldWinnerPembrookeWelshCorgi.jpg')) {
             $imgCorgi.addClass('o_wslides_tour_success');
         }
     },

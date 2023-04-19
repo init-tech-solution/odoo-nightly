@@ -370,15 +370,15 @@ registerModel({
         lastMessage: one('Message', {
             related: 'thread.lastMessage',
         }),
-        lastMessageListViewItem: one('MessageListViewItem', {
+        lastMessageView: one('MessageView', {
             compute() {
                 if (!this.messageListView) {
                     return clear();
                 }
                 const { length, [length - 1]: messageListViewItem } = this.messageListView.messageListViewItems;
-                return messageListViewItem;
+                return messageListViewItem && messageListViewItem.messageView ? messageListViewItem.messageView : clear();
             },
-            inverse: 'threadViewOwnerAsLastMessageListViewItem',
+            inverse: 'threadViewOwnerAsLastMessageView',
         }),
         /**
          * Most recent message in this ThreadView that has been shown to the

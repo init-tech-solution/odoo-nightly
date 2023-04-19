@@ -2,38 +2,29 @@
 
 import { usePosition } from "../position_hook";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class Popover extends Component {
     setup() {
         usePosition(this.props.target, {
-            onPositioned: this.props.onPositioned || this.onPositioned.bind(this),
+            onPositioned: this.props.onPositioned || this.onPositioned,
             position: this.props.position,
         });
     }
     onPositioned(el, { direction, variant }) {
         const position = `${direction[0]}${variant[0]}`;
-
-        // reset all popover classes
         const directionMap = {
             top: "top",
             bottom: "bottom",
             left: "start",
             right: "end",
         };
-        el.classList = [
-            "o_popover popover mw-100 shadow-sm",
+        el.classList.add(
             `bs-popover-${directionMap[direction]}`,
             `o-popover-${direction}`,
-            `o-popover--${position}`,
-        ].join(" ");
-        if (this.props.popoverClass) {
-            el.classList.add(...this.props.popoverClass.split(" "));
-        }
-
-        // reset all arrow classes
+            `o-popover--${position}`
+        );
         const arrowEl = el.firstElementChild;
-        arrowEl.className = "popover-arrow";
         switch (position) {
             case "tm": // top-middle
             case "bm": // bottom-middle

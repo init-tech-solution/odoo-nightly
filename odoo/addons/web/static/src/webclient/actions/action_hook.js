@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { onMounted, useComponent, useEffect, useExternalListener } from "@odoo/owl";
+const { onMounted, useComponent, useEffect, useExternalListener } = owl;
 
 const scrollSymbol = Symbol("scroll");
 

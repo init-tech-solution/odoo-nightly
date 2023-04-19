@@ -15,7 +15,6 @@ from odoo.exceptions import ValidationError
 from odoo.http import request
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment_adyen import utils as adyen_utils
 from odoo.addons.payment_adyen.const import CURRENCY_DECIMALS
 
 _logger = logging.getLogger(__name__)
@@ -121,9 +120,6 @@ class AdyenController(http.Controller):
             'recurringProcessingModel': 'CardOnFile',  # Most susceptible to trigger a 3DS check
             'shopperIP': payment_utils.get_customer_ip_address(),
             'shopperInteraction': 'Ecommerce',
-            'shopperEmail': tx_sudo.partner_email,
-            'shopperName': adyen_utils.format_partner_name(tx_sudo.partner_name),
-            'telephoneNumber': tx_sudo.partner_phone,
             'storePaymentMethod': tx_sudo.tokenize,  # True by default on Adyen side
             'additionalData': {
                 'allow3DS2': True
@@ -138,7 +134,6 @@ class AdyenController(http.Controller):
                 # by the /payments endpoint of Adyen.
                 f'/payment/adyen/return?merchantReference={reference}'
             ),
-            **adyen_utils.include_partner_addresses(tx_sudo),
         }
 
         # Force the capture delay on Adyen side if the provider is not configured for capturing

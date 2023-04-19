@@ -9,7 +9,7 @@ import { SettingsContainer } from "./settings/settings_container";
 import { SettingsApp } from "./settings/settings_app";
 import { SettingsPage } from "./settings/settings_page";
 
-import { useState } from "@odoo/owl";
+const { useState } = owl;
 
 const fieldRegistry = registry.category("fields");
 
@@ -22,10 +22,6 @@ export class SettingsFormRenderer extends FormRenderer {
         }
         super.setup();
         this.searchState = useState(this.env.searchState);
-    }
-
-    get shouldAutoFocus() {
-        return false;
     }
 
     get compileParams() {

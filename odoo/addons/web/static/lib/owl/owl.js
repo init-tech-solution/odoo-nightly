@@ -41,11 +41,8 @@
             this.parentEl = parent;
             this.child.mount(parent, afterNode);
         }
-        moveBeforeDOMNode(node, parent) {
-            this.child.moveBeforeDOMNode(node, parent);
-        }
-        moveBeforeVNode(other, afterNode) {
-            this.moveBeforeDOMNode((other && other.firstNode()) || afterNode);
+        moveBefore(other, afterNode) {
+            this.child.moveBefore(other ? other.child : null, afterNode);
         }
         patch(other, withBeforeRemove) {
             if (this === other) {
@@ -421,22 +418,7 @@
             this.anchors = anchors;
             this.parentEl = parent;
         }
-        moveBeforeDOMNode(node, parent = this.parentEl) {
-            this.parentEl = parent;
-            const children = this.children;
-            const anchors = this.anchors;
-            for (let i = 0, l = children.length; i < l; i++) {
-                let child = children[i];
-                if (child) {
-                    child.moveBeforeDOMNode(node, parent);
-                }
-                else {
-                    const anchor = anchors[i];
-                    nodeInsertBefore$3.call(parent, anchor, node);
-                }
-            }
-        }
-        moveBeforeVNode(other, afterNode) {
+        moveBefore(other, afterNode) {
             if (other) {
                 const next = other.children[0];
                 afterNode = (next ? next.firstNode() : other.anchors[0]) || null;
@@ -447,7 +429,7 @@
             for (let i = 0, l = children.length; i < l; i++) {
                 let child = children[i];
                 if (child) {
-                    child.moveBeforeVNode(null, afterNode);
+                    child.moveBefore(null, afterNode);
                 }
                 else {
                     const anchor = anchors[i];
@@ -545,12 +527,9 @@
             nodeInsertBefore$2.call(parent, node, afterNode);
             this.el = node;
         }
-        moveBeforeDOMNode(node, parent = this.parentEl) {
-            this.parentEl = parent;
-            nodeInsertBefore$2.call(parent, this.el, node);
-        }
-        moveBeforeVNode(other, afterNode) {
-            nodeInsertBefore$2.call(this.parentEl, this.el, other ? other.el : afterNode);
+        moveBefore(other, afterNode) {
+            const target = other ? other.el : afterNode;
+            nodeInsertBefore$2.call(this.parentEl, this.el, target);
         }
         beforeRemove() { }
         remove() {
@@ -992,12 +971,9 @@
             firstNode() {
                 return this.el;
             }
-            moveBeforeDOMNode(node, parent = this.parentEl) {
-                this.parentEl = parent;
-                nodeInsertBefore.call(parent, this.el, node);
-            }
-            moveBeforeVNode(other, afterNode) {
-                nodeInsertBefore.call(this.parentEl, this.el, other ? other.el : afterNode);
+            moveBefore(other, afterNode) {
+                const target = other ? other.el : afterNode;
+                nodeInsertBefore.call(this.parentEl, this.el, target);
             }
             toString() {
                 const div = document.createElement("div");
@@ -1134,22 +1110,14 @@
             }
             this.parentEl = parent;
         }
-        moveBeforeDOMNode(node, parent = this.parentEl) {
-            this.parentEl = parent;
-            const children = this.children;
-            for (let i = 0, l = children.length; i < l; i++) {
-                children[i].moveBeforeDOMNode(node, parent);
-            }
-            parent.insertBefore(this.anchor, node);
-        }
-        moveBeforeVNode(other, afterNode) {
+        moveBefore(other, afterNode) {
             if (other) {
                 const next = other.children[0];
                 afterNode = (next ? next.firstNode() : other.anchor) || null;
             }
             const children = this.children;
             for (let i = 0, l = children.length; i < l; i++) {
-                children[i].moveBeforeVNode(null, afterNode);
+                children[i].moveBefore(null, afterNode);
             }
             this.parentEl.insertBefore(this.anchor, afterNode);
         }
@@ -1164,7 +1132,7 @@
             }
             this.children = ch2;
             const proto = ch2[0] || ch1[0];
-            const { mount: cMount, patch: cPatch, remove: cRemove, beforeRemove, moveBeforeVNode: cMoveBefore, firstNode: cFirstNode, } = proto;
+            const { mount: cMount, patch: cPatch, remove: cRemove, beforeRemove, moveBefore: cMoveBefore, firstNode: cFirstNode, } = proto;
             const _anchor = this.anchor;
             const isOnlyChild = this.isOnlyChild;
             const parent = this.parentEl;
@@ -1346,15 +1314,12 @@
                 nodeInsertBefore.call(parent, textNode, afterNode);
             }
         }
-        moveBeforeDOMNode(node, parent = this.parentEl) {
-            this.parentEl = parent;
-            for (let elem of this.content) {
-                nodeInsertBefore.call(parent, elem, node);
-            }
-        }
-        moveBeforeVNode(other, afterNode) {
+        moveBefore(other, afterNode) {
             const target = other ? other.content[0] : afterNode;
-            this.moveBeforeDOMNode(target);
+            const parent = this.parentEl;
+            for (let elem of this.content) {
+                nodeInsertBefore.call(parent, elem, target);
+            }
         }
         patch(other) {
             if (this === other) {
@@ -1433,7 +1398,7 @@
                         const target = ev.target;
                         let currentNode = self.child.firstNode();
                         const afterNode = self.afterNode;
-                        while (currentNode && currentNode !== afterNode) {
+                        while (currentNode !== afterNode) {
                             if (currentNode.contains(target)) {
                                 return origFn.call(this, ev);
                             }
@@ -1442,17 +1407,8 @@
                     };
                 }
             }
-            moveBeforeDOMNode(node, parent = this.parentEl) {
-                this.parentEl = parent;
-                this.child.moveBeforeDOMNode(node, parent);
-                parent.insertBefore(this.afterNode, node);
-            }
-            moveBeforeVNode(other, afterNode) {
-                if (other) {
-                    // check this with @ged-odoo for use in foreach
-                    afterNode = other.firstNode() || afterNode;
-                }
-                this.child.moveBeforeVNode(other ? other.child : null, afterNode);
+            moveBefore(other, afterNode) {
+                this.child.moveBefore(other ? other.child : null, afterNode);
                 this.parentEl.insertBefore(this.afterNode, afterNode);
             }
             patch(other, withBeforeRemove) {
@@ -1743,13 +1699,12 @@
         }
     }
 
+    // Allows to get the target of a Reactive (used for making a new Reactive from the underlying object)
+    const TARGET = Symbol("Target");
+    // Escape hatch to prevent reactivity system to turn something into a reactive
+    const SKIP = Symbol("Skip");
     // Special key to subscribe to, to be notified of key creation/deletion
     const KEYCHANGES = Symbol("Key changes");
-    // Used to specify the absence of a callback, can be used as WeakMap key but
-    // should only be used as a sentinel value and never called.
-    const NO_CALLBACK = () => {
-        throw new Error("Called NO_CALLBACK. Owl is broken, please report this to the maintainers.");
-    };
     const objectToString = Object.prototype.toString;
     const objectHasOwnProperty = Object.prototype.hasOwnProperty;
     const SUPPORTED_RAW_TYPES = new Set(["Object", "Array", "Set", "Map", "WeakMap"]);
@@ -1764,7 +1719,7 @@
      * @returns the raw type of the object
      */
     function rawType(obj) {
-        return objectToString.call(toRaw(obj)).slice(8, -1);
+        return objectToString.call(obj).slice(8, -1);
     }
     /**
      * Checks whether a given value can be made into a reactive object.
@@ -1788,7 +1743,6 @@
     function possiblyReactive(val, cb) {
         return canBeMadeReactive(val) ? reactive(val, cb) : val;
     }
-    const skipped = new WeakSet();
     /**
      * Mark an object or array so that it is ignored by the reactivity system
      *
@@ -1796,7 +1750,7 @@
      * @returns the object itself
      */
     function markRaw(value) {
-        skipped.add(value);
+        value[SKIP] = true;
         return value;
     }
     /**
@@ -1806,7 +1760,7 @@
      * @returns the underlying value
      */
     function toRaw(value) {
-        return targets.has(value) ? targets.get(value) : value;
+        return value[TARGET] || value;
     }
     const targetToKeysToCallbacks = new WeakMap();
     /**
@@ -1819,9 +1773,6 @@
      * @param callback the function to call when the key changes
      */
     function observeTargetKey(target, key, callback) {
-        if (callback === NO_CALLBACK) {
-            return;
-        }
         if (!targetToKeysToCallbacks.get(target)) {
             targetToKeysToCallbacks.set(target, new Map());
         }
@@ -1875,11 +1826,8 @@
             if (!observedKeys) {
                 continue;
             }
-            for (const [key, callbacks] of observedKeys.entries()) {
+            for (const callbacks of observedKeys.values()) {
                 callbacks.delete(callback);
-                if (!callbacks.size) {
-                    observedKeys.delete(key);
-                }
             }
         }
         targetsToClear.clear();
@@ -1888,19 +1836,12 @@
         const targets = callbacksToTargets.get(callback) || [];
         return [...targets].map((target) => {
             const keysToCallbacks = targetToKeysToCallbacks.get(target);
-            let keys = [];
-            if (keysToCallbacks) {
-                for (const [key, cbs] of keysToCallbacks) {
-                    if (cbs.has(callback)) {
-                        keys.push(key);
-                    }
-                }
-            }
-            return { target, keys };
+            return {
+                target,
+                keys: keysToCallbacks ? [...keysToCallbacks.keys()] : [],
+            };
         });
     }
-    // Maps reactive objects to the underlying target
-    const targets = new WeakMap();
     const reactiveCache = new WeakMap();
     /**
      * Creates a reactive proxy for an object. Reading data on the reactive object
@@ -1916,7 +1857,7 @@
      * Subscriptions:
      * + Reading a property on an object will subscribe you to changes in the value
      *    of that property.
-     * + Accessing an object's keys (eg with Object.keys or with `for..in`) will
+     * + Accessing an object keys (eg with Object.keys or with `for..in`) will
      *    subscribe you to the creation/deletion of keys. Checking the presence of a
      *    key on the object with 'in' has the same effect.
      * - getOwnPropertyDescriptor does not currently subscribe you to the property.
@@ -1929,16 +1870,16 @@
      *  reactive has changed
      * @returns a proxy that tracks changes to it
      */
-    function reactive(target, callback = NO_CALLBACK) {
+    function reactive(target, callback = () => { }) {
         if (!canBeMadeReactive(target)) {
             throw new OwlError(`Cannot make the given value reactive`);
         }
-        if (skipped.has(target)) {
+        if (SKIP in target) {
             return target;
         }
-        if (targets.has(target)) {
-            // target is reactive, create a reactive on the underlying object instead
-            return reactive(targets.get(target), callback);
+        const originalTarget = target[TARGET];
+        if (originalTarget) {
+            return reactive(originalTarget, callback);
         }
         if (!reactiveCache.has(target)) {
             reactiveCache.set(target, new WeakMap());
@@ -1951,7 +1892,6 @@
                 : basicProxyHandler(callback);
             const proxy = new Proxy(target, handler);
             reactivesForTarget.set(callback, proxy);
-            targets.set(proxy, target);
         }
         return reactivesForTarget.get(callback);
     }
@@ -1963,27 +1903,29 @@
      */
     function basicProxyHandler(callback) {
         return {
-            get(target, key, receiver) {
+            get(target, key, proxy) {
+                if (key === TARGET) {
+                    return target;
+                }
                 // non-writable non-configurable properties cannot be made reactive
                 const desc = Object.getOwnPropertyDescriptor(target, key);
                 if (desc && !desc.writable && !desc.configurable) {
-                    return Reflect.get(target, key, receiver);
+                    return Reflect.get(target, key, proxy);
                 }
                 observeTargetKey(target, key, callback);
-                return possiblyReactive(Reflect.get(target, key, receiver), callback);
+                return possiblyReactive(Reflect.get(target, key, proxy), callback);
             },
-            set(target, key, value, receiver) {
-                const hadKey = objectHasOwnProperty.call(target, key);
-                const originalValue = Reflect.get(target, key, receiver);
-                const ret = Reflect.set(target, key, value, receiver);
-                if (!hadKey && objectHasOwnProperty.call(target, key)) {
+            set(target, key, value, proxy) {
+                const isNewKey = !objectHasOwnProperty.call(target, key);
+                const originalValue = Reflect.get(target, key, proxy);
+                const ret = Reflect.set(target, key, value, proxy);
+                if (isNewKey) {
                     notifyReactives(target, KEYCHANGES);
                 }
                 // While Array length may trigger the set trap, it's not actually set by this
                 // method but is updated behind the scenes, and the trap is not called with the
                 // new value. We disable the "same-value-optimization" for it because of that.
-                if (originalValue !== Reflect.get(target, key, receiver) ||
-                    (key === "length" && Array.isArray(target))) {
+                if (originalValue !== value || (Array.isArray(target) && key === "length")) {
                     notifyReactives(target, key);
                 }
                 return ret;
@@ -2159,8 +2101,10 @@
         // property is read.
         const specialHandlers = rawTypeToFuncHandlers[targetRawType](target, callback);
         return Object.assign(basicProxyHandler(callback), {
-            // FIXME: probably broken when part of prototype chain since we ignore the receiver
             get(target, key) {
+                if (key === TARGET) {
+                    return target;
+                }
                 if (objectHasOwnProperty.call(specialHandlers, key)) {
                     return specialHandlers[key];
                 }
@@ -2320,13 +2264,12 @@
             this.childEnv = env;
             for (const key in props) {
                 const prop = props[key];
-                if (prop && typeof prop === "object" && targets.has(prop)) {
+                if (prop && typeof prop === "object" && prop[TARGET]) {
                     props[key] = useState(prop);
                 }
             }
             this.component = new C(props, env, this);
-            const ctx = Object.assign(Object.create(this.component), { this: this.component });
-            this.renderFn = app.getTemplate(C.template).bind(this.component, ctx, this);
+            this.renderFn = app.getTemplate(C.template).bind(this.component, this.component, this);
             this.component.setup();
             currentNode = null;
         }
@@ -2439,7 +2382,7 @@
             currentNode = this;
             for (const key in props) {
                 const prop = props[key];
-                if (prop && typeof prop === "object" && targets.has(prop)) {
+                if (prop && typeof prop === "object" && prop[TARGET]) {
                     props[key] = useState(prop);
                 }
             }
@@ -2501,11 +2444,8 @@
             this.children = this.fiber.childrenMap;
             this.fiber = null;
         }
-        moveBeforeDOMNode(node, parent) {
-            this.bdom.moveBeforeDOMNode(node, parent);
-        }
-        moveBeforeVNode(other, afterNode) {
-            this.bdom.moveBeforeVNode(other ? other.bdom : null, afterNode);
+        moveBefore(other, afterNode) {
+            this.bdom.moveBefore(other ? other.bdom : null, afterNode);
         }
         patch() {
             if (this.fiber && this.fiber.parent) {
@@ -2517,7 +2457,6 @@
         }
         _patch() {
             let hasChildren = false;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             for (let _k in this.children) {
                 hasChildren = true;
                 break;
@@ -2723,7 +2662,7 @@
                 if (!portal.target) {
                     const target = document.querySelector(this.props.target);
                     if (target) {
-                        portal.content.moveBeforeDOMNode(target.firstChild, target);
+                        portal.content.moveBefore(target, null);
                     }
                     else {
                         throw new OwlError("invalid portal target");
@@ -2794,7 +2733,6 @@
         if (Array.isArray(schema)) {
             schema = toSchema(schema);
         }
-        obj = toRaw(obj);
         let errors = [];
         // check if each value in obj has correct shape
         for (let key in obj) {
@@ -2899,7 +2837,7 @@
         if (__scope) {
             slotScope[__scope] = extra;
         }
-        const slotBDom = __render ? __render(slotScope, parent, key) : null;
+        const slotBDom = __render ? __render.call(__ctx.__owl__.component, slotScope, parent, key) : null;
         if (defaultContent) {
             let child1 = undefined;
             let child2 = undefined;
@@ -2907,14 +2845,15 @@
                 child1 = dynamic ? toggler(name, slotBDom) : slotBDom;
             }
             else {
-                child2 = defaultContent(ctx, parent, key);
+                child2 = defaultContent.call(ctx.__owl__.component, ctx, parent, key);
             }
             return multi([child1, child2]);
         }
         return slotBDom || text("");
     }
     function capture(ctx) {
-        const result = ObjectCreate(ctx);
+        const component = ctx.__owl__.component;
+        const result = ObjectCreate(component);
         for (let k in ctx) {
             result[k] = ctx[k];
         }
@@ -3023,7 +2962,8 @@
     let boundFunctions = new WeakMap();
     const WeakMapGet = WeakMap.prototype.get;
     const WeakMapSet = WeakMap.prototype.set;
-    function bind(component, fn) {
+    function bind(ctx, fn) {
+        let component = ctx.__owl__.component;
         let boundFnMap = WeakMapGet.call(boundFunctions, component);
         if (!boundFnMap) {
             boundFnMap = new WeakMap();
@@ -3047,15 +2987,6 @@
             }
             if (count === 0 || el) {
                 refs[name] = el;
-            }
-        };
-    }
-    function singleRefSetter(refs, name) {
-        let _el = null;
-        return (el) => {
-            if (el || refs[name] === _el) {
-                refs[name] = el;
-                _el = el;
             }
         };
     }
@@ -3107,7 +3038,6 @@
         prepareList,
         setContextValue,
         multiRefSetter,
-        singleRefSetter,
         shallowEqual,
         toNumber,
         validateProps,
@@ -3261,7 +3191,7 @@
     //------------------------------------------------------------------------------
     // Misc types, constants and helpers
     //------------------------------------------------------------------------------
-    const RESERVED_WORDS = "true,false,NaN,null,undefined,debugger,console,window,in,instanceof,new,function,return,eval,void,Math,RegExp,Array,Object,Date".split(",");
+    const RESERVED_WORDS = "true,false,NaN,null,undefined,debugger,console,window,in,instanceof,new,function,return,this,eval,void,Math,RegExp,Array,Object,Date".split(",");
     const WORD_REPLACEMENT = Object.assign(Object.create(null), {
         and: "&&",
         or: "||",
@@ -3647,7 +3577,7 @@
             let result = [];
             result.push(`function ${this.name}(ctx, node, key = "") {`);
             if (this.hasRef) {
-                result.push(`  const refs = this.__owl__.refs;`);
+                result.push(`  const refs = ctx.__owl__.refs;`);
                 for (let name in this.refInfo) {
                     const [id, expr] = this.refInfo[name];
                     result.push(`  const ${id} = ${expr};`);
@@ -3739,7 +3669,7 @@
                 for (let block of this.blocks) {
                     if (block.dom) {
                         let xmlString = block.asXmlString();
-                        xmlString = xmlString.replace(/\\/g, "\\\\").replace(/`/g, "\\`");
+                        xmlString = xmlString.replace(/`/g, "\\`");
                         if (block.dynamicTagName) {
                             xmlString = xmlString.replace(/^<\w+/, `<\${tag || '${block.dom.nodeName}'}`);
                             xmlString = xmlString.replace(/\w+>$/, `\${tag || '${block.dom.nodeName}'}>`);
@@ -4032,6 +3962,39 @@
                     attrs[`block-attribute-${selectedId}`] = "selected";
                 }
             }
+            // event handlers
+            for (let ev in ast.on) {
+                const name = this.generateHandlerCode(ev, ast.on[ev]);
+                const idx = block.insertData(name, "hdlr");
+                attrs[`block-handler-${idx}`] = ev;
+            }
+            // t-ref
+            if (ast.ref) {
+                this.target.hasRef = true;
+                const isDynamic = INTERP_REGEXP.test(ast.ref);
+                if (isDynamic) {
+                    const str = replaceDynamicParts(ast.ref, (expr) => this.captureExpression(expr, true));
+                    const idx = block.insertData(`(el) => refs[${str}] = el`, "ref");
+                    attrs["block-ref"] = String(idx);
+                }
+                else {
+                    let name = ast.ref;
+                    if (name in this.target.refInfo) {
+                        // ref has already been defined
+                        this.helpers.add("multiRefSetter");
+                        const info = this.target.refInfo[name];
+                        const index = block.data.push(info[0]) - 1;
+                        attrs["block-ref"] = String(index);
+                        info[1] = `multiRefSetter(refs, \`${name}\`)`;
+                    }
+                    else {
+                        let id = generateId("ref");
+                        this.target.refInfo[name] = [id, `(el) => refs[\`${name}\`] = el`];
+                        const index = block.data.push(id) - 1;
+                        attrs["block-ref"] = String(index);
+                    }
+                }
+            }
             // t-model
             let tModelSelectedExpr;
             if (ast.model) {
@@ -4045,15 +4008,7 @@
                 const fullExpression = `${bExprId}[${exprId}]`;
                 let idx;
                 if (specialInitTargetAttr) {
-                    let targetExpr = targetAttr in attrs && `'${attrs[targetAttr]}'`;
-                    if (!targetExpr && ast.attrs) {
-                        // look at the dynamic attribute counterpart
-                        const dynamicTgExpr = ast.attrs[`t-att-${targetAttr}`];
-                        if (dynamicTgExpr) {
-                            targetExpr = compileExpr(dynamicTgExpr);
-                        }
-                    }
-                    idx = block.insertData(`${fullExpression} === ${targetExpr}`, "attr");
+                    idx = block.insertData(`${fullExpression} === '${attrs[targetAttr]}'`, "attr");
                     attrs[`block-attribute-${idx}`] = specialInitTargetAttr;
                 }
                 else if (hasDynamicChildren) {
@@ -4072,41 +4027,6 @@
                 const handler = `[(ev) => { ${fullExpression} = ${valueCode}; }]`;
                 idx = block.insertData(handler, "hdlr");
                 attrs[`block-handler-${idx}`] = eventType;
-            }
-            // event handlers
-            for (let ev in ast.on) {
-                const name = this.generateHandlerCode(ev, ast.on[ev]);
-                const idx = block.insertData(name, "hdlr");
-                attrs[`block-handler-${idx}`] = ev;
-            }
-            // t-ref
-            if (ast.ref) {
-                this.target.hasRef = true;
-                const isDynamic = INTERP_REGEXP.test(ast.ref);
-                if (isDynamic) {
-                    this.helpers.add("singleRefSetter");
-                    const str = replaceDynamicParts(ast.ref, (expr) => this.captureExpression(expr, true));
-                    const idx = block.insertData(`singleRefSetter(refs, ${str})`, "ref");
-                    attrs["block-ref"] = String(idx);
-                }
-                else {
-                    let name = ast.ref;
-                    if (name in this.target.refInfo) {
-                        // ref has already been defined
-                        this.helpers.add("multiRefSetter");
-                        const info = this.target.refInfo[name];
-                        const index = block.data.push(info[0]) - 1;
-                        attrs["block-ref"] = String(index);
-                        info[1] = `multiRefSetter(refs, \`${name}\`)`;
-                    }
-                    else {
-                        let id = generateId("ref");
-                        this.helpers.add("singleRefSetter");
-                        this.target.refInfo[name] = [id, `singleRefSetter(refs, \`${name}\`)`];
-                        const index = block.data.push(id) - 1;
-                        attrs["block-ref"] = String(index);
-                    }
-                }
             }
             const dom = xmlDoc.createElement(ast.tag);
             for (const [attr, val] of Object.entries(attrs)) {
@@ -4298,8 +4218,8 @@
             if (this.dev) {
                 // Throw error on duplicate keys in dev mode
                 this.helpers.add("OwlError");
-                this.addLine(`if (keys${block.id}.has(String(key${this.target.loopLevel}))) { throw new OwlError(\`Got duplicate key in t-foreach: \${key${this.target.loopLevel}}\`)}`);
-                this.addLine(`keys${block.id}.add(String(key${this.target.loopLevel}));`);
+                this.addLine(`if (keys${block.id}.has(key${this.target.loopLevel})) { throw new OwlError(\`Got duplicate key in t-foreach: \${key${this.target.loopLevel}}\`)}`);
+                this.addLine(`keys${block.id}.add(key${this.target.loopLevel});`);
             }
             let id;
             if (ast.memo) {
@@ -4516,7 +4436,7 @@
                 if (suffix === "bind") {
                     this.helpers.add("bind");
                     name = _name;
-                    value = `bind(this, ${value || undefined})`;
+                    value = `bind(ctx, ${value || undefined})`;
                 }
                 else {
                     throw new OwlError("Invalid prop suffix");
@@ -4555,7 +4475,7 @@
                     const params = [];
                     if (slotAst.content) {
                         const name = this.compileInNewTarget("slot", slotAst.content, ctx, slotAst.on);
-                        params.push(`__render: ${name}.bind(this), __ctx: ${ctxStr}`);
+                        params.push(`__render: ${name}, __ctx: ${ctxStr}`);
                     }
                     const scope = ast.slots[slotName].scope;
                     if (scope) {
@@ -4610,13 +4530,6 @@
                 id,
                 expr: `app.createComponent(${ast.isDynamic ? null : expr}, ${!ast.isDynamic}, ${!!ast.slots}, ${!!ast.dynamicProps}, ${!ast.props && !ast.dynamicProps})`,
             });
-            if (ast.isDynamic) {
-                // If the component class changes, this can cause delayed renders to go
-                // through if the key doesn't change. Use the component name for now.
-                // This means that two component classes with the same name isn't supported
-                // in t-component. We can generate a unique id per class later if needed.
-                keyArg = `(${expr}).name + ${keyArg}`;
-            }
             let blockExpr = `${id}(${propString}, ${keyArg}, node, this, ${ast.isDynamic ? expr : null})`;
             if (ast.isDynamic) {
                 blockExpr = `toggler(${expr}, ${blockExpr})`;
@@ -4673,7 +4586,7 @@
             const scope = this.getPropString(props, dynProps);
             if (ast.defaultContent) {
                 const name = this.compileInNewTarget("defaultContent", ast.defaultContent, ctx);
-                blockString = `callSlot(ctx, node, ${key}, ${slotName}, ${dynamic}, ${scope}, ${name}.bind(this))`;
+                blockString = `callSlot(ctx, node, ${key}, ${slotName}, ${dynamic}, ${scope}, ${name})`;
             }
             else {
                 if (dynamic) {
@@ -4721,7 +4634,7 @@
                 expr: `app.createComponent(null, false, true, false, false)`,
             });
             const target = compileExpr(ast.target);
-            const blockString = `${id}({target: ${target},slots: {'default': {__render: ${name}.bind(this), __ctx: ${ctxStr}}}}, key + \`${key}\`, node, ctx, Portal)`;
+            const blockString = `${id}({target: ${target},slots: {'default': {__render: ${name}, __ctx: ${ctxStr}}}}, key + \`${key}\`, node, ctx, Portal)`;
             if (block) {
                 this.insertAnchor(block);
             }
@@ -5254,9 +5167,8 @@
             }
             // default slot
             const defaultContent = parseChildNodes(clone, ctx);
-            slots = slots || {};
-            // t-set-slot="default" has priority over content
-            if (defaultContent && !slots.default) {
+            if (defaultContent) {
+                slots = slots || {};
                 slots.default = { content: defaultContent, on, attrs: null, scope: defaultSlotScope };
             }
         }
@@ -5600,18 +5512,12 @@
 This is not suitable for production use.
 See https://github.com/odoo/owl/blob/${hash}/doc/reference/app.md#configuration for more information.`;
     };
-    window.__OWL_DEVTOOLS__ || (window.__OWL_DEVTOOLS__ = {
-        apps: new Set(),
-        Fiber: Fiber,
-        RootFiber: RootFiber,
-    });
     class App extends TemplateSet {
         constructor(Root, config = {}) {
             super(config);
             this.scheduler = new Scheduler();
             this.root = null;
             this.Root = Root;
-            window.__OWL_DEVTOOLS__.apps.add(this);
             if (config.test) {
                 this.dev = true;
             }
@@ -5668,7 +5574,6 @@ See https://github.com/odoo/owl/blob/${hash}/doc/reference/app.md#configuration 
                 this.scheduler.flush();
                 this.root.destroy();
             }
-            window.__OWL_DEVTOOLS__.apps.delete(this);
         }
         createComponent(name, isStatic, hasSlotsProp, hasDynamicPropList, hasNoProp) {
             const isDynamic = !isStatic;
@@ -5703,11 +5608,7 @@ See https://github.com/odoo/owl/blob/${hash}/doc/reference/app.md#configuration 
                 else {
                     // new component
                     if (isStatic) {
-                        const components = parent.constructor.components;
-                        if (!components) {
-                            throw new OwlError(`Cannot find the definition of component "${name}", missing static components key in parent`);
-                        }
-                        C = components[name];
+                        C = parent.constructor.components[name];
                         if (!C) {
                             throw new OwlError(`Cannot find the definition of component "${name}"`);
                         }
@@ -5909,9 +5810,9 @@ See https://github.com/odoo/owl/blob/${hash}/doc/reference/app.md#configuration 
     Object.defineProperty(exports, '__esModule', { value: true });
 
 
-    __info__.version = '2.0.7';
-    __info__.date = '2023-02-20T08:44:56.632Z';
-    __info__.hash = '276c8a0';
+    __info__.version = '2.0.0-beta-22';
+    __info__.date = '2022-09-29T07:17:44.146Z';
+    __info__.hash = '64bad25';
     __info__.url = 'https://github.com/odoo/owl';
 
 

@@ -5,7 +5,7 @@ import { registry } from "@web/core/registry";
 import { clearRegistryWithCleanup, makeTestEnv } from "../../helpers/mock_env";
 import { click, getFixture, mount, nextTick } from "../../helpers/utils";
 
-import { Component, xml } from "@odoo/owl";
+const { Component, xml } = owl;
 
 let env;
 let fixture;

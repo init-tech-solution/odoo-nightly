@@ -261,11 +261,7 @@ class WebsiteForm(http.Controller):
             }
             attachment_id = request.env['ir.attachment'].sudo().create(attachment_value)
             if attachment_id and not custom_field:
-                record_sudo = record.sudo()
-                value = [(4, attachment_id.id)]
-                if record_sudo._fields[file.field_name].type == 'many2one':
-                    value = attachment_id.id
-                record_sudo[file.field_name] = value
+                record.sudo()[file.field_name] = [(4, attachment_id.id)]
             else:
                 orphan_attachment_ids.append(attachment_id.id)
 

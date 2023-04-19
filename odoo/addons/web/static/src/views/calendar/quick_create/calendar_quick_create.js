@@ -4,7 +4,7 @@ import { useAutofocus, useService } from "@web/core/utils/hooks";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _lt } from "@web/core/l10n/translation";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class CalendarQuickCreate extends Component {
     setup() {

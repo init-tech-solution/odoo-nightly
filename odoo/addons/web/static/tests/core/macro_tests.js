@@ -3,7 +3,7 @@
 import { MacroEngine } from "@web/core/macro";
 import { getFixture, mockTimeout } from "../helpers/utils";
 
-import { Component, xml, useState, mount } from "@odoo/owl";
+const { Component, xml, useState, mount } = owl;
 
 let target, engine, mock;
 

@@ -415,20 +415,6 @@ function formatSelection(value, field, options) {
     }
     return value;
 }
-/**
- * Returns a string representing json.
- *
- * @param {json|false} value
- * @param {Object} [field]
- * @param {Object} [options] additional options
- * @returns {string}
- */
-function formatJson(value, field, options) {
-    if (!value) {
-        return '';
-    }
-    return JSON.stringify(value);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Parse
@@ -766,7 +752,6 @@ return {
         reference: formatMany2one,
         selection: formatSelection,
         text: formatChar,
-        json: formatJson,
     },
     parse: {
         binary: _.identity,
@@ -788,7 +773,6 @@ return {
         reference: parseMany2one,
         selection: _.identity, // todo
         text: _.identity, // todo
-        json: _.identity, // todo
     },
 };
 

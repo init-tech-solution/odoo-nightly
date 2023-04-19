@@ -5,7 +5,7 @@ import { _lt } from "@web/core/l10n/translation";
 import { standardFieldProps } from "../standard_field_props";
 import { formatSelection } from "../formatters";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class LabelSelectionField extends Component {
     get className() {

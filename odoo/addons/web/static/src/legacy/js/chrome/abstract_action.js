@@ -13,7 +13,7 @@ import ControlPanel from "web.ControlPanel";
 import Widget from "web.Widget";
 import { ComponentWrapper } from "web.OwlCompatibility";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 const AbstractAction = Widget.extend(ActionMixin, {
     config: {
         ControlPanel: ControlPanel,

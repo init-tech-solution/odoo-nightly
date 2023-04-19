@@ -2,7 +2,7 @@
 
 import { registry } from "@web/core/registry";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 const parsers = registry.category("parsers");
 
 export class DomainSelectorFieldInput extends Component {

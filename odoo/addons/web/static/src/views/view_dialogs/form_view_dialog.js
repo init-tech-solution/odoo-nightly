@@ -4,7 +4,7 @@ import { Dialog } from "@web/core/dialog/dialog";
 import { useChildRef } from "@web/core/utils/hooks";
 import { View } from "@web/views/view";
 
-import { Component, onMounted } from "@odoo/owl";
+const { Component, onMounted } = owl;
 
 export class FormViewDialog extends Component {
     setup() {
@@ -28,10 +28,7 @@ export class FormViewDialog extends Component {
             viewId: this.props.viewId || false,
             preventCreate: this.props.preventCreate,
             preventEdit: this.props.preventEdit,
-            discardRecord: async () => {
-                if (this.props.onRecordDiscarded) {
-                    await this.props.onRecordDiscarded();
-                }
+            discardRecord: () => {
                 this.props.close();
             },
             saveRecord: async (record, { saveAndNew }) => {
@@ -83,7 +80,6 @@ FormViewDialog.props = {
         validate: (m) => ["edit", "readonly"].includes(m),
     },
     onRecordSaved: { type: Function, optional: true },
-    onRecordDiscarded: { type: Function, optional: true },
     removeRecord: { type: Function, optional: true },
     resId: { type: [Number, Boolean], optional: true },
     title: { type: String, optional: true },

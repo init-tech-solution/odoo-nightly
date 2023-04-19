@@ -51,28 +51,28 @@ export class QuestionPageListRenderer extends ListRenderer {
     }
 
     getSectionColumns(columns) {
+        const sectionColumns = [];
+
         let titleColumnIndex = 0;
-        let found = false;
-        let colspan = 1
-        for (let index = 0; index < columns.length; index++) {
-            const col = columns[index];
-            if (!found && col.name !== this.titleField) {
+        for (const col of columns) {
+            if (col.type !== "field") {
                 continue;
             }
-            if (!found) {
-                found = true;
-                titleColumnIndex = index;
+            if (col.widget === "handle") {
+                titleColumnIndex = 1;
+                sectionColumns.push(col);
                 continue;
             }
-            if (col.type !== "field" || this.fieldsToShow.includes(col.name)) {
-                break;
+            if (this.fieldsToShow.includes(col.name) && col.name !== this.titleField) {
+                sectionColumns.push(col);
             }
-            colspan += 1;
         }
 
-        const sectionColumns = columns.slice(0, titleColumnIndex + 1).concat(columns.slice(titleColumnIndex + colspan));
-
-        sectionColumns[titleColumnIndex] = {...sectionColumns[titleColumnIndex], colspan};
+        const colspan = columns.length - sectionColumns.length;
+        const titleCol = columns.find(
+            (col) => col.type === "field" && col.name === this.titleField
+        );
+        sectionColumns.splice(titleColumnIndex, 0, { ...titleCol, colspan });
 
         return sectionColumns;
     }
@@ -83,22 +83,6 @@ export class QuestionPageListRenderer extends ListRenderer {
 
     isSection(record) {
         return record.data[this.discriminant];
-    }
-
-    /**
-     *
-     * Overriding the method in order to identify the requested column based on its `name`
-     * instead of the exact object passed. This is necessary for section rows because the
-     * column object could have been replaced in `getSectionColumns` to add a `colspan`
-     * attribute.
-     *
-     * @override
-     */
-    focusCell(column, forward = true) {
-        const actualColumn = column.name ? this.state.columns.find(
-            (col) => col.name === column.name
-        ) : column;
-        super.focusCell(actualColumn, forward);
     }
 
     onCellKeydownEditMode(hotkey) {

@@ -5,7 +5,7 @@ import { CheckBox } from "@web/core/checkbox/checkbox";
 import { registry } from "@web/core/registry";
 import { useAutofocus, useService } from "@web/core/utils/hooks";
 
-import { Component, useState } from "@odoo/owl";
+const { Component, useState } = owl;
 
 const favoriteMenuRegistry = registry.category("favoriteMenu");
 

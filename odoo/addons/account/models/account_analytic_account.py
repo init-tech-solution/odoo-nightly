@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 
 
 class AccountAnalyticAccount(models.Model):
@@ -18,52 +18,26 @@ class AccountAnalyticAccount(models.Model):
     @api.depends('line_ids')
     def _compute_invoice_count(self):
         sale_types = self.env['account.move'].get_sale_types(include_receipts=True)
-
-        query = self.env['account.move.line']._search([
-            ('move_id.state', '=', 'posted'),
-            ('move_id.move_type', 'in', sale_types),
-        ])
-        query.add_where(
-            'account_move_line.analytic_distribution ?| array[%s]',
-            [str(account_id) for account_id in self.ids],
-        )
-
-        query.order = None
-        query_string, query_param = query.select(
-            'jsonb_object_keys(account_move_line.analytic_distribution) as account_id',
-            'COUNT(DISTINCT(move_id)) as move_count',
-        )
-        query_string = f"{query_string} GROUP BY jsonb_object_keys(account_move_line.analytic_distribution)"
-
-        self._cr.execute(query_string, query_param)
-        data = {int(record.get('account_id')): record.get('move_count') for record in self._cr.dictfetchall()}
+        domain = [
+            ('move_line_id.move_id.move_type', 'in', sale_types),
+            ('account_id', 'in', self.ids)
+        ]
+        groups = self.env['account.analytic.line']._read_group(domain, ['move_line_id.move_id:count_distinct'], ['account_id'])
+        moves_count_mapping = dict((g['account_id'][0], g['account_id_count']) for g in groups)
         for account in self:
-            account.invoice_count = data.get(account.id, 0)
+            account.invoice_count = moves_count_mapping.get(account.id, 0)
 
     @api.depends('line_ids')
     def _compute_vendor_bill_count(self):
         purchase_types = self.env['account.move'].get_purchase_types(include_receipts=True)
-
-        query = self.env['account.move.line']._search([
-            ('move_id.state', '=', 'posted'),
-            ('move_id.move_type', 'in', purchase_types),
-        ])
-        query.add_where(
-            'account_move_line.analytic_distribution ?| array[%s]',
-            [str(account_id) for account_id in self.ids],
-        )
-
-        query.order = None
-        query_string, query_param = query.select(
-            'jsonb_object_keys(account_move_line.analytic_distribution) as account_id',
-            'COUNT(DISTINCT(move_id)) as move_count',
-        )
-        query_string = f"{query_string} GROUP BY jsonb_object_keys(account_move_line.analytic_distribution)"
-
-        self._cr.execute(query_string, query_param)
-        data = {int(record.get('account_id')): record.get('move_count') for record in self._cr.dictfetchall()}
+        domain = [
+            ('move_line_id.move_id.move_type', 'in', purchase_types),
+            ('account_id', 'in', self.ids)
+        ]
+        groups = self.env['account.analytic.line']._read_group(domain, ['move_line_id.move_id:count_distinct'], ['account_id'])
+        moves_count_mapping = dict((g['account_id'][0], g['account_id_count']) for g in groups)
         for account in self:
-            account.vendor_bill_count = data.get(account.id, 0)
+            account.vendor_bill_count = moves_count_mapping.get(account.id, 0)
 
     def action_view_invoice(self):
         self.ensure_one()
@@ -78,7 +52,7 @@ class AccountAnalyticAccount(models.Model):
             "res_model": "account.move",
             "domain": [('id', 'in', move_ids)],
             "context": {"create": False},
-            "name": _("Customer Invoices"),
+            "name": "Customer Invoices",
             'view_mode': 'tree,form',
         }
         return result
@@ -96,7 +70,7 @@ class AccountAnalyticAccount(models.Model):
             "res_model": "account.move",
             "domain": [('id', 'in', move_ids)],
             "context": {"create": False},
-            "name": _("Vendor Bills"),
+            "name": "Vendor Bills",
             'view_mode': 'tree,form',
         }
         return result

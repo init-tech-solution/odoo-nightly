@@ -5,7 +5,7 @@ import { is24HourFormat } from "@web/core/l10n/dates";
 import { Field } from "@web/views/fields/field";
 import { Record } from "@web/views/record";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class CalendarCommonPopover extends Component {
     setup() {

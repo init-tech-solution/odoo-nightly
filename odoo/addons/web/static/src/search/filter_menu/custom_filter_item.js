@@ -7,7 +7,7 @@ import { serializeDate, serializeDateTime } from "@web/core/l10n/dates";
 import { _lt } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 
-import { Component, useState } from "@odoo/owl";
+const { Component, useState } = owl;
 
 const { DateTime } = luxon;
 
@@ -313,10 +313,7 @@ export class CustomFilterItem extends Component {
         } catch (_err) {
             // Parsing error: nothing is done
         }
-        // Only reset the target's value if it is not a selection field.
-        if (field.type !== "selection") {
-            ev.target.value = condition.displayedValue;
-        }
+        ev.target.value = condition.displayedValue;
     }
 }
 

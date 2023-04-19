@@ -1,14 +1,14 @@
 /** @odoo-module **/
 
-import { Component, markup } from "@odoo/owl";
 import { isMacOS } from "@web/core/browser/feature_detection";
-import { escape } from "@web/core/utils/strings";
-import { session } from "@web/session";
 import { browser } from "../../core/browser/browser";
 import { registry } from "../../core/registry";
+import { session } from "@web/session";
+
+const { Component } = owl;
 
 function documentationItem(env) {
-    const documentationURL = "https://www.odoo.com/documentation/16.0";
+    const documentationURL = "https://www.odoo.com/documentation/master";
     return {
         type: "item",
         id: "documentation",
@@ -37,7 +37,7 @@ function supportItem(env) {
 
 class ShortcutsFooterComponent extends Component {
     setup() {
-        this.runShortcutKey = isMacOS() ? "CONTROL" : "ALT";
+        this.runShortcutKey = isMacOS() ? "ALT + CONTROL" : "ALT";
     }
 }
 ShortcutsFooterComponent.template = "web.UserMenu.ShortcutsFooterComponent";
@@ -47,12 +47,7 @@ function shortCutsItem(env) {
         type: "item",
         id: "shortcuts",
         hide: env.isSmall,
-        description: markup(
-            `<div class="d-flex align-items-center justify-content-between">
-                <span>${escape(env._t("Shortcuts"))}</span>
-                <span class="fw-bold">${isMacOS() ? "CMD" : "CTRL"}+K</span>
-            </div>`
-        ),
+        description: env._t("Shortcuts"),
         callback: () => {
             env.services.command.openMainPalette({ FooterComponent: ShortcutsFooterComponent });
         },

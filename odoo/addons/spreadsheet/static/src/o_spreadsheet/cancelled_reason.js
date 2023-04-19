@@ -11,5 +11,4 @@ export default {
     ListIdNotFound: 1006,
     EmptyName: 1007,
     PivotIdNotFound: 1008,
-    InvalidFieldMatch: 1009,
 };

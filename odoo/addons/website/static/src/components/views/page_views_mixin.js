@@ -22,16 +22,15 @@ export const PageControllerMixin = (component) => class extends component {
         this.dialog = useService('dialog');
         this.rpc = useService('rpc');
 
-        this.websiteSelection = odoo.debug ? [{id: 0, name: this.env._t("All Websites")}] : [];
+        this.websiteSelection = [{id: 0, name: this.env._t("All Websites")}];
 
         this.state = useState({
-            activeWebsite: undefined,
+            activeWebsite: this.websiteSelection[0],
         });
 
         onWillStart(async () => {
             await this.website.fetchWebsites();
             this.websiteSelection.push(...this.website.websites);
-            this.state.activeWebsite = this.website.currentWebsite || this.website.websites[0];
         });
     }
 
@@ -87,9 +86,8 @@ export const PageRendererMixin = (component) => class extends component {
      *        specific clones).
      */
     recordFilter(record, records) {
-        const websiteId = record.data.website_id && record.data.website_id[0];
         return !this.props.activeWebsite.id
-            || this.props.activeWebsite.id === websiteId
-            || !websiteId && records.filter(rec => rec.data.website_url === record.data.website_url).length === 1;
+            || this.props.activeWebsite.id === record.data.website_id[0]
+            || !record.data.website_id[0] && records.filter(rec => rec.data.website_url === record.data.website_url).length === 1;
     }
 };

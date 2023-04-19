@@ -3,7 +3,6 @@ odoo.define("website_mass_mailing.tour.newsletter_popup_edition", function (requ
 
 const tour = require('web_tour.tour');
 const wTourUtils = require('website.tour_utils');
-const newsletterPopupUseTour = require('website_mass_mailing.tour.newsletter_popup_use');
 
 tour.register('newsletter_popup_edition', {
     test: true,
@@ -22,10 +21,15 @@ tour.register('newsletter_popup_edition', {
     ...wTourUtils.clickOnSave(),
     {
         content: "Check the modal has been saved, closed",
-        trigger: 'iframe body:has(.o_newsletter_popup)',
+        trigger: 'iframe .o_newsletter_popup',
         extra_trigger: 'iframe body:not(.editor_enable)',
-        run: newsletterPopupUseTour.ensurePopupNotVisible,
-    }
+        run: function (actions) {
+            const $modal = this.$anchor.find('.modal');
+            if ($modal.is(':visible')) {
+                console.error('Modal is still opened...');
+            }
+        },
+    },
 ]);
 });
 
@@ -34,29 +38,20 @@ odoo.define("website_mass_mailing.tour.newsletter_popup_use", function (require)
 
 const tour = require('web_tour.tour');
 
-function ensurePopupNotVisible() {
-    const $modal = this.$anchor.find('.o_newsletter_popup .modal');
-    if ($modal.length !== 1) {
-        // Avoid the tour to succeed if the modal can't be found while
-        // it should. Indeed, if the selector ever becomes wrong and the
-        // expected element is actually not found anymore, the test
-        // won't be testing anything anymore as the visible check will
-        // always be truthy on empty jQuery element.
-        console.error("Modal couldn't be found in the DOM. The tour is not working as expected.");
-    }
-    if ($modal.is(':visible')) {
-        console.error('Modal should not be opened.');
-    }
-}
-
 tour.register('newsletter_popup_use', {
     test: true,
     url: '/',
 }, [
     {
         content: "Check the modal is not yet opened and force it opened",
-        trigger: 'body:has(.o_newsletter_popup)',
-        run: ensurePopupNotVisible,
+        trigger: '.o_newsletter_popup',
+        run: function (actions) {
+            const $modal = this.$anchor.find('.modal');
+            if ($modal.is(':visible')) {
+                console.error('Modal is already opened...');
+            }
+            $(document).trigger('mouseleave');
+        },
     },
     {
         content: "Check the modal is now opened and enter text in the subscribe input",
@@ -70,12 +65,13 @@ tour.register('newsletter_popup_use', {
     },
     {
         content: "Check the modal is now closed",
-        trigger: 'body:has(.o_newsletter_popup)',
-        run: ensurePopupNotVisible,
+        trigger: '.o_newsletter_popup',
+        run: function (actions) {
+            const $modal = this.$anchor.find('.modal');
+            if ($modal.is(':visible')) {
+                console.error('Modal is still opened...');
+            }
+        },
     }
 ]);
-
-return {
-    ensurePopupNotVisible: ensurePopupNotVisible,
-};
 });

@@ -163,11 +163,9 @@ var MockServer = Class.extend({
         if (abort) {
             abort = abort.bind(def);
         } else {
-            abort = function (rejectError = true) {
-                if (rejectError) {
-                    throw new Error("XmlHttpRequestError abort");
-                }
-            }
+            abort = function () {
+                throw new Error("Can't abort this request");
+            };
         }
 
         def = def.then(function (result) {
@@ -1707,15 +1705,6 @@ var MockServer = Class.extend({
         var data = {};
         _.each(records, function (record) {
             var groupByValue = record[groupBy]; // always technical value here
-
-            // special case for bool values: rpc call response with capitalized strings
-            if (!(groupByValue in data)) {
-                if (groupByValue === true) {
-                    groupByValue = "True";
-                } else if (groupByValue === false) {
-                    groupByValue = "False";
-                }
-            }
 
             if (!(groupByValue in data)) {
                 data[groupByValue] = {};

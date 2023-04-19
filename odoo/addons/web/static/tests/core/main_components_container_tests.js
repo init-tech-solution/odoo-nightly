@@ -5,7 +5,7 @@ import { clearRegistryWithCleanup, makeTestEnv } from "../helpers/mock_env";
 import { patch, unpatch } from "@web/core/utils/patch";
 import { getFixture, mount, nextTick } from "../helpers/utils";
 
-import { Component, useState, xml } from "@odoo/owl";
+const { Component, useState, xml } = owl;
 const mainComponentsRegistry = registry.category("main_components");
 
 let target;

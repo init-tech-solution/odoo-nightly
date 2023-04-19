@@ -169,10 +169,7 @@ Contracts:
 
         start = min(self.mapped('date_from') + [fields.Datetime.from_string(vals.get('date_from', False)) or datetime.max])
         stop = max(self.mapped('date_to') + [fields.Datetime.from_string(vals.get('date_to', False)) or datetime.min])
-        employee_ids = self.employee_id.ids
-        if 'employee_id' in vals and vals['employee_id']:
-            employee_ids += vals['employee_id']
-        with self.env['hr.work.entry']._error_checking(start=start, stop=stop, skip=skip_check, employee_ids=employee_ids):
+        with self.env['hr.work.entry']._error_checking(start=start, stop=stop, skip=skip_check):
             return super().write(vals)
 
     @api.model_create_multi
@@ -181,14 +178,13 @@ Contracts:
         stop_dates = [v.get('date_to') for v in vals_list if v.get('date_to')]
         if any(vals.get('holiday_type', 'employee') == 'employee' and not vals.get('multi_employee', False) and not vals.get('employee_id', False) for vals in vals_list):
             raise ValidationError(_("There is no employee set on the time off. Please make sure you're logged in the correct company."))
-        employee_ids = {v['employee_id'] for v in vals_list if v.get('employee_id')}
-        with self.env['hr.work.entry']._error_checking(start=min(start_dates, default=False), stop=max(stop_dates, default=False), employee_ids=employee_ids):
+        with self.env['hr.work.entry']._error_checking(start=min(start_dates, default=False), stop=max(stop_dates, default=False)):
             return super().create(vals_list)
 
     def action_confirm(self):
         start = min(self.mapped('date_from'), default=False)
         stop = max(self.mapped('date_to'), default=False)
-        with self.env['hr.work.entry']._error_checking(start=start, stop=stop, employee_ids=self.employee_id.ids):
+        with self.env['hr.work.entry']._error_checking(start=start, stop=stop):
             return super().action_confirm()
 
     def _get_leaves_on_public_holiday(self):

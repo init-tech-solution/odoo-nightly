@@ -9,7 +9,7 @@ import { CharField } from "../char/char_field";
 import { TextField } from "../text/text_field";
 import { standardFieldProps } from "../standard_field_props";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 class CopyClipboardField extends Component {
     setup() {

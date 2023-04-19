@@ -9,7 +9,7 @@ import { useBus, useService } from "@web/core/utils/hooks";
 import { ActionContainer } from "./actions/action_container";
 import { NavBar } from "./navbar/navbar";
 
-import { Component, onMounted, useExternalListener, useState } from "@odoo/owl";
+const { Component, onMounted, useExternalListener, useState } = owl;
 
 export class WebClient extends Component {
     setup() {

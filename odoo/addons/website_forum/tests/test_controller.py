@@ -10,8 +10,10 @@ class TestController(HttpCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.portal_user = new_test_user(cls.env, login='portal_user', groups='base.group_portal')
-        cls.admin_user = new_test_user(cls.env, login='admin_user', groups='base.group_user,base.group_system')
+        portal_user = new_test_user(cls.env, login='portal_user', groups='base.group_portal')
+        cls.portal = portal_user.login
+        admin_user = new_test_user(cls.env, login='admin_user', groups='base.group_user,base.group_system')
+        cls.admin = admin_user.login
         cls.headers = {"Content-Type": "application/json"}
         cls.pixel = 'R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs='
 
@@ -27,16 +29,15 @@ class TestController(HttpCase):
         }
 
     def test_01_portal_attachment(self):
-        self.authenticate(self.portal_user.login, self.portal_user.login)
-        payload = self._build_payload({'name': 'pixel', 'data': self.pixel, 'is_image': True, 'res_model': 'forum.post', 'res_id': 1})
-        self.portal_user.karma = 30
+        self.authenticate(self.portal, self.portal)
+        payload = self._build_payload({"name": "pixel", "data": self.pixel, "is_image": True, "res_model": "forum.post"})
         response = self.url_open('/web_editor/attachment/add_data', data=json.dumps(payload), headers=self.headers, timeout=60000)
         self.assertEqual(200, response.status_code)
         attachment = self.env['ir.attachment'].search([('name', '=', 'pixel')])
         self.assertTrue(attachment)
 
     def test_02_admin_attachment(self):
-        self.authenticate(self.admin_user.login, self.admin_user.login)
+        self.authenticate(self.admin, self.admin)
         payload = self._build_payload({"name": "pixel", "data": self.pixel, "is_image": True, "res_model": "forum.post"})
         response = self.url_open('/web_editor/attachment/add_data', data=json.dumps(payload), headers=self.headers)
         self.assertEqual(200, response.status_code)

@@ -9,7 +9,7 @@ import { useModel } from "@web/views/model";
 import { standardViewProps } from "@web/views/standard_view_props";
 import { useSetupView } from "@web/views/view_hook";
 
-import { Component, useRef } from "@odoo/owl";
+const { Component, useRef } = owl;
 
 export class PivotController extends Component {
     setup() {
