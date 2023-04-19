@@ -4,7 +4,7 @@ import { loadCSS, loadJS } from "@web/core/assets";
 import { useService } from "@web/core/utils/hooks";
 import { useActionLinks } from "@web/views/view_hook";
 
-import { Component, markup, onWillStart, useRef, xml } from "@odoo/owl";
+const { Component, markup, onWillStart, useRef, xml } = owl;
 
 export class OnboardingBanner extends Component {
     setup() {

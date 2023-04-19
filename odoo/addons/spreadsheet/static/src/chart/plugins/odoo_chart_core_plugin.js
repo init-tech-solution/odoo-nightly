@@ -4,8 +4,6 @@ import ChartDataSource from "../data_source/chart_data_source";
 import { globalFiltersFieldMatchers } from "@spreadsheet/global_filters/plugins/global_filters_core_plugin";
 import { sprintf } from "@web/core/utils/strings";
 import { _t } from "@web/core/l10n/translation";
-import { checkFilterFieldMatching } from "@spreadsheet/global_filters/helpers";
-import CommandResult from "../../o_spreadsheet/cancelled_reason";
 
 const { CorePlugin } = spreadsheet;
 
@@ -13,8 +11,6 @@ const { CorePlugin } = spreadsheet;
  * @typedef {Object} Chart
  * @property {string} dataSourceId
  * @property {Object} fieldMatching
- *
- * @typedef {import("@spreadsheet/global_filters/plugins/global_filters_core_plugin").FieldMatching} FieldMatching
  */
 
 export default class OdooChartCorePlugin extends CorePlugin {
@@ -39,17 +35,6 @@ export default class OdooChartCorePlugin extends CorePlugin {
                 this.getters.getChart(chartId).getDefinitionForDataSource().metaData.resModel,
             getFields: (chartId) => this.getChartDataSource(chartId).getFields(),
         };
-    }
-
-    allowDispatch(cmd) {
-        switch (cmd.type) {
-            case "ADD_GLOBAL_FILTER":
-            case "EDIT_GLOBAL_FILTER":
-                if (cmd.chart) {
-                    return checkFilterFieldMatching(cmd.chart);
-                }
-        }
-        return CommandResult.Success;
     }
 
     /**
@@ -202,8 +187,9 @@ export default class OdooChartCorePlugin extends CorePlugin {
     /**
      * Sets the current pivotFieldMatching of a chart
      *
+     * @param {string} chartId
      * @param {string} filterId
-     * @param {Record<string,FieldMatching>} chartFieldMatches
+     * @param {FieldMatching} fieldMatching
      */
     _setOdooChartFieldMatching(filterId, chartFieldMatches) {
         const charts = { ...this.charts };

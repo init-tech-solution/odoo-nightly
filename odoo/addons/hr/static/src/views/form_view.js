@@ -29,7 +29,6 @@ export class EmployeeFormController extends FormController {
     }
 }
 
-// TODO KBA: to remove in master
 export class EmployeeFormRenderer extends FormRenderer {
     setup() {
         super.setup();

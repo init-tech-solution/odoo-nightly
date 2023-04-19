@@ -1,10 +1,8 @@
 /** @odoo-module **/
 
-import { registry } from "@web/core/registry";
 import { getFixture, triggerEvents } from "@web/../tests/helpers/utils";
 import { pagerNext } from "@web/../tests/search/helpers";
 import { makeView, setupViewRegistries } from "@web/../tests/views/helpers";
-import { fakeCookieService } from "@web/../tests/helpers/mock_services";
 
 let serverData;
 let target;
@@ -33,7 +31,6 @@ QUnit.module("Fields", (hooks) => {
         };
 
         setupViewRegistries();
-        registry.category("services").add("cookie", fakeCookieService);
     });
 
     QUnit.module("AceEditorField");

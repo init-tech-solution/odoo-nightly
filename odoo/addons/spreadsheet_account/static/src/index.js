@@ -19,10 +19,10 @@ cellMenuRegistry.add("move_lines_see_records", {
     async action(env) {
         const cell = env.model.getters.getActiveCell();
         const { args } = getFirstAccountFunction(cell.content);
-        let [codes, date_range, offset, companyId, includeUnposted] = args
+        let [code, date_range, offset, companyId, includeUnposted] = args
             .map(astToFormula)
             .map((arg) => env.model.getters.evaluateFormula(arg));
-        codes = toString(codes).split(",");
+        code = toString(code);
         const dateRange = parseAccountingDate(date_range);
         dateRange.year += offset || 0;
         companyId = companyId || null;
@@ -31,17 +31,15 @@ cellMenuRegistry.add("move_lines_see_records", {
         const action = await env.services.orm.call(
             "account.account",
             "spreadsheet_move_line_action",
-            [camelToSnakeObject({ dateRange, companyId, codes, includeUnposted })]
+            [camelToSnakeObject({ dateRange, companyId, code, includeUnposted })]
         );
         await env.services.action.doAction(action);
     },
     isVisible: (env) => {
         const cell = env.model.getters.getActiveCell();
         return (
-            cell &&
-            !cell.evaluated.error &&
-            cell.evaluated.value !== "" &&
-            getNumberOfAccountFormulas(cell.content) === 1
+            cell && !cell.evaluated.error &&
+            cell.evaluated.value !== "" && getNumberOfAccountFormulas(cell.content) === 1
         );
     },
 });

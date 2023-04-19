@@ -5,7 +5,7 @@ import * as legacySystrayMenu from "web.SystrayMenu";
 import { registry } from "../core/registry";
 import { LegacyComponent } from "@web/legacy/legacy_component";
 
-import { Component, xml } from "@odoo/owl";
+const { Component, xml } = owl;
 const systrayRegistry = registry.category("systray");
 
 class SystrayItemAdapter extends ComponentAdapter {

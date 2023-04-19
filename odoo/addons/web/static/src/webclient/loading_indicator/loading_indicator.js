@@ -5,7 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Transition } from "@web/core/transition";
 
-import { Component, onWillDestroy, useState } from "@odoo/owl";
+const { Component, onWillDestroy, useState } = owl;
 
 /**
  * Loading Indicator

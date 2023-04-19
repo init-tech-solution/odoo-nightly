@@ -4,7 +4,7 @@ import { DROPDOWN } from "@web/core/dropdown/dropdown";
 import { pick } from "@web/core/utils/objects";
 import { debounce as debounceFn } from "@web/core/utils/timing";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 const explicitRankClasses = [
     "btn-primary",

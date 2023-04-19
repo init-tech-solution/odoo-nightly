@@ -11,7 +11,7 @@ import { debounce } from "@web/core/utils/timing";
 import { isMacOS, isMobileOS } from "@web/core/browser/feature_detection";
 import { escapeRegExp } from "@web/core/utils/strings";
 
-import {
+const {
     Component,
     onWillStart,
     onWillDestroy,
@@ -19,7 +19,7 @@ import {
     useState,
     markRaw,
     useExternalListener,
-} from "@odoo/owl";
+} = owl;
 
 const DEFAULT_PLACEHOLDER = _lt("Search...");
 const DEFAULT_EMPTY_MESSAGE = _lt("No result found");

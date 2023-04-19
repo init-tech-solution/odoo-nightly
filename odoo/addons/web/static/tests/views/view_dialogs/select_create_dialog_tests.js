@@ -127,7 +127,6 @@ QUnit.module("ViewDialogs", (hooks) => {
                             orderby: "",
                             expand: false,
                             expand_orderby: null,
-                            expand_limit: null,
                             lazy: true,
                             limit: 80,
                             offset: 0,
@@ -343,7 +342,7 @@ QUnit.module("ViewDialogs", (hooks) => {
     });
 
     QUnit.test("SelectCreateDialog: save current search", async function (assert) {
-        assert.expect(5);
+        assert.expect(4);
 
         serverData.views = {
             "partner,false,list": `
@@ -385,9 +384,6 @@ QUnit.module("ViewDialogs", (hooks) => {
                     "should save the correct context"
                 );
                 return 7; // fake serverSideId
-            }
-            if (args.method === "get_views") {
-                assert.equal(args.kwargs.options.load_filters, true, "Missing load_filters option");
             }
         };
         patchWithCleanup(browser, { setTimeout: (fn) => fn() });

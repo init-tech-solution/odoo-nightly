@@ -411,7 +411,7 @@ class ApplyConfiguratorScreen extends Component {
     }
 }
 
-export class FeaturesSelectionScreen extends ApplyConfiguratorScreen {
+class FeaturesSelectionScreen extends ApplyConfiguratorScreen {
     setup() {
         super.setup();
 
@@ -601,7 +601,7 @@ function useStore() {
     return useState(env.store);
 }
 
-export class Configurator extends Component {
+class Configurator extends Component {
     setup() {
         this.orm = useService('orm');
         this.action = useService('action');

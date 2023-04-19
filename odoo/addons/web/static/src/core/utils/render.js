@@ -1,9 +1,10 @@
 /** @odoo-module **/
 
-import { blockDom, markup } from "@odoo/owl";
+const { blockDom, markup } = owl;
 
 /**
- * renders a template with an (optional) context and outputs it as a string
+ * renders a template with an (optional) context and returns a Markup string,
+ * suitable to be inserted in a template with a t-out directive
  *
  * @param {string} template
  * @param {Object} context

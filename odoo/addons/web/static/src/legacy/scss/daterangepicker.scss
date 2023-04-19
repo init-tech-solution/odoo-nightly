@@ -40,7 +40,7 @@
         background-color: var(--daterangepicker__table-bg);
 
         .next span, .prev span {
-            border-color: var(--daterangepicker-color);
+            border-color: currentColor;
         }
 
         td, th {
@@ -121,19 +121,15 @@
         }
     }
 
-    .calendar-time {
-        /*rtl:ignore*/
-        direction:ltr;
-        select {
-            &.hourselect, &.minuteselect, &.secondselect, &.ampmselect {
-                display: initial;
-                border-color: var(--daterangepicker__select-border-color);
-                background-color: var(--daterangepicker__select-bg);
-                color: var(--daterangepicker__select-color);
-                -webkit-appearance: menulist-button;
-                -moz-appearance: menulist-button;
-                appearance: menulist-button;
-            }
+    .calendar-time select {
+        &.hourselect, &.minuteselect, &.secondselect, &.ampmselect {
+            display: initial;
+            border-color: var(--daterangepicker__select-border-color);
+            background-color: var(--daterangepicker__select-bg);
+            color: var(--daterangepicker__select-color);
+            -webkit-appearance: menulist-button;
+            -moz-appearance: menulist-button;
+            appearance: menulist-button;
         }
     }
 

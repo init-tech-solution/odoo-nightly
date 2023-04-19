@@ -9,7 +9,7 @@ import { useModel } from "@web/views/model";
 import { standardViewProps } from "@web/views/standard_view_props";
 import { useSetupView } from "@web/views/view_hook";
 
-import { Component, useRef } from "@odoo/owl";
+const { Component, useRef } = owl;
 
 export class GraphController extends Component {
     setup() {
@@ -31,19 +31,11 @@ export class GraphController extends Component {
     getContext() {
         // expand context object? change keys?
         const { measure, groupBy, mode } = this.model.metaData;
-        const context = {
+        return {
             graph_measure: measure,
             graph_mode: mode,
             graph_groupbys: groupBy.map((gb) => gb.spec),
         };
-        if (mode !== "pie") {
-            context.graph_order = this.model.metaData.order;
-            context.graph_stacked = this.model.metaData.stacked;
-            if (mode === "line") {
-                context.graph_cumulated = this.model.metaData.cumulated;
-            }
-        }
-        return context;
     }
 
     /**

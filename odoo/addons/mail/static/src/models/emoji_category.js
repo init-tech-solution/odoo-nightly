@@ -15,7 +15,6 @@ registerModel({
         allEmojis: many('Emoji', {
             inverse: 'emojiCategories',
         }),
-        displayName: attr(),
         emojiCount: attr({ //Number of emojis that will be in that category once every emoji is loaded.
             default: 0,
         }),

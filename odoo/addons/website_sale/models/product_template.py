@@ -242,10 +242,9 @@ class ProductTemplate(models.Model):
             partner = self.env.user.partner_id
             company_id = current_website.company_id
 
-            fpos_id = self.env['website'].sudo()._get_current_fiscal_position_id(partner)
-            fiscal_position = self.env['account.fiscal.position'].sudo().browse(fpos_id)
+            fpos = self.env['account.fiscal.position'].sudo()._get_fiscal_position(partner)
             product_taxes = product.sudo().taxes_id.filtered(lambda x: x.company_id == company_id)
-            taxes = fiscal_position.map_tax(product_taxes)
+            taxes = fpos.map_tax(product_taxes)
 
             price = self._price_with_tax_computed(
                 combination_info['price'], product_taxes, taxes, company_id, pricelist, product,
@@ -273,7 +272,7 @@ class ProductTemplate(models.Model):
             prevent_zero_price_sale = not price and current_website.prevent_zero_price_sale
             combination_info.update(
                 base_unit_name=product.base_unit_name,
-                base_unit_price=product.base_unit_count and list_price / product.base_unit_count,
+                base_unit_price=base_unit_price,
                 price=price,
                 list_price=list_price,
                 price_extra=price_extra,

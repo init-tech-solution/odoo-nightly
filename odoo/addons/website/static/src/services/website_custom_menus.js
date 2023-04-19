@@ -80,7 +80,6 @@ registry.category('website_custom_menus').add('website.menu_edit_menu', {
 registry.category('website_custom_menus').add('website.menu_optimize_seo', {
     Component: OptimizeSEODialog,
     isDisplayed: (env) => env.services.website.currentWebsite
-        && env.services.website.isDesigner
         && !!env.services.website.currentWebsite.metadata.mainObject,
 });
 registry.category('website_custom_menus').add('website.menu_current_page', {
@@ -96,7 +95,6 @@ registry.category('website_custom_menus').add('website.menu_ace_editor', {
 registry.category('website_custom_menus').add('website.menu_page_properties', {
     Component: PagePropertiesDialog,
     isDisplayed: (env) => env.services.website.currentWebsite
-        && env.services.website.isDesigner
         && !!env.services.website.currentWebsite.metadata.mainObject
         && env.services.website.currentWebsite.metadata.mainObject.model === 'website.page',
     getProps: (services) => ({
@@ -113,7 +111,6 @@ registry.category('website_custom_menus').add('website.custom_menu_edit_menu', {
     // menuitem will be cloned (in 'addCustomMenus()') to edit every content menu using
     // the 'EditMenuDialog' component.
     isDisplayed: (env) => env.services.website.currentWebsite
-        && env.services.website.currentWebsite.metadata.contentMenus
         && env.services.website.currentWebsite.metadata.contentMenus.length
         && !env.services.ui.isSmall,
 });

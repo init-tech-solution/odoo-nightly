@@ -5,7 +5,7 @@ import { usePosition } from "../position_hook";
 import { useDropdownNavigation } from "./dropdown_navigation_hook";
 import { localization } from "../l10n/localization";
 
-import {
+const {
     Component,
     EventBus,
     onWillStart,
@@ -14,7 +14,7 @@ import {
     useRef,
     useState,
     useChildSubEnv,
-} from "@odoo/owl";
+} = owl;
 
 const DIRECTION_CARET_CLASS = {
     bottom: "dropdown",
@@ -95,11 +95,16 @@ export class Dropdown extends Component {
 
         // Set up toggler and positioning --------------------------------------
         /** @type {string} **/
-        const position =
+        let position =
             this.props.position || (this.parentDropdown ? "right-start" : "bottom-start");
-        let [direction] = position.split("-");
-        if (["left", "right"].includes(direction) && localization.direction === "rtl") {
-            direction = direction === "left" ? "right" : "left";
+        let [direction, variant = "middle"] = position.split("-");
+        if (localization.direction === "rtl") {
+            if (["bottom", "top"].includes(direction)) {
+                variant = variant === "start" ? "end" : "start";
+            } else {
+                direction = direction === "left" ? "right" : "left";
+            }
+            position = [direction, variant].join("-");
         }
         const positioningOptions = {
             popper: "menuRef",
@@ -128,25 +133,12 @@ export class Dropdown extends Component {
                         }
                         this.toggle();
                     };
-                    if (this.rootRef.el.parentElement.tabIndex === -1) {
-                        // If the parent is not focusable, make it focusable programmatically.
-                        // This code may look weird, but an element with a negative tabIndex is
-                        // focusable programmatically ONLY if its tabIndex is explicitly set.
-                        this.rootRef.el.parentElement.tabIndex = -1;
-                    }
                     this.rootRef.el.parentElement.addEventListener("click", onClick);
                     return () => {
                         this.rootRef.el.parentElement.removeEventListener("click", onClick);
                     };
                 },
                 () => []
-            );
-
-            useEffect(
-                (open) => {
-                    this.rootRef.el.parentElement.ariaExpanded = open ? "true" : "false";
-                },
-                () => [this.state.open]
             );
 
             // Position menu relatively to parent element
@@ -269,7 +261,6 @@ export class Dropdown extends Component {
      */
     onTogglerMouseEnter() {
         if (this.state.groupIsOpen && !this.state.open) {
-            this.togglerRef.el.focus();
             this.open();
         }
     }
@@ -313,10 +304,6 @@ Dropdown.props = {
         type: String,
         optional: true,
         validate: (prop) => ["parent"].includes(prop),
-    },
-    skipTogglerTabbing: {
-        type: Boolean,
-        optional: true,
     },
     startOpen: {
         type: Boolean,

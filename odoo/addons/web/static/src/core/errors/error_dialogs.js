@@ -7,7 +7,7 @@ import { registry } from "../registry";
 import { useService } from "@web/core/utils/hooks";
 import { capitalize } from "../utils/strings";
 
-import { Component, useState } from "@odoo/owl";
+const { Component, useState } = owl;
 
 export const odooExceptionTitleMap = new Map(
     Object.entries({
@@ -63,7 +63,7 @@ export class RPCErrorDialog extends ErrorDialog {
         this.inferTitle();
         this.traceback = this.props.traceback;
         if (this.props.data && this.props.data.debug) {
-            this.traceback = `${this.props.data.debug}\nThe above server error caused the following client error:\n${this.traceback}`;
+            this.traceback = `${this.props.data.debug}`;
         }
     }
     inferTitle() {

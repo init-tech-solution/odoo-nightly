@@ -5,7 +5,7 @@ import { useDebounced } from "@web/core/utils/timing";
 import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
 import { usePosition } from "@web/core/position_hook";
 
-import { Component, useExternalListener, useRef, useState } from "@odoo/owl";
+const { Component, useExternalListener, useRef, useState } = owl;
 
 export class AutoComplete extends Component {
     setup() {
@@ -69,12 +69,11 @@ export class AutoComplete extends Component {
     }
 
     loadSources(useInput) {
-        this.sources = [];
-        this.state.activeSourceOption = null;
+        const sources = [];
         const proms = [];
         for (const pSource of this.props.sources) {
             const source = this.makeSource(pSource);
-            this.sources.push(source);
+            sources.push(source);
 
             const options = this.loadOptions(
                 pSource.options,
@@ -92,7 +91,7 @@ export class AutoComplete extends Component {
                 source.options = options.map((option) => this.makeOption(option));
             }
         }
-
+        this.sources = sources;
         Promise.all(proms).then(() => {
             this.navigate(0);
         });
@@ -143,8 +142,6 @@ export class AutoComplete extends Component {
             ...params,
             input: this.inputRef.el,
         });
-        const customEvent = new CustomEvent("AutoComplete:OPTION_SELECTED", { bubbles: true });
-        this.root.el.dispatchEvent(customEvent);
         this.close();
     }
 
@@ -188,9 +185,7 @@ export class AutoComplete extends Component {
 
             if (source) {
                 const optionIndex = step < 0 ? source.options.length - 1 : 0;
-                if (optionIndex < source.options.length) {
-                    this.state.activeSourceOption = [sourceIndex, optionIndex];
-                }
+                this.state.activeSourceOption = [sourceIndex, optionIndex];
             }
         }
     }

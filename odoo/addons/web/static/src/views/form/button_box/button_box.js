@@ -4,7 +4,7 @@ import { useService } from "@web/core/utils/hooks";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 export class ButtonBox extends Component {
     setup() {
         const ui = useService("ui");

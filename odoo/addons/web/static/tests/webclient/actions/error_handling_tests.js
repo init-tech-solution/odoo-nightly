@@ -6,7 +6,7 @@ import { registerCleanup } from "../../helpers/cleanup";
 import { click, getFixture, nextTick, patchWithCleanup } from "../../helpers/utils";
 import { errorService } from "@web/core/errors/error_service";
 
-import { Component, xml } from "@odoo/owl";
+const { Component, xml } = owl;
 
 let serverData;
 let target;

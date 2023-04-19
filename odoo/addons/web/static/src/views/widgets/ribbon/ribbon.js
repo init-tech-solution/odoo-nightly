@@ -3,7 +3,7 @@
 import { registry } from "@web/core/registry";
 import { standardWidgetProps } from "../standard_widget_props";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 /**
  * This widget adds a ribbon on the top right side of the form

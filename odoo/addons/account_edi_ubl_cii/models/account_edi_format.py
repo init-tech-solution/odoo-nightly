@@ -3,7 +3,6 @@
 
 from odoo import models, fields, _
 from odoo.addons.account_edi_ubl_cii.models.account_edi_common import COUNTRY_EAS
-from odoo.exceptions import UserError
 
 import logging
 
@@ -16,7 +15,6 @@ FORMAT_CODES = [
     'nlcius_1',
     'efff_1',
     'ubl_2_1',
-    'ubl_a_nz',
 ]
 
 class AccountEdiFormat(models.Model):
@@ -65,8 +63,6 @@ class AccountEdiFormat(models.Model):
             return self.env['account.edi.xml.ubl_de']
         if self.code == 'efff_1' and company.country_id.code == 'BE':
             return self.env['account.edi.xml.ubl_efff']
-        if self.code == 'ubl_a_nz' and company.country_id.code in ['AU', 'NZ']:
-            return self.env['account.edi.xml.ubl_a_nz']
 
     def _is_ubl_cii_available(self, company):
         """
@@ -152,11 +148,10 @@ class AccountEdiFormat(models.Model):
         self.ensure_one()
         if self.code != 'facturx_1_0_05':
             return super()._prepare_invoice_report(pdf_writer, edi_document)
-        attachment = edi_document.sudo().attachment_id
-        if not attachment:
+        if not edi_document.attachment_id:
             return
 
-        pdf_writer.embed_odoo_attachment(attachment, subtype='text/xml')
+        pdf_writer.embed_odoo_attachment(edi_document.attachment_id, subtype='text/xml')
         if not pdf_writer.is_pdfa:
             try:
                 pdf_writer.convert_to_pdfa()
@@ -180,15 +175,9 @@ class AccountEdiFormat(models.Model):
         self.ensure_one()
 
         if not journal:
-            context_move_type = self._context.get("default_move_type", "entry")
-            if context_move_type in self.env['account.move'].get_sale_types():
-                journal_type = "sale"
-            elif context_move_type in self.env['account.move'].get_purchase_types():
-                journal_type = "purchase"
-            else:
-                raise UserError(_("The journal in which to upload should either be a sale or a purchase journal."))
+            # infer the journal
             journal = self.env['account.journal'].search([
-                ('company_id', '=', self.env.company.id), ('type', '=', journal_type)
+                ('company_id', '=', self.env.company.id), ('type', '=', 'purchase')
             ], limit=1)
 
         if not self._is_ubl_cii_available(journal.company_id) and self.code != 'facturx_1_0_05':

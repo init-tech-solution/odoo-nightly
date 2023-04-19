@@ -4,6 +4,8 @@ import { registry } from "@web/core/registry";
 import { ConnectionLostError, RPCError } from "../core/network/rpc_service";
 import { lostConnectionHandler, rpcErrorHandler } from "@web/core/errors/error_handlers";
 
+const { OwlError } = owl;
+
 const errorHandlerRegistry = registry.category("error_handlers");
 
 /**
@@ -17,11 +19,14 @@ const errorHandlerRegistry = registry.category("error_handlers");
 
 /**
  * @param {OdooEnv} env
- * @param {UncaughError} error
+ * @param {Error} error
  * @param {Error} originalError
  * @returns {boolean}
  */
 function legacyRPCErrorHandler(env, error, originalError) {
+    if (originalError instanceof OwlError) {
+        originalError = originalError.cause;
+    }
     if (
         originalError &&
         originalError.legacy &&
@@ -44,4 +49,4 @@ function legacyRPCErrorHandler(env, error, originalError) {
     }
     return false;
 }
-errorHandlerRegistry.add("legacyRPCErrorHandler", legacyRPCErrorHandler, { sequence: 97 });
+errorHandlerRegistry.add("legacyRPCErrorHandler", legacyRPCErrorHandler, { sequence: 2 });

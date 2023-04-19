@@ -60,11 +60,6 @@ QUnit.module("Mobile Fields", ({ beforeEach }) => {
             ".o_statusbar_status .dropdown-menu",
             "dropdown should be hidden"
         );
-        assert.strictEqual(
-            fixture.querySelector(".o_statusbar_status button.dropdown-toggle").textContent.trim(),
-            "aaa",
-            "statusbar button should display current field value"
-        );
 
         // open the dropdown
         await click(fixture, ".o_statusbar_status > button");
@@ -120,8 +115,8 @@ QUnit.module("Mobile Fields", ({ beforeEach }) => {
         assert.strictEqual(
             fixture.querySelector(".o_statusbar_status button.dropdown-toggle").textContent.trim(),
             "",
-            "statusbar button shouldn't have text for null field value"
-        );
+            "statusbar button has no text"
+        ); // Behavior as of saas-15, might be improved
 
         await click(fixture, ".o_statusbar_status button.dropdown-toggle");
         assert.containsOnce(

@@ -5,7 +5,7 @@ import { DebugMenu } from "@web/core/debug/debug_menu";
 import { useOwnDebugContext } from "@web/core/debug/debug_context";
 import { useLegacyRefs } from "@web/legacy/utils";
 
-import { useEffect } from "@odoo/owl";
+const { useEffect } = owl;
 
 const LEGACY_SIZE_CLASSES = {
     "extra-large": "xl",

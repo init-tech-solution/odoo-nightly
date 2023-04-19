@@ -4,7 +4,7 @@
 # Copyright (C) 2011 Smartmode LTD (<http://www.smartmode.co.uk>).
 
 {
-    'name': 'United Kingdom - Accounting',
+    'name': 'UK - Accounting',
     'version': '1.0',
     'category': 'Accounting/Localizations/Account Charts',
     'description': """

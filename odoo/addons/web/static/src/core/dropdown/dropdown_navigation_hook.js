@@ -5,7 +5,7 @@ import { browser } from "../browser/browser";
 import { localization } from "@web/core/l10n/localization";
 import { scrollTo } from "../utils/scrolling";
 
-import { useComponent, useEffect, useRef } from "@odoo/owl";
+const { useComponent, useEffect, useRef } = owl;
 
 /**
  * @typedef {{
@@ -114,7 +114,6 @@ export function useDropdownNavigation() {
                 }
                 // Make myself active
                 navTarget.classList.add(ACTIVE_MENU_ELEMENT_CLASS);
-                navTarget.focus();
             };
 
             /** @type {MenuElement} */
@@ -201,16 +200,7 @@ export function useDropdownNavigation() {
 
     // Set up keyboard navigation ----------------------------------------------
     const hotkeyService = useService("hotkey");
-    const closeAndRefocus = () => {
-        const toFocus =
-            comp.props.toggler === "parent"
-                ? comp.rootRef.el.parentElement
-                : comp.rootRef.el.querySelector(":scope > .dropdown-toggle");
-        comp.close().then(() => {
-            toFocus.focus();
-        });
-    };
-    const closeSubDropdown = comp.parentDropdown ? closeAndRefocus : () => {};
+    const closeSubDropdown = comp.parentDropdown ? comp.close : () => {};
     const openSubDropdown = () => {
         const menuElement = getActiveMenuElement();
         // Active menu element is a sub dropdown
@@ -239,7 +229,7 @@ export function useDropdownNavigation() {
         arrowleft: localization.direction === "rtl" ? openSubDropdown : closeSubDropdown,
         arrowright: localization.direction === "rtl" ? closeSubDropdown : openSubDropdown,
         enter: selectActiveMenuElement,
-        escape: closeAndRefocus,
+        escape: comp.close,
     };
     useEffect(
         (open) => {

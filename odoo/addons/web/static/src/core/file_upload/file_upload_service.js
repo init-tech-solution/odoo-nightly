@@ -3,7 +3,7 @@
 import { registry } from "../registry";
 import { sprintf } from "../utils/strings";
 
-import { EventBus, reactive } from "@odoo/owl";
+const { EventBus, reactive } = owl;
 
 export const fileUploadService = {
     dependencies: ["notification"],

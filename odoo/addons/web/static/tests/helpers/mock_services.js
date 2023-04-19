@@ -13,7 +13,7 @@ import { patchWithCleanup } from "./utils";
 import { uiService } from "@web/core/ui/ui_service";
 import { ConnectionAbortedError } from "../../src/core/network/rpc_service";
 
-import { Component, status } from "@odoo/owl";
+const { Component, status } = owl;
 
 // -----------------------------------------------------------------------------
 // Mock Services
@@ -69,11 +69,8 @@ export function makeFakeRPCService(mockRPC) {
                         .then(resolve)
                         .catch(reject);
                 });
-                rpcProm.abort = (rejectError = true) => {
-                    if (rejectError) {
-                        rejectFn(new ConnectionAbortedError("XmlHttpRequestError abort"));
-                    }
-                };
+                rpcProm.abort = () =>
+                    rejectFn(new ConnectionAbortedError("XmlHttpRequestError abort"));
                 return rpcProm;
             };
         },
@@ -236,14 +233,6 @@ export const fakeTitleService = {
     },
 };
 
-export const fakeColorSchemeService = {
-    start() {
-        return {
-            switchToColorScheme() {},
-        };
-    },
-};
-
 export function makeFakeNotificationService(mock) {
     return {
         start() {
@@ -317,7 +306,6 @@ export function makeFakeHTTPService(getResponse, postResponse) {
 }
 
 export const mocks = {
-    color_scheme: () => fakeColorSchemeService,
     company: () => fakeCompanyService,
     command: () => fakeCommandService,
     cookie: () => fakeCookieService,

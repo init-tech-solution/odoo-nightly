@@ -11,7 +11,7 @@ import { registerCleanup } from "../../helpers/cleanup";
 import { makeFakeLocalizationService } from "../../helpers/mock_services";
 import { templates } from "@web/core/assets";
 
-import { App, Component, useState, xml } from "@odoo/owl";
+const { App, Component, useState, xml } = owl;
 
 const mainComponents = registry.category("main_components");
 
@@ -102,15 +102,19 @@ QUnit.module("Tooltip service", (hooks) => {
 
     QUnit.test("basic rendering", async (assert) => {
         class MyComponent extends Component {}
-        MyComponent.template = xml`<button class="mybtn" data-tooltip="hello">Action</button>`;
+        MyComponent.template = xml`<button data-tooltip="hello">Action</button>`;
         let simulateTimeout;
         const mockSetTimeout = (fn) => {
             simulateTimeout = fn;
         };
-        await makeParent(MyComponent, { mockSetTimeout });
+        let simulateInterval;
+        const mockSetInterval = (fn) => {
+            simulateInterval = fn;
+        };
+        await makeParent(MyComponent, { mockSetTimeout, mockSetInterval });
 
         assert.containsNone(target, ".o_popover_container .o_popover");
-        target.querySelector(".mybtn").dispatchEvent(new Event("mouseenter"));
+        target.querySelector("button").dispatchEvent(new Event("mouseenter"));
         await nextTick();
         assert.containsNone(target, ".o_popover_container .o_popover");
 
@@ -122,7 +126,19 @@ QUnit.module("Tooltip service", (hooks) => {
             "hello"
         );
 
-        target.querySelector(".mybtn").dispatchEvent(new Event("mouseleave"));
+        const buttonRect = target.querySelector("button").getBoundingClientRect();
+        const x = buttonRect.right + 10;
+        const y = buttonRect.bottom + 10;
+        await triggerEvent(target, "button", "mousemove", {
+            pageX: x,
+            layerX: x,
+            screenX: x,
+            pageY: y,
+            layerY: y,
+            screenY: y,
+        });
+        assert.containsOnce(target, ".o_popover_container .o_popover");
+        simulateInterval();
         await nextTick();
         assert.containsNone(target, ".o_popover_container .o_popover");
     });
@@ -134,7 +150,11 @@ QUnit.module("Tooltip service", (hooks) => {
         const mockSetTimeout = (fn) => {
             simulateTimeout = fn;
         };
-        await makeParent(MyComponent, { mockSetTimeout });
+        let simulateInterval;
+        const mockSetInterval = (fn) => {
+            simulateInterval = fn;
+        };
+        await makeParent(MyComponent, { mockSetTimeout, mockSetInterval });
 
         assert.containsNone(target, ".o_popover_container .o_popover");
         const [outerSpan, innerSpan] = target.querySelectorAll("span.our_span");
@@ -151,11 +171,19 @@ QUnit.module("Tooltip service", (hooks) => {
             "hello"
         );
 
-        innerSpan.dispatchEvent(new Event("mouseleave"));
-        await nextTick();
+        const outerSpanRect = outerSpan.getBoundingClientRect();
+        const x = outerSpanRect.right + 10;
+        const y = outerSpanRect.bottom + 10;
+        await triggerEvent(target, 'span[data-tooltip="hello"]', "mousemove", {
+            pageX: x,
+            layerX: x,
+            screenX: x,
+            pageY: y,
+            layerY: y,
+            screenY: y,
+        });
         assert.containsOnce(target, ".o_popover_container .o_popover");
-
-        outerSpan.dispatchEvent(new Event("mouseleave"));
+        simulateInterval();
         await nextTick();
         assert.containsNone(target, ".o_popover_container .o_popover");
     });
@@ -343,27 +371,14 @@ QUnit.module("Tooltip service", (hooks) => {
         assert.containsNone(target, ".o_popover_container .o_popover");
     });
 
-    QUnit.test("tooltip with no delay (default delay)", async (assert) => {
-        assert.expect(1);
-        class MyComponent extends Component {}
-        MyComponent.template = xml`<button class="myBtn" data-tooltip="'helpful tooltip'">Action</button>`;
-        const mockSetTimeout = (fn, delay) => {
-            assert.strictEqual(delay, 400);
-        };
-        await makeParent(MyComponent, { mockSetTimeout });
-        target.querySelector("button.myBtn").dispatchEvent(new Event("mouseenter"));
-        await nextTick();
-    });
-
     QUnit.test("tooltip with a delay", async (assert) => {
-        assert.expect(1);
         class MyComponent extends Component {}
-        MyComponent.template = xml`<button class="myBtn" data-tooltip="'helpful tooltip'" data-tooltip-delay="2000">Action</button>`;
+        MyComponent.template = xml`<button data-tooltip="'helpful tooltip'" data-tooltip-delay="2000">Action</button>`;
         const mockSetTimeout = (fn, delay) => {
             assert.strictEqual(delay, 2000);
         };
         await makeParent(MyComponent, { mockSetTimeout });
-        target.querySelector("button.myBtn").dispatchEvent(new Event("mouseenter"));
+        target.querySelector("button").dispatchEvent(new Event("mouseenter"));
         await nextTick();
     });
 
@@ -435,30 +450,6 @@ QUnit.module("Tooltip service", (hooks) => {
         assert.containsOnce(target, ".o_popover_container .o_popover");
 
         await triggerEvent(target, "button[data-tooltip]", "touchstart");
-        assert.containsNone(target, ".o_popover_container .o_popover");
-    });
-
-    QUnit.test("tooltip does not crash with disappearing target", async (assert) => {
-        class MyComponent extends Component {}
-        MyComponent.template = xml`<button class="mybtn" data-tooltip="hello">Action</button>`;
-        let simulateTimeout;
-        const mockSetTimeout = async (fn) => {
-            simulateTimeout = fn;
-        };
-        await makeParent(MyComponent, { mockSetTimeout });
-
-        assert.containsNone(target, ".o_popover_container .o_popover");
-        target.querySelector(".mybtn").dispatchEvent(new Event("mouseenter"));
-        await nextTick();
-        assert.containsNone(target, ".o_popover_container .o_popover");
-
-        // the element disappeared from the DOM during the setTimeout
-        target.querySelector(".mybtn").remove();
-
-        simulateTimeout();
-        await nextTick();
-
-        // tooltip did not crash and is not shown
         assert.containsNone(target, ".o_popover_container .o_popover");
     });
 });

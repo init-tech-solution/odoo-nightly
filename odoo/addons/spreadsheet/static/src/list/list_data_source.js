@@ -35,22 +35,14 @@ export default class ListDataSource extends OdooViewsDataSource {
      */
     constructor(services, params) {
         super(services, params);
-        this.maxPosition = params.limit;
-        this.maxPositionFetched = 0;
+        this.limit = params.limit;
+        this._orm = services.orm;
         this.data = [];
-    }
-
-    /**
-     * Increase the max position of the list
-     * @param {number} position
-     */
-    increaseMaxPosition(position) {
-        this.maxPosition = Math.max(this.maxPosition, position);
     }
 
     async _load() {
         await super._load();
-        if (this.maxPosition === 0) {
+        if (this.limit === 0) {
             this.data = [];
             return;
         }
@@ -58,28 +50,13 @@ export default class ListDataSource extends OdooViewsDataSource {
         this.data = await this._orm.searchRead(
             this._metaData.resModel,
             domain,
-            this._getFieldsToFetch(),
+            this._metaData.columns.filter((f) => this.getField(f)),
             {
                 order: orderByToString(orderBy),
-                limit: this.maxPosition,
+                limit: this.limit,
                 context,
             }
         );
-        this.maxPositionFetched = this.maxPosition;
-    }
-
-    /**
-     * Get the fields to fetch from the server.
-     * Automatically add the currency field if the field is a monetary field.
-     */
-    _getFieldsToFetch() {
-        const fields = this._metaData.columns.filter((f) => this.getField(f));
-        for (const field of fields) {
-            if (this.getField(field).type === "monetary") {
-                fields.push(this.getField(field).currency_field);
-            }
-        }
-        return fields;
     }
 
     /**
@@ -109,8 +86,8 @@ export default class ListDataSource extends OdooViewsDataSource {
      */
     getListCellValue(position, fieldName) {
         this._assertDataIsLoaded();
-        if (position >= this.maxPositionFetched) {
-            this.increaseMaxPosition(position + 1);
+        if (position >= this.limit) {
+            this.limit = position + 1;
             // A reload is needed because the asked position is not already loaded.
             this._triggerFetching();
             throw new LoadingDataError();

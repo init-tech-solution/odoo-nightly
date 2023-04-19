@@ -45,10 +45,9 @@ export class BoardArchParser extends XMLParser {
                         isFolded,
                     };
                     if (node.hasAttribute("domain")) {
-                        action.domain = new Domain(_.unescape(node.getAttribute("domain"))).toList();
+                        action.domain = new Domain(node.getAttribute("domain")).toList();
                         // so it can be serialized when reexporting board xml
-                        // we unescape before re-escaping, to avoid double escaping due to subsequent layout change
-                        action.domain.toString = () => _.escape(_.unescape(node.getAttribute("domain")));
+                        action.domain.toString = () => node.getAttribute("domain");
                     }
                     archInfo.columns[currentIndex].actions.push(action);
                     break;

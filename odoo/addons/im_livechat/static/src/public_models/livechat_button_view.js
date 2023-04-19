@@ -4,7 +4,8 @@ import { registerModel } from '@mail/model/model_core';
 import { attr, one } from '@mail/model/model_field';
 import { clear } from '@mail/model/model_field_command';
 
-import {getCookie, deleteCookie} from 'web.utils.cookies';
+import {unaccent} from 'web.utils';
+import {getCookie, setCookie, deleteCookie} from 'web.utils.cookies';
 
 registerModel({
     name: 'LivechatButtonView',
@@ -130,7 +131,9 @@ registerModel({
         async openChatWindow() {
             this.messaging.publicLivechatGlobal.update({ chatWindow: {} });
             await this.messaging.publicLivechatGlobal.chatWindow.widget.appendTo($('body'));
-            this.messaging.publicLivechatGlobal.chatWindow.widget.adjustPosition();
+            const cssProps = { bottom: 0 };
+            cssProps[this.messaging.locale.textDirection === 'rtl' ? 'left' : 'right'] = 0;
+            this.messaging.publicLivechatGlobal.chatWindow.widget.$el.css(cssProps);
             this.widget.$el.hide();
             this._openChatWindowChatbot();
         },
@@ -138,12 +141,6 @@ registerModel({
          * @param {Object} message
          */
         async sendMessage(message) {
-            if (this.messaging.publicLivechatGlobal.publicLivechat.isTemporary) {
-                await this.messaging.publicLivechatGlobal.publicLivechat.createLivechatChannel();
-                if (!this.messaging.publicLivechatGlobal.publicLivechat.operator) {
-                    return;
-                }
-            }
             await this._sendMessageChatbotBefore();
             await this._sendMessage(message);
             this._sendMessageChatbotAfter();
@@ -199,10 +196,7 @@ registerModel({
                 this.messaging.publicLivechatGlobal.update({ messages: clear() });
                 def = this.messaging.rpc({
                     route: '/im_livechat/get_session',
-                    params: {
-                        ...this.widget._prepareGetSessionParameters(),
-                        persisted: false,
-                    },
+                    params: this.widget._prepareGetSessionParameters(),
                 }, { silent: true });
             }
             def.then((livechatData) => {
@@ -231,7 +225,15 @@ registerModel({
                             this.widget._sendWelcomeMessage();
                         }
                         this.messaging.publicLivechatGlobal.chatWindow.renderMessages();
-                        this.messaging.publicLivechatGlobal.publicLivechat.updateSessionCookie();
+                        this.messaging.publicLivechatGlobal.update({ notificationHandler: {} });
+
+                        setCookie('im_livechat_session', unaccent(JSON.stringify(this.messaging.publicLivechatGlobal.publicLivechat.widget.toData()), true), 60 * 60, 'required');
+                        setCookie('im_livechat_auto_popup', JSON.stringify(false), 60 * 60, 'optional');
+                        if (this.messaging.publicLivechatGlobal.publicLivechat.operator) {
+                            const operatorPidId = this.messaging.publicLivechatGlobal.publicLivechat.operator.id;
+                            const oneWeek = 7 * 24 * 60 * 60;
+                            setCookie('im_livechat_previous_operator_pid', operatorPidId, oneWeek, 'optional');
+                        }
                     });
                 }
             }).then(() => {

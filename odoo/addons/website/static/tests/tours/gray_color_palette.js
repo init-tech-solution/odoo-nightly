@@ -1,25 +1,6 @@
 /** @odoo-module **/
 import wTourUtils from 'website.tour_utils';
 
-function waitForCSSReload() {
-    return [
-        {
-            // This step is here because the option is applied but triggers a
-            // reloading of the CC value, so if the second value is sent too
-            // soon, it will be ignored. Clicking on the snippet tab and back
-            // will ensure that the mutex is cleared, and therefore we can apply
-            // the saturation step.
-            content: "Click on the blocks tab and back on theme to ensure the changes are applied",
-            trigger: '.o_we_add_snippet_btn',
-        },
-        {
-            content: "Go back to theme options",
-            trigger: '.o_we_customize_theme_btn',
-            extra_trigger: '#o_scroll',
-        },
-    ];
-}
-
 wTourUtils.registerWebsitePreviewTour('website_gray_color_palette', {
     test: true,
     url: '/',
@@ -44,11 +25,18 @@ wTourUtils.registerWebsitePreviewTour('website_gray_color_palette', {
         },
     },
     {
-        content: "Check the preview of the gray 900 after hue change",
-        trigger: '[variable="900"][style="background-color: rgb(36, 41, 33) !important;"]',
-        run: () => {}, // This is a check.
+        // This step is here because the option is applied but triggers a reloading of the
+        // css value, so if the second value is sent too soon, it will be ignored.
+        // Clicking on the snippet tab and back will ensure that the mutex is cleared,
+        // and therefore we can apply the saturation step.
+        content: "Click on the blacks tab and back on theme to ensure the changes are applied",
+        trigger: '.o_we_add_snippet_btn',
     },
-    ...waitForCSSReload(),
+    {
+        content: "Go back to theme options",
+        trigger: '.o_we_customize_theme_btn',
+        extra_trigger: '#o_scroll',
+    },
     {
         content: "Drag the saturation slider",
         trigger: '.o_we_user_value_widget[data-param="gray-extra-saturation"]',
@@ -59,15 +47,10 @@ wTourUtils.registerWebsitePreviewTour('website_gray_color_palette', {
             slider.dispatchEvent(new InputEvent('change', {bubbles: true}));
         }
     },
-    {
-        content: "Check the preview of the gray 900 after saturation change",
-        trigger: '[variable="900"][style="background-color: rgb(34, 47, 27) !important;"]',
-        run: () => {}, // This is a check.
-    },
-    ...waitForCSSReload(),
+    ...wTourUtils.clickOnSave(),
     {
         content: "Wait for the iframe to be loaded",
-        trigger: 'iframe body',
+        trigger: 'iframe body:not(.editor_enable)',
         run: () => {
             const iframeEl = document.querySelector('.o_website_preview .o_iframe');
             const styles = iframeEl.contentWindow.getComputedStyle(iframeEl.contentDocument.documentElement);

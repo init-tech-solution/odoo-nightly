@@ -86,11 +86,19 @@ const NavbarLinkPopoverWidget = weWidgets.LinkPopoverWidget.extend({
      * @param {Event} ev
      */
      _onEditMenuClick(ev) {
-        const contentMenu = this.target.closest('[data-content_menu_id]');
-        const rootID = contentMenu ? parseInt(contentMenu.dataset.content_menu_id, 10) : undefined;
         this.trigger_up('action_demand', {
             actionName: 'edit_menu',
-            params: [rootID],
+            params: [
+                () => {
+                    const prom = new Promise((resolve, reject) => {
+                        this.trigger_up('request_save', {
+                            onSuccess: resolve,
+                            onFailure: reject,
+                        });
+                    });
+                    return prom;
+                },
+            ],
         });
     },
 });

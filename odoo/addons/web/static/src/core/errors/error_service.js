@@ -42,11 +42,7 @@ export class UncaughtCorsError extends UncaughtError {
 
 export const errorService = {
     start(env) {
-        function handleError(uncaughtError, retry = true) {
-            let originalError = uncaughtError;
-            while (originalError instanceof Error && "cause" in originalError) {
-                originalError = originalError.cause;
-            }
+        function handleError(error, originalError, retry = true) {
             const services = env.services;
             if (!services.dialog || !services.notification || !services.rpc) {
                 // here, the environment is not ready to provide feedback to the user.
@@ -54,32 +50,36 @@ export const errorService = {
                 // recover.
                 if (retry) {
                     browser.setTimeout(() => {
-                        handleError(uncaughtError, false);
+                        handleError(error, originalError, false);
                     }, 1000);
                 }
                 return;
             }
             for (const handler of registry.category("error_handlers").getAll()) {
-                if (handler(env, uncaughtError, originalError)) {
+                if (handler(env, error, originalError)) {
                     break;
                 }
             }
-            if (uncaughtError.event && !uncaughtError.event.defaultPrevented) {
+            if (
+                originalError instanceof Error &&
+                originalError.errorEvent &&
+                !originalError.errorEvent.defaultPrevented
+            ) {
                 // Log the full traceback instead of letting the browser log the incomplete one
-                uncaughtError.event.preventDefault();
-                console.error(uncaughtError.traceback);
+                originalError.errorEvent.preventDefault();
+                console.error(error.traceback);
             }
         }
 
         browser.addEventListener("error", async (ev) => {
-            const { colno, error, filename, lineno, message } = ev;
+            const { colno, error: originalError, filename, lineno, message } = ev;
             const errorsToIgnore = [
                 // Ignore some unnecessary "ResizeObserver loop limit exceeded" error in Firefox.
                 "ResizeObserver loop completed with undelivered notifications.",
                 // ignore Chrome video internal error: https://crbug.com/809574
                 "ResizeObserver loop limit exceeded",
             ];
-            if (!error && errorsToIgnore.includes(message)) {
+            if (!originalError && errorsToIgnore.includes(message)) {
                 return;
             }
             let uncaughtError;
@@ -93,29 +93,25 @@ export const errorService = {
                 );
             } else {
                 uncaughtError = new UncaughtClientError();
-                uncaughtError.event = ev;
-                if (error instanceof Error) {
-                    error.errorEvent = ev;
+                if (originalError instanceof Error) {
+                    originalError.errorEvent = ev;
                     const annotated = env.debug && env.debug.includes("assets");
-                    await completeUncaughtError(uncaughtError, error, annotated);
+                    await completeUncaughtError(uncaughtError, originalError, annotated);
                 }
             }
-            uncaughtError.cause = error;
-            handleError(uncaughtError);
+            handleError(uncaughtError, originalError);
         });
 
         browser.addEventListener("unhandledrejection", async (ev) => {
-            const error = ev.reason;
+            const originalError = ev.reason;
             const uncaughtError = new UncaughtPromiseError();
             uncaughtError.unhandledRejectionEvent = ev;
-            uncaughtError.event = ev;
-            if (error instanceof Error) {
-                error.errorEvent = ev;
+            if (originalError instanceof Error) {
+                originalError.errorEvent = ev;
                 const annotated = env.debug && env.debug.includes("assets");
-                await completeUncaughtError(uncaughtError, error, annotated);
+                await completeUncaughtError(uncaughtError, originalError, annotated);
             }
-            uncaughtError.cause = error;
-            handleError(uncaughtError);
+            handleError(uncaughtError, originalError);
         });
     },
 };

@@ -16,5 +16,5 @@
             'test_sale_product_configurators/static/tests/tours/**/*',
         ],
     },
-    'license': 'LGPL-3',
+    'license': 'OEEL-1',
 }

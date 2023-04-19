@@ -3,12 +3,16 @@
 import json
 import logging
 
+import werkzeug
 import werkzeug.exceptions
+import werkzeug.utils
+import werkzeug.wrappers
+import werkzeug.wsgi
 from werkzeug.urls import url_parse
 
 from odoo import http
 from odoo.http import content_disposition, request
-from odoo.tools.misc import html_escape
+from odoo.tools import html_escape
 from odoo.tools.safe_eval import safe_eval, time
 
 
@@ -140,8 +144,7 @@ class ReportController(http.Controller):
                 'message': "Odoo Server Error",
                 'data': se
             }
-            res = request.make_response(html_escape(json.dumps(error)))
-            raise werkzeug.exceptions.InternalServerError(response=res) from e
+            return request.make_response(html_escape(json.dumps(error)))
 
     @http.route(['/report/check_wkhtmltopdf'], type='json', auth="user")
     def check_wkhtmltopdf(self):

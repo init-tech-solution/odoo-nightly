@@ -9,7 +9,7 @@ import { standardFieldProps } from "../standard_field_props";
 import { TranslationButton } from "../translation_button";
 import { useDynamicPlaceholder } from "../dynamicplaceholder_hook";
 
-import { Component, onMounted, onWillUnmount, useRef } from "@odoo/owl";
+const { Component, onMounted, onWillUnmount, useRef } = owl;
 
 export class CharField extends Component {
     setup() {

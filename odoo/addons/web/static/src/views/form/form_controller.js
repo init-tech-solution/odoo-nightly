@@ -18,7 +18,7 @@ import { useSetupView } from "@web/views/view_hook";
 import { hasTouch } from "@web/core/browser/feature_detection";
 import { FormStatusIndicator } from "./form_status_indicator/form_status_indicator";
 
-import { Component, onWillStart, useEffect, useRef, onRendered, useState, toRaw } from "@odoo/owl";
+const { Component, onWillStart, useEffect, useRef, onRendered, useState, toRaw } = owl;
 
 const viewRegistry = registry.category("views");
 
@@ -98,7 +98,6 @@ export class FormController extends Component {
         this.ui = useService("ui");
         this.state = useState({
             isDisabled: false,
-            fieldIsDirty: false,
         });
         useBus(this.ui.bus, "resize", this.render);
 
@@ -131,7 +130,6 @@ export class FormController extends Component {
                 rootType: "record",
                 mode,
                 beforeLoadProm,
-                component: this,
             },
             {
                 ignoreUseSampleModel: true,
@@ -154,14 +152,14 @@ export class FormController extends Component {
         // enable the archive feature in Actions menu only if the active field is in the view
         this.archiveEnabled =
             "active" in activeFields
-                ? !this.props.fields.active.readonly
+                ? !activeFields.active.readonly
                 : "x_active" in activeFields
-                ? !this.props.fields.x_active.readonly
+                ? !activeFields.x_active.readonly
                 : false;
 
         // select footers that are not in subviews and move them to another arch
         // that will be moved to the dialog's footer (if we are in a dialog)
-        const footers = [...this.archInfo.xmlDoc.querySelectorAll("footer:not(field footer)")];
+        const footers = [...this.archInfo.xmlDoc.querySelectorAll("footer:not(field footer")];
         if (footers.length) {
             this.footerArchInfo = Object.assign({}, this.archInfo);
             this.footerArchInfo.xmlDoc = createElement("t");
@@ -181,14 +179,20 @@ export class FormController extends Component {
         this.fieldsToTranslate = useState(fieldsToTranslate || {});
         const activeNotebookPages = { ...state.activeNotebookPages };
         this.onNotebookPageChange = (notebookId, page) => {
-            if (page) {
-                activeNotebookPages[notebookId] = page;
-            }
+            activeNotebookPages[notebookId] = page;
         };
 
         useSetupView({
             rootRef,
-            beforeLeave: () => this.beforeLeave(),
+            beforeLeave: () => {
+                if (this.model.root.isDirty) {
+                    return this.model.root.save({
+                        noReload: true,
+                        stayInEdition: true,
+                        useSaveErrorDialog: true,
+                    });
+                }
+            },
             beforeUnload: (ev) => this.beforeUnload(ev),
             getLocalState: () => {
                 // TODO: export the whole model?
@@ -266,16 +270,6 @@ export class FormController extends Component {
         }
         if (canProceed) {
             return this.model.load({ resId: resIds[offset] });
-        }
-    }
-
-    async beforeLeave() {
-        if (this.model.root.isDirty) {
-            return this.model.root.save({
-                noReload: true,
-                stayInEdition: true,
-                useSaveErrorDialog: true,
-            });
         }
     }
 
@@ -368,10 +362,6 @@ export class FormController extends Component {
         this.state.isDisabled = false;
     }
 
-    setFieldAsDirty(dirty) {
-        this.state.fieldIsDirty = dirty;
-    }
-
     async beforeExecuteActionButton(clickParams) {
         if (clickParams.special !== "cancel") {
             return this.model.root
@@ -440,7 +430,6 @@ export class FormController extends Component {
             this.fieldsToTranslate[record.resId] = this.fieldsToTranslate.false;
             delete this.fieldsToTranslate.false;
         }
-        return saved;
     }
 
     async discard() {
@@ -452,7 +441,7 @@ export class FormController extends Component {
         if (this.props.onDiscard) {
             this.props.onDiscard(this.model.root);
         }
-        if (this.model.root.isVirtual || this.env.inDialog) {
+        if (this.model.root.isVirtual) {
             this.env.config.historyBack();
         }
     }

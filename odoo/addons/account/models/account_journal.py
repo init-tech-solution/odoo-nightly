@@ -85,13 +85,14 @@ class AccountJournal(models.Model):
         comodel_name='account.account', check_company=True, copy=False, ondelete='restrict',
         string='Default Account',
         domain="[('deprecated', '=', False), ('company_id', '=', company_id),"
-               "('account_type', '=', default_account_type), ('account_type', 'not in', ('asset_receivable', 'liability_payable'))]")
+               "'|', ('account_type', '=', default_account_type), ('account_type', 'not in', ('asset_receivable', 'liability_payable'))]")
     suspense_account_id = fields.Many2one(
         comodel_name='account.account', check_company=True, ondelete='restrict', readonly=False, store=True,
         compute='_compute_suspense_account_id',
         help="Bank statements transactions will be posted on the suspense account until the final reconciliation "
              "allowing finding the right account.", string='Suspense Account',
         domain="[('deprecated', '=', False), ('company_id', '=', company_id), \
+                ('account_type', 'not in', ('asset_receivable', 'liability_payable')), \
                 ('account_type', '=', 'asset_current')]")
     restrict_mode_hash_table = fields.Boolean(string="Lock Posted Entries with Hash",
         help="If ticked, the accounting entry or invoice receives a hash as soon as it is posted and cannot be modified anymore.")
@@ -148,12 +149,14 @@ class AccountJournal(models.Model):
         help="Used to register a profit when the ending balance of a cash register differs from what the system computes",
         string='Profit Account',
         domain="[('deprecated', '=', False), ('company_id', '=', company_id), \
+                ('account_type', 'not in', ('asset_receivable', 'liability_payable')), \
                 ('account_type', 'in', ('income', 'income_other'))]")
     loss_account_id = fields.Many2one(
         comodel_name='account.account', check_company=True,
         help="Used to register a loss when the ending balance of a cash register differs from what the system computes",
         string='Loss Account',
         domain="[('deprecated', '=', False), ('company_id', '=', company_id), \
+                ('account_type', 'not in', ('asset_receivable', 'liability_payable')), \
                 ('account_type', '=', 'expense')]")
 
     # Bank journals fields
@@ -546,8 +549,8 @@ class AccountJournal(models.Model):
                     if bank_account.partner_id != company.partner_id:
                         raise UserError(_("The partners of the journal's company and the related bank account mismatch."))
             if 'restrict_mode_hash_table' in vals and not vals.get('restrict_mode_hash_table'):
-                journal_entry = self.env['account.move'].sudo().search([('journal_id', '=', self.id), ('state', '=', 'posted'), ('secure_sequence_number', '!=', 0)], limit=1)
-                if journal_entry:
+                journal_entry = self.env['account.move'].search([('journal_id', '=', self.id), ('state', '=', 'posted'), ('secure_sequence_number', '!=', 0)], limit=1)
+                if len(journal_entry) > 0:
                     field_string = self._fields['restrict_mode_hash_table'].get_description(self.env)['string']
                     raise UserError(_("You cannot modify the field %s of a journal that already has accounting entries.", field_string))
         result = super(AccountJournal, self).write(vals)
@@ -688,10 +691,10 @@ class AccountJournal(models.Model):
         # We simply call the setup bar function.
         return self.env['res.company'].setting_init_bank_account_action()
 
-    def _create_document_from_attachment(self, attachment_ids=None):
-        """
-        Create invoices from the attachments (for instance a Factur-X XML file)
-        """
+    def create_document_from_attachment(self, attachment_ids=None):
+        ''' Create the invoices from files.
+         :return: A action redirecting to account.move tree/form view.
+        '''
         attachments = self.env['ir.attachment'].browse(attachment_ids)
         if not attachments:
             raise UserError(_("No attachment was provided"))
@@ -699,6 +702,7 @@ class AccountJournal(models.Model):
         invoices = self.env['account.move']
         with invoices._disable_discount_precision():
             for attachment in attachments:
+                attachment.write({'res_model': 'mail.compose.message'})
                 decoders = self.env['account.move']._get_create_document_from_attachment_decoders()
                 invoice = False
                 for decoder in sorted(decoders, key=lambda d: d[0]):
@@ -708,18 +712,8 @@ class AccountJournal(models.Model):
                 if not invoice:
                     invoice = self.env['account.move'].create({})
                 invoice.with_context(no_new_invoice=True).message_post(attachment_ids=[attachment.id])
-                attachment.write({'res_model': 'account.move', 'res_id': invoice.id})
                 invoices += invoice
-        return invoices
 
-    def create_document_from_attachment(self, attachment_ids=None):
-        """
-        Create invoices from the attachments (for instance a Factur-X XML file)
-        and redirect the user to the newly created invoice(s).
-        :param attachment_ids: list of attachment ids
-        :return: action to open the created invoices
-        """
-        invoices = self._create_document_from_attachment(attachment_ids)
         action_vals = {
             'name': _('Generated Documents'),
             'domain': [('id', 'in', invoices.ids)],

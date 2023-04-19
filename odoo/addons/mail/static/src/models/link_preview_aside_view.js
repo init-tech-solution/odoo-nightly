@@ -12,9 +12,6 @@ registerModel({
          * Handles the click on delete link preview and open the confirm dialog.
          */
         onClick() {
-            if (!this.exists()) {
-                return;
-            }
             this.update({ linkPreviewDeleteConfirmDialog: {} });
         },
     },

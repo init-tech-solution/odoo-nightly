@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { formView } from "@web/views/form/form_view";
+import { formView } from "@web/views/form/form_view"
 import { Record, RelationalModel } from "@web/views/relational_model";
 
 /**
@@ -14,14 +14,12 @@ import { Record, RelationalModel } from "@web/views/relational_model";
 class EventBoothConfiguratorRelationalModel extends RelationalModel {}
 
 class EventBoothConfiguratorRecord extends Record {
+
     //--------------------------------------------------------------------------
     // Overrides
     //--------------------------------------------------------------------------
-    async save() {
-        const isSaved = await super.save(...arguments);
-        if (!isSaved) {
-            return false;
-        }
+    async save(options = {}) {
+        await super.save(options);
         this.model.action.doAction({type: 'ir.actions.act_window_close', infos: {
             eventBoothConfiguration: {
                 event_id: this.data.event_id,
@@ -35,7 +33,6 @@ class EventBoothConfiguratorRecord extends Record {
                 }
             }
         }});
-        return true;
     }
 }
 

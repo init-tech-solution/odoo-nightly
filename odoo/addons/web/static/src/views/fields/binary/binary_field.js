@@ -8,7 +8,7 @@ import { standardFieldProps } from "../standard_field_props";
 import { FileUploader } from "../file_handler";
 import { _lt } from "@web/core/l10n/translation";
 
-import { Component, onWillUpdateProps, useState } from "@odoo/owl";
+const { Component, onWillUpdateProps, useState } = owl;
 export class BinaryField extends Component {
     setup() {
         this.notification = useService("notification");

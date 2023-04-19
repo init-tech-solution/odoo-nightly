@@ -9,7 +9,6 @@ options.registry.TableOfContent = options.Class.extend({
      */
     start: function () {
         this.targetedElements = 'h1, h2';
-        this.oldHeadingsEls = [];
         const $headings = this.$target.find(this.targetedElements);
         if ($headings.length > 0) {
             this._generateNav();
@@ -19,24 +18,7 @@ options.registry.TableOfContent = options.Class.extend({
         const config = {attributes: false, childList: true, subtree: true, characterData: true};
         this.observer = new MutationObserver(() => this._generateNav());
         this.observer.observe(targetNode, config);
-        this.$target.on('content_changed', () => this._generateNav());
         return this._super(...arguments);
-    },
-    /**
-     * @override
-     */
-    destroy: function () {
-        // The observer needs to be disconnected first.
-        this.observer.disconnect();
-        this._super(...arguments);
-    },
-    /**
-     * @override
-     */
-    onRemove() {
-        this._disposeScrollSpy();
-        const exception = (tocEl) => tocEl === this.$target[0];
-        this._activateScrollSpy(exception);
     },
     /**
      * @override
@@ -50,55 +32,14 @@ options.registry.TableOfContent = options.Class.extend({
     //--------------------------------------------------------------------------
 
     /**
-     * @param  {Function} exception
-     */
-    _activateScrollSpy(exception) {
-        for (const tocEl of this.ownerDocument.querySelectorAll('#wrapwrap .s_table_of_content')) {
-            if (exception(tocEl)) {
-                continue;
-            }
-            this.trigger_up('widgets_start_request', {
-                $target: $(tocEl),
-                editableMode: true,
-            });
-        }
-    },
-    /**
-     * @private
-     */
-    _disposeScrollSpy() {
-        const scrollingEl = $().getScrollingElement(this.ownerDocument)[0];
-        const scrollSpyInstance =
-            this.$target[0].ownerDocument.defaultView.ScrollSpy.getInstance(scrollingEl);
-        if (scrollSpyInstance) {
-            scrollSpyInstance.dispose();
-        }
-    },
-    /**
      * @private
      */
     _generateNav: function (ev) {
         this.options.wysiwyg && this.options.wysiwyg.odooEditor.unbreakableStepUnactive();
-        const headingsEls = this.$target.find(this.targetedElements).toArray()
-            .filter(el => !el.closest('.o_snippet_desktop_invisible'));
-        const areHeadingsEqual = this.oldHeadingsEls.length === headingsEls.length
-            && this.oldHeadingsEls.every((el, i) => el.isEqualNode(headingsEls[i]));
-        if (areHeadingsEqual) {
-            // If the content of the navbar before the change of the DOM is
-            // equal to the content of the navbar after the change of the DOM,
-            // then there is no need to regenerate the navbar.
-            // This is especially important as to regenerate it, we also have
-            // to restart scrollSpy, which is done by restarting widgets. But
-            // restarting all widgets inside the ToC would certainly lead to
-            // DOM changes... which would then regenerate the navbar and lead to
-            // an infinite loop.
-            return;
-        }
-        // We dispose the scrollSpy because the navbar will be updated.
-        this._disposeScrollSpy();
         const $nav = this.$target.find('.s_table_of_content_navbar');
+        const $headings = this.$target.find(this.targetedElements);
         $nav.empty();
-        _.each(headingsEls, el => {
+        _.each($headings, el => {
             const $el = $(el);
             const id = 'table_of_content_heading_' + _.now() + '_' + _.uniqueId();
             $('<a>').attr('href', "#" + id)
@@ -108,9 +49,7 @@ options.registry.TableOfContent = options.Class.extend({
             $el.attr('id', id);
             $el[0].dataset.anchor = 'true';
         });
-        const exception = (tocEl) => !tocEl.querySelector('.s_table_of_content_navbar a');
-        this._activateScrollSpy(exception);
-        this.oldHeadingsEls = [...headingsEls.map(el => el.cloneNode(true))];
+        $nav.find('a:first').addClass('active');
     },
 });
 

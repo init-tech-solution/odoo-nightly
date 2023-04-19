@@ -133,7 +133,7 @@ class Groups(models.Model):
     users = fields.Many2many('res.users', 'res_groups_users_rel', 'gid', 'uid')
     model_access = fields.One2many('ir.model.access', 'group_id', string='Access Controls', copy=True)
     rule_groups = fields.Many2many('ir.rule', 'rule_group_rel',
-        'group_id', 'rule_group_id', string='Rules', domain="[('global', '=', False)]")
+        'group_id', 'rule_group_id', string='Rules', domain=[('global', '=', False)])
     menu_access = fields.Many2many('ir.ui.menu', 'ir_ui_menu_group_rel', 'gid', 'menu_id', string='Access Menu')
     view_access = fields.Many2many('ir.ui.view', 'ir_ui_view_group_rel', 'group_id', 'view_id', string='Views')
     comment = fields.Text(translate=True)
@@ -472,9 +472,9 @@ class Users(models.Model):
                         # skip SpecialValue (e.g. for missing record or access right)
                         pass
 
-    @api.constrains('company_id', 'company_ids', 'active')
+    @api.constrains('company_id', 'company_ids')
     def _check_company(self):
-        for user in self.filtered(lambda u: u.active):
+        for user in self:
             if user.company_id not in user.company_ids:
                 raise ValidationError(
                     _('Company %(company_name)s is not in the allowed companies for user %(user_name)s (%(company_allowed)s).',
@@ -488,14 +488,6 @@ class Users(models.Model):
         action_open_website = self.env.ref('base.action_open_website', raise_if_not_found=False)
         if action_open_website and any(user.action_id.id == action_open_website.id for user in self):
             raise ValidationError(_('The "App Switcher" action cannot be selected as home action.'))
-        # Prevent using reload actions.
-        # We use sudo() because  "Access rights" admins can't read action models
-        for user in self.sudo():
-            if user.action_id.type == "ir.actions.client":
-                action = self.env["ir.actions.client"].browse(user.action_id.id)  # magic
-                if action.tag == "reload":
-                    raise ValidationError(_('The "%s" action cannot be selected as home action.', action.name))
-
 
     @api.constrains('groups_id')
     def _check_one_user_type(self):
@@ -693,19 +685,12 @@ class Users(models.Model):
             for name, key in name_to_key.items()
         }
 
-        # ensure lang is set and available
-        # context > request > company > english > any lang installed
-        langs = [code for code, _ in self.env['res.lang'].get_installed()]
-        lang = context.get('lang')
-        if lang not in langs:
-            lang = request.best_lang if request else None
-            if lang not in langs:
-                lang = self.env.user.company_id.partner_id.lang
-                if lang not in langs:
-                    lang = DEFAULT_LANG
-                    if lang not in langs:
-                        lang = langs[0] if langs else DEFAULT_LANG
-        context['lang'] = lang
+        # ensure the language is set and is compatible with the web client
+        lang = context.get('lang') or (request and request.default_lang()) or DEFAULT_LANG
+        if lang == 'ar_AR':
+            context['lang'] = 'ar'
+        if lang in babel.core.LOCALE_ALIASES:
+            context['lang'] = babel.core.LOCALE_ALIASES[lang]
 
         # ensure uid is set
         context['uid'] = self.env.uid
@@ -716,7 +701,7 @@ class Users(models.Model):
     def _get_company_ids(self):
         # use search() instead of `self.company_ids` to avoid extra query for `active_test`
         domain = [('active', '=', True), ('user_ids', 'in', self.id)]
-        return self.env['res.company'].search(domain)._ids
+        return frozenset(self.env['res.company'].search(domain).ids)
 
     @api.model
     def action_get(self):
@@ -968,7 +953,7 @@ class Users(models.Model):
         assert group_ext_id and '.' in group_ext_id, "External ID '%s' must be fully qualified" % group_ext_id
         module, ext_id = group_ext_id.split('.')
         self._cr.execute("""SELECT 1 FROM res_groups_users_rel WHERE uid=%s AND gid IN
-                            (SELECT res_id FROM ir_model_data WHERE module=%s AND name=%s AND model='res.groups')""",
+                            (SELECT res_id FROM ir_model_data WHERE module=%s AND name=%s)""",
                          (self._uid, module, ext_id))
         return bool(self._cr.fetchone())
 
@@ -1131,7 +1116,7 @@ class Users(models.Model):
                     "and *might* be a proxy. If your Odoo is behind a proxy, "
                     "it may be mis-configured. Check that you are running "
                     "Odoo in Proxy Mode and that the proxy is properly configured, see "
-                    "https://www.odoo.com/documentation/16.0/administration/install/deploy.html#https for details.",
+                    "https://www.odoo.com/documentation/master/administration/install/deploy.html#https for details.",
                     source
                 )
             raise AccessDenied(_("Too many login failures, please wait a bit before trying again."))
@@ -1633,12 +1618,12 @@ class UsersView(models.Model):
             )
             if missing_implied_groups:
                 # prepare missing group message, by categories
-                missing_groups[group] = ", ".join(f'"{missing_group.category_id.name or _("Other")}: {missing_group.name}"'
+                missing_groups[group] = ", ".join(f'"{missing_group.category_id.name}: {missing_group.name}"'
                                                   for missing_group in missing_implied_groups)
         return "\n".join(
             _('Since %(user)s is a/an "%(category)s: %(group)s", they will at least obtain the right %(missing_group_message)s',
               user=user.name,
-              category=group.category_id.name or _('Other'),
+              category=group.category_id.name,
               group=group.name,
               missing_group_message=missing_group_message
              ) for group, missing_group_message in missing_groups.items()
@@ -1955,8 +1940,7 @@ class APIKeysUser(models.Model):
         }
 
 class APIKeys(models.Model):
-    _name = 'res.users.apikeys'
-    _description = 'Users API Keys'
+    _name = _description = 'res.users.apikeys'
     _auto = False # so we can have a secret column
 
     name = fields.Char("Description", required=True, readonly=True)
@@ -2044,8 +2028,7 @@ class APIKeys(models.Model):
         return k
 
 class APIKeyDescription(models.TransientModel):
-    _name = 'res.users.apikeys.description'
-    _description = 'API Key Description'
+    _name = _description = 'res.users.apikeys.description'
 
     name = fields.Char("Description", required=True)
 
@@ -2061,7 +2044,7 @@ class APIKeyDescription(models.TransientModel):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'res.users.apikeys.show',
-            'name': _('API Key Ready'),
+            'name': 'API Key Ready',
             'views': [(False, 'form')],
             'target': 'new',
             'context': {
@@ -2074,8 +2057,7 @@ class APIKeyDescription(models.TransientModel):
             raise AccessError(_("Only internal users can create API keys"))
 
 class APIKeyShow(models.AbstractModel):
-    _name = 'res.users.apikeys.show'
-    _description = 'Show API Key'
+    _name = _description = 'res.users.apikeys.show'
 
     # the field 'id' is necessary for the onchange that returns the value of 'key'
     id = fields.Id()

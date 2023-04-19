@@ -27,7 +27,7 @@ const { browser } = require("@web/core/browser/browser");
 const { assets } = require("@web/core/assets");
 const { processArch } = require("@web/legacy/legacy_load_views");
 
-const { Component } = require("@odoo/owl");
+const { Component } = owl;
 const DebouncedField = basic_fields.DebouncedField;
 
 

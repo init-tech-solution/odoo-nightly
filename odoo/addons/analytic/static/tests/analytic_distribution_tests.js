@@ -22,7 +22,6 @@ QUnit.module("Analytic", (hooks) => {
                         plan_id: { string: "Plan", type: "many2one", relation: "plan" },
                         root_plan_id: { string: "Root Plan", type: "many2one", relation: "plan" },
                         color: { string: "Color", type: "integer" },
-                        code: { string: "Ref", type: "string"},
                     },
                     records: [
                         {id: 1, color: 1, root_plan_id: 2, plan_id: 2, name: "RD" },
@@ -125,7 +124,7 @@ QUnit.module("Analytic", (hooks) => {
             },
         });
 
-        assert.containsOnce(target, ".o_field_analytic_distribution", "widget should be visible");
+        assert.containsOnce(target, ".analytic_distribution", "widget should be visible");
         assert.containsN(target, ".badge", 2, "should contain 2 tags");
         assert.strictEqual(target.querySelector(".badge .o_tag_badge_text").textContent, "RD 30.3%",
             "should have rendered 'RD 30.3%'"

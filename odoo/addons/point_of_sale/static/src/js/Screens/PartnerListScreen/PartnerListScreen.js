@@ -8,7 +8,7 @@ odoo.define('point_of_sale.PartnerListScreen', function(require) {
     const { debounce } = require("@web/core/utils/timing");
     const { useListener } = require("@web/core/utils/hooks");
 
-    const { onWillUnmount, useRef } = owl;
+    const { onWillUnmount, useRef, onMounted } = owl;
 
     /**
      * Render this screen using `showTempScreen` to select partner.
@@ -47,6 +47,11 @@ odoo.define('point_of_sale.PartnerListScreen', function(require) {
             };
             this.updatePartnerList = debounce(this.updatePartnerList, 70);
             onWillUnmount(this.updatePartnerList.cancel);
+            onMounted(() => {
+                if(!this.env.pos.config.limited_partners_loading)
+                    this.env.pos.isEveryPartnerLoaded = true;
+            });
+
         }
         // Lifecycle hooks
         back() {
@@ -103,15 +108,15 @@ odoo.define('point_of_sale.PartnerListScreen', function(require) {
 
         async _onPressEnterKey() {
             if (!this.state.query) return;
-            const result = await this.searchPartner();
-            this.showNotification(
-                _.str.sprintf(
-                    this.env._t('%s customer(s) found for "%s".'),
-                    result.length,
-                    this.state.query
-                ),
-                3000
-            );
+            if (!this.env.pos.isEveryPartnerLoaded) {
+                const result = await this.searchPartner();
+                this.showNotification(
+                    _.str.sprintf(this.env._t('%s customer(s) found for "%s".'),
+                        result.length,
+                        this.state.query)
+                    , 3000);
+                if(!result.length) this._clearSearch();
+            }
         }
         _clearSearch() {
             this.searchWordInputRef.el.value = '';
@@ -172,6 +177,7 @@ odoo.define('point_of_sale.PartnerListScreen', function(require) {
         async searchPartner() {
             let result = await this.getNewPartners();
             this.env.pos.addPartners(result);
+            if (!this.env.pos.isEveryPartnerLoaded) await this.env.pos.updateIsEveryPartnerLoaded();
             this.render(true);
             return result;
         }

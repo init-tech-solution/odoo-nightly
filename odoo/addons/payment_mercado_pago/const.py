@@ -1,22 +1,20 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 # Currency codes of the currencies supported by Mercado Pago in ISO 4217 format.
-# See https://api.mercadopago.com/currencies. Last seen online: 24 November 2022.
+# See https://api.mercadopago.com/currencies.
 SUPPORTED_CURRENCIES = [
     'ARS',  # Argentinian Peso
-    'BOB',  # Boliviano
     'BRL',  # Real
-    'CLF',  # Fomento Unity
     'CLP',  # Chilean Peso
+    'CLF',  # Fomento Unity
+    'MXN',  # Mexican Peso
     'COP',  # Colombian Peso
     'CRC',  # Colon
     'CUC',  # Cuban Convertible Peso
     'CUP',  # Cuban Peso
     'DOP',  # Dominican Peso
-    'EUR',  # Euro
     'GTQ',  # Guatemalan Quetzal
     'HNL',  # Lempira
-    'MXN',  # Mexican Peso
     'NIO',  # Cordoba
     'PAB',  # Balboa
     'PEN',  # Sol

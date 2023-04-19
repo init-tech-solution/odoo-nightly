@@ -7,7 +7,7 @@ import { url } from "@web/core/utils/urls";
 import { standardFieldProps } from "../standard_field_props";
 import { FileUploader } from "../file_handler";
 
-import { Component, onWillUpdateProps, useState } from "@odoo/owl";
+const { Component, onWillUpdateProps, useState } = owl;
 
 export class PdfViewerField extends Component {
     setup() {

@@ -2,55 +2,25 @@
 
 import { Dialog } from "../dialog/dialog";
 import { _lt } from "../l10n/translation";
-import { useChildRef } from "@web/core/utils/hooks";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class ConfirmationDialog extends Component {
     setup() {
         this.env.dialogData.close = () => this._cancel();
-        this.modalRef = useChildRef();
-        this.isConfirmedOrCancelled = false; // ensures we do not confirm and/or cancel twice
     }
-    async _cancel() {
-        if (this.isConfirmedOrCancelled) {
-            return;
-        }
-        this.isConfirmedOrCancelled = true;
-        this.disableButtons();
+    _cancel() {
         if (this.props.cancel) {
-            try {
-                await this.props.cancel();
-            } catch (e) {
-                this.props.close();
-                throw e;
-            }
+            this.props.cancel();
         }
         this.props.close();
     }
-    async _confirm() {
-        if (this.isConfirmedOrCancelled) {
-            return;
-        }
-        this.isConfirmedOrCancelled = true;
-        this.disableButtons();
+
+    _confirm() {
         if (this.props.confirm) {
-            try {
-                await this.props.confirm();
-            } catch (e) {
-                this.props.close();
-                throw e;
-            }
+            this.props.confirm();
         }
         this.props.close();
-    }
-    disableButtons() {
-        if (!this.modalRef.el) {
-            return; // safety belt for stable versions
-        }
-        for (const button of [...this.modalRef.el.querySelectorAll(".modal-footer button")]) {
-            button.disabled = true;
-        }
     }
 }
 ConfirmationDialog.template = "web.ConfirmationDialog";
@@ -84,6 +54,5 @@ AlertDialog.props = {
     contentClass: { type: String, optional: true },
 };
 AlertDialog.defaultProps = {
-    ...ConfirmationDialog.defaultProps,
     title: _lt("Alert"),
 };

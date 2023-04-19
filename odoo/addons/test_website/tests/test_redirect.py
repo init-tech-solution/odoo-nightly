@@ -7,7 +7,6 @@ from odoo.tools import mute_logger
 from odoo.addons.http_routing.models.ir_http import slug
 
 from unittest.mock import patch
-from urllib.parse import urlparse
 
 
 @tagged('-at_install', 'post_install')
@@ -82,7 +81,7 @@ class TestRedirect(HttpCase):
             # published
             resp = self.url_open(f"/test_website/200/name-{rec_published.id}", allow_redirects=False)
             self.assertEqual(resp.status_code, 308)
-            self.assertEqual(urlparse(resp.headers.get('Location', '')).path, f"/test_website/308/name-{rec_published.id}")
+            self.assertEqual(resp.headers.get('Location'), f"{self.base_url()}/test_website/308/name-{rec_published.id}")
 
             resp = self.url_open(f"/test_website/308/name-{rec_published.id}", allow_redirects=False)
             self.assertEqual(resp.status_code, 200)
@@ -93,7 +92,7 @@ class TestRedirect(HttpCase):
 
             resp = self.url_open(f"/test_website/308/xx-{rec_published.id}", allow_redirects=False)
             self.assertEqual(resp.status_code, 301)
-            self.assertEqual(urlparse(resp.headers.get('Location'), '').path, f"/test_website/308/name-{rec_published.id}")
+            self.assertEqual(resp.headers.get('Location'), f"{self.base_url()}/test_website/308/name-{rec_published.id}")
 
             resp = self.url_open(f"/test_website/200/xx-{rec_published.id}", allow_redirects=True)
             self.assertEqual(resp.status_code, 200)

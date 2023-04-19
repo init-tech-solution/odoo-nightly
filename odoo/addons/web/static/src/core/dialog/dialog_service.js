@@ -3,7 +3,7 @@
 import { registry } from "../registry";
 import { DialogContainer } from "./dialog_container";
 
-import { markRaw, reactive } from "@odoo/owl";
+const { markRaw, reactive } = owl;
 
 /**
  *  @typedef {{

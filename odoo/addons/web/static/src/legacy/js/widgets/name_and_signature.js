@@ -579,7 +579,6 @@ var NameAndSignature = Widget.extend({
      */
     _onClickSignDrawButton: function (ev) {
         ev.preventDefault();
-        this.$signatureField.jSignature('reset'); // clears signature when clicking on draw
         this.setMode('draw');
     },
     /**

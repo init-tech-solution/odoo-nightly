@@ -94,10 +94,7 @@ class AccountMoveLine(models.Model):
         return [
             ('so_line', 'in', sale_line_delivery.ids),
             ('project_id', '!=', False),
-            '|', '|',
-                ('timesheet_invoice_id', '=', False),
-                ('timesheet_invoice_id.state', '=', 'cancel'),
-                ('timesheet_invoice_id.payment_state', '=', 'reversed')
+            '|', ('timesheet_invoice_id', '=', False), ('timesheet_invoice_id.state', '=', 'cancel')
         ]
 
     def unlink(self):

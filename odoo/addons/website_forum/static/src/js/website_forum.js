@@ -129,11 +129,7 @@ publicWidget.registry.websiteForum = publicWidget.Widget.extend({
                 recordInfo: {
                     context: self._getContext(),
                     res_model: 'forum.post',
-                    // Id is retrieved from URL, which is either:
-                    // - /forum/name-1/post/something-5
-                    // - /forum/name-1/post/something-5/edit
-                    // TODO: Make this more robust.
-                    res_id: +window.location.pathname.split('-').slice(-1)[0].split('/')[0],
+                    res_id: +window.location.pathname.split('-').pop(),
                 },
                 resizable: true,
                 userGeneratedContent: true,

@@ -5,10 +5,8 @@ from odoo import http
 from odoo.http import request
 from odoo.tools import html2plaintext
 
-from .mail_plugin import MailPluginController
 
-
-class CrmClient(MailPluginController):
+class CrmClient(http.Controller):
 
     @http.route(route='/mail_client_extension/log_single_mail_content',
                 type="json", auth="outlook", cors="*")

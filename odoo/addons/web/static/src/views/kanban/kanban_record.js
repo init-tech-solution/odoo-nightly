@@ -20,7 +20,7 @@ import { KanbanCompiler } from "./kanban_compiler";
 import { KanbanCoverImageDialog } from "./kanban_cover_image_dialog";
 import { KanbanDropdownMenuWrapper } from "./kanban_dropdown_menu_wrapper";
 
-import { Component, onMounted, onWillUpdateProps, useRef } from "@odoo/owl";
+const { Component, onMounted, onWillUpdateProps, useRef } = owl;
 const { COLORS } = ColorList;
 
 const formatters = registry.category("formatters");
@@ -163,9 +163,9 @@ export class KanbanRecord extends Component {
 
         const { archInfo, Compiler, templates } = this.props;
         const { arch } = archInfo;
-        const ViewCompiler = Compiler || this.constructor.Compiler;
+        const ViewCompiler = Compiler || KanbanCompiler;
 
-        this.templates = useViewCompiler(ViewCompiler, arch, templates);
+        this.templates = useViewCompiler(ViewCompiler, arch, templates, KANBAN_BOX_ATTRIBUTE);
 
         if (KANBAN_TOOLTIP_ATTRIBUTE in templates) {
             useTooltip("root", {
@@ -378,6 +378,7 @@ export class KanbanRecord extends Component {
         return getImageSrcFromRecordInfo(this.props.record, ...arguments);
     }
 }
+
 KanbanRecord.components = {
     Dropdown,
     DropdownItem,
@@ -404,6 +405,5 @@ KanbanRecord.props = [
     "record",
     "templates",
 ];
-KanbanRecord.Compiler = KanbanCompiler;
 KanbanRecord.KANBAN_BOX_ATTRIBUTE = KANBAN_BOX_ATTRIBUTE;
 KanbanRecord.template = "web.KanbanRecord";

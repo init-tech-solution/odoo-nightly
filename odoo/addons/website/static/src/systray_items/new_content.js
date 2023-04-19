@@ -170,14 +170,10 @@ export class NewContentModal extends Component {
         if (redirectUrl) {
             window.location.replace(redirectUrl);
         } else {
-            const { id, metadata: { path, viewXmlid } } = this.website.currentWebsite;
-            const url = new URL(path);
-            if (viewXmlid === 'website.page_404') {
-                url.pathname = '';
-            }
+            const { id, metadata: { path } } = this.website.currentWebsite;
             // A reload is needed after installing a new module, to instantiate
             // a NewContentModal with patches from the installed module.
-            window.location.replace(`/web#action=website.website_preview&website_id=${id}&path=${encodeURIComponent(url.toString())}&display_new_content=true`);
+            window.location.replace(`/web#action=website.website_preview&website_id=${id}&path=${encodeURIComponent(path)}&display_new_content=true`);
         }
     }
 

@@ -3,7 +3,7 @@
 import { Domain } from "@web/core/domain";
 import { DomainSelectorRootNode } from "./domain_selector_root_node";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class DomainSelector extends Component {
     setup() {

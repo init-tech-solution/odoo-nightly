@@ -164,7 +164,6 @@ var GreetingMessage = AbstractAction.extend({
                 clearTimeout(this.return_to_main_menu);
             }
             core.bus.off('barcode_scanned', this, this._onBarcodeScanned);
-            const kioskDelay = this.kioskDelay;
             this._rpc({
                     model: 'hr.employee',
                     method: 'attendance_scan',
@@ -175,13 +174,13 @@ var GreetingMessage = AbstractAction.extend({
                         self.do_action(result.action);
                     } else if (result.warning) {
                         self.displayNotification({ title: result.warning, type: 'danger' });
-                        if (kioskDelay > 0) {
-                            setTimeout( function() { self.do_action(self.next_action, {clear_breadcrumbs: true}); }, kioskDelay);
+                        if (this.kioskDelay > 0) {
+                            setTimeout( function() { self.do_action(self.next_action, {clear_breadcrumbs: true}); }, this.kioskDelay);
                         }
                     }
                 }, function () {
-                    if (kioskDelay > 0) {
-                        setTimeout( function() { self.do_action(self.next_action, {clear_breadcrumbs: true}); }, kioskDelay);
+                    if (this.kioskDelay > 0) {
+                        setTimeout( function() { self.do_action(self.next_action, {clear_breadcrumbs: true}); }, this.kioskDelay);
                     }
                 });
         }

@@ -37,22 +37,6 @@ export class GroupListArchParser extends XMLParser {
 }
 
 export class ListArchParser extends XMLParser {
-    isColumnVisible(columnInvisibleModifier) {
-        return columnInvisibleModifier !== true;
-    }
-
-    parseFieldNode(node, models, modelName) {
-        return Field.parseFieldNode(node, models, modelName, "list");
-    }
-
-    parseWidgetNode(node, models, modelName) {
-        return Widget.parseWidgetNode(node);
-    }
-
-    processButton(node) {
-        return processButton(node);
-    }
-
     parse(arch, models, modelName) {
         const xmlDoc = this.parseXML(arch);
         const fieldNodes = {};
@@ -78,9 +62,9 @@ export class ListArchParser extends XMLParser {
             }
             if (node.tagName === "button") {
                 const modifiers = JSON.parse(node.getAttribute("modifiers") || "{}");
-                if (this.isColumnVisible(modifiers.column_invisible)) {
+                if (modifiers.column_invisible !== true) {
                     const button = {
-                        ...this.processButton(node),
+                        ...processButton(node),
                         defaultRank: "btn-link",
                         type: "button",
                         id: buttonId++,
@@ -98,7 +82,7 @@ export class ListArchParser extends XMLParser {
                     }
                 }
             } else if (node.tagName === "field") {
-                const fieldInfo = this.parseFieldNode(node, models, modelName);
+                const fieldInfo = Field.parseFieldNode(node, models, modelName, "list");
                 fieldNodes[fieldInfo.name] = fieldInfo;
                 node.setAttribute("field_id", fieldInfo.name);
                 if (fieldInfo.widget === "handle") {
@@ -109,7 +93,7 @@ export class ListArchParser extends XMLParser {
                     models[modelName],
                     fieldInfo.FieldComponent.fieldDependencies
                 );
-                if (this.isColumnVisible(fieldInfo.modifiers.column_invisible)) {
+                if (fieldInfo.modifiers.column_invisible !== true) {
                     const label = fieldInfo.FieldComponent.label;
                     columns.push({
                         ...fieldInfo,
@@ -123,7 +107,7 @@ export class ListArchParser extends XMLParser {
                 }
                 return false;
             } else if (node.tagName === "widget") {
-                const widgetInfo = this.parseWidgetNode(node);
+                const widgetInfo = Widget.parseWidgetNode(node);
                 addFieldDependencies(
                     activeFields,
                     models[modelName],
@@ -200,14 +184,11 @@ export class ListArchParser extends XMLParser {
                 const limitAttr = node.getAttribute("limit");
                 treeAttr.limit = limitAttr && parseInt(limitAttr, 10);
 
-                const countLimitAttr = node.getAttribute("count_limit");
-                treeAttr.countLimit = countLimitAttr && parseInt(countLimitAttr, 10);
-
                 const groupsLimitAttr = node.getAttribute("groups_limit");
                 treeAttr.groupsLimit = groupsLimitAttr && parseInt(groupsLimitAttr, 10);
 
                 treeAttr.noOpen = archParseBoolean(node.getAttribute("no_open") || "");
-                treeAttr.rawExpand = xmlDoc.getAttribute("expand");
+                treeAttr.expand = archParseBoolean(xmlDoc.getAttribute("expand") || "");
                 treeAttr.decorations = getDecoration(xmlDoc);
 
                 // custom open action when clicking on record row

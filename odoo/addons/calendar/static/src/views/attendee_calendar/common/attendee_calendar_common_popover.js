@@ -84,7 +84,7 @@ export class AttendeeCalendarCommonPopover extends CalendarCommonPopover {
                 return this.props.close();
             }
         }
-        await this.env.services.orm.call(
+        await this.orm.call(
             this.props.model.resModel,
             "change_attendee_status",
             [[record.id], selectedStatus, recurrenceUpdate],

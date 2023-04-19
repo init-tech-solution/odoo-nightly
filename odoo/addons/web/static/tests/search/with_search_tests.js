@@ -18,7 +18,7 @@ import {
     toggleMenuItem,
 } from "./helpers";
 
-import { Component, onWillUpdateProps, onWillStart, useState, xml } from "@odoo/owl";
+const { Component, onWillUpdateProps, onWillStart, useState, xml } = owl;
 
 const serviceRegistry = registry.category("services");
 
@@ -111,7 +111,7 @@ QUnit.module("Search", (hooks) => {
                     });
                     assert.deepEqual(domain, [[0, "=", 1]]);
                     assert.deepEqual(groupBy, ["birthday"]);
-                    assert.deepEqual(orderBy, [{name: "bar", asc: true}]);
+                    assert.deepEqual(orderBy, ["bar"]);
                 }
             }
             TestComponent.template = xml`<div class="o_test_component">Test component content</div>`;
@@ -123,7 +123,7 @@ QUnit.module("Search", (hooks) => {
                 domain: [[0, "=", 1]],
                 groupBy: ["birthday"],
                 context: { key: "val" },
-                orderBy: [{name: "bar", asc: true}],
+                orderBy: ["bar"],
             });
         }
     );

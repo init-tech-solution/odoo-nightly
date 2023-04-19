@@ -8,7 +8,7 @@ import { getColor } from "../colors";
 import { useCalendarPopover, useClickHandler, useFullCalendar } from "../hooks";
 import { CalendarCommonPopover } from "./calendar_common_popover";
 
-import { Component, useEffect } from "@odoo/owl";
+const { Component, useEffect } = owl;
 
 const SCALE_TO_FC_VIEW = {
     day: "timeGridDay",

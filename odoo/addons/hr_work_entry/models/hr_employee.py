@@ -6,16 +6,13 @@ from odoo import models, _
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    def action_open_work_entries(self, initial_date=False):
+    def action_open_work_entries(self):
         self.ensure_one()
-        ctx = {'default_employee_id': self.id}
-        if initial_date:
-            ctx['initial_date'] = initial_date
         return {
             'type': 'ir.actions.act_window',
             'name': _('%s work entries', self.display_name),
-            'view_mode': 'calendar,tree,form',
+            'view_mode': 'calendar,gantt,tree,form',
             'res_model': 'hr.work.entry',
-            'context': ctx,
+            'context': {'default_employee_id': self.id},
             'domain': [('employee_id', '=', self.id)],
         }

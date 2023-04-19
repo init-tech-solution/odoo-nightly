@@ -5,7 +5,7 @@ import { registry } from "@web/core/registry";
 import { fuzzyLookup } from "@web/core/utils/search";
 import { computeAppsAndMenuItems } from "@web/webclient/menus/menu_helpers";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 class AppIconCommand extends Component {}
 AppIconCommand.template = "web.AppIconCommand";

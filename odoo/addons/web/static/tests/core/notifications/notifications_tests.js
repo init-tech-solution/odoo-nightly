@@ -6,7 +6,7 @@ import { registry } from "@web/core/registry";
 import { makeTestEnv } from "../../helpers/mock_env";
 import { click, getFixture, mount, nextTick, patchWithCleanup } from "../../helpers/utils";
 
-import { markup } from "@odoo/owl";
+const { markup } = owl;
 
 let target;
 const serviceRegistry = registry.category("services");

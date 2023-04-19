@@ -41,42 +41,48 @@ class AccountMove(models.Model):
         return start, end
 
     def _build_spreadsheet_formula_domain(self, formula_params):
-        codes = [code for code in formula_params["codes"] if code]
-        if not codes:
+        code = formula_params["code"]
+        if not code:
             return expression.FALSE_DOMAIN
         company_id = formula_params["company_id"] or self.env.company.id
         company = self.env["res.company"].browse(company_id)
         start, end = self._get_date_period_boundaries(
             formula_params["date_range"], company
         )
-        balance_domain = [
-            ("account_id.include_initial_balance", "=", True),
-            ("date", "<=", end),
+
+        base_domain = [
+            ("account_id.code", "=like", f"{code}%"),
+            ("company_id", "=", company_id),
         ]
-        pnl_domain = [
-            ("account_id.include_initial_balance", "=", False),
-            ("date", ">=", start),
-            ("date", "<=", end),
-        ]
-        code_domain = expression.OR(
-            [
-                expression.AND([
-                    [("account_id.code", "=like", f"{code}%")],
-                    expression.OR([balance_domain, pnl_domain]),
-                ])
-                for code in codes
-            ]
-        )
-        domain = expression.AND([code_domain, [("company_id", "=", company_id)]])
         if formula_params["include_unposted"]:
-            domain = expression.AND(
-                [domain, [("move_id.state", "!=", "cancel")]]
+            base_domain = expression.AND(
+                [base_domain, [("move_id.state", "!=", "cancel")]]
             )
         else:
-            domain = expression.AND(
-                [domain, [("move_id.state", "=", "posted")]]
+            base_domain = expression.AND(
+                [base_domain, [("move_id.state", "=", "posted")]]
             )
-        return domain
+
+        balance_domain = expression.AND(
+            [
+                base_domain,
+                [
+                    ("account_id.include_initial_balance", "=", True),
+                    ("date", "<=", end),
+                ],
+            ]
+        )
+        result_domain = expression.AND(
+            [
+                base_domain,
+                [
+                    ("account_id.include_initial_balance", "=", False),
+                    ("date", ">=", start),
+                    ("date", "<=", end),
+                ],
+            ]
+        )
+        return expression.OR([balance_domain, result_domain])
 
     @api.model
     def spreadsheet_move_line_action(self, args):
@@ -88,7 +94,7 @@ class AccountMove(models.Model):
             "views": [[False, "list"]],
             "target": "current",
             "domain": domain,
-            "name": _("Journal items for account prefix %s", ", ".join(args["codes"])),
+            "name": _("Journal items for account prefix %s", args["code"]),
         }
 
     @api.model
@@ -101,7 +107,7 @@ class AccountMove(models.Model):
                 year: int
             },
             company_id: int
-            codes: str[]
+            code: str
             include_unposted: bool
         }]
         """
@@ -133,10 +139,7 @@ class AccountMove(models.Model):
     @api.model
     def get_account_group(self, account_types):
         data = self._read_group(
-            [
-                ("account_type", "in", account_types),
-                ("company_id", "=", self.env.company.id),
-            ],
+            [("account_type", "in", account_types), ("company_id", "=", self.env.company.id)],
             ["code:array_agg"],
             ["account_type"],
         )

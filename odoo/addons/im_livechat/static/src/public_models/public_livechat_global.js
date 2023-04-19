@@ -44,13 +44,12 @@ registerModel({
             await this._willStartChatbot();
         },
         async _willStart() {
-            const strCookie = getCookie('im_livechat_session');
-            const isSessionCookieAvailable = Boolean(strCookie);
-            const cookie = JSON.parse(strCookie || '{}');
-            if (cookie.id) {
+            const cookie = getCookie('im_livechat_session');
+            if (cookie) {
+                const channel = JSON.parse(cookie);
                 const history = await this.messaging.rpc({
                     route: '/mail/chat_history',
-                    params: { uuid: cookie.uuid, limit: 100 },
+                    params: { uuid: channel.uuid, limit: 100 },
                 });
                 history.reverse();
                 this.update({ history });
@@ -58,8 +57,6 @@ registerModel({
                     message.body = Markup(message.body);
                 }
                 this.update({ isAvailableForMe: true });
-            } else if (isSessionCookieAvailable) {
-                this.update({ history: [], isAvailableForMe: true });
             } else {
                 const result = await this.messaging.rpc({
                     route: '/im_livechat/init',
@@ -190,9 +187,6 @@ registerModel({
                 if (!this.publicLivechat) {
                     return clear();
                 }
-                if (!this.publicLivechat.operator) {
-                    return clear();
-                }
                 return this.lastMessage.authorId !== this.publicLivechat.operator.id;
             },
             default: false,
@@ -227,12 +221,6 @@ registerModel({
         messages: many('PublicLivechatMessage'),
         notificationHandler: one('PublicLivechatGlobalNotificationHandler', {
             inverse: 'publicLivechatGlobalOwner',
-            compute() {
-                if (this.publicLivechat && !this.publicLivechat.isTemporary) {
-                    return {};
-                }
-                return clear();
-            }
         }),
         options: attr({
             default: {},

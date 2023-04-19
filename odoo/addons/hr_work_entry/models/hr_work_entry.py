@@ -8,7 +8,6 @@ import itertools
 from psycopg2 import OperationalError
 
 from odoo import api, fields, models, tools, _
-from odoo.osv import expression
 
 
 class HrWorkEntry(models.Model):
@@ -183,22 +182,18 @@ class HrWorkEntry(models.Model):
         if 'active' in vals:
             vals['state'] = 'draft' if vals['active'] else 'cancelled'
 
-        employee_ids = self.employee_id.ids
-        if 'employee_id' in vals and vals['employee_id']:
-            employee_ids += vals['employee_id']
-        with self._error_checking(skip=skip_check, employee_ids=employee_ids):
+        with self._error_checking(skip=skip_check):
             return super(HrWorkEntry, self).write(vals)
 
     def unlink(self):
-        employee_ids = self.employee_id.ids
-        with self._error_checking(employee_ids=employee_ids):
+        with self._error_checking():
             return super().unlink()
 
     def _reset_conflicting_state(self):
         self.filtered(lambda w: w.state == 'conflict').write({'state': 'draft'})
 
     @contextmanager
-    def _error_checking(self, start=None, stop=None, skip=False, employee_ids=False):
+    def _error_checking(self, start=None, stop=None, skip=False):
         """
         Context manager used for conflicts checking.
         When exiting the context manager, conflicts are checked
@@ -214,14 +209,11 @@ class HrWorkEntry(models.Model):
             start = start or min(self.mapped('date_start'), default=False)
             stop = stop or max(self.mapped('date_stop'), default=False)
             if not skip and start and stop:
-                domain = [
+                work_entries = self.sudo().with_context(hr_work_entry_no_check=True).search([
                     ('date_start', '<', stop),
                     ('date_stop', '>', start),
                     ('state', 'not in', ('validated', 'cancelled')),
-                ]
-                if employee_ids:
-                    domain = expression.AND([domain, [('employee_id', 'in', list(employee_ids))]])
-                work_entries = self.sudo().with_context(hr_work_entry_no_check=True).search(domain)
+                ])
                 work_entries._reset_conflicting_state()
             yield
         except OperationalError:

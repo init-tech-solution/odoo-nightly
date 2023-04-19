@@ -2,7 +2,7 @@
 
 import { _lt } from "@web/core/l10n/translation";
 
-import { Component, useRef, useState, useExternalListener } from "@odoo/owl";
+const { Component, useRef, useState, useExternalListener } = owl;
 
 export class ColorList extends Component {
     setup() {

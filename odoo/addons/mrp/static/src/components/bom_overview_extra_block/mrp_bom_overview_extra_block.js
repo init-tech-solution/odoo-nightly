@@ -1,10 +1,9 @@
 /** @odoo-module **/
 
-import { useBus } from "@web/core/utils/hooks";
 import { BomOverviewLine } from "../bom_overview_line/mrp_bom_overview_line";
 import { BomOverviewSpecialLine } from "../bom_overview_special_line/mrp_bom_overview_special_line";
 
-const { Component, onWillUnmount, onWillUpdateProps, useState } = owl;
+const { Component, onMounted, onWillUnmount, onWillUpdateProps, useState } = owl;
 
 export class BomOverviewExtraBlock extends Component {
     setup() {
@@ -12,10 +11,13 @@ export class BomOverviewExtraBlock extends Component {
             isFolded: !this.props.unfoldAll,
         });
         if (this.props.unfoldAll) {
-            this.props.changeFolded({ ids: [this.identifier], isFolded: false });
+            this.props.bus.trigger("change-fold", { ids: [this.identifier], isFolded: false });
         }
 
-        useBus(this.env.overviewBus, "unfold-all", () => this._unfold());
+        onMounted(() => {
+            this.props.bus.addEventListener(`toggle-fold-${this.identifier}`, () => this._onToggleFolded());
+            this.props.bus.addEventListener("unfold-all", () => this._unfold());
+        });
 
         onWillUpdateProps(newProps => {
             if (this.props.data.product_id != newProps.data.product_id) {
@@ -24,22 +26,23 @@ export class BomOverviewExtraBlock extends Component {
         });
 
         onWillUnmount(() => {
-            // Need to notify main component that the block was folded so it doesn't appear on the PDF.
-            this.props.changeFolded({ ids: [this.identifier], isFolded: true });
+            this.props.bus.trigger("change-fold", { ids: [this.identifier], isFolded: true });
+            this.props.bus.removeEventListener(`toggle-fold-${this.identifier}`, () => this._onToggleFolded());
+            this.props.bus.removeEventListener("unfold-all", () => this._unfold());
         });
     }
 
     //---- Handlers ----
 
-    onToggleFolded() {
+    _onToggleFolded() {
         const newState = !this.state.isFolded;
         this.state.isFolded = newState;
-        this.props.changeFolded({ ids: [this.identifier], isFolded: newState });
+        this.props.bus.trigger("change-fold", { ids: [this.identifier], isFolded: newState });
     }
 
     _unfold() {
         this.state.isFolded = false;
-        this.props.changeFolded({ ids: [this.identifier], isFolded: false })
+        this.props.bus.trigger("change-fold", { ids: [this.identifier], isFolded: false });
     }
 
     //---- Getters ----
@@ -55,6 +58,7 @@ BomOverviewExtraBlock.components = {
     BomOverviewSpecialLine,
 };
 BomOverviewExtraBlock.props = {
+    bus: Object,
     unfoldAll: { type: Boolean, optional: true },
     type: {
         type: String,
@@ -62,7 +66,6 @@ BomOverviewExtraBlock.props = {
     },
     showOptions: Object,
     data: Object,
-    changeFolded: Function,
 };
 BomOverviewExtraBlock.defaultProps = {
     showAvailabilities: false,

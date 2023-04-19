@@ -2,7 +2,7 @@
 
 import { Dropdown } from "@web/core/dropdown/dropdown";
 
-import { Component, useState } from "@odoo/owl";
+const { Component, useState } = owl;
 
 export class CustomGroupByItem extends Component {
     setup() {

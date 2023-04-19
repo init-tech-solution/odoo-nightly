@@ -2,7 +2,7 @@
 
 import { scrollTo } from "@web/core/utils/scrolling";
 
-import { Component, onWillDestroy, onWillUpdateProps, useEffect, useRef, useState } from "@odoo/owl";
+const { Component, onWillDestroy, onWillUpdateProps, useEffect, useRef, useState } = owl;
 
 /**
  * A notebook component that will render only the current page and allow
@@ -106,10 +106,6 @@ export class Notebook extends Component {
                 this.state.currentPage = this.props.anchors[id].target;
             }
         }
-    }
-
-    activatePage(pageIndex) {
-        this.state.currentPage = pageIndex;
     }
 
     computePages(props) {

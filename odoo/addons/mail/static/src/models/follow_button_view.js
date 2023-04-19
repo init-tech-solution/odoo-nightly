@@ -10,21 +10,14 @@ registerModel({
         /**
          * @param {MouseEvent} ev
          */
-        async onClickFollow(ev) {
+        onClickFollow(ev) {
             if (!this.exists()) {
                 return;
             }
-            const chatter = this.chatterOwner;
-            if (!chatter) {
+            if (!this.chatterOwner || !this.chatterOwner.thread) {
                 return;
             }
-            if (chatter.isTemporary) {
-                const saved = await chatter.doSaveRecord();
-                if (!saved || chatter.thread.isCurrentPartnerFollowing) {
-                    return;
-                }
-            }
-            chatter.thread.follow();
+            this.chatterOwner.thread.follow();
         },
         /**
          * @param {MouseEvent} ev
@@ -73,7 +66,7 @@ registerModel({
                 if (!this.chatterOwner) {
                     return clear();
                 }
-                return !this.chatterOwner.isTemporary && !this.chatterOwner.hasReadAccess;
+                return !this.chatterOwner.hasReadAccess;
             },
         }),
         isUnfollowButtonHighlighted: attr({

@@ -7,7 +7,7 @@ import { escape } from "@web/core/utils/strings";
 
 import { FormViewDialog } from "./form_view_dialog";
 
-import { Component, markup, useState } from "@odoo/owl";
+const { Component, markup, useState } = owl;
 
 export class SelectCreateDialog extends Component {
     setup() {
@@ -30,7 +30,6 @@ export class SelectCreateDialog extends Component {
     get viewProps() {
         const type = this.env.isSmall ? "kanban" : "list";
         const props = {
-            loadIrFilters: true,
             ...this.baseViewProps,
             context: this.props.context,
             domain: this.props.domain,
@@ -50,17 +49,6 @@ export class SelectCreateDialog extends Component {
             await this.props.onSelected(resIds);
             this.props.close();
         }
-    }
-
-    async unselect() {
-        if (this.props.onUnselect) {
-            await this.props.onUnselect();
-            this.props.close();
-        }
-    }
-
-    get canUnselect() {
-        return this.env.isSmall && !!this.props.onUnselect;
     }
 
     async createEditRecord() {

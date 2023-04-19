@@ -8,8 +8,6 @@ import { TOP_LEVEL_STYLE } from "../../helpers/constants";
 import { _t } from "@web/core/l10n/translation";
 import { globalFiltersFieldMatchers } from "@spreadsheet/global_filters/plugins/global_filters_core_plugin";
 import { sprintf } from "@web/core/utils/strings";
-import { checkFilterFieldMatching } from "@spreadsheet/global_filters/helpers";
-import { getFirstListFunction, getNumberOfListFormulas } from "../list_helpers";
 
 /**
  * @typedef {Object} ListDefinition
@@ -27,7 +25,7 @@ import { getFirstListFunction, getNumberOfListFormulas } from "../list_helpers";
  * @property {ListDefinition} definition
  * @property {Object} fieldMatching
  *
- * @typedef {import("@spreadsheet/global_filters/plugins/global_filters_core_plugin").FieldMatching} FieldMatching
+ * @typedef {import("@spreadsheet/global_filters/plugins/global_filters_ui_plugin").FieldMatching} FieldMatching
  */
 
 const { CorePlugin } = spreadsheet;
@@ -70,11 +68,6 @@ export default class ListCorePlugin extends CorePlugin {
                     return CommandResult.EmptyName;
                 }
                 break;
-            case "ADD_GLOBAL_FILTER":
-            case "EDIT_GLOBAL_FILTER":
-                if (cmd.list) {
-                    return checkFilterFieldMatching(cmd.list);
-                }
         }
         return CommandResult.Success;
     }
@@ -100,7 +93,7 @@ export default class ListCorePlugin extends CorePlugin {
                 const anchor = [col, row];
                 this._addList(id, definition, dataSourceId, linesNumber);
                 this._insertList(sheetId, anchor, id, linesNumber, columns);
-                this.history.update("nextId", parseInt(id, 10) + 1)
+                this.nextId = parseInt(id, 10) + 1;
                 break;
             }
             case "RE_INSERT_ODOO_LIST": {
@@ -152,49 +145,7 @@ export default class ListCorePlugin extends CorePlugin {
             case "REMOVE_GLOBAL_FILTER":
                 this._onFilterDeletion(cmd.id);
                 break;
-
-            case "START":
-                for (const sheetId of this.getters.getSheetIds()) {
-                    const cells = this.getters.getCells(sheetId);
-                    for (const cell of Object.values(cells)) {
-                        if (cell.isFormula()) {
-                            this._addListPositionToDataSource(cell.content);
-                        }
-                    }
-                }
-                break;
-            case "UPDATE_CELL":
-                if (cmd.content) {
-                    this._addListPositionToDataSource(cmd.content);
-                }
-                break;
         }
-    }
-
-    /**
-     * Extract the position of the records asked in the given formula and
-     * increase the max position of the corresponding data source.
-     *
-     * @param {string} content Odoo list formula
-     */
-    _addListPositionToDataSource(content) {
-        if (getNumberOfListFormulas(content) !== 1) {
-            return;
-        }
-        const { functionName, args } = getFirstListFunction(content);
-        if (functionName !== "ODOO.LIST") {
-            return;
-        }
-        const [listId, positionArg] = args.map((arg) => arg.value.toString());
-        if (!(listId in this.lists)) {
-            return;
-        }
-        const position = parseInt(positionArg, 10);
-        if (isNaN(position)) {
-            return;
-        }
-        const dataSourceId = this.lists[listId].dataSourceId;
-        this.dataSources.get(dataSourceId).increaseMaxPosition(position);
     }
 
     // -------------------------------------------------------------------------
@@ -315,8 +266,9 @@ export default class ListCorePlugin extends CorePlugin {
     /**
      * Sets the current FieldMatching on a list
      *
+     * @param {string} listId
      * @param {string} filterId
-     * @param {Record<string,FieldMatching>} listFieldMatches
+     * @param {FieldMatching} fieldMatching
      */
     _setListFieldMatching(filterId, listFieldMatches) {
         const lists = { ...this.lists };

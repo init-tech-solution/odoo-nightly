@@ -115,11 +115,13 @@ class TestMenu(common.TransactionCase):
 
 
 class TestMenuHttp(common.HttpCase):
-    def setUp(self):
-        super().setUp()
-        self.page_url = '/page_specific'
-        self.page = self.env['website.page'].create({
-            'url': self.page_url,
+    def test_01_menu_page_m2o(self):
+        # 1. Create a page with a menu
+        Menu = self.env['website.menu']
+        Page = self.env['website.page']
+        page_url = '/page_specific'
+        page = Page.create({
+            'url': page_url,
             'website_id': 1,
             # ir.ui.view properties
             'name': 'Base',
@@ -127,14 +129,20 @@ class TestMenuHttp(common.HttpCase):
             'arch': '<div>Specific View</div>',
             'key': 'test.specific_view',
         })
-        self.menu = self.env['website.menu'].create({
+        menu = Menu.create({
             'name': 'Page Specific menu',
-            'page_id': self.page.id,
-            'url': self.page_url,
+            'page_id': page.id,
+            'url': page_url,
             'website_id': 1,
         })
 
-    def simulate_rpc_save_menu(self, data, to_delete=None):
+        # 2. Edit the menu URL to a 'reserved' URL
+        data = {
+            'id': menu.id,
+            'parent_id': menu.parent_id.id,
+            'name': menu.name,
+            'url': '/website/info',
+        }
         self.authenticate("admin", "admin")
         # `Menu.save(1, {'data': [data], 'to_delete': []})` would have been
         # ideal but need a full frontend context to generate routing maps,
@@ -143,45 +151,18 @@ class TestMenuHttp(common.HttpCase):
             "params": {
                 'model': 'website.menu',
                 'method': 'save',
-                'args': [1, {'data': [data], 'to_delete': to_delete or []}],
+                'args': [1, {'data': [data], 'to_delete': []}],
                 'kwargs': {},
             },
-        }), headers={"Content-Type": "application/json", "Referer": self.page.get_base_url() + self.page_url})
+        }), headers={"Content-Type": "application/json"})
 
-    def test_01_menu_page_m2o(self):
-        # Ensure that the M2o relation tested later in the test is properly set.
-        self.assertTrue(self.menu.page_id, "M2o should have been set by the setup")
-        # Edit the menu URL to a 'reserved' URL
-        data = {
-            'id': self.menu.id,
-            'parent_id': self.menu.parent_id.id,
-            'name': self.menu.name,
-            'url': '/website/info',
-        }
-        self.simulate_rpc_save_menu(data)
-
-        self.assertFalse(self.menu.page_id, "M2o should have been unset as this is a reserved URL.")
-        self.assertEqual(self.menu.url, '/website/info', "Menu URL should have changed.")
-        self.assertEqual(self.page.url, self.page_url, "Page's URL shouldn't have changed.")
+        self.assertFalse(menu.page_id, "M2o should have been unset as this is a reserved URL.")
+        self.assertEqual(menu.url, '/website/info', "Menu URL should have changed.")
+        self.assertEqual(page.url, page_url, "Page's URL shouldn't have changed.")
 
         # 3. Edit the menu URL back to the page URL
-        data['url'] = self.page_url
-        self.env['website.menu'].save(1, {'data': [data], 'to_delete': []})
-        self.assertEqual(self.menu.page_id, self.page,
+        data['url'] = page_url
+        Menu.save(1, {'data': [data], 'to_delete': []})
+        self.assertEqual(menu.page_id, page,
                          "M2o should have been set back, as there was a page found with the new URL set on the menu.")
-        self.assertTrue(self.page.url == self.menu.url == self.page_url)
-
-    def test_02_menu_anchors(self):
-        # Ensure that the M2o relation tested later in the test is properly set.
-        self.assertTrue(self.menu.page_id, "M2o should have been set by the setup")
-        # Edit the menu URL to an anchor
-        data = {
-            'id': self.menu.id,
-            'parent_id': self.menu.parent_id.id,
-            'name': self.menu.name,
-            'url': '#anchor',
-        }
-        self.simulate_rpc_save_menu(data)
-        self.assertFalse(self.menu.page_id, "M2o should have been unset as this is an anchor URL.")
-        self.assertEqual(self.menu.url, self.page_url + '#anchor', "Page URL should have been properly prefixed with the referer url")
-        self.assertEqual(self.page.url, self.page_url, "Page URL should not have changed")
+        self.assertTrue(page.url == menu.url == page_url)

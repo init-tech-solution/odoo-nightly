@@ -21,10 +21,8 @@
     const { isEnterprise } = odoo.info;
     const { onWillStart } = owl;
     let appsMenusOnly = false;
-    const isStudioInstalled = "@web_studio/studio_service" in odoo.__DEBUG__.services;
     let actionCount = 0;
     let viewUpdateCount = 0;
-    let studioCount = 0;
 
     let appIndex;
     let menuIndex;
@@ -250,26 +248,6 @@
     }
 
     /**
-     * Test Studio
-     * Click on the Studio systray item to enter Studio, and simply leave it once loaded.
-     */
-    async function testStudio() {
-        if (!isStudioInstalled) {
-            return;
-        }
-        const studioIcon = document.querySelector(".o_web_studio_navbar_item:not(.o_disabled) a i");
-        if (!studioIcon) {
-            return;
-        }
-        // Open the filter menu dropdown
-        await triggerClick(studioIcon, "entering studio");
-        await waitForCondition(() => document.querySelector(".o_in_studio"));
-        await triggerClick(document.querySelector(".o_web_studio_leave"), "leaving studio");
-        await waitForCondition(() => document.querySelector(".o_main_navbar:not(.o_studio_navbar) .o_menu_toggle"));
-        studioCount++;
-    }
-
-    /**
      * Test filters
      * Click on each filter in the control pannel
      */
@@ -351,7 +329,6 @@
             await waitForCondition(() => {
                 return document.querySelector(`.o_switch_view.o_${viewType}.active`) !== null;
             });
-            await testStudio();
             await testFilters();
         }
     }
@@ -390,11 +367,6 @@
             }
             return startActionCount !== actionCount;
         })
-            .then(() => {
-                if (!isModal) {
-                    return testStudio();
-                }
-            })
             .then(() => {
                 if (!isModal) {
                     return testFilters();
@@ -472,15 +444,12 @@
                 }
             }
 
-            console.log(`Test took ${(performance.now() - startTime) / 1000} seconds`);
-            console.log(`Successfully tested ${testedApps.length} apps`);
-            console.log(`Successfully tested ${testedMenus.length - testedApps.length} menus`);
-            if (isStudioInstalled) {
-                console.log(`Successfully tested ${studioCount} views in Studio`);
-            }
+            console.log("Test took", (performance.now() - startTime) / 1000, "seconds");
+            console.log("Successfully tested", testedApps.length, " apps");
+            console.log("Successfully tested", testedMenus.length - testedApps.length, "menus");
             console.log("test successful");
         } catch (err) {
-            console.log(`Test took ${(performance.now() - startTime) / 1000} seconds`);
+            console.log("Test took", (performance.now() - startTime) / 1000, "seconds");
             console.error(err || "test failed");
         }
         console.log(testedApps);

@@ -9,7 +9,7 @@ import {
 } from "@web/core/l10n/dates";
 import { registry } from "@web/core/registry";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 const dsf = registry.category("domain_selector/fields");
 const dso = registry.category("domain_selector/operator");

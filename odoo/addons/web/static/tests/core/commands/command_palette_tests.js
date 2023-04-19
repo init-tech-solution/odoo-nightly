@@ -19,7 +19,7 @@ import {
 } from "../../helpers/utils";
 import { backspaceSearchBar, editSearchBar } from "./command_service_tests";
 
-import { Component, xml } from "@odoo/owl";
+const { Component, xml } = owl;
 
 let env;
 let target;

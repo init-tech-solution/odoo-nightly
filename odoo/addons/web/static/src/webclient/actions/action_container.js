@@ -2,7 +2,7 @@
 
 import { ActionDialog } from "./action_dialog";
 
-import { Component, xml, onWillDestroy } from "@odoo/owl";
+const { Component, xml, onWillDestroy } = owl;
 
 // -----------------------------------------------------------------------------
 // ActionContainer (Component)

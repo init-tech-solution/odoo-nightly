@@ -16,7 +16,7 @@ import { FormCompiler } from "./form_compiler";
 import { FormLabel } from "./form_label";
 import { StatusBarButtons } from "./status_bar_buttons/status_bar_buttons";
 
-import { Component, onMounted, onWillUnmount, useEffect, useSubEnv, useRef, useState, xml } from "@odoo/owl";
+const { Component, onMounted, onWillUnmount, useEffect, useSubEnv, useRef, useState, xml } = owl;
 
 export class FormRenderer extends Component {
     setup() {
@@ -39,8 +39,8 @@ export class FormRenderer extends Component {
         onMounted(() => browser.addEventListener("resize", this.onResize));
         onWillUnmount(() => browser.removeEventListener("resize", this.onResize));
 
-        const { autofocusFieldId } = archInfo;
-        if (this.shouldAutoFocus) {
+        const { autofocusFieldId, disableAutofocus } = archInfo;
+        if (!disableAutofocus) {
             const rootRef = useRef("compiled_view_root");
             useEffect(
                 (isVirtual, rootEl) => {
@@ -49,10 +49,9 @@ export class FormRenderer extends Component {
                     }
                     let elementToFocus;
                     if (isVirtual) {
-                        const focusableSelectors = ['input[type="text"]', 'textarea', '[contenteditable]'];
                         elementToFocus =
                             (autofocusFieldId && rootEl.querySelector(`#${autofocusFieldId}`)) ||
-                            rootEl.querySelector(focusableSelectors.map(sel => `.o_content .o_field_widget ${sel}`).join(', '));
+                            rootEl.querySelector(`.o_content .o_field_widget input[type="text"]`);
                     }
                     if (elementToFocus) {
                         elementToFocus.focus();
@@ -61,10 +60,6 @@ export class FormRenderer extends Component {
                 () => [this.props.record.isVirtual, rootRef.el]
             );
         }
-    }
-
-    get shouldAutoFocus() {
-        return !this.props.archInfo.disableAutofocus;
     }
 
     evalDomainFromRecord(record, expr) {

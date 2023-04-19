@@ -275,7 +275,9 @@
             ('project_id.privacy_visibility', '!=', 'followers'),
             '|',
                 ('project_id.message_partner_ids', 'in', [user.partner_id.id]),
-                ('user_ids', 'in', user.id),
+                '|',
+                    ('task_id.message_partner_ids', 'in', [user.partner_id.id]),
+                    ('user_ids', 'in', user.id),
         ]</field>
         <field name="groups" eval="[(4,ref('project.group_project_user'))]"/>
     </record>

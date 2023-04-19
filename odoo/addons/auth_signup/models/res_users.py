@@ -187,7 +187,6 @@ class ResUsers(models.Model):
         email_values = {
             'email_cc': False,
             'auto_delete': True,
-            'message_type': 'user_notification',
             'recipient_ids': [],
             'partner_ids': [],
             'scheduled_date': False,

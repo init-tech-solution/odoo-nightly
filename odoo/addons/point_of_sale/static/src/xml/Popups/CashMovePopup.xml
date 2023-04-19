@@ -14,12 +14,7 @@
                                 </span>
                                 <div class="input-field">
                                     <input type="text" name="amount" t-model="state.inputAmount" t-ref="input-amount-ref" t-on-keypress="_onAmountKeypress"/>
-                                    <t t-if="env.pos.currency.symbol.length > 1">
-                                        <span class="left-currency" t-esc="env.pos.currency.symbol" />
-                                    </t>
-                                    <t t-else="">
-                                        <span class="currency" t-esc="env.pos.currency.symbol" />
-                                    </t>
+                                    <span class="currency" t-esc="env.pos.currency.symbol" />
                                 </div>
                             </div>
                             <textarea name="reason" t-model="state.inputReason" placeholder="Reason"></textarea>

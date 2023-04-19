@@ -3,10 +3,9 @@
 import { useService } from '@web/core/utils/hooks';
 import { ConfirmationDialog } from '@web/core/confirmation_dialog/confirmation_dialog';
 import { Dialog } from '@web/core/dialog/dialog';
-import { KeepLast } from "@web/core/utils/concurrency";
 import { SearchMedia } from './search_media';
 
-import { Component, xml, useState, useRef, onWillStart } from "@odoo/owl";
+const { Component, xml, useState, useRef, onWillStart } = owl;
 
 export const IMAGE_MIMETYPES = ['image/jpg', 'image/jpeg', 'image/jpe', 'image/png', 'image/svg+xml', 'image/gif'];
 export const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.jpe', '.png', '.svg', '.gif'];
@@ -137,7 +136,6 @@ export class FileSelector extends Component {
     setup() {
         this.orm = useService('orm');
         this.uploadService = useService('upload');
-        this.keepLast = new KeepLast();
 
         this.state = useState({
             attachments: [],
@@ -218,21 +216,13 @@ export class FileSelector extends Component {
     }
 
     async loadMore() {
-        return this.keepLast.add(this.fetchAttachments(this.NUMBER_OF_ATTACHMENTS_TO_DISPLAY, this.state.attachments.length)).then((newAttachments) => {
-            // This is never reached if another search or loadMore occurred.
-            this.state.attachments.push(...newAttachments);
-        });
+        const newAttachments = await this.fetchAttachments(this.NUMBER_OF_ATTACHMENTS_TO_DISPLAY, this.state.attachments.length);
+        this.state.attachments.push(...newAttachments);
     }
 
     async search(needle) {
-        // Prepare in case loadMore results are obtained instead.
-        this.state.attachments = [];
-        // Fetch attachments relies on the state's needle.
         this.state.needle = needle;
-        return this.keepLast.add(this.fetchAttachments(this.NUMBER_OF_ATTACHMENTS_TO_DISPLAY, 0)).then((attachments) => {
-            // This is never reached if a new search occurred.
-            this.state.attachments = attachments;
-        });
+        this.state.attachments = await this.fetchAttachments(this.NUMBER_OF_ATTACHMENTS_TO_DISPLAY, 0);
     }
 
     async uploadFiles(files) {

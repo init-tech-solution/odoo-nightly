@@ -55,7 +55,6 @@ up a management by affair.
         ],
         'project.webclient': [
             'hr_timesheet/static/src/components/**/*',
-            'hr_timesheet/static/src/scss/timesheets_task_form.scss'
         ],
     },
     'license': 'LGPL-3',

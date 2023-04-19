@@ -4,7 +4,7 @@
 import hashlib
 from collections import OrderedDict
 from werkzeug.urls import url_quote
-from markupsafe import Markup
+from markupsafe import Markup as M
 
 from odoo import api, models
 from odoo.tools import pycompat
@@ -108,7 +108,7 @@ class Image(models.AbstractModel):
                 img.append('"')
         img.append('/>')
 
-        return Markup(''.join(img))
+        return M(''.join(img))
 
 class ImageUrlConverter(models.AbstractModel):
     _description = 'Qweb Field Image'

@@ -25,7 +25,6 @@ coreTypes.add("UPDATE_ODOO_PIVOT_DOMAIN");
 
 invalidateEvaluationCommands.add("UPDATE_ODOO_PIVOT_DOMAIN");
 invalidateEvaluationCommands.add("REMOVE_PIVOT");
-invalidateEvaluationCommands.add("INSERT_PIVOT");
 
 cellMenuRegistry.add("pivot_see_records", {
     name: _lt("See records"),

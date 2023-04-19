@@ -37,9 +37,7 @@ class WebsiteEventBoothController(WebsiteEventController):
             registration_values=booth_values,
         )
         if order_sudo.amount_total:
-            if request.env.user._is_public():
-                order_sudo.partner_id = booth_values['partner_id']
-            return json.dumps({'redirect': '/shop/cart'})
+            return json.dumps({'redirect': '/shop/checkout'})
         elif order_sudo:
             order_sudo.action_confirm()
             request.website.sale_reset()

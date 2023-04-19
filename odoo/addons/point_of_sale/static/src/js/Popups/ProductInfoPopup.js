@@ -5,9 +5,11 @@ odoo.define('point_of_sale.ProductInfoPopup', function(require) {
     const Registries = require('point_of_sale.Registries');
 
     /**
+     * This popup needs to be self-dependent because it needs to be called from different place. In order to avoid code
      * Props:
      *  {
-     *      info: {object of data}
+     *      product: a product object
+     *      quantity: number
      *  }
      */
     class ProductInfoPopup extends AbstractAwaitablePopup {

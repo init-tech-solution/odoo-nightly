@@ -11,12 +11,13 @@ import {
     moveNodes,
     preserveCursor,
     isFontAwesome,
+    isMediaElement,
     getDeepRange,
     isUnbreakable,
     isEditorTab,
     isZWS,
     getUrlsInfosInString,
-    isVoidElement,
+    URL_REGEX,
 } from './utils.js';
 
 const NOT_A_NUMBER = /[^\d]/g;
@@ -81,35 +82,19 @@ export function areSimilarElements(node, node2) {
 class Sanitize {
     constructor(root) {
         this.root = root;
-        this.parse(root);
-        // Handle unique ids.
         const rootClosestBlock = closestBlock(root);
         if (rootClosestBlock) {
+            // Remove unique ids from checklists and stars. These will be
+            // renewed afterwards.
+            for (const node of rootClosestBlock.querySelectorAll('[id^=checkId-]')) {
+                node.removeAttribute('id');
+            }
+        }
+        this.parse(root);
+        if (rootClosestBlock) {
             // Ensure unique ids on checklists and stars.
-            const elementsWithId = [...rootClosestBlock.querySelectorAll('[id^=checkId-]')];
-            const maxId = Math.max(...[0, ...elementsWithId.map(node => +node.getAttribute('id').substring(8))]);
-            let nextId = maxId + 1;
-            const ids = [];
-            for (const node of rootClosestBlock.querySelectorAll('[id^=checkId-], .o_checklist > li, .o_stars')) {
-                if (
-                    !node.classList.contains('o_stars') && (
-                        !node.parentElement.classList.contains('o_checklist') ||
-                        [...node.children].some(child => ['UL', 'OL'].includes(child.nodeName))
-                )) {
-                    // Remove unique ids from checklists and stars from elements
-                    // that are no longer checklist items or stars, and from
-                    // parents of nested lists.
-                    node.removeAttribute('id')
-                } else {
-                    // Add/change IDs where needed, and ensure they're unique.
-                    let id = node.getAttribute('id');
-                    if (!id || ids.includes(id)) {
-                        id = `checkId-${nextId}`;
-                        nextId++;
-                        node.setAttribute('id', id);
-                    }
-                    ids.push(id);
-                }
+            for (const node of rootClosestBlock.querySelectorAll('.o_checklist > li, .o_stars')) {
+                node.setAttribute('id', `checkId-${Math.floor(new Date() * Math.random())}`);
             }
         }
     }
@@ -124,10 +109,6 @@ class Sanitize {
 
     _parse(node) {
         while (node) {
-            const closestProtected = closestElement(node, '[data-oe-protected="true"]');
-            if (closestProtected && node !== closestProtected) {
-                return;
-            }
             // Merge identical elements together.
             while (
                 areSimilarElements(node, node.previousSibling) &&
@@ -234,23 +215,22 @@ class Sanitize {
             // Ensure elements which should not contain any content are tagged
             // contenteditable=false to avoid any hiccup.
             if (
-                isVoidElement(node) &&
+                (isMediaElement(node) || node.tagName === 'HR') &&
                 node.getAttribute('contenteditable') !== 'false'
             ) {
                 node.setAttribute('contenteditable', 'false');
             }
-
+            // update link URL if label is a new valid link
+            if (node.nodeName === 'A' && anchorEl === node) {
+                const linkLabel = node.textContent;
+                const match = linkLabel.match(URL_REGEX);
+                if (match && match[0] === node.textContent) {
+                    const urlInfo = getUrlsInfosInString(linkLabel)[0];
+                    node.setAttribute('href', urlInfo.url);
+                }
+            }
             if (node.firstChild) {
                 this._parse(node.firstChild);
-            }
-
-            // Update link URL if label is a new valid link.
-            if (node.nodeName === 'A' && anchorEl === node) {
-                const linkLabel = node.innerText;
-                const urlInfo = getUrlsInfosInString(linkLabel);
-                if (urlInfo.length && urlInfo[0].label === linkLabel && !node.href.startsWith('mailto:')) {
-                    node.setAttribute('href', urlInfo[0].url);
-                }
             }
             node = node.nextSibling;
         }

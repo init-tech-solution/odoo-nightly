@@ -10,6 +10,10 @@ export class FleetFormController extends FormController {
      * @override
      **/
     getActionMenuItems() {
+        if (this.model.root.isInEdition) {
+            return {};
+        }
+
         const menuItems = super.getActionMenuItems();
         const archiveAction = menuItems.other.find((item) => item.key === "archive");
         if (archiveAction) {

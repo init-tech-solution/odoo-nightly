@@ -2,15 +2,16 @@ import importlib
 import importlib.util
 import inspect
 import itertools
+import logging
 import threading
 import unittest
 
 from .. import tools
-from .tag_selector import TagsSelector
-from .suite import OdooSuite
-from .result import OdooTestResult
+from .common import TagsSelector, OdooSuite
+from .runner import OdooTestResult
 
 
+_logger = logging.getLogger(__name__)
 def get_test_modules(module):
     """ Return a list of module for the addons potentially containing tests to
     feed unittest.TestLoader.loadTestsFromModule() """
@@ -21,7 +22,6 @@ def get_test_modules(module):
         results += _get_tests_modules(upgrade_spec)
 
     return results
-
 
 def _get_tests_modules(mod):
     spec = importlib.util.find_spec('.tests', mod.name)
@@ -34,7 +34,6 @@ def _get_tests_modules(mod):
         for name, mod_obj in inspect.getmembers(tests_mod, inspect.ismodule)
         if name.startswith('test_')
     ]
-
 
 def make_suite(module_names, position='at_install'):
     """ Creates a test suite for all the tests in the specified modules,
@@ -54,7 +53,6 @@ def make_suite(module_names, position='at_install'):
     )
     return OdooSuite(sorted(tests, key=lambda t: t.test_sequence))
 
-
 def run_suite(suite, module_name=None):
     # avoid dependency hell
     from ..modules import module
@@ -67,7 +65,6 @@ def run_suite(suite, module_name=None):
     threading.current_thread().testing = False
     module.current_test = None
     return results
-
 
 def unwrap_suite(test):
     """
@@ -86,10 +83,10 @@ def unwrap_suite(test):
         return
 
     subtests = list(test)
-    ## custom test suite (no test cases)
-    #if not len(subtests):
-    #    yield test
-    #    return
+    # custom test suite (no test cases)
+    if not len(subtests):
+        yield test
+        return
 
     for item in itertools.chain.from_iterable(unwrap_suite(t) for t in subtests):
         yield item

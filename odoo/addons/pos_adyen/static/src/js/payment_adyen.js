@@ -165,7 +165,6 @@ var PaymentAdyen = PaymentInterface.extend({
             // represented by true.
             if (! ignore_error && data !== true) {
                 self._show_error(_t('Cancelling the payment failed. Please cancel it manually on the payment terminal.'));
-                self.was_cancelled = !!self.polling;
             }
         });
     },
@@ -175,9 +174,9 @@ var PaymentAdyen = PaymentInterface.extend({
             var params = new URLSearchParams(entry.Text);
 
             if (params.get('name') && !params.get('value')) {
-                return acc + _.str.sprintf('\n%s', params.get('name'));
+                return acc + _.str.sprintf('<br/>%s', params.get('name'));
             } else if (params.get('name') && params.get('value')) {
-                return acc + _.str.sprintf('\n%s: %s', params.get('name'), params.get('value'));
+                return acc + _.str.sprintf('<br/>%s: %s', params.get('name'), params.get('value'));
             }
 
             return acc;
@@ -212,7 +211,7 @@ var PaymentAdyen = PaymentInterface.extend({
         }).then(function (status) {
             var notification = status.latest_response;
             var order = self.pos.get_order();
-            var line = self.pending_adyen_line() || resolve(false);
+            var line = self.pending_adyen_line();
 
             if (notification && notification.SaleToPOIResponse.MessageHeader.ServiceID == line.terminalServiceId) {
                 var response = notification.SaleToPOIResponse.PaymentResponse.Response;

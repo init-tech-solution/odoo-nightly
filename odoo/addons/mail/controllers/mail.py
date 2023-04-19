@@ -160,8 +160,5 @@ class MailController(http.Controller):
         # ==============================================================================================
 
         if res_id and isinstance(res_id, str):
-            try:
-                res_id = int(res_id)
-            except ValueError:
-                res_id = False
+            res_id = int(res_id)
         return self._redirect_to_record(model, res_id, access_token, **kwargs)

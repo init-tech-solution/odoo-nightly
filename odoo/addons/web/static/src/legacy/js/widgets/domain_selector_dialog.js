@@ -3,7 +3,6 @@ odoo.define("web.DomainSelectorDialog", function (require) {
 
 var core = require("web.core");
 var Dialog = require("web.Dialog");
-var Domain = require("web.Domain");
 var DomainSelector = require("web.DomainSelector");
 
 var _t = core._t;
@@ -43,7 +42,8 @@ return Dialog.extend({
             title: _t("Domain"),
             buttons: buttons,
         }, options || {}));
-        this.domainSelector = new DomainSelector(this, model, Domain.prototype.arrayToString(domain), options);
+
+        this.domainSelector = new DomainSelector(this, model, domain, options);
     },
     start: function () {
         var self = this;

@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _
-from odoo.addons.web_editor.controllers.main import handle_history_divergence
 
 
 class Job(models.Model):
@@ -55,8 +54,3 @@ class Job(models.Model):
         if 'name' not in default:
             default['name'] = _("%s (copy)") % (self.name)
         return super(Job, self).copy(default=default)
-
-    def write(self, vals):
-        if len(self) == 1:
-            handle_history_divergence(self, 'description', vals)
-        return super(Job, self).write(vals)

@@ -10,15 +10,7 @@ registerModel({
         /**
          * Handles click on the "add attachment" button.
          */
-        async onClickAddAttachment() {
-            if (this.chatter.isTemporary) {
-                const chatter = this.chatter;
-                const saved = await this.chatter.doSaveRecord();
-                if (saved) {
-                    chatter.attachmentBoxView.fileUploader.openBrowserFileUploader();
-                }
-                return;
-            }
+        onClickAddAttachment() {
             this.fileUploader.openBrowserFileUploader();
         },
     },

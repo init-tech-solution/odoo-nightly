@@ -5,7 +5,8 @@ from odoo.tests.common import TransactionCase
 from odoo.tests import Form
 
 
-class TestMrpAnalyticAccount(TransactionCase):
+class TestAnalyticAccount(TransactionCase):
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -47,8 +48,6 @@ class TestMrpAnalyticAccount(TransactionCase):
                 (0, 0, {'name': 'work work', 'workcenter_id': cls.workcenter.id, 'time_cycle': 15, 'sequence': 1}),
             ]})
 
-
-class TestAnalyticAccount(TestMrpAnalyticAccount):
     def test_mo_analytic(self):
         """Test the amount on analytic line will change when consumed qty of the
         component changed.

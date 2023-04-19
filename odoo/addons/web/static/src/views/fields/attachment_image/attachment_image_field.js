@@ -3,7 +3,7 @@
 import { _lt } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 
-import { Component } from "@odoo/owl";
+const { Component } = owl;
 
 export class AttachmentImageField extends Component {}
 

@@ -31,29 +31,25 @@ registerModel({
                 const { shadow: silent, ...rpcSettings } = options;
                 return this.env.services.rpc(route, rpcParameters, { silent, ...rpcSettings });
             } else {
-                const { args = [], method, model, kwargs = {} } = params;
-                const { domain, fields, groupBy, ...remainingKwargs } = kwargs;
+                const { args, method, model, kwargs = {} } = params;
+                const { domain, fields, groupBy } = kwargs;
 
                 const ormService = 'shadow' in options ? this.env.services.orm.silent : this.env.services.orm;
                 switch (method) {
-                    case 'create': {
-                        const { vals_list, ...createKwargs } = kwargs;
-                        return ormService.create(model, args[0] || vals_list, createKwargs);
-                    }
+                    case 'create':
+                        return ormService.create(model, args[0], kwargs);
                     case 'read':
-                        return ormService.read(model, args[0], args[1] || fields, remainingKwargs);
+                        return ormService.read(model, args[0], args.length > 1 ? args[1] : undefined, kwargs);
                     case 'read_group':
-                        return ormService.readGroup(model, args[0] || domain, args[1] || fields, args[2] || groupBy, remainingKwargs);
+                        return ormService.readGroup(model, domain, fields, groupBy, kwargs);
                     case 'search':
-                        return ormService.search(model, args[0] || domain, remainingKwargs);
+                        return ormService.search(model, args[0], kwargs);
                     case 'search_read':
-                        return ormService.searchRead(model, args[0] || domain, args[1] || fields, remainingKwargs);
+                        return ormService.searchRead(model, domain, fields, kwargs);
                     case 'unlink':
                         return ormService.unlink(model, args[0], kwargs);
-                    case 'write': {
-                        const { vals, ...writeKwargs } = kwargs;
-                        return ormService.write(model, args[0], args[1] || vals, writeKwargs);
-                    }
+                    case 'write':
+                        return ormService.write(model, args[0], args[1], kwargs);
                     default:
                         return ormService.call(model, method, args, kwargs);
                 }

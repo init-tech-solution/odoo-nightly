@@ -32,10 +32,7 @@ export class CrmKanbanDynamicGroupList extends CrmKanbanModel.DynamicGroupList {
      * a rainbowman message if that's the case.
      */
     async moveRecord(dataRecordId, dataGroupId, refId, targetGroupId) {
-        const succeeded = await super.moveRecord(...arguments);
-        if (!succeeded) {
-            return;
-        }
+        const res = await super.moveRecord(...arguments);
         const sourceGroup = this.groups.find((g) => g.id === dataGroupId);
         const targetGroup = this.groups.find((g) => g.id === targetGroupId);
         if (
@@ -47,6 +44,7 @@ export class CrmKanbanDynamicGroupList extends CrmKanbanModel.DynamicGroupList {
             const record = targetGroup.list.records.find((r) => r.id === dataRecordId);
             await checkRainbowmanMessage(this.model.ormService, this.model.effect, record.resId);
         }
+        return res;
     }
 }
 

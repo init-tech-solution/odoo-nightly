@@ -16,12 +16,11 @@ export class TimeOffDialogFormController extends FormController {
     }
 
     deleteRecord() {
-        const record = this.model.root.data
+        const leaveId = this.model.root.data.id;
 
-        this.props.onRecordDeleted(record)
         this.props.onCancelLeave();
-        if (record.can_cancel) {
-            this.leaveCancelWizard(record.id, () => {
+        if (this.model.root.data.can_cancel) {
+            this.leaveCancelWizard(leaveId, () => {
                 this.props.onLeaveCancelled();
             });
         }
@@ -36,7 +35,6 @@ export class TimeOffDialogFormController extends FormController {
 TimeOffDialogFormController.props = {
     ...FormController.props,
     onCancelLeave: Function,
-    onRecordDeleted: Function,
     onLeaveCancelled: Function,
 }
 
@@ -56,15 +54,11 @@ export class TimeOffFormViewDialog extends FormViewDialog {
             onCancelLeave: () => {
                 this.props.close();
             },
-            onRecordDeleted: (record) => {
-                this.props.onRecordDeleted(record)
-            },
             onLeaveCancelled: this.props.onLeaveCancelled.bind(this),
         })
     }
 }
 TimeOffFormViewDialog.props = {
     ...TimeOffFormViewDialog.props,
-    onRecordDeleted: Function,
     onLeaveCancelled: Function,
 }

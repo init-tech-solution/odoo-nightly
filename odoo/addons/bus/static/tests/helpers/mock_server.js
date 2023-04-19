@@ -75,6 +75,8 @@ patch(MockServer.prototype, 'bus', {
      * @param {number} clodeCode the code to close the connection with.
      */
     _simulateConnectionLost(closeCode) {
-        this.websocketWorker.websocket.close(closeCode);
+        this.websocketWorker.websocket.dispatchEvent(new CloseEvent('close', {
+            code: closeCode,
+        }));
     },
 });

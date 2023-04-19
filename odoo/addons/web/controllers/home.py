@@ -88,15 +88,9 @@ class Home(http.Controller):
         if request.httprequest.method == 'GET' and redirect and request.session.uid:
             return request.redirect(redirect)
 
-        # simulate hybrid auth=user/auth=public, despite using auth=none to be able
-        # to redirect users when no db is selected - cfr ensure_db()
-        if request.env.uid is None:
-            if request.session.uid is None:
-                # no user -> auth=public with specific website public user
-                request.env["ir.http"]._auth_method_public()
-            else:
-                # auth=user
-                request.update_env(user=request.session.uid)
+        # so it is correct if overloaded with auth="public"
+        if not request.uid:
+            request.update_env(user=odoo.SUPERUSER_ID)
 
         values = {k: v for k, v in request.params.items() if k in SIGN_UP_REQUEST_PARAMS}
         try:

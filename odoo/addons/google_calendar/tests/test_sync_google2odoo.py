@@ -15,11 +15,6 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
 
     def setUp(self):
         super().setUp()
-        self.public_partner = self.env['res.partner'].create({
-            'name': 'Public Contact',
-            'email': 'public_email@example.com',
-            'type': 'contact',
-        })
         self.private_partner = self.env['res.partner'].create({
             'name': 'Private Contact',
             'email': 'private_email@example.com',
@@ -46,7 +41,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             },],
             'reminders': {'useDefault': True},
@@ -67,9 +62,9 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
         self.assertEqual(html2plaintext(event.description), values.get('description'))
         self.assertEqual(event.start, datetime(2020, 1, 13, 15, 55))
         self.assertEqual(event.stop, datetime(2020, 1, 13, 18, 55))
-        admin_attendee = event.attendee_ids.filtered(lambda e: e.email == self.public_partner.email)
-        self.assertEqual(self.public_partner.email, admin_attendee.email)
-        self.assertEqual(self.public_partner.name, admin_attendee.partner_id.name)
+        admin_attendee = event.attendee_ids.filtered(lambda e: e.email == 'admin@yourcompany.example.com')
+        self.assertEqual('admin@yourcompany.example.com', admin_attendee.email)
+        self.assertEqual('Mitchell Admin', admin_attendee.partner_id.name)
         self.assertEqual(event.partner_ids, event.attendee_ids.partner_id)
         self.assertEqual('needsAction', admin_attendee.state)
         self.assertGoogleAPINotCalled()
@@ -754,7 +749,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             }, ],
             'reminders': {'useDefault': True},
@@ -804,7 +799,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             }, ],
             'reminders': {'overrides': [{"method": "email", "minutes": 10}], 'useDefault': False},
@@ -833,7 +828,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             }, ],
             'reminders': {'overrides': [{"method": "email", "minutes": 10}], 'useDefault': False},
@@ -1099,7 +1094,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             },],
             'reminders': {'useDefault': True},
@@ -1139,7 +1134,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             },],
             'reminders': {'useDefault': True},
@@ -1169,7 +1164,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'visibility': 'public',
             'attendees': [{
                 'displayName': 'Mitchell Admin',
-                'email': self.public_partner.email,
+                'email': 'admin@yourcompany.example.com',
                 'responseStatus': 'needsAction'
             }, {
                 'displayName': 'Attendee',
@@ -1262,30 +1257,4 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
         events = recurrence.calendar_event_ids.sorted('start')
         self.assertEqual(len(events), 2)
         self.assertFalse(events.mapped('attendee_ids'))
-        self.assertGoogleAPINotCalled()
-
-    @patch_api
-    def test_owner_only_new_google_event(self):
-        values = {
-            'id': 'oj44nep1ldf8a3ll02uip0c9aa',
-            'description': 'Small mini desc',
-            'organizer': {'email': 'odoocalendarref@gmail.com', 'self': True},
-            'summary': 'Pricing new update',
-            'visibility': 'public',
-            'attendees': [],
-            'reminders': {'useDefault': True},
-            'start': {
-                'dateTime': '2020-01-13T16:55:00+01:00',
-                'timeZone': 'Europe/Brussels'
-            },
-            'end': {
-                'dateTime': '2020-01-13T19:55:00+01:00',
-                'timeZone': 'Europe/Brussels'
-            },
-        }
-        self.env['calendar.event']._sync_google2odoo(GoogleEvent([values]))
-        event = self.env['calendar.event'].search([('google_id', '=', values.get('id'))])
-        self.assertEqual(1, len(event.attendee_ids))
-        self.assertEqual(event.partner_ids[0], event.attendee_ids[0].partner_id)
-        self.assertEqual('accepted', event.attendee_ids[0].state)
         self.assertGoogleAPINotCalled()
