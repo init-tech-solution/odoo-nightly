@@ -9,7 +9,7 @@ import { isVisible } from "@web/core/utils/ui";
 import { registerCleanup } from "./cleanup";
 import { templates } from "@web/core/assets";
 
-const { App, onMounted, onPatched, useComponent } = owl;
+import { App, onMounted, onPatched, useComponent } from "@odoo/owl";
 
 /**
  * Patch the native Date object
@@ -489,6 +489,7 @@ export function editSelect(el, selector, value) {
  * @param {string} hotkey
  * @param {boolean} addOverlayModParts
  * @param {KeyboardEventInit} eventAttrs
+ * @returns {{ keydownEvent: KeyboardEvent, keyupEvent: KeyboardEvent }}
  */
 export function triggerHotkey(hotkey, addOverlayModParts = false, eventAttrs = {}) {
     eventAttrs.key = hotkey.split("+").pop();
@@ -517,8 +518,11 @@ export function triggerHotkey(hotkey, addOverlayModParts = false, eventAttrs = {
         eventAttrs.bubbles = true;
     }
 
-    document.activeElement.dispatchEvent(new KeyboardEvent("keydown", eventAttrs));
-    document.activeElement.dispatchEvent(new KeyboardEvent("keyup", eventAttrs));
+    const keydownEvent = new KeyboardEvent("keydown", eventAttrs);
+    const keyupEvent = new KeyboardEvent("keyup", eventAttrs);
+    document.activeElement.dispatchEvent(keydownEvent);
+    document.activeElement.dispatchEvent(keyupEvent);
+    return { keydownEvent, keyupEvent };
 }
 
 export async function legacyExtraNextTick() {
@@ -742,22 +746,28 @@ export function drag(from, to, position) {
         clientX: toRect.x + toRect.width / 2,
         clientY: toRect.y + toRect.height / 2,
     };
-    switch (position) {
-        case "top": {
-            toPos.clientY = toRect.y - 1;
-            break;
-        }
-        case "bottom": {
-            toPos.clientY = toRect.y + toRect.height + 1;
-            break;
-        }
-        case "left": {
-            toPos.clientX = toRect.x - 1;
-            break;
-        }
-        case "right": {
-            toPos.clientX = toRect.x + toRect.width + 1;
-            break;
+    if (position && typeof position === "object") {
+        // x and y coordinates start from the element's initial coordinates
+        toPos.clientX += position.x || 0;
+        toPos.clientY += position.y || 0;
+    } else {
+        switch (position) {
+            case "top": {
+                toPos.clientY = toRect.y - 1;
+                break;
+            }
+            case "bottom": {
+                toPos.clientY = toRect.y + toRect.height + 1;
+                break;
+            }
+            case "left": {
+                toPos.clientX = toRect.x - 1;
+                break;
+            }
+            case "right": {
+                toPos.clientX = toRect.x + toRect.width + 1;
+                break;
+            }
         }
     }
 

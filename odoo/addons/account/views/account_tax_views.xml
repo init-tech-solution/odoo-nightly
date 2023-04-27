@@ -40,11 +40,15 @@
                     <field name="factor_percent" attrs="{'invisible': [('repartition_type', '=', 'base')]}"/>
                     <field name="repartition_type"/>
                     <field name="account_id" attrs="{'invisible': [('repartition_type', '=', 'base')]}" options="{'no_create': True}"/>
-                    <field name="tag_ids" widget="many2many_tags" options="{'no_create': True}" domain="[('applicability', '=', 'taxes'), '|', ('country_id', '=', parent.country_id), ('country_id', '=', False)]"/>
+                    <field name="tag_ids"
+                           widget="many2many_tags"
+                           options="{'no_create': True}"
+                           domain="tag_ids_domain"/>
                     <field name="use_in_tax_closing"
                            optional="hidden"
                            attrs="{'invisible': [('repartition_type', '=', 'base')]}"/>
                     <field name="company_id" invisible="1"/>
+                    <field name="tag_ids_domain" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -149,10 +153,12 @@
                         <page string="Definition" name="definition">
                             <div attrs="{'invisible': [('amount_type', '=', 'group')]}">
                                 <field name="country_code" invisible="1"/>
-                                <label for="invoice_repartition_line_ids"/>
-                                <field name="invoice_repartition_line_ids"/>
-                                <label for="refund_repartition_line_ids"/>
-                                <field name="refund_repartition_line_ids"/>
+                                <group string="Distribution for Invoices">
+                                    <field name="invoice_repartition_line_ids" nolabel="1" colspan="2"/>
+                                </group>
+                                <group string="Distribution for Refunds">
+                                    <field name="refund_repartition_line_ids" nolabel="1" colspan="2"/>
+                                </group>
                             </div>
                             <field name="children_tax_ids" attrs="{'invisible':['|', ('amount_type','!=','group'), ('type_tax_use','=','none')]}" domain="[('type_tax_use','in',('none',type_tax_use)), ('amount_type','!=','group')]">
                                 <tree string="Children Taxes">

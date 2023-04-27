@@ -19,10 +19,20 @@ import { KanbanColumnQuickCreate } from "./kanban_column_quick_create";
 import { KanbanRecord } from "./kanban_record";
 import { KanbanRecordQuickCreate } from "./kanban_record_quick_create";
 
-const { Component, useState, useRef, onWillDestroy } = owl;
+import { Component, useState, useRef, onPatched, onWillPatch, onWillDestroy } from "@odoo/owl";
 
 const DRAGGABLE_GROUP_TYPES = ["many2one"];
 const MOVABLE_RECORD_TYPES = ["char", "boolean", "integer", "selection", "many2one"];
+
+function validateColumnQuickCreateExamples(data) {
+    const { allowedGroupBys = [], examples = [] } = data;
+    if (!allowedGroupBys.length) {
+        throw new Error("The example data must contain an array of allowed groupbys");
+    }
+    if (!examples.length) {
+        throw new Error("The example data must contain an array of examples");
+    }
+}
 
 export class KanbanRenderer extends Component {
     setup() {
@@ -35,13 +45,16 @@ export class KanbanRenderer extends Component {
         this.exampleData = registry
             .category("kanban_examples")
             .get(this.props.archInfo.examples, null);
+        if (this.exampleData) {
+            validateColumnQuickCreateExamples(this.exampleData);
+        }
         this.ghostColumns = this.generateGhostColumns();
 
         // Sortable
         let dataRecordId;
         let dataGroupId;
         const rootRef = useRef("root");
-        if (!this.env.isSmall) {
+        if (this.canUseSortable) {
             useSortable({
                 enable: () => this.canResequenceRecords,
                 // Params
@@ -99,17 +112,19 @@ export class KanbanRenderer extends Component {
             this.dialogClose.forEach((close) => close());
         });
 
-        useBus(this.env.searchModel, "focus-view", () => {
-            const { model } = this.props.list;
-            if (model.useSampleModel || !model.hasData()) {
-                return;
-            }
-            const firstCard = rootRef.el.querySelector(".o_kanban_record");
-            if (firstCard) {
-                // Focus first kanban card
-                firstCard.focus();
-            }
-        });
+        if (this.env.searchModel) {
+            useBus(this.env.searchModel, "focus-view", () => {
+                const { model } = this.props.list;
+                if (model.useSampleModel || !model.hasData()) {
+                    return;
+                }
+                const firstCard = rootRef.el.querySelector(".o_kanban_record");
+                if (firstCard) {
+                    // Focus first kanban card
+                    firstCard.focus();
+                }
+            });
+        }
 
         useHotkey(
             "Enter",
@@ -129,23 +144,37 @@ export class KanbanRenderer extends Component {
         );
 
         const arrowsOptions = { area: () => rootRef.el, allowRepeat: true };
-        useHotkey(
-            "ArrowUp",
-            ({ area }) => {
-                if (!this.focusNextCard(area, "up")) {
-                    this.env.searchModel.trigger("focus-search");
-                }
-            },
-            arrowsOptions
-        );
+        if (this.env.searchModel) {
+            useHotkey(
+                "ArrowUp",
+                ({ area }) => {
+                    if (!this.focusNextCard(area, "up")) {
+                        this.env.searchModel.trigger("focus-search");
+                    }
+                },
+                arrowsOptions
+            );
+        }
         useHotkey("ArrowDown", ({ area }) => this.focusNextCard(area, "down"), arrowsOptions);
         useHotkey("ArrowLeft", ({ area }) => this.focusNextCard(area, "left"), arrowsOptions);
         useHotkey("ArrowRight", ({ area }) => this.focusNextCard(area, "right"), arrowsOptions);
+
+        let previousScrollTop = 0;
+        onWillPatch(() => {
+            previousScrollTop = rootRef.el.scrollTop;
+        });
+        onPatched(() => {
+            rootRef.el.scrollTop = previousScrollTop;
+        });
     }
 
     // ------------------------------------------------------------------------
     // Getters
     // ------------------------------------------------------------------------
+
+    get canUseSortable() {
+        return !this.env.isSmall;
+    }
 
     get canMoveRecords() {
         if (!this.canResequenceRecords) {
@@ -252,12 +281,7 @@ export class KanbanRenderer extends Component {
         if (!this.env.isSmall && group.isFolded) {
             classes.push("o_column_folded");
         }
-        if (
-            this.canResequenceGroups &&
-            group.value &&
-            !group.isFolded &&
-            !group.hasActiveProgressValue
-        ) {
+        if (!group.isFolded && !group.hasActiveProgressValue) {
             classes.push("bg-100");
         }
         if (group.progressBars.length) {
@@ -352,10 +376,10 @@ export class KanbanRenderer extends Component {
     }
 
     async validateQuickCreate(mode, group) {
-        const values = group.list.quickCreateRecord.data;
-        let record;
+        const values = group.quickCreateRecord.data;
+        let record = group.quickCreateRecord;
         try {
-            record = await group.validateQuickCreate();
+            record = await group.validateQuickCreate(record, mode);
         } catch (e) {
             // TODO: filter RPC errors more specifically (eg, for access denied, there is no point in opening a dialog)
             if (!(e instanceof RPCError)) {
@@ -384,12 +408,8 @@ export class KanbanRenderer extends Component {
             );
         }
 
-        if (record) {
-            if (mode === "edit") {
-                await this.props.openRecord(record, "edit");
-            } else {
-                await this.quickCreate(group);
-            }
+        if (mode === "edit" && record) {
+            await this.props.openRecord(record, "edit");
         }
     }
 
@@ -504,7 +524,6 @@ export class KanbanRenderer extends Component {
      */
     sortRecordGroupEnter({ group }) {
         group.classList.add("o_kanban_hover");
-        group.classList.remove("bg-100");
     }
 
     /**
@@ -513,7 +532,6 @@ export class KanbanRenderer extends Component {
      */
     sortRecordGroupLeave({ group }) {
         group.classList.remove("o_kanban_hover");
-        group.classList.add("bg-100");
     }
 
     /**
@@ -546,16 +564,19 @@ export class KanbanRenderer extends Component {
      */
     focusNextCard(area, direction) {
         const { isGrouped } = this.props.list;
+        const closestCard = document.activeElement.closest(".o_kanban_record");
+        if (!closestCard) {
+            return;
+        }
         const groups = isGrouped ? [...area.querySelectorAll(".o_kanban_group")] : [area];
         const cards = [...groups]
             .map((group) => [...group.querySelectorAll(".o_kanban_record")])
             .filter((group) => group.length);
 
-        // Search current card position
         let iGroup;
         let iCard;
         for (iGroup = 0; iGroup < cards.length; iGroup++) {
-            const i = cards[iGroup].indexOf(document.activeElement);
+            const i = cards[iGroup].indexOf(closestCard);
             if (i !== -1) {
                 iCard = i;
                 break;
@@ -605,6 +626,7 @@ export class KanbanRenderer extends Component {
 
 KanbanRenderer.props = [
     "archInfo",
+    "Compiler?", // optional in stable for backward compatibility
     "list",
     "openRecord",
     "readonly",

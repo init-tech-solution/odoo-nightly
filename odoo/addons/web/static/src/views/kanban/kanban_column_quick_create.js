@@ -4,7 +4,7 @@ import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { useAutofocus, useService } from "@web/core/utils/hooks";
 import { KanbanColumnExamplesDialog } from "./kanban_column_examples_dialog";
 
-const { Component, useExternalListener, useState, useRef } = owl;
+import { Component, useExternalListener, useState, useRef } from "@odoo/owl";
 
 export class KanbanColumnQuickCreate extends Component {
     setup() {
@@ -43,6 +43,16 @@ export class KanbanColumnQuickCreate extends Component {
             bypassEditableProtection: true,
         });
         useHotkey("escape", () => this.fold());
+    }
+
+    get canShowExamples() {
+        const { allowedGroupBys = [], examples = [] } = this.props.exampleData || {};
+        const hasExamples = Boolean(examples.length);
+        return hasExamples && allowedGroupBys.includes(this.props.groupByField.name);
+    }
+
+    get relatedFieldName() {
+        return this.props.groupByField.string;
     }
 
     fold() {

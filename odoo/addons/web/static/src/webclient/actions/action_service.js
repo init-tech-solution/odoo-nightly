@@ -15,7 +15,16 @@ import { ActionDialog } from "./action_dialog";
 import { CallbackRecorder } from "./action_hook";
 import { ReportAction } from "./reports/report_action";
 
-const { Component, markup, onMounted, onWillUnmount, onError, useChildSubEnv, xml, reactive } = owl;
+import {
+    Component,
+    markup,
+    onMounted,
+    onWillUnmount,
+    onError,
+    useChildSubEnv,
+    xml,
+    reactive,
+} from "@odoo/owl";
 
 const actionHandlersRegistry = registry.category("action_handlers");
 const actionRegistry = registry.category("actions");
@@ -487,7 +496,7 @@ function makeActionManager(env) {
         }
 
         // view specific
-        if (action.res_id) {
+        if (action.res_id && !viewProps.resId) {
             viewProps.resId = action.res_id;
         }
 
@@ -814,10 +823,13 @@ function makeActionManager(env) {
      * @param {ActionOptions} options
      */
     function _executeActURLAction(action, options) {
+        let url = action.url;
+        if (url && !(url.startsWith('http') || url.startsWith('/')))
+            url = '/' + url;
         if (action.target === "self") {
-            env.services.router.redirect(action.url);
+            env.services.router.redirect(url);
         } else {
-            const w = browser.open(action.url, "_blank");
+            const w = browser.open(url, "_blank");
             if (!w || w.closed || typeof w.closed === "undefined") {
                 const msg = env._t(
                     "A popup window has been blocked. You may need to change your " +
@@ -1212,7 +1224,7 @@ function makeActionManager(env) {
                 if (action.target !== "new") {
                     const canProceed = await clearUncommittedChanges(env);
                     if (!canProceed) {
-                        return;
+                        return new Promise(() => {});
                     }
                 }
                 return _executeActWindowAction(action, options);
@@ -1363,6 +1375,11 @@ function makeActionManager(env) {
         }
         // END LEGACY CODE COMPATIBILITY
 
+        const canProceed = await clearUncommittedChanges(env);
+        if (!canProceed) {
+            return;
+        }
+
         Object.assign(
             newController,
             _getViewInfo(view, controller.action, controller.views, props)
@@ -1380,10 +1397,7 @@ function makeActionManager(env) {
             );
             index = index > -1 ? index : controllerStack.length;
         }
-        const canProceed = await clearUncommittedChanges(env);
-        if (canProceed) {
-            return _updateUI(newController, { index });
-        }
+        return _updateUI(newController, { index });
     }
 
     /**
@@ -1405,6 +1419,10 @@ function makeActionManager(env) {
             const msg = jsId ? "Invalid controller to restore" : "No controller to restore";
             throw new ControllerNotFoundError(msg);
         }
+        const canProceed = await clearUncommittedChanges(env);
+        if (!canProceed) {
+            return;
+        }
         const controller = controllerStack[index];
         if (controller.action.type === "ir.actions.act_window") {
             const { action, exportedState, view, views } = controller;
@@ -1415,10 +1433,7 @@ function makeActionManager(env) {
             }
             Object.assign(controller, _getViewInfo(view, action, views, props));
         }
-        const canProceed = await clearUncommittedChanges(env);
-        if (canProceed) {
-            return _updateUI(controller, { index });
-        }
+        return _updateUI(controller, { index });
     }
 
     /**

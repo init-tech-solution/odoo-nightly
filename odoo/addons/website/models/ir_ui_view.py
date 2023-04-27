@@ -462,6 +462,14 @@ class View(models.Model):
                 self = website_specific_view
         super(View, self).save(value, xpath=xpath)
 
+    @api.model
+    def _get_allowed_root_attrs(self):
+        # Related to these options:
+        # background-video, background-shapes, parallax
+        return super()._get_allowed_root_attrs() + [
+            'data-bg-video-src', 'data-shape', 'data-scroll-background-ratio',
+        ]
+
     # --------------------------------------------------------------------------
     # Snippet saving
     # --------------------------------------------------------------------------
@@ -473,3 +481,6 @@ class View(models.Model):
         if website_id:
             res['website_id'] = website_id
         return res
+
+    def _update_field_translations(self, fname, translations, digest=None):
+        return super(View, self.with_context(no_cow=True))._update_field_translations(fname, translations, digest)

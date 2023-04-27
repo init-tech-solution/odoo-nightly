@@ -5,14 +5,14 @@ import { useService } from "@web/core/utils/hooks";
 import { SettingsContainer } from "../settings/settings_container";
 import { Setting } from "../settings/setting";
 
-const { Component, onWillStart } = owl;
+import { Component, onWillStart } from "@odoo/owl";
 
 /**
  * Widget in the settings that handles the "Developer Tools" section.
  * Can be used to enable/disable the debug modes.
  * Can be used to load the demo data.
  */
-class ResConfigDevTool extends Component {
+export class ResConfigDevTool extends Component {
     setup() {
         this.isDebug = Boolean(odoo.debug);
         this.isAssets = odoo.debug.includes("assets");

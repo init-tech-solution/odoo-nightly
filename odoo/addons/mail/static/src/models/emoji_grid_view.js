@@ -32,11 +32,10 @@ registerModel({
         },
         _onChangeScrollRecomputeCount() {
             for (const viewCategory of this.emojiPickerViewOwner.categories) {
-                const rowIndex = this.firstRenderedRowIndex;
                 if (
                     viewCategory.emojiGridRowView &&
-                    rowIndex >= viewCategory.emojiGridRowView.index &&
-                    (viewCategory.emojiPickerViewOwnerAsLastCategory || rowIndex <= viewCategory.endSectionIndex)
+                    this.scrollIndex >= viewCategory.emojiGridRowView.index &&
+                    (viewCategory.emojiPickerViewOwnerAsLastCategory || this.scrollIndex <= viewCategory.endSectionIndex)
                 ) {
                     this.emojiPickerViewOwner.update({ activeCategoryByGridViewScroll: viewCategory });
                     break;
@@ -133,6 +132,15 @@ registerModel({
             default: 0,
         }),
         listRef: attr(),
+        loadingScreenView: one('EmojiGridLoadingScreen', {
+            compute() {
+                if (!this.messaging.emojiRegistry.isLoaded) {
+                    return {};
+                }
+                return clear();
+            },
+            inverse: 'emojiGridViewOwner',
+        }),
         nonSearchRowRegistry: one('EmojiGridViewRowRegistry', {
             default: {},
             inverse: 'emojiGridViewOwnerAsNonSearch',

@@ -46,8 +46,7 @@ class PayULatamTest(PayULatamCommon, PaymentHttpCommon):
     @freeze_time('2011-11-02 12:00:21')  # Freeze time for consistent singularization behavior
     def test_reference_is_computed_based_on_document_name(self):
         """ Test computation of reference prefixes based on the provided invoice. """
-        if not self.env['ir.module.module']._get('account').state == 'installed':
-            self.skipTest('account module not installed')
+        self._skip_if_account_payment_is_not_installed()
 
         invoice = self.env['account.move'].create({})
         reference = self.env['payment.transaction']._compute_reference(
@@ -160,11 +159,7 @@ class PayULatamTest(PayULatamCommon, PaymentHttpCommon):
         """ Test the processing of a webhook notification. """
         tx = self._create_transaction('redirect')
         url = self._build_url(PayuLatamController._webhook_url)
-        with patch(
-            'odoo.addons.payment_payulatam.controllers.main.PayuLatamController'
-            '._verify_notification_signature'
-        ):
-            self._make_http_post_request(url, data=self.async_notification_data)
+        self._make_http_post_request(url, data=self.async_notification_data_webhook)
         self.assertEqual(tx.state, 'done')
 
     @mute_logger('odoo.addons.payment_payulatam.controllers.main')

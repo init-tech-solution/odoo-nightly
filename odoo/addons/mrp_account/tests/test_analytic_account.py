@@ -5,8 +5,7 @@ from odoo.tests.common import TransactionCase
 from odoo.tests import Form
 
 
-class TestAnalyticAccount(TransactionCase):
-
+class TestMrpAnalyticAccount(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -48,6 +47,8 @@ class TestAnalyticAccount(TransactionCase):
                 (0, 0, {'name': 'work work', 'workcenter_id': cls.workcenter.id, 'time_cycle': 15, 'sequence': 1}),
             ]})
 
+
+class TestAnalyticAccount(TestMrpAnalyticAccount):
     def test_mo_analytic(self):
         """Test the amount on analytic line will change when consumed qty of the
         component changed.
@@ -239,3 +240,31 @@ class TestAnalyticAccount(TransactionCase):
         # Check that the AA lines are recreated correctly if we delete the AA, save the MO, and assign a new one
         mo.analytic_account_id = self.analytic_account
         self.assertEqual(len(mo.move_raw_ids.analytic_account_line_id), 1)
+
+    def test_add_wo_analytic_no_company(self):
+        """Test the addition of work orders to a MO linked to
+        an analytic account that has no company associated
+        """
+        # Create an analytic account and remove the company
+        analytic_account_no_company = self.env['account.analytic.account'].create({
+            'name': 'test_analytic_account_no_company',
+            'plan_id': self.analytic_plan.id,
+        })
+        analytic_account_no_company.company_id = False
+
+        # Create a mo linked to an analytic account with no associated company
+        mo_no_company = self.env['mrp.production'].create({
+            'product_id': self.product.id,
+            'analytic_account_id': analytic_account_no_company.id,
+            'product_uom_id': self.bom.product_uom_id.id,
+        })
+
+        mo_no_c_form = Form(mo_no_company)
+        self.env['mrp.workorder'].create({
+            'name': 'Work_order',
+            'workcenter_id': self.workcenter.id,
+            'product_uom_id': self.bom.product_uom_id.id,
+            'production_id': mo_no_c_form.id,
+        })
+        mo_no_c_form.save()
+        self.assertTrue(mo_no_company.workorder_ids)

@@ -3,6 +3,7 @@
 
 from odoo import models, fields, _
 from odoo.addons.account_edi_ubl_cii.models.account_edi_common import COUNTRY_EAS
+from odoo.exceptions import UserError
 
 import logging
 
@@ -15,6 +16,8 @@ FORMAT_CODES = [
     'nlcius_1',
     'efff_1',
     'ubl_2_1',
+    'ubl_a_nz',
+    'ubl_sg',
 ]
 
 class AccountEdiFormat(models.Model):
@@ -30,18 +33,23 @@ class AccountEdiFormat(models.Model):
         customization_id = tree.find('{*}CustomizationID')
         if tree.tag == '{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice':
             return self.env['account.edi.xml.cii']
-        if customization_id is not None:
-            if 'xrechnung' in customization_id.text:
-                return self.env['account.edi.xml.ubl_de']
-            if customization_id.text == 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0':
-                return self.env['account.edi.xml.ubl_bis3']
-            if customization_id.text == 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0':
-                return self.env['account.edi.xml.ubl_nl']
         if ubl_version is not None:
             if ubl_version.text == '2.0':
                 return self.env['account.edi.xml.ubl_20']
             if ubl_version.text == '2.1':
                 return self.env['account.edi.xml.ubl_21']
+        if customization_id is not None:
+            if 'xrechnung' in customization_id.text:
+                return self.env['account.edi.xml.ubl_de']
+            if customization_id.text == 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0':
+                return self.env['account.edi.xml.ubl_nl']
+            if customization_id.text == 'urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0':
+                return self.env['account.edi.xml.ubl_a_nz']
+            if customization_id.text == 'urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:sg:3.0':
+                return self.env['account.edi.xml.ubl_sg']
+            # Allow to parse any format derived from the european semantic norm EN16931
+            if 'urn:cen.eu:en16931:2017' in customization_id.text:
+                return self.env['account.edi.xml.ubl_bis3']
         return
 
     def _get_xml_builder(self, company):
@@ -63,6 +71,10 @@ class AccountEdiFormat(models.Model):
             return self.env['account.edi.xml.ubl_de']
         if self.code == 'efff_1' and company.country_id.code == 'BE':
             return self.env['account.edi.xml.ubl_efff']
+        if self.code == 'ubl_a_nz' and company.country_id.code in ['AU', 'NZ']:
+            return self.env['account.edi.xml.ubl_a_nz']
+        if self.code == 'ubl_sg' and company.country_id.code == 'SG':
+            return self.env['account.edi.xml.ubl_sg']
 
     def _is_ubl_cii_available(self, company):
         """
@@ -148,10 +160,11 @@ class AccountEdiFormat(models.Model):
         self.ensure_one()
         if self.code != 'facturx_1_0_05':
             return super()._prepare_invoice_report(pdf_writer, edi_document)
-        if not edi_document.attachment_id:
+        attachment = edi_document.sudo().attachment_id
+        if not attachment:
             return
 
-        pdf_writer.embed_odoo_attachment(edi_document.attachment_id, subtype='text/xml')
+        pdf_writer.embed_odoo_attachment(attachment, subtype='text/xml')
         if not pdf_writer.is_pdfa:
             try:
                 pdf_writer.convert_to_pdfa()
@@ -175,9 +188,17 @@ class AccountEdiFormat(models.Model):
         self.ensure_one()
 
         if not journal:
-            # infer the journal
+            journal = self.env['account.journal'].browse(self._context.get("default_journal_id"))
+        if not journal:
+            context_move_type = self._context.get("default_move_type", "entry")
+            if context_move_type in self.env['account.move'].get_sale_types():
+                journal_type = "sale"
+            elif context_move_type in self.env['account.move'].get_purchase_types():
+                journal_type = "purchase"
+            else:
+                raise UserError(_("The journal in which to upload should either be a sale or a purchase journal."))
             journal = self.env['account.journal'].search([
-                ('company_id', '=', self.env.company.id), ('type', '=', 'purchase')
+                ('company_id', '=', self.env.company.id), ('type', '=', journal_type)
             ], limit=1)
 
         if not self._is_ubl_cii_available(journal.company_id) and self.code != 'facturx_1_0_05':
