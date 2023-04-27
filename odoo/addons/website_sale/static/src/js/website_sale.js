@@ -8,7 +8,8 @@ var _t = core._t;
 var timeout;
 
 publicWidget.registry.websiteSaleCartLink = publicWidget.Widget.extend({
-    selector: '#top_menu a[href$="/shop/cart"]',
+    // TODO in master: remove the second selector.
+    selector: '#top a[href$="/shop/cart"]:not(.js_change_lang), #top_menu a[href$="/shop/cart"]:not(.js_change_lang)',
     events: {
         'mouseenter': '_onMouseEnter',
         'mouseleave': '_onMouseLeave',
@@ -140,7 +141,7 @@ publicWidget.registry.websiteSaleCartLink = publicWidget.Widget.extend({
         if ('website_sale_cart_quantity' in sessionStorage) {
             this.cartQty = sessionStorage.getItem('website_sale_cart_quantity');
         }
-        if (this.el.querySelector('.my_cart_quantity').innerText != this.cartQty) {
+        if (this.el.querySelector('.my_cart_quantity') && this.el.querySelector('.my_cart_quantity').innerText != this.cartQty) {
             return this._rpc({route: "/shop/cart/quantity"}).then((cartQty) => {
                 this.cartQty = cartQty;
                 sessionStorage.setItem('website_sale_cart_quantity', this.cartQty);
@@ -151,7 +152,7 @@ publicWidget.registry.websiteSaleCartLink = publicWidget.Widget.extend({
      * @private
      */
     _updateCartQuantityText() {
-        if (this.cartQty !== undefined) {
+        if (this.cartQty !== undefined && this.el.querySelector('.my_cart_quantity')) {
             this.el.querySelector('.my_cart_quantity').innerText = this.cartQty;
         }
     }
@@ -331,7 +332,7 @@ publicWidget.registry.WebsiteSale = publicWidget.Widget.extend(VariantMixin, car
         var attributeIds = _.map($attributes, function (elem) {
             return $(elem).data('value_id');
         });
-        window.location.hash = 'attr=' + attributeIds.join(',');
+        window.location.replace('#attr=' + attributeIds.join(','));
     },
     /**
      * Set the checked values active.
@@ -737,7 +738,10 @@ publicWidget.registry.WebsiteSale = publicWidget.Widget.extend(VariantMixin, car
     _onChangeAttribute: function (ev) {
         if (!ev.isDefaultPrevented()) {
             ev.preventDefault();
-            this.el.querySelector('.o_wsale_products_grid_table_wrapper').classList.add('opacity-50');
+            const productGrid = this.el.querySelector(".o_wsale_products_grid_table_wrapper");
+            if (productGrid) {
+                productGrid.classList.add("opacity-50");
+            }
             $(ev.currentTarget).closest("form").submit();
         }
     },
@@ -777,6 +781,9 @@ publicWidget.registry.WebsiteSale = publicWidget.Widget.extend(VariantMixin, car
             ev.preventDefault();
             var oldurl = $this.attr('action');
             oldurl += (oldurl.indexOf("?")===-1) ? "?" : "";
+            if ($this.find('[name=noFuzzy]').val() === "true") {
+                oldurl += '&noFuzzy=true';
+            }
             var search = $this.find('input.search-query');
             window.location = oldurl + '&' + search.attr('name') + '=' + encodeURIComponent(search.val());
         }
@@ -890,7 +897,7 @@ publicWidget.registry.WebsiteSale = publicWidget.Widget.extend(VariantMixin, car
                 const selectedCombination = allCombinations.find(c => this._isValidCombination(c, attributeExclusions));
 
                 if (selectedCombination && selectedCombination.length) {
-                    window.location.hash = `attr=${selectedCombination.join(',')}`;
+                    window.location.replace('#attr=' + selectedCombination.join(','));
                 }
             }
         }
@@ -1191,7 +1198,10 @@ publicWidget.registry.multirangePriceSelector = publicWidget.Widget.extend({
         if (parseFloat(range.max) !== range.valueHigh) {
             search['max_price'] = range.valueHigh;
         }
-        this.el.querySelector('.o_wsale_products_grid_table_wrapper').classList.add('opacity-50');
+        let product_list_div = this.el.querySelector('.o_wsale_products_grid_table_wrapper');
+        if (product_list_div) {
+            product_list_div.classList.add('opacity-50');
+        }
         window.location.search = $.param(search);
     },
 });

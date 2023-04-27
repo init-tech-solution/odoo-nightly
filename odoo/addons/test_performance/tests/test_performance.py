@@ -135,7 +135,7 @@ class TestPerformance(SavepointCaseWithUserDemo):
             rec1.write({'line_ids': [Command.create({'value': 0})]})
         self.assertEqual(len(rec1.line_ids), 1)
 
-        with self.assertQueryCount(5):
+        with self.assertQueryCount(4):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.create({'value': val}) for val in range(1, 12)]})
         self.assertEqual(len(rec1.line_ids), 12)
@@ -143,23 +143,23 @@ class TestPerformance(SavepointCaseWithUserDemo):
         lines = rec1.line_ids
 
         # update N lines: O(N) queries
-        with self.assertQueryCount(6):
+        with self.assertQueryCount(5):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.update(line.id, {'value': 42}) for line in lines[0]]})
         self.assertEqual(rec1.line_ids, lines)
 
-        with self.assertQueryCount(26):
+        with self.assertQueryCount(25):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.update(line.id, {'value': 42 + line.id}) for line in lines[1:]]})
         self.assertEqual(rec1.line_ids, lines)
 
         # delete N lines: O(1) queries
-        with self.assertQueryCount(14):
+        with self.assertQueryCount(12):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.delete(line.id) for line in lines[0]]})
         self.assertEqual(rec1.line_ids, lines[1:])
 
-        with self.assertQueryCount(12):
+        with self.assertQueryCount(11):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.delete(line.id) for line in lines[1:]]})
         self.assertFalse(rec1.line_ids)
@@ -169,12 +169,12 @@ class TestPerformance(SavepointCaseWithUserDemo):
         lines = rec1.line_ids
 
         # unlink N lines: O(1) queries
-        with self.assertQueryCount(14):
+        with self.assertQueryCount(12):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.unlink(line.id) for line in lines[0]]})
         self.assertEqual(rec1.line_ids, lines[1:])
 
-        with self.assertQueryCount(12):
+        with self.assertQueryCount(11):
             self.env.invalidate_all()
             rec1.write({'line_ids': [Command.unlink(line.id) for line in lines[1:]]})
         self.assertFalse(rec1.line_ids)
@@ -185,30 +185,30 @@ class TestPerformance(SavepointCaseWithUserDemo):
         rec2 = self.env['test_performance.base'].create({'name': 'X'})
 
         # link N lines from rec1 to rec2: O(1) queries
-        with self.assertQueryCount(8):
+        with self.assertQueryCount(7):
             self.env.invalidate_all()
             rec2.write({'line_ids': [Command.link(line.id) for line in lines[0]]})
         self.assertEqual(rec1.line_ids, lines[1:])
         self.assertEqual(rec2.line_ids, lines[0])
 
-        with self.assertQueryCount(8):
+        with self.assertQueryCount(7):
             self.env.invalidate_all()
             rec2.write({'line_ids': [Command.link(line.id) for line in lines[1:]]})
         self.assertFalse(rec1.line_ids)
         self.assertEqual(rec2.line_ids, lines)
 
-        with self.assertQueryCount(4):
+        with self.assertQueryCount(3):
             self.env.invalidate_all()
             rec2.write({'line_ids': [Command.link(line.id) for line in lines[0]]})
         self.assertEqual(rec2.line_ids, lines)
 
-        with self.assertQueryCount(4):
+        with self.assertQueryCount(3):
             self.env.invalidate_all()
             rec2.write({'line_ids': [Command.link(line.id) for line in lines[1:]]})
         self.assertEqual(rec2.line_ids, lines)
 
         # empty N lines in rec2: O(1) queries
-        with self.assertQueryCount(13):
+        with self.assertQueryCount(12):
             self.env.invalidate_all()
             rec2.write({'line_ids': [Command.clear()]})
         self.assertFalse(rec2.line_ids)
@@ -685,3 +685,20 @@ class TestIncrementFieldsSkipLock(TransactionCase):
 
         self.assertEqual(self.other_record.value, 10, "other_record should not have been updated.")
         self.assertEqual(self.other_record.value_plus_one, 11, "other_record should not have been updated.")
+
+    def test_increment_fields_skiplock_null_field(self):
+        """Test that incrementing a field with a NULL value in database works.
+        When an integer is NULL in database, the ORM automatically converts it to 0.
+        However, increment_fields_skiplock is a special tool using raw sql and by-passing the ORM"""
+        # First, ensure our value is NULL in database
+        self.env.cr.execute("SELECT value_null_by_default FROM test_performance_mozzarella WHERE id = %s", (self.record.id,))
+        [value] = self.env.cr.fetchone()
+        self.assertIsNone(value)
+        self.assertEqual(self.record.value_null_by_default, 0)
+        # Then, increment its count.
+        with self.assertQueryCount(1):
+            sql.increment_fields_skiplock(self.record, 'value_null_by_default')
+        # Invalidate the cache regarding the value of `value_null_by_default` for our record to force fetching from database
+        # as `increment_fields_skiplock` only does raw SQL and doesn't assign the new value in the cache
+        self.record.invalidate_recordset(['value_null_by_default'])
+        self.assertEqual(self.record.value_null_by_default, 1)

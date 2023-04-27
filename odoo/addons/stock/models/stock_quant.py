@@ -287,7 +287,11 @@ class StockQuant(models.Model):
         for value in values:
             if 'location_id' not in value:
                 value['location_id'] = warehouse.lot_stock_id.id
-        return super()._load_records_create(values)
+        return super(StockQuant, self.with_context(inventory_mode=True))._load_records_create(values)
+
+    def _load_records_write(self, values):
+        """ Only allowed fields should be modified """
+        return super(StockQuant, self.with_context(inventory_mode=True))._load_records_write(values)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -329,6 +333,15 @@ class StockQuant(models.Model):
                 raise UserError(_("Quant's editing is restricted, you can't do this operation."))
             self = self.sudo()
         return super(StockQuant, self).write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_wrong_permission(self):
+        if not self.env.is_superuser():
+            if not self.user_has_groups('stock.group_stock_manager'):
+                raise UserError(_("Quants are auto-deleted when appropriate. If you must manually delete them, please ask a stock manager to do it."))
+            self = self.with_context(inventory_mode=True)
+            self.inventory_quantity = 0
+            self._apply_inventory()
 
     def action_view_stock_moves(self):
         self.ensure_one()
@@ -618,7 +631,7 @@ class StockQuant(models.Model):
                 self.product_id, self.location_id, lot_id=self.lot_id,
                 package_id=self.package_id, owner_id=self.owner_id, strict=True)
             if quant:
-                self.quantity = quant.quantity
+                self.quantity = quant.filtered(lambda q: q.lot_id == self.lot_id).quantity
 
             # Special case: directly set the quantity to one for serial numbers,
             # it'll trigger `inventory_quantity` compute.

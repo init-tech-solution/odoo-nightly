@@ -12,12 +12,12 @@ import logging
 import os
 import time
 from collections import defaultdict
+from functools import wraps
 from hashlib import sha256
 from itertools import chain, repeat
 from markupsafe import Markup
 
 import babel.core
-import decorator
 import pytz
 from lxml import etree
 from lxml.builder import E
@@ -83,8 +83,7 @@ def _jsonable(o):
     except TypeError: return False
     else: return True
 
-@decorator.decorator
-def check_identity(fn, self):
+def check_identity(fn):
     """ Wrapped method should be an *action method* (called from a button
     type=object), and requires extra security to be executed. This decorator
     checks if the identity (password) has been checked in the last 10mn, and
@@ -92,32 +91,36 @@ def check_identity(fn, self):
 
     Prevents access outside of interactive contexts (aka with a request)
     """
-    if not request:
-        raise UserError(_("This method can only be accessed over HTTP"))
+    @wraps(fn)
+    def wrapped(self):
+        if not request:
+            raise UserError(_("This method can only be accessed over HTTP"))
 
-    if request.session.get('identity-check-last', 0) > time.time() - 10 * 60:
-        # update identity-check-last like github?
-        return fn(self)
+        if request.session.get('identity-check-last', 0) > time.time() - 10 * 60:
+            # update identity-check-last like github?
+            return fn(self)
 
-    w = self.sudo().env['res.users.identitycheck'].create({
-        'request': json.dumps([
-            { # strip non-jsonable keys (e.g. mapped to recordsets like binary_field_real_user)
-                k: v for k, v in self.env.context.items()
-                if _jsonable(v)
-            },
-            self._name,
-            self.ids,
-            fn.__name__
-        ])
-    })
-    return {
-        'type': 'ir.actions.act_window',
-        'res_model': 'res.users.identitycheck',
-        'res_id': w.id,
-        'name': _("Security Control"),
-        'target': 'new',
-        'views': [(False, 'form')],
-    }
+        w = self.sudo().env['res.users.identitycheck'].create({
+            'request': json.dumps([
+                { # strip non-jsonable keys (e.g. mapped to recordsets like binary_field_real_user)
+                    k: v for k, v in self.env.context.items()
+                    if _jsonable(v)
+                },
+                self._name,
+                self.ids,
+                fn.__name__
+            ])
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'res.users.identitycheck',
+            'res_id': w.id,
+            'name': _("Security Control"),
+            'target': 'new',
+            'views': [(False, 'form')],
+        }
+    wrapped.__has_check_identity = True
+    return wrapped
 
 #----------------------------------------------------------
 # Basic res.groups and res.users
@@ -133,7 +136,7 @@ class Groups(models.Model):
     users = fields.Many2many('res.users', 'res_groups_users_rel', 'gid', 'uid')
     model_access = fields.One2many('ir.model.access', 'group_id', string='Access Controls', copy=True)
     rule_groups = fields.Many2many('ir.rule', 'rule_group_rel',
-        'group_id', 'rule_group_id', string='Rules', domain=[('global', '=', False)])
+        'group_id', 'rule_group_id', string='Rules', domain="[('global', '=', False)]")
     menu_access = fields.Many2many('ir.ui.menu', 'ir_ui_menu_group_rel', 'gid', 'menu_id', string='Access Menu')
     view_access = fields.Many2many('ir.ui.view', 'ir_ui_view_group_rel', 'group_id', 'view_id', string='Views')
     comment = fields.Text(translate=True)
@@ -472,9 +475,9 @@ class Users(models.Model):
                         # skip SpecialValue (e.g. for missing record or access right)
                         pass
 
-    @api.constrains('company_id', 'company_ids')
+    @api.constrains('company_id', 'company_ids', 'active')
     def _check_company(self):
-        for user in self:
+        for user in self.filtered(lambda u: u.active):
             if user.company_id not in user.company_ids:
                 raise ValidationError(
                     _('Company %(company_name)s is not in the allowed companies for user %(user_name)s (%(company_allowed)s).',
@@ -488,6 +491,14 @@ class Users(models.Model):
         action_open_website = self.env.ref('base.action_open_website', raise_if_not_found=False)
         if action_open_website and any(user.action_id.id == action_open_website.id for user in self):
             raise ValidationError(_('The "App Switcher" action cannot be selected as home action.'))
+        # Prevent using reload actions.
+        # We use sudo() because  "Access rights" admins can't read action models
+        for user in self.sudo():
+            if user.action_id.type == "ir.actions.client":
+                action = self.env["ir.actions.client"].browse(user.action_id.id)  # magic
+                if action.tag == "reload":
+                    raise ValidationError(_('The "%s" action cannot be selected as home action.', action.name))
+
 
     @api.constrains('groups_id')
     def _check_one_user_type(self):
@@ -685,12 +696,19 @@ class Users(models.Model):
             for name, key in name_to_key.items()
         }
 
-        # ensure the language is set and is compatible with the web client
-        lang = context.get('lang') or (request and request.default_lang()) or DEFAULT_LANG
-        if lang == 'ar_AR':
-            context['lang'] = 'ar'
-        if lang in babel.core.LOCALE_ALIASES:
-            context['lang'] = babel.core.LOCALE_ALIASES[lang]
+        # ensure lang is set and available
+        # context > request > company > english > any lang installed
+        langs = [code for code, _ in self.env['res.lang'].get_installed()]
+        lang = context.get('lang')
+        if lang not in langs:
+            lang = request.best_lang if request else None
+            if lang not in langs:
+                lang = self.env.user.company_id.partner_id.lang
+                if lang not in langs:
+                    lang = DEFAULT_LANG
+                    if lang not in langs:
+                        lang = langs[0] if langs else DEFAULT_LANG
+        context['lang'] = lang
 
         # ensure uid is set
         context['uid'] = self.env.uid
@@ -701,7 +719,7 @@ class Users(models.Model):
     def _get_company_ids(self):
         # use search() instead of `self.company_ids` to avoid extra query for `active_test`
         domain = [('active', '=', True), ('user_ids', 'in', self.id)]
-        return frozenset(self.env['res.company'].search(domain).ids)
+        return self.env['res.company'].search(domain)._ids
 
     @api.model
     def action_get(self):
@@ -953,7 +971,7 @@ class Users(models.Model):
         assert group_ext_id and '.' in group_ext_id, "External ID '%s' must be fully qualified" % group_ext_id
         module, ext_id = group_ext_id.split('.')
         self._cr.execute("""SELECT 1 FROM res_groups_users_rel WHERE uid=%s AND gid IN
-                            (SELECT res_id FROM ir_model_data WHERE module=%s AND name=%s)""",
+                            (SELECT res_id FROM ir_model_data WHERE module=%s AND name=%s AND model='res.groups')""",
                          (self._uid, module, ext_id))
         return bool(self._cr.fetchone())
 
@@ -1116,7 +1134,7 @@ class Users(models.Model):
                     "and *might* be a proxy. If your Odoo is behind a proxy, "
                     "it may be mis-configured. Check that you are running "
                     "Odoo in Proxy Mode and that the proxy is properly configured, see "
-                    "https://www.odoo.com/documentation/master/administration/install/deploy.html#https for details.",
+                    "https://www.odoo.com/documentation/16.0/administration/install/deploy.html#https for details.",
                     source
                 )
             raise AccessDenied(_("Too many login failures, please wait a bit before trying again."))
@@ -1243,8 +1261,17 @@ class GroupsImplied(models.Model):
         groups = self.filtered(lambda g: implied_group in g.implied_ids)
         if groups:
             groups.write({'implied_ids': [Command.unlink(implied_group.id)]})
-            if groups.users:
-                implied_group.write({'users': [Command.unlink(user.id) for user in groups.users]})
+            # if user belongs to implied_group thanks to another group, don't remove him
+            # this avoids readding the template user and triggering the mechanism at 121cd0d6084cb28
+            users_to_unlink = [
+                user
+                for user in groups.with_context(active_test=False).users
+                if implied_group not in (user.groups_id - implied_group).trans_implied_ids
+            ]
+            if users_to_unlink:
+                # do not remove inactive users (e.g. default)
+                implied_group.with_context(active_test=False).write(
+                    {'users': [Command.unlink(user.id) for user in users_to_unlink]})
 
 class UsersImplied(models.Model):
     _inherit = 'res.users'
@@ -1614,16 +1641,17 @@ class UsersView(models.Model):
             missing_implied_groups = missing_implied_groups.filtered(
                 lambda g:
                 g.category_id not in (group.category_id | categories_to_ignore) and
-                g not in current_groups_by_category[g.category_id]
+                g not in current_groups_by_category[g.category_id] and
+                (self.user_has_groups('base.group_no_one') or g.category_id)
             )
             if missing_implied_groups:
                 # prepare missing group message, by categories
-                missing_groups[group] = ", ".join(f'"{missing_group.category_id.name}: {missing_group.name}"'
+                missing_groups[group] = ", ".join(f'"{missing_group.category_id.name or _("Other")}: {missing_group.name}"'
                                                   for missing_group in missing_implied_groups)
         return "\n".join(
             _('Since %(user)s is a/an "%(category)s: %(group)s", they will at least obtain the right %(missing_group_message)s',
               user=user.name,
-              category=group.category_id.name,
+              category=group.category_id.name or _('Other'),
               group=group.name,
               missing_group_message=missing_group_message
              ) for group, missing_group_message in missing_groups.items()
@@ -1813,7 +1841,9 @@ class CheckIdentity(models.TransientModel):
 
         request.session['identity-check-last'] = time.time()
         ctx, model, ids, method = json.loads(self.sudo().request)
-        return getattr(self.env(context=ctx)[model].browse(ids), method)()
+        method = getattr(self.env(context=ctx)[model].browse(ids), method)
+        assert getattr(method, '__has_check_identity', False)
+        return method()
 
 #----------------------------------------------------------
 # change password wizard
@@ -1940,7 +1970,8 @@ class APIKeysUser(models.Model):
         }
 
 class APIKeys(models.Model):
-    _name = _description = 'res.users.apikeys'
+    _name = 'res.users.apikeys'
+    _description = 'Users API Keys'
     _auto = False # so we can have a secret column
 
     name = fields.Char("Description", required=True, readonly=True)
@@ -2028,7 +2059,8 @@ class APIKeys(models.Model):
         return k
 
 class APIKeyDescription(models.TransientModel):
-    _name = _description = 'res.users.apikeys.description'
+    _name = 'res.users.apikeys.description'
+    _description = 'API Key Description'
 
     name = fields.Char("Description", required=True)
 
@@ -2044,7 +2076,7 @@ class APIKeyDescription(models.TransientModel):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'res.users.apikeys.show',
-            'name': 'API Key Ready',
+            'name': _('API Key Ready'),
             'views': [(False, 'form')],
             'target': 'new',
             'context': {
@@ -2057,7 +2089,8 @@ class APIKeyDescription(models.TransientModel):
             raise AccessError(_("Only internal users can create API keys"))
 
 class APIKeyShow(models.AbstractModel):
-    _name = _description = 'res.users.apikeys.show'
+    _name = 'res.users.apikeys.show'
+    _description = 'Show API Key'
 
     # the field 'id' is necessary for the onchange that returns the value of 'key'
     id = fields.Id()

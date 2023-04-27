@@ -7,7 +7,7 @@ import { serializeDate, serializeDateTime } from "@web/core/l10n/dates";
 import { _lt } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 
-const { Component, useState } = owl;
+import { Component, useState } from "@odoo/owl";
 
 const { DateTime } = luxon;
 
@@ -15,6 +15,7 @@ const formatters = registry.category("formatters");
 const parsers = registry.category("parsers");
 
 const FIELD_TYPES = {
+    binary: "binary",
     boolean: "boolean",
     char: "char",
     date: "date",
@@ -33,6 +34,10 @@ const FIELD_TYPES = {
 
 // FilterMenu parameters
 const FIELD_OPERATORS = {
+    binary: [
+        { symbol: "!=", description: _lt("is set"), value: false },
+        { symbol: "=", description: _lt("is not set"), value: false },
+    ],
     boolean: [
         { symbol: "=", description: _lt("is Yes"), value: true },
         { symbol: "!=", description: _lt("is No"), value: true },
@@ -313,7 +318,10 @@ export class CustomFilterItem extends Component {
         } catch (_err) {
             // Parsing error: nothing is done
         }
-        ev.target.value = condition.displayedValue;
+        // Only reset the target's value if it is not a selection field.
+        if (field.type !== "selection") {
+            ev.target.value = condition.displayedValue;
+        }
     }
 }
 

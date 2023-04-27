@@ -6,14 +6,13 @@ import { getDataURLFromFile } from "@web/core/utils/urls";
 import { session } from "@web/session";
 import { formatFloat } from "./formatters";
 
-const { Component, useRef, useState } = owl;
+import { Component, useRef, useState } from "@odoo/owl";
 
 const DEFAULT_MAX_FILE_SIZE = 128 * 1024 * 1024;
 
 export class FileUploader extends Component {
     setup() {
         this.notification = useService("notification");
-        this.id = `o_fileupload_${++FileUploader.nextId}`;
         this.fileInputRef = useRef("fileInput");
         this.state = useState({
             isUploading: false,
@@ -74,4 +73,3 @@ export class FileUploader extends Component {
 }
 
 FileUploader.template = "web.FileUploader";
-FileUploader.nextId = 0;

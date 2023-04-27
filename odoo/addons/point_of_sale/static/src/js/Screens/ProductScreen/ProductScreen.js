@@ -9,6 +9,7 @@ odoo.define('point_of_sale.ProductScreen', function(require) {
     const { useBarcodeReader } = require('point_of_sale.custom_hooks');
     const { isConnectionError } = require('point_of_sale.utils');
     const { parse } = require('web.field_utils');
+    const { _lt } = require('@web/core/l10n/translation');
 
     const { onMounted, useState } = owl;
 
@@ -16,6 +17,7 @@ odoo.define('point_of_sale.ProductScreen', function(require) {
         setup() {
             super.setup();
             useListener('update-selected-orderline', this._updateSelectedOrderline);
+            useListener('select-line', this._selectLine);
             useListener('set-numpad-mode', this._setNumpadMode);
             useListener('click-product', this._clickProduct);
             useListener('click-partner', this.onClickPartner);
@@ -161,9 +163,14 @@ odoo.define('point_of_sale.ProductScreen', function(require) {
             NumberBuffer.reset();
             this.env.pos.numpadMode = mode;
         }
+        _selectLine() {
+            NumberBuffer.reset();
+        }
         async _updateSelectedOrderline(event) {
             if (this.env.pos.numpadMode === 'quantity' && this.env.pos.disallowLineQuantityChange()) {
                 let order = this.env.pos.get_order();
+                if(!order.orderlines.length)
+                    return;
                 let selectedLine = order.get_selected_orderline();
                 let orderlines = order.orderlines;
                 let lastId = orderlines.length !== 0 && orderlines.at(orderlines.length - 1).cid;
@@ -261,18 +268,15 @@ odoo.define('point_of_sale.ProductScreen', function(require) {
                     merge: false,
                 });
             }
-            this.currentOrder.add_product(product,  options)
+            this.currentOrder.add_product(product,  options);
+            NumberBuffer.reset();
         }
         _barcodePartnerAction(code) {
             const partner = this.env.pos.db.get_partner_by_barcode(code.code);
             if (partner) {
                 if (this.currentOrder.get_partner() !== partner) {
                     this.currentOrder.set_partner(partner);
-                    this.currentOrder.set_pricelist(
-                        _.findWhere(this.env.pos.pricelists, {
-                            id: partner.property_product_pricelist[0],
-                        }) || this.env.pos.default_pricelist
-                    );
+                    this.currentOrder.updatePricelist(partner);
                 }
                 return true;
             }
@@ -376,6 +380,7 @@ odoo.define('point_of_sale.ProductScreen', function(require) {
         }
     }
     ProductScreen.template = 'ProductScreen';
+    ProductScreen.numpadActionName = _lt('Payment');
 
     Registries.Component.add(ProductScreen);
 

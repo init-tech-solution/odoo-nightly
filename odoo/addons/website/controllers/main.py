@@ -21,12 +21,14 @@ import odoo
 
 from odoo import http, models, fields, _
 from odoo.exceptions import AccessError
-from odoo.http import request
+from odoo.http import request, SessionExpiredException
 from odoo.osv import expression
 from odoo.tools import OrderedSet, escape_psql, html_escape as escape
 from odoo.addons.http_routing.models.ir_http import slug, slugify, _guess_mimetype
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.addons.portal.controllers.web import Home
+from odoo.addons.web.controllers.binary import Binary
+from odoo.addons.website.tools import get_base_domain
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +105,7 @@ class Website(Home):
         if homepage_url and homepage_url != '/':
             try:
                 return request._serve_ir_http()
-            except (AccessError, NotFound):
+            except (AccessError, NotFound, SessionExpiredException):
                 pass
 
         # Fallback on first accessible menu
@@ -137,7 +139,7 @@ class Website(Home):
 
         if not isredir and website.domain:
             domain_from = request.httprequest.environ.get('HTTP_HOST', '')
-            domain_to = werkzeug.urls.url_parse(website.domain).netloc
+            domain_to = get_base_domain(website.domain)
             if domain_from != domain_to:
                 # redirect to correct domain for a correct routing map
                 url_to = werkzeug.urls.url_join(website.domain, '/website/force/%s?isredir=1&path=%s' % (website.id, path))
@@ -775,7 +777,32 @@ class Website(Home):
         return request.redirect('/')
 
 
-class WebsiteBinary(http.Controller):
+class WebsiteBinary(Binary):
+
+    # Retrocompatibility routes
+    @http.route([
+        '/website/image',
+        '/website/image/<xmlid>',
+        '/website/image/<xmlid>/<int:width>x<int:height>',
+        '/website/image/<xmlid>/<field>',
+        '/website/image/<xmlid>/<field>/<int:width>x<int:height>',
+        '/website/image/<model>/<id>/<field>',
+        '/website/image/<model>/<id>/<field>/<int:width>x<int:height>'
+    ], type='http', auth="public", website=False, multilang=False)
+    # pylint: disable=redefined-builtin,invalid-name
+    def website_content_image(self, id=None, max_width=0, max_height=0, **kw):
+        if max_width:
+            kw['width'] = max_width
+        if max_height:
+            kw['height'] = max_height
+        if id:
+            id, _, unique = id.partition('_')
+            kw['id'] = int(id)
+            if unique:
+                kw['unique'] = unique
+        return self.content_image(**kw)
+
+    # TODO in master: move this route outside the WebsiteBinary class
     # if not icon provided in DOM, browser tries to access /favicon.ico, eg when opening an order pdf
     @http.route(['/favicon.ico'], type='http', auth='public', website=True, multilang=False, sitemap=False)
     def favicon(self, **kw):

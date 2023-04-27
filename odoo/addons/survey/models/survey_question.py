@@ -49,7 +49,7 @@ class SurveyQuestion(models.Model):
     # question generic data
     title = fields.Char('Title', required=True, translate=True)
     description = fields.Html(
-        'Description', translate=True, sanitize=False,  # TDE TODO: sanitize but find a way to keep youtube iframe media stuff
+        'Description', translate=True, sanitize=True, sanitize_overridable=True,
         help="Use this field to add additional explanations about your question or to illustrate it with pictures or a video")
     question_placeholder = fields.Char("Placeholder", translate=True, compute="_compute_question_placeholder", store=True, readonly=False)
     background_image = fields.Image("Background Image", compute="_compute_background_image", store=True, readonly=False)
@@ -112,7 +112,7 @@ class SurveyQuestion(models.Model):
     # -- comments (simple choice, multiple choice, matrix (without count as an answer))
     comments_allowed = fields.Boolean('Show Comments Field')
     comments_message = fields.Char('Comment Message', translate=True)
-    comment_count_as_answer = fields.Boolean('Comment Field is an Answer Choice')
+    comment_count_as_answer = fields.Boolean('Comment is an answer')
     # question validation
     validation_required = fields.Boolean('Validate entry', compute='_compute_validation_required', readonly=False, store=True)
     validation_email = fields.Boolean('Input must be an email')

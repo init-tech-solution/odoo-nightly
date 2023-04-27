@@ -70,8 +70,8 @@ export class AnalyticDistribution extends Component {
             fieldString: this.env._t("Analytic Distribution Template"),
         });
         this.allPlans = [];
-        this.lastAccount = this.props.account_field ? this.props.record.data[this.props.account_field] : false;
-        this.lastProduct = this.props.product_field ? this.props.record.data[this.props.product_field] : false;
+        this.lastAccount = this.props.account_field && this.props.record.data[this.props.account_field] || false;
+        this.lastProduct = this.props.product_field && this.props.record.data[this.props.product_field] || false;
     }
 
     // Lifecycle
@@ -79,12 +79,6 @@ export class AnalyticDistribution extends Component {
         if (this.editingRecord) {
             await this.fetchAllPlans(this.props);
         }
-        const args = {
-            domain: [["name", "like", "Percentage Analytic"]],
-            fields: ["digits"],
-            context: [],
-        }
-        this.decimal_precision = await this.orm.call("decimal.precision", "search_read", [], args);
         await this.formatData(this.props);
     }
 
@@ -94,8 +88,8 @@ export class AnalyticDistribution extends Component {
         // or a model applies that contains unavailable plans
         // This should only execute when these fields have changed, therefore we use the `_field` props.
         const valueChanged = JSON.stringify(this.props.value) !== JSON.stringify(nextProps.value);
-        const currentAccount = this.props.account_field ? this.props.record.data[this.props.account_field] : false;
-        const currentProduct = this.props.product_field ? this.props.record.data[this.props.product_field] : false;
+        const currentAccount = this.props.account_field && this.props.record.data[this.props.account_field] || false;
+        const currentProduct = this.props.product_field && this.props.record.data[this.props.product_field] || false;
         const accountChanged = !shallowEqual(this.lastAccount, currentAccount);
         const productChanged = !shallowEqual(this.lastProduct, currentProduct);
         if (valueChanged || accountChanged || productChanged) {
@@ -116,9 +110,6 @@ export class AnalyticDistribution extends Component {
         const data = nextProps.value;
         const analytic_account_ids = Object.keys(data).map((id) => parseInt(id));
         const records = analytic_account_ids.length ? await this.fetchAnalyticAccounts([["id", "in", analytic_account_ids]]) : [];
-        if (records.length < data.length) {
-            console.log('removing tags... value should be updated');
-        }
         let widgetData = Object.assign({}, ...this.allPlans.map((plan) => ({[plan.id]: {...plan, distribution: []}})));
         records.map((record) => {
             if (!widgetData[record.root_plan_id[0]]) {
@@ -130,12 +121,17 @@ export class AnalyticDistribution extends Component {
                 percentage: data[record.id],
                 id: this.nextId++,
                 group_id: record.root_plan_id[0],
-                analytic_account_name: record.name,
+                analytic_account_name: record.display_name,
                 color: record.color,
             });
         });
 
         this.state.list = widgetData;
+        if (records.length < Object.keys(data).length) {
+            // analytic accounts were not found for some keys in the json data, they may have been deleted
+            // save the json without them
+            this.save();
+        }
     }
 
     // ORM
@@ -160,6 +156,9 @@ export class AnalyticDistribution extends Component {
         if (existing_account_ids.length) {
             args['existing_account_ids'] = existing_account_ids;
         }
+        if (this.props.record.data.company_id) {
+            args['company_id'] = this.props.record.data.company_id[0];
+        }
         return args;
     }
 
@@ -172,7 +171,7 @@ export class AnalyticDistribution extends Component {
     async fetchAnalyticAccounts(domain, limit=null) {
         const args = {
             domain: domain,
-            fields: ["id", "name", "root_plan_id", "color"],
+            fields: ["id", "display_name", "root_plan_id", "color"],
             context: [],
         }
         if (limit) {
@@ -199,16 +198,23 @@ export class AnalyticDistribution extends Component {
 
     async loadOptionsSourceAnalytic(request) {
         let domain = [['id', 'not in', this.existingAnalyticAccountIDs]];
+        if (this.props.record.data.company_id){
+            domain.push(
+                '|',
+                ['company_id', '=', this.props.record.data.company_id[0]],
+                ['company_id', '=', false]
+            );
+        }
 
         if (this.activeGroup) {
             domain.push(['root_plan_id', '=', this.activeGroup]);
         }
 
-        const records = await this.fetchAnalyticAccounts([...domain, ["name", "ilike", request]], 7);
+        const records = await this.fetchAnalyticAccounts([...domain, '|', ["name", "ilike", request], '|', ['code', 'ilike', request], ['partner_id', 'ilike', request]], 7);
 
         let options = records.map((result) => ({
             value: result.id,
-            label: result.name,
+            label: result.display_name,
             group_id: result.root_plan_id[0],
             color: result.color,
         }));
@@ -565,15 +571,18 @@ export class AnalyticDistribution extends Component {
     }
 
     formatPercentage(value) {
-        return formatPercentage(value / 100, { digits: [false, this.decimal_precision[0].digits || 2] });
-
+        return formatPercentage(value / 100, { digits: [false, this.props.record.data.analytic_precision || 2] });
     }
 }
-AnalyticDistribution.template = "analytic_distribution";
+AnalyticDistribution.template = "analytic.AnalyticDistribution";
 AnalyticDistribution.supportedTypes = ["char", "text"];
 AnalyticDistribution.components = {
     AnalyticAutoComplete,
     TagsList,
+}
+
+AnalyticDistribution.fieldDependencies = {
+    analytic_precision: { type: 'integer' },
 }
 AnalyticDistribution.props = {
     ...standardFieldProps,
@@ -595,8 +604,4 @@ AnalyticDistribution.extractProps = ({ field, attrs }) => {
     };
 };
 
-export class AnalyticDistributionForm extends AnalyticDistribution {}
-AnalyticDistributionForm.template = "analytic_distribution_form";
-
 registry.category("fields").add("analytic_distribution", AnalyticDistribution);
-registry.category("fields").add("form.analytic_distribution", AnalyticDistributionForm);

@@ -33,16 +33,23 @@ import { SelectCreateDialog } from "@web/views/view_dialogs/select_create_dialog
  * @property {Function | null} onDelete
  */
 
-const { Component, useComponent, useEffect, useEnv, useSubEnv, onWillUpdateProps } = owl;
+import {
+    Component,
+    useComponent,
+    useEffect,
+    useEnv,
+    useSubEnv,
+    onWillUpdateProps,
+} from "@odoo/owl";
 
 //
 // Commons
 //
-export function useSelectCreate({ resModel, activeActions, onSelected, onCreateEdit }) {
+export function useSelectCreate({ resModel, activeActions, onSelected, onCreateEdit, onUnselect }) {
     const env = useEnv();
     const addDialog = useOwnedDialogs();
 
-    function selectCreate({ domain, context, filters, title }) {
+    function selectCreate({ domain, context, filters, title, kanbanViewId }) {
         addDialog(SelectCreateDialog, {
             title: title || env._t("Select records"),
             noCreate: !activeActions.create,
@@ -53,6 +60,8 @@ export function useSelectCreate({ resModel, activeActions, onSelected, onCreateE
             onSelected,
             onCreateEdit: () => onCreateEdit({ context }),
             dynamicFilters: filters,
+            onUnselect,
+            kanbanViewId,
         });
     }
     return selectCreate;
@@ -147,6 +156,11 @@ export class Many2XAutocomplete extends Component {
             onRecordSaved: (record) => {
                 return update([record.data]);
             },
+            onRecordDiscarded: () => {
+                if (!isToMany) {
+                    this.props.update(false);
+                }
+            },
             fieldString,
             onClose: () => {
                 const autoCompleteInput = this.autoCompleteContainer.el.querySelector("input");
@@ -172,6 +186,7 @@ export class Many2XAutocomplete extends Component {
                 return update(values);
             },
             onCreateEdit: ({ context }) => this.openMany2X({ context }),
+            onUnselect: isToMany ? false : () => update(),
         });
     }
 
@@ -213,13 +228,17 @@ export class Many2XAutocomplete extends Component {
     }
 
     async loadOptionsSource(request) {
-        const records = await this.orm.call(this.props.resModel, "name_search", [], {
+        if (this.lastProm) {
+            this.lastProm.abort(false);
+        }
+        this.lastProm = this.orm.call(this.props.resModel, "name_search", [], {
             name: request,
             operator: "ilike",
             args: this.props.getDomain(),
             limit: this.props.searchLimit + 1,
             context: this.props.context,
         });
+        const records = await this.lastProm;
 
         const options = records.map((result) => ({
             value: result[0],
@@ -233,9 +252,28 @@ export class Many2XAutocomplete extends Component {
                 action: async (params) => {
                     try {
                         await this.props.quickCreate(request, params);
-                    } catch {
-                        const context = this.getCreationContext(request);
-                        return this.openMany2X({ context });
+                    } catch (e) {
+                        if (
+                            e &&
+                            e.name === "RPC_ERROR" &&
+                            e.exceptionName === "odoo.exceptions.ValidationError"
+                        ) {
+                            const context = this.getCreationContext(request);
+                            return this.openMany2X({ context });
+                        }
+                        // Compatibility with legacy code
+                        if (
+                            e &&
+                            e.message &&
+                            e.message.name === "RPC_ERROR" &&
+                            e.message.exceptionName === "odoo.exceptions.ValidationError"
+                        ) {
+                            // The event.preventDefault() is necessary because we still use the legacy
+                            e.event.preventDefault();
+                            const context = this.getCreationContext(request);
+                            return this.openMany2X({ context });
+                        }
+                        throw e;
                     }
                 },
             });
@@ -281,7 +319,7 @@ export class Many2XAutocomplete extends Component {
         return options;
     }
 
-    async onSearchMoreSmall() {
+    async onBarcodeSearch() {
         const autoCompleteInput = this.autoCompleteContainer.el.querySelector("input");
         return this.onSearchMore(autoCompleteInput.value);
     }
@@ -314,6 +352,7 @@ export class Many2XAutocomplete extends Component {
             context,
             filters: dynamicFilters,
             title,
+            kanbanViewId: this.props.kanbanViewId,
         });
     }
 
@@ -337,6 +376,7 @@ Many2XAutocomplete.defaultProps = {
 export function useOpenMany2XRecord({
     resModel,
     onRecordSaved,
+    onRecordDiscarded,
     fieldString,
     activeActions,
     isToMany,
@@ -379,6 +419,7 @@ export function useOpenMany2XRecord({
                 resModel: model,
                 viewId,
                 onRecordSaved,
+                onRecordDiscarded,
                 isToMany,
             },
             {
@@ -414,7 +455,13 @@ export class X2ManyFieldDialog extends Component {
         this.modalRef = useChildRef();
 
         const reload = () => this.record.load();
-        useViewButtons(this.props.record.model, this.modalRef, { reload }); // maybe pass the model directly in props
+
+        useViewButtons(this.props.record.model, this.modalRef, {
+            reload,
+            beforeExecuteAction: this.beforeExecuteActionButton.bind(this),
+        }); // maybe pass the model directly in props
+
+        this.canCreate = !this.record.resId;
 
         if (this.archInfo.xmlDoc.querySelector("footer")) {
             this.footerArchInfo = Object.assign({}, this.archInfo);
@@ -449,6 +496,12 @@ export class X2ManyFieldDialog extends Component {
                 },
                 () => [this.record.isInEdition]
             );
+        }
+    }
+
+    async beforeExecuteActionButton(clickParams) {
+        if (clickParams.special !== "cancel") {
+            return this.record.save();
         }
     }
 
@@ -524,7 +577,10 @@ async function getFormViewInfo({ list, activeField, viewService, userService, en
             views: [[false, "form"]],
         });
         const archInfo = new FormArchParser().parse(views.form.arch, relatedModels, comodel);
-        formViewInfo = { ...archInfo, fields }; // should be good to memorize this on activeField
+        // Fields that need to be defined are the ones in the form view, this is natural,
+        // plus the ones that the list record has, that is, present in either the list arch or the kanban arch
+        // of the one2many field
+        formViewInfo = { ...archInfo, fields: { ...list.fields, ...fields } }; // should be good to memorize this on activeField
     }
 
     await loadSubViews(
@@ -623,7 +679,7 @@ export function useOpenX2ManyRecord({
                         return model.addNewRecord(
                             list,
                             {
-                                context: list.context,
+                                context: makeContext([list.context, context]),
                                 resModel: resModel,
                                 activeFields: form.activeFields,
                                 fields: { ...form.fields },
