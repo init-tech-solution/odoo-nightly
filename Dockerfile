@@ -1,5 +1,7 @@
 FROM python:3.9.15-slim-bullseye
 
+LABEL org.opencontainers.image.source=https://github.com/init-tech-solution/odoo-nightly
+
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG=C.UTF-8
 
