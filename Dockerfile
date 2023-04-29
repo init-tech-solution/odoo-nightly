@@ -5,6 +5,7 @@ LABEL org.opencontainers.image.source=https://github.com/init-tech-solution/odoo
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG=C.UTF-8
 
+
 # INIT: Create "odoo" user
 RUN useradd -ms /bin/bash odoo && groupadd odoo_group && usermod -a -G odoo_group odoo
 
