@@ -89,7 +89,9 @@ RUN mkdir -p /etc/odoo/ \
 # INIT: "odoo data" folder
 RUN mkdir -p /var/lib/odoo/data \
     && chown -R :odoo_group /var/lib/odoo/data
-COPY ./etc/odoo.conf /etc/odoo/
+
+COPY ./etc/odoo.conf.tmpl /etc/odoo/odoo.conf
+COPY ./etc/odoo.con[f] /etc/odoo/
 
 RUN chown :odoo_group /etc/odoo/odoo.conf \
     # INIT: Source "odoo custom" extra-addons folder
