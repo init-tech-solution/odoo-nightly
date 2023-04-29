@@ -102,5 +102,5 @@ COPY ./extra-addons /var/lib/odoo/extra-addons
 ENV ODOO_RC=/etc/odoo/odoo.conf
 # USER odoo
 
-CMD [ "runuser", "-l", "odoo", "-c", "'python /var/lib/odoo/odoo-bin -c /etc/odoo/odoo.conf'" ] 
+CMD [ "runuser", "-l", "odoo", "-c", "'/usr/local/bin/python /var/lib/odoo/odoo-bin -c /etc/odoo/odoo.conf'" ] 
 # CMD [ "python", "/var/lib/odoo/odoo-bin", "-c", "/etc/odoo/odoo.conf" ]
