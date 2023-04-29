@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG=C.UTF-8
 
 # INIT: Create "odoo" user
-RUN useradd -ms /bin/bash odoo
+RUN useradd -ms /bin/bash odoo && groupadd odoo_group && usermod -a -G odoo_group odoo
 
 # INIT: Source "odoo core" folder
 WORKDIR /var/lib/odoo
@@ -16,6 +16,8 @@ COPY ./odoo /var/lib/odoo/odoo
 # COPY ./addons /var/lib/odoo/addons
 # COPY ./odoo.egg-info /var/lib/odoo/odoo.egg-info
 # COPY ./setup /var/lib/odoo/setup
+
+RUN chown :odoo_group /var/lib/odoo/odoo
 
 # INIT: Copy files
 # COPY ./LICENSE /var/lib/odoo/
@@ -82,21 +84,22 @@ RUN pip install -r /var/lib/odoo/requirements.txt
 
 # INIT: "odoo config" folder
 RUN mkdir -p /etc/odoo/ \
-    && chown -R odoo /etc/odoo/
+    && chown -R :odoo_group /etc/odoo/
 # INIT: "odoo data" folder
 RUN mkdir -p /var/lib/odoo/data \
-    && chown -R odoo /var/lib/odoo/data
+    && chown -R :odoo_group /var/lib/odoo/data
 COPY ./etc/odoo.conf /etc/odoo/
 
-RUN chown odoo /etc/odoo/odoo.conf \
+RUN chown :odoo_group /etc/odoo/odoo.conf \
     # INIT: Source "odoo custom" extra-addons folder
     && mkdir -p /var/lib/odoo/extra-addons \
-    && chown -R odoo /var/lib/odoo/extra-addons
+    && chown -R :odoo_group /var/lib/odoo/extra-addons
 COPY ./extra-addons /var/lib/odoo/extra-addons
 
 # VOLUME ["/var/lib/odoo" "/mnt/extra-addons"]
 # EXPOSE 8069 8071 8072
 ENV ODOO_RC=/etc/odoo/odoo.conf
-USER odoo
+# USER odoo
 
-CMD [ "python", "/var/lib/odoo/odoo-bin", "-c", "/etc/odoo/odoo.conf" ]
+CMD [ "runuser", "-l", "odoo", "-c", "'python /var/lib/odoo/odoo-bin -c /etc/odoo/odoo.conf'" ] 
+# CMD [ "python", "/var/lib/odoo/odoo-bin", "-c", "/etc/odoo/odoo.conf" ]
