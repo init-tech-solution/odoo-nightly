@@ -100,7 +100,7 @@ COPY ./extra-addons /var/lib/odoo/extra-addons
 # VOLUME ["/var/lib/odoo" "/mnt/extra-addons"]
 # EXPOSE 8069 8071 8072
 ENV ODOO_RC=/etc/odoo/odoo.conf
-# USER odoo
+USER odoo
 
-CMD [ "runuser", "-l", "odoo", "-c", "'/usr/local/bin/python /var/lib/odoo/odoo-bin -c /etc/odoo/odoo.conf'" ] 
-# CMD [ "python", "/var/lib/odoo/odoo-bin", "-c", "/etc/odoo/odoo.conf" ]
+# CMD [ "runuser", "-l", "odoo", "-c", "'/usr/local/bin/python /var/lib/odoo/odoo-bin -c /etc/odoo/odoo.conf'" ]
+CMD [ "python", "/var/lib/odoo/odoo-bin", "-c", "/etc/odoo/odoo.conf" ]
