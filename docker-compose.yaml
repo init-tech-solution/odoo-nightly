@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+
+  odoo-v16:
+    # admin:GWTUjm4E64n5Cr
+    image: gcr.io/init-page/odoo-v16:${VERSION} # docker build -t odoo-v16 .
+    command: python /var/lib/odoo/odoo-bin ${ODOO_CMD_OPTIONS} -c /etc/odoo/odoo.conf
+    volumes:
+      - odoo-v16-data:/var/lib/odoo/data
+      - odoo-v16-extra_addons:/var/lib/odoo/extra-addons
+      - odoo-v16-etc_odoo:/etc/odoo
+    networks:
+      - swarm-network
+      - traefik-network
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-network
+        - traefik.constraint-label=traefik-network
+        # redirect HTTP -> HTTPS
+        - traefik.http.routers.odoo-v16-http.rule=HostRegexp(`{subdomain:[a-z|-]+}.odoo-v16.init.vn`)
+        - traefik.http.routers.odoo-v16-http.entrypoints=http
+        - traefik.http.routers.odoo-v16-http.service=odoo-v16
+        - traefik.http.routers.odoo-v16-http.middlewares=https-redirect
+        # HTTPS Longpolling
+        - traefik.http.routers.odoo-v16-longpolling-https.rule=HostRegexp(`{subdomain:[a-z|-]+}.odoo-v16.init.vn`) && PathPrefix(`/longpolling`)
+        - traefik.http.routers.odoo-v16-longpolling-https.entrypoints=https
+        - traefik.http.routers.odoo-v16-longpolling-https.service=odoo-v16-longpolling
+        - traefik.http.routers.odoo-v16-longpolling-https.middlewares=odoo-sslheader,odoo-limit
+        - traefik.http.routers.odoo-v16-longpolling-https.tls=true
+        - traefik.http.routers.odoo-v16-longpolling-https.tls.certresolver=le
+        # HTTPS
+        - traefik.http.routers.odoo-v16-https.rule=HostRegexp(`{subdomain:[a-z|-]+}.odoo-v16.init.vn`)
+        - traefik.http.routers.odoo-v16-https.entrypoints=https
+        - traefik.http.routers.odoo-v16-https.service=odoo-v16
+        - traefik.http.routers.odoo-v16-https.middlewares=odoo-sslheader,odoo-limit
+        - traefik.http.routers.odoo-v16-https.tls=true
+        - traefik.http.routers.odoo-v16-https.tls.certresolver=le
+        # Services
+        - traefik.http.services.odoo-v16.loadbalancer.server.port=8069
+        - traefik.http.services.odoo-v16-longpolling.loadbalancer.server.port=8072
+        # Odoo middlewares
+        - traefik.http.middlewares.odoo-sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
+        - traefik.http.middlewares.odoo-limit.buffering.memRequestBodyBytes=20971520
+        - traefik.http.middlewares.odoo-limit.buffering.maxRequestBodyBytes=20971520
+
+networks:
+  swarm-network:
+    external: true
+  traefik-network:
+    external: true
+
+volumes:
+  odoo-v16-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /var/lib/docker-data/odoo-v16/odoo-v16-data
+  odoo-v16-extra_addons:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /var/lib/docker-data/odoo-v16/odoo-v16-extra_addons
+  odoo-v16-etc_odoo:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /var/lib/docker-data/odoo-v16/odoo-v16-etc_odoo
