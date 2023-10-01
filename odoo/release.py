@@ -36,4 +36,4 @@ license = 'LGPL-3'
 
 nt_service_name = "odoo-server-" + series.replace('~','-')
 
-version += '-20230930'
+version += '-20231001'
