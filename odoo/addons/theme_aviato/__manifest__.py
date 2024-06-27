@@ -5,9 +5,9 @@
     'summary': 'Travel, Excursion, Plane, Tour, Agency ',
     'sequence': 130,
     'version': '1.0.0',
-    'author': 'Odoo S.A.',
     'depends': ['theme_common'],
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images_library.xml',
 
@@ -20,6 +20,7 @@
         'views/snippets/s_popup.xml',
         'views/snippets/s_title.xml',
         'views/snippets/s_quotes_carousel.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/aviato_cover.jpg',
@@ -32,7 +33,7 @@
         'website.s_three_columns_default_image_3': '/theme_aviato/static/src/img/content/s_three_columns_3.jpg',
         'website.s_picture_default_image': '/theme_aviato/static/src/img/content/s_picture.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_cover', 's_text_image', 's_image_text', 's_title', 's_three_columns', 's_picture'],
     },
     'license': 'LGPL-3',

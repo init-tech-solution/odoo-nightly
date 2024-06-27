@@ -92,7 +92,8 @@ class TestStockValuationLCCommon(TestStockLandedCostsCommon):
 
         in_move._action_confirm()
         in_move._action_assign()
-        in_move.move_line_ids.qty_done = quantity
+        in_move.move_line_ids.quantity = quantity
+        in_move.picked = True
         in_move._action_done()
 
         self.days += 1
@@ -129,7 +130,8 @@ class TestStockValuationLCCommon(TestStockLandedCostsCommon):
                 'location_id': out_move.location_id.id,
                 'location_dest_id': out_move.location_dest_id.id,
             })
-        out_move.move_line_ids.qty_done = quantity
+        out_move.move_line_ids.quantity = quantity
+        out_move.picked = True
         out_move._action_done()
 
         self.days += 1
@@ -183,7 +185,7 @@ class TestStockValuationLCFIFO(TestStockValuationLCCommon):
     def test_alreadyout_3(self):
         move1 = self._make_in_move(self.product1, 10, unit_cost=10, create_picking=True)
         move2 = self._make_out_move(self.product1, 10)
-        move1.move_line_ids.qty_done = 15
+        move1.move_line_ids.quantity = 15
         lc = self._make_lc(move1, 60)
 
         self.assertEqual(self.product1.value_svl, 70)
@@ -199,8 +201,8 @@ class TestStockValuationLCFIFO(TestStockValuationLCCommon):
         in_svl = self.product1.stock_valuation_layer_ids.sorted()[-1]
 
         self.assertEqual(out_svl.value, -250)
-        # 15 * 16.67
-        self.assertAlmostEqual(in_svl.value, 250.05)
+        # 15 * 16.66
+        self.assertAlmostEqual(in_svl.value, 249.9)
 
     def test_rounding_1(self):
         """3@100, out 1, out 1, out 1"""
@@ -318,7 +320,7 @@ class TestStockValuationLCAVCO(TestStockValuationLCCommon):
         po.button_confirm()
 
         receipt = po.picking_ids
-        receipt.move_line_ids.qty_done = 1
+        receipt.move_line_ids.quantity = 1
         receipt.button_validate()
 
         action = po.action_create_invoice()
@@ -376,8 +378,7 @@ class TestStockValuationLCFIFOVB(TestStockValuationLCCommon):
 
         # Process the receipt
         receipt = rfq.picking_ids
-        wiz = receipt.button_validate()
-        wiz = Form(self.env['stock.immediate.transfer'].with_context(wiz['context'])).save().process()
+        receipt.button_validate()
         self.assertEqual(rfq.order_line.qty_received, 10)
 
         input_aml = self._get_stock_input_move_lines()[-1]
@@ -465,9 +466,7 @@ class TestStockValuationLCFIFOVB(TestStockValuationLCCommon):
 
         # Process the receipt
         receipt = rfq.picking_ids
-        wiz = receipt.button_validate()
-        wiz = Form(self.env['stock.immediate.transfer'].with_context(wiz['context'])).save()
-        wiz.process()
+        receipt.button_validate()
         self.assertEqual(rfq.order_line.qty_received, 10)
 
         input_aml = self._get_stock_input_move_lines()[-1]
@@ -520,8 +519,7 @@ class TestStockValuationLCFIFOVB(TestStockValuationLCCommon):
 
         # Process the receipt
         receipt = rfq.picking_ids
-        wiz = receipt.button_validate()
-        wiz = Form(self.env['stock.immediate.transfer'].with_context(wiz['context'])).save().process()
+        receipt.button_validate()
         self.assertEqual(rfq.order_line.qty_received, 10)
 
         input_aml = self._get_stock_input_move_lines()[-1]

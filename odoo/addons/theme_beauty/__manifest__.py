@@ -5,9 +5,9 @@
     'summary': 'Beauty, Health, Care, Make Up, Cosmetics, Hair Dressers, Stores',
     'sequence': 170,
     'version': '2.1.0',
-    'author': 'Odoo S.A.',
     'depends': ['theme_common'],
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images.xml',
 
@@ -25,6 +25,7 @@
         'views/snippets/s_media_list.xml',
         'views/snippets/s_comparisons.xml',
         'views/snippets/s_product_catalog.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/beauty_description.jpg',
@@ -40,7 +41,7 @@
         'website.s_product_list_default_image_5': '/theme_beauty/static/src/img/snippets/s_product_5.jpg',
         'website.s_product_list_default_image_6': '/theme_beauty/static/src/img/snippets/s_product_6.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_cover', 's_text_image', 's_title', 's_product_list', 's_company_team', 's_call_to_action'],
     },
     'license': 'LGPL-3',

@@ -5,9 +5,9 @@
     'summary': 'Legal, Corporate, Business, Tech, Services',
     'sequence': 120,
     'version': '2.1.0',
-    'author': 'Odoo S.A.',
     'depends': ['theme_common'],
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/image_content.xml',
 
@@ -19,12 +19,12 @@
         'views/snippets/s_title.xml',
         'views/snippets/s_features.xml',
         'views/snippets/s_numbers.xml',
-        'views/snippets/s_banner.xml',
         'views/snippets/s_image_text.xml',
         'views/snippets/s_color_blocks_2.xml',
         'views/snippets/s_comparisons.xml',
         'views/snippets/s_product_catalog.xml',
         'views/snippets/s_quotes_carousel.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/clean_description.jpg',
@@ -39,9 +39,11 @@
         'website.s_three_columns_default_image_2': '/theme_clean/static/src/img/content/image_content_23.jpg',
         'website.s_three_columns_default_image_3': '/theme_clean/static/src/img/content/image_content_24.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_cover', 's_text_image', 's_title', 's_features', 's_carousel', 's_numbers',
                      's_three_columns', 's_call_to_action'],
+        # TODO In master, remove unused templates instead.
+        '_': ['s_comparisons'],
     },
     'license': 'LGPL-3',
     'live_test_url': 'https://theme-clean.odoo.com',

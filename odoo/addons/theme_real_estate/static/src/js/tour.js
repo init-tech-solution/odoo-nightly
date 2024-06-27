@@ -1,7 +1,6 @@
-odoo.define("theme_real_estate.tour.real_estate", function (require) {
-"use strict";
+/** @odoo-module **/
 
-const wTourUtils = require("website.tour_utils");
+import wTourUtils from "@website/js/tours/tour_utils";
 
 const snippets = [
     {
@@ -46,7 +45,7 @@ const snippets = [
     },
 ];
 
-wTourUtils.registerThemeHomepageTour("real_estate_tour", [
+wTourUtils.registerThemeHomepageTour("real_estate_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"real-estate-4"'),
     wTourUtils.dragNDrop(snippets[0]),
     wTourUtils.clickOnText(snippets[0], 'h1'),
@@ -65,4 +64,3 @@ wTourUtils.registerThemeHomepageTour("real_estate_tour", [
     wTourUtils.dragNDrop(snippets[8]),
     wTourUtils.dragNDrop(snippets[9]),
 ]);
-});
