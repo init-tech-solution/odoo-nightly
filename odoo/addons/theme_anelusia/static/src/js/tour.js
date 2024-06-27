@@ -1,11 +1,11 @@
 /** @odoo-module */
 
-import wTourUtils from 'website.tour_utils';
+import wTourUtils from '@website/js/tours/tour_utils';
 
 const snippets = [
     {
-        id: 's_banner',
-        name: 'Banner',
+        id: 's_text_cover',
+        name: 'Text Cover',
     },
     {
         id: 's_images_wall',
@@ -33,7 +33,7 @@ const snippets = [
     },
 ];
 
-wTourUtils.registerThemeHomepageTour("anelusia_tour", [
+wTourUtils.registerThemeHomepageTour("anelusia_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"generic-17"'),
     wTourUtils.dragNDrop(snippets[0]),
     wTourUtils.clickOnText(snippets[0], 'h1', 'top'),

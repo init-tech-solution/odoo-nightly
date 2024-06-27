@@ -1,6 +1,6 @@
 /** @odoo-module */
 
-import wTourUtils from 'website.tour_utils';
+import wTourUtils from '@website/js/tours/tour_utils';
 
 const snippets = [
     {
@@ -29,7 +29,7 @@ const snippets = [
     },
 ];
 
-wTourUtils.registerThemeHomepageTour("artists_tour", [
+wTourUtils.registerThemeHomepageTour("artists_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"artists-1"'),
     wTourUtils.dragNDrop(snippets[0], 'top'),
     wTourUtils.dragNDrop(snippets[1]),
@@ -37,7 +37,7 @@ wTourUtils.registerThemeHomepageTour("artists_tour", [
     wTourUtils.goBackToBlocks(),
     wTourUtils.dragNDrop(snippets[2]),
     wTourUtils.dragNDrop(snippets[3]),
-    wTourUtils.clickOnText(snippets[3], 'h1'),
+    wTourUtils.clickOnText(snippets[3], 'h2'),
     wTourUtils.goBackToBlocks(),
     wTourUtils.dragNDrop(snippets[4]),
     wTourUtils.dragNDrop(snippets[5]),

@@ -5,12 +5,13 @@
     'summary': 'Vehicle, Cars, Motorbikes, Bikes, Tires, Transports, Repair, Mechanics, Garages, Sports, Services',
     'sequence': 300,
     'version': '2.0.0',
-    'author': 'Odoo S.A.',
     'depends': ['theme_common'],
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images.xml',
         'views/customizations.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/vehicle_description.png',
@@ -24,8 +25,18 @@
         'website.s_parallax_default_image': '/theme_vehicle/static/src/img/snippets/s_parallax.jpg',
         'website.s_picture_default_image': '/theme_vehicle/static/src/img/snippets/s_picture.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_cover', 's_text_image', 's_image_text', 's_picture', 's_masonry_block', 's_call_to_action'],
+        # TODO In master, remove unused templates instead.
+        '_': ['s_numbers', 's_references'],
+    },
+    'new_page_templates': {
+        'about': {
+            'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
+        },
+        'team': {
+            '5': ['s_text_block_h1', 's_text_block', 's_image_gallery', 's_picture'],
+        },
     },
     'license': 'LGPL-3',
     'live_test_url': 'https://theme-vehicle.odoo.com',

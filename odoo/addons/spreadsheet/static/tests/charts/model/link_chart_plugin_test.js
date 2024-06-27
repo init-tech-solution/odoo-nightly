@@ -1,17 +1,12 @@
 /** @odoo-module */
 
-import spreadsheet from "@spreadsheet/o_spreadsheet/o_spreadsheet_extended";
+import { Model } from "@odoo/o-spreadsheet";
 import { getBasicData } from "@spreadsheet/../tests/utils/data";
 import { createBasicChart } from "@spreadsheet/../tests/utils/commands";
-import { createSpreadsheetWithChart } from "@spreadsheet/../tests/utils/chart";
 import { makeTestEnv } from "@web/../tests/helpers/mock_env";
 import { registry } from "@web/core/registry";
 import { menuService } from "@web/webclient/menus/menu_service";
 import { actionService } from "@web/webclient/actions/action_service";
-import { ormService } from "@web/core/orm_service";
-import { viewService } from "@web/views/view_service";
-
-const { Model } = spreadsheet;
 
 const chartId = "uuid1";
 
@@ -115,8 +110,6 @@ QUnit.module(
                 },
             };
             registry.category("services").add("menu", menuService).add("action", actionService);
-            registry.category("services").add("view", viewService, { force: true }); // #action-serv-leg-compat-js-class
-            registry.category("services").add("orm", ormService, { force: true }); // #action-serv-leg-compat-js-class
         },
     },
 
@@ -125,7 +118,7 @@ QUnit.module(
             "Links between charts and ir.menus are correctly imported/exported",
             async function (assert) {
                 const env = await makeTestEnv({ serverData: this.serverData });
-                const model = new Model({}, { evalContext: { env } });
+                const model = new Model({}, { custom: { env } });
                 createBasicChart(model, chartId);
                 model.dispatch("LINK_ODOO_MENU_TO_CHART", {
                     chartId,
@@ -137,7 +130,7 @@ QUnit.module(
                     1,
                     "Link to odoo menu is exported"
                 );
-                const importedModel = new Model(exportedData, { evalContext: { env } });
+                const importedModel = new Model(exportedData, { custom: { env } });
                 const chartMenu = importedModel.getters.getChartOdooMenu(chartId);
                 assert.equal(chartMenu.id, 1, "Link to odoo menu is imported");
             }
@@ -145,7 +138,7 @@ QUnit.module(
 
         QUnit.test("Can undo-redo a LINK_ODOO_MENU_TO_CHART", async function (assert) {
             const env = await makeTestEnv({ serverData: this.serverData });
-            const model = new Model({}, { evalContext: { env } });
+            const model = new Model({}, { custom: { env } });
             createBasicChart(model, chartId);
             model.dispatch("LINK_ODOO_MENU_TO_CHART", {
                 chartId,
@@ -160,7 +153,7 @@ QUnit.module(
 
         QUnit.test("link is removed when figure is deleted", async function (assert) {
             const env = await makeTestEnv({ serverData: this.serverData });
-            const model = new Model({}, { evalContext: { env } });
+            const model = new Model({}, { custom: { env } });
             createBasicChart(model, chartId);
             model.dispatch("LINK_ODOO_MENU_TO_CHART", {
                 chartId,
@@ -173,45 +166,5 @@ QUnit.module(
             });
             assert.equal(model.getters.getChartOdooMenu(chartId), undefined);
         });
-
-        QUnit.test(
-            "Links of Odoo charts are duplicated when duplicating a sheet",
-            async function (assert) {
-                const { model } = await createSpreadsheetWithChart({
-                    type: "odoo_pie",
-                    serverData: this.serverData,
-                });
-                const sheetId = model.getters.getActiveSheetId();
-                const secondSheetId = "mySecondSheetId";
-                const chartId = model.getters.getChartIds(sheetId)[0];
-                model.dispatch("DUPLICATE_SHEET", { sheetId, sheetIdTo: secondSheetId });
-                const newChartId = model.getters.getChartIds(secondSheetId)[0];
-                assert.deepEqual(
-                    model.getters.getChartOdooMenu(newChartId),
-                    model.getters.getChartOdooMenu(chartId)
-                );
-            }
-        );
-
-        QUnit.test(
-            "Links of standard charts are duplicated when duplicating a sheet",
-            async function (assert) {
-                const env = await makeTestEnv({ serverData: this.serverData });
-                const model = new Model({}, { evalContext: { env } });
-                const sheetId = model.getters.getActiveSheetId();
-                const secondSheetId = "mySecondSheetId";
-                createBasicChart(model, chartId);
-                model.dispatch("LINK_ODOO_MENU_TO_CHART", {
-                    chartId,
-                    odooMenuId: 1,
-                });
-                model.dispatch("DUPLICATE_SHEET", { sheetId, sheetIdTo: secondSheetId });
-                const newChartId = model.getters.getChartIds(secondSheetId)[0];
-                assert.deepEqual(
-                    model.getters.getChartOdooMenu(newChartId),
-                    model.getters.getChartOdooMenu(chartId)
-                );
-            }
-        );
     }
 );

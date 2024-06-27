@@ -1,7 +1,6 @@
-odoo.define("theme_enark.tour.enark", function (require) {
-"use strict";
+/** @odoo-module **/
 
-const wTourUtils = require("website.tour_utils");
+import wTourUtils from "@website/js/tours/tour_utils";
 
 const snippets = [
     {
@@ -30,7 +29,7 @@ const snippets = [
     },
 ];
 
-wTourUtils.registerThemeHomepageTour("enark_tour", [
+wTourUtils.registerThemeHomepageTour("enark_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"enark-1"'),
     wTourUtils.dragNDrop(snippets[0]),
     wTourUtils.clickOnText(snippets[0], 'h1'),
@@ -41,4 +40,3 @@ wTourUtils.registerThemeHomepageTour("enark_tour", [
     wTourUtils.dragNDrop(snippets[4]),
     wTourUtils.dragNDrop(snippets[5]),
 ]);
-});

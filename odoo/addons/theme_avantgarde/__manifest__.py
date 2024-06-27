@@ -5,11 +5,12 @@
     'summary': 'Design, Fine Art, Artwork, Creative, Creativity, Galleries, Trends, Shows, Magazines, Blogs',
     'sequence': 150,
     'version': '2.0.0',
-    'author': 'Odoo S.A.',
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images_library.xml',
         'views/customizations.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/poster.jpg',
@@ -23,7 +24,7 @@
         'website.s_three_columns_default_image_3': '/theme_avantgarde/static/src/img/pictures/bg_image_17.jpg',
         'website.s_text_image_default_image': '/theme_avantgarde/static/src/img/pictures/bg_image_13.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_cover', 's_picture', 's_three_columns', 's_text_image', 's_call_to_action'],
     },
     'depends': ['theme_common'],

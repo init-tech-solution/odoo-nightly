@@ -5,9 +5,9 @@
     'summary': 'Band, Musics, Sound, Concerts, Artists, Records, Event, Food, Stores',
     'sequence': 280,
     'version': '2.1.0',
-    'author': 'Odoo S.A.',
     'depends': ['theme_common'],
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images_library.xml',
 
@@ -30,6 +30,7 @@
         'views/snippets/s_parallax.xml',
         'views/snippets/s_comparisons.xml',
         'views/snippets/s_quotes_carousel.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/notes_description.jpg',
@@ -44,8 +45,15 @@
         'website.s_media_list_default_image_2': '/theme_notes/static/src/img/content/content_img_26.jpg',
         'website.s_media_list_default_image_3': '/theme_notes/static/src/img/content/content_img_27.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_carousel', 's_masonry_block', 's_text_image', 's_product_catalog', 's_media_list', 's_company_team'],
+        # TODO In master, remove unused templates instead.
+        '_': ['s_cover'],
+    },
+    'new_page_templates': {
+        'about': {
+            'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
+        },
     },
     'license': 'LGPL-3',
     'live_test_url': 'https://theme-notes.odoo.com',

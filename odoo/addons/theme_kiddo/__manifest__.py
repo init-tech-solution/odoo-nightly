@@ -5,9 +5,9 @@
     'summary': 'Nursery, Toys, Games, Kids, Boys, Girls, Stores',
     'sequence': 290,
     'version': '2.1.0',
-    'author': 'Odoo S.A.',
     'depends': ['theme_common'],
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images_library.xml',
 
@@ -21,6 +21,7 @@
         'views/snippets/s_quotes_carousel.xml',
         'views/snippets/s_text_image.xml',
         'views/snippets/s_product_catalog.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/kiddo_description.jpg',
@@ -33,8 +34,15 @@
         'website.s_three_columns_default_image_2': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_2.jpg',
         'website.s_three_columns_default_image_3': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_3.jpg',
     },
-    'snippet_lists': {
+    'configurator_snippets': {
         'homepage': ['s_banner', 's_image_text', 's_three_columns', 's_product_list', 's_call_to_action'],
+        # TODO In master, remove unused templates instead.
+        '_': ['s_picture'],
+    },
+    'new_page_templates': {
+        'about': {
+            'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
+        },
     },
     'license': 'LGPL-3',
     'live_test_url': 'https://theme-kiddo.odoo.com',

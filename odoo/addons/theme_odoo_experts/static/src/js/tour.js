@@ -1,7 +1,7 @@
 /** @odoo-module */
 
-import wTourUtils from 'website.tour_utils';
-import { _t } from 'web.core';
+import wTourUtils from '@website/js/tours/tour_utils';
+import { _t } from "@web/core/l10n/translation";
 
 const snippets = [
     {
@@ -34,7 +34,7 @@ const snippets = [
     },
 ];
 
-wTourUtils.registerThemeHomepageTour("odoo_experts_tour", [
+wTourUtils.registerThemeHomepageTour("odoo_experts_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"odoo-experts-1"'),
     wTourUtils.dragNDrop(snippets[0]),
     wTourUtils.dragNDrop(snippets[1]),
@@ -45,7 +45,7 @@ wTourUtils.registerThemeHomepageTour("odoo_experts_tour", [
     wTourUtils.dragNDrop(snippets[4]),
     wTourUtils.dragNDrop(snippets[5]),
     wTourUtils.clickOnSnippet(snippets[5], 'top'),
-    wTourUtils.changeOption('BackgroundShape', 'we-toggler', _t('Background Shape')),
+    wTourUtils.changeOption('ColoredLevelBackground', 'we-button[data-toggle-bg-shape]', _t('Background Shape')),
     wTourUtils.selectNested('we-select-page', 'BackgroundShape', ':not(.o_we_pager_controls)', _t('Background Shape')),
     wTourUtils.goBackToBlocks(),
     wTourUtils.dragNDrop(snippets[6]),
