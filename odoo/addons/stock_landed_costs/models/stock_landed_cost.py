@@ -21,37 +21,33 @@ class StockLandedCost(models.Model):
     _name = 'stock.landed.cost'
     _description = 'Stock Landed Cost'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'date desc, id desc'
 
     def _default_account_journal_id(self):
         """Take the journal configured in the company, else fallback on the stock journal."""
-        lc_journal = self.env['account.journal']
-        if self.env.company.lc_journal_id:
-            lc_journal = self.env.company.lc_journal_id
-        else:
-            lc_journal = self.env['ir.property']._get("property_stock_journal", "product.category")
-        return lc_journal
+        ProductCategory = self.env['product.category']
+        return self.env.company.lc_journal_id or ProductCategory._fields['property_stock_journal'].get_company_dependent_fallback(ProductCategory)
 
     name = fields.Char(
         'Name', default=lambda self: _('New'),
         copy=False, readonly=True, tracking=True)
     date = fields.Date(
         'Date', default=fields.Date.context_today,
-        copy=False, required=True, states={'done': [('readonly', True)]}, tracking=True)
+        copy=False, required=True, tracking=True)
     target_model = fields.Selection(
         [('picking', 'Transfers')], string="Apply On",
         required=True, default='picking',
-        copy=False, states={'done': [('readonly', True)]})
+        copy=False)
     picking_ids = fields.Many2many(
         'stock.picking', string='Transfers',
-        copy=False, states={'done': [('readonly', True)]})
+        copy=False)
     cost_lines = fields.One2many(
         'stock.landed.cost.lines', 'cost_id', 'Cost Lines',
-        copy=True, states={'done': [('readonly', True)]})
+        copy=True)
     valuation_adjustment_lines = fields.One2many(
-        'stock.valuation.adjustment.lines', 'cost_id', 'Valuation Adjustments',
-        states={'done': [('readonly', True)]})
+        'stock.valuation.adjustment.lines', 'cost_id', 'Valuation Adjustments',)
     description = fields.Text(
-        'Item Description', states={'done': [('readonly', True)]})
+        'Item Description')
     amount_total = fields.Monetary(
         'Total', compute='_compute_total_amount',
         store=True, tracking=True)
@@ -66,9 +62,8 @@ class StockLandedCost(models.Model):
         copy=False, readonly=True)
     account_journal_id = fields.Many2one(
         'account.journal', 'Account Journal',
-        required=True, states={'done': [('readonly', True)]}, default=lambda self: self._default_account_journal_id())
-    company_id = fields.Many2one('res.company', string="Company",
-        related='account_journal_id.company_id')
+        required=True, default=lambda self: self._default_account_journal_id())
+    company_id = fields.Many2one('res.company', string="Company", required=True, default=lambda self: self.env.company)
     stock_valuation_layer_ids = fields.One2many('stock.valuation.layer', 'stock_landed_cost_id')
     vendor_bill_id = fields.Many2one(
         'account.move', 'Vendor Bill', copy=False, domain=[('move_type', '=', 'in_invoice')])
@@ -126,30 +121,55 @@ class StockLandedCost(models.Model):
             }
             valuation_layer_ids = []
             cost_to_add_byproduct = defaultdict(lambda: 0.0)
+            cost_to_add_bylot = defaultdict(lambda: 0.0)
             for line in cost.valuation_adjustment_lines.filtered(lambda line: line.move_id):
-                remaining_qty = sum(line.move_id.stock_valuation_layer_ids.mapped('remaining_qty'))
-                linked_layer = line.move_id.stock_valuation_layer_ids[:1]
+                remaining_qty = sum(line.move_id._get_stock_valuation_layer_ids().mapped('remaining_qty'))
+                linked_layer = line.move_id._get_stock_valuation_layer_ids()
 
                 # Prorate the value at what's still in stock
-                cost_to_add = (remaining_qty / line.move_id.product_qty) * line.additional_landed_cost
-                if not cost.company_id.currency_id.is_zero(cost_to_add):
-                    valuation_layer = self.env['stock.valuation.layer'].create({
-                        'value': cost_to_add,
-                        'unit_cost': 0,
-                        'quantity': 0,
-                        'remaining_qty': 0,
-                        'stock_valuation_layer_id': linked_layer.id,
-                        'description': cost.name,
-                        'stock_move_id': line.move_id.id,
-                        'product_id': line.move_id.product_id.id,
-                        'stock_landed_cost_id': cost.id,
-                        'company_id': cost.company_id.id,
-                    })
-                    linked_layer.remaining_value += cost_to_add
-                    valuation_layer_ids.append(valuation_layer.id)
-                # Update the AVCO
+                move_qty = line.move_id.product_uom._compute_quantity(line.move_id.quantity, line.move_id.product_id.uom_id)
+                cost_to_add = (remaining_qty / move_qty) * line.additional_landed_cost
                 product = line.move_id.product_id
-                if product.cost_method == 'average':
+                if not cost.company_id.currency_id.is_zero(cost_to_add):
+                    vals_list = []
+                    if line.move_id.product_id.lot_valuated:
+                        for lot_id, sml in line.move_id.move_line_ids.grouped('lot_id').items():
+                            lot_layer = linked_layer.filtered(lambda l: l.lot_id == lot_id)[:1]
+                            value = cost_to_add * sum(sml.mapped('quantity')) / line.move_id.quantity
+                            if product.cost_method in ['average', 'fifo']:
+                                cost_to_add_bylot[lot_id] += value
+                            vals_list.append({
+                                'value': value,
+                                'unit_cost': 0,
+                                'quantity': 0,
+                                'remaining_qty': 0,
+                                'stock_valuation_layer_id': lot_layer.id,
+                                'description': cost.name,
+                                'stock_move_id': line.move_id.id,
+                                'product_id': line.move_id.product_id.id,
+                                'stock_landed_cost_id': cost.id,
+                                'company_id': cost.company_id.id,
+                                'lot_id': lot_id.id,
+                            })
+                            lot_layer.remaining_value += value
+                    else:
+                        vals_list.append({
+                            'value': cost_to_add,
+                            'unit_cost': 0,
+                            'quantity': 0,
+                            'remaining_qty': 0,
+                            'stock_valuation_layer_id': linked_layer[:1].id,
+                            'description': cost.name,
+                            'stock_move_id': line.move_id.id,
+                            'product_id': line.move_id.product_id.id,
+                            'stock_landed_cost_id': cost.id,
+                            'company_id': cost.company_id.id,
+                        })
+                        linked_layer[:1].remaining_value += cost_to_add
+                    valuation_layer = self.env['stock.valuation.layer'].create(vals_list)
+                    valuation_layer_ids += valuation_layer.ids
+                # Update the AVCO/FIFO
+                if product.cost_method in ['average', 'fifo']:
                     cost_to_add_byproduct[product] += cost_to_add
                 # Products with manual inventory valuation are ignored because they do not need to create journal entries.
                 if product.valuation != "real_time":
@@ -158,9 +178,9 @@ class StockLandedCost(models.Model):
                 # in stock.
                 qty_out = 0
                 if line.move_id._is_in():
-                    qty_out = line.move_id.product_qty - remaining_qty
+                    qty_out = line.move_id.quantity - remaining_qty
                 elif line.move_id._is_out():
-                    qty_out = line.move_id.product_qty
+                    qty_out = line.move_id.quantity
                 move_vals['line_ids'] += line._create_accounting_entries(move, qty_out)
 
             # batch standard price computation avoid recompute quantity_svl at each iteration
@@ -168,6 +188,11 @@ class StockLandedCost(models.Model):
             for product in products:  # iterate on recordset to prefetch efficiently quantity_svl
                 if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
                     product.sudo().with_context(disable_auto_svl=True).standard_price += cost_to_add_byproduct[product] / product.quantity_svl
+                if product.lot_valuated:
+                    for lot, value in cost_to_add_bylot.items():
+                        if float_is_zero(lot.quantity_svl, precision_rounding=product.uom_id.rounding):
+                            continue
+                        lot.sudo().with_context(disable_auto_svl=True).standard_price += value / lot.quantity_svl
 
             move_vals['stock_valuation_layer_ids'] = [(6, None, valuation_layer_ids)]
             # We will only create the accounting entry when there are defined lines (the lines will be those linked to products of real_time valuation category).
@@ -197,15 +222,16 @@ class StockLandedCost(models.Model):
 
         for move in self._get_targeted_move_ids():
             # it doesn't make sense to make a landed cost for a product that isn't set as being valuated in real time at real cost
-            if move.product_id.cost_method not in ('fifo', 'average') or move.state == 'cancel' or not move.product_qty:
+            if move.product_id.cost_method not in ('fifo', 'average') or move.state == 'cancel' or not move.quantity:
                 continue
+            qty = move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id)
             vals = {
                 'product_id': move.product_id.id,
                 'move_id': move.id,
-                'quantity': move.product_qty,
-                'former_cost': sum(move.stock_valuation_layer_ids.mapped('value')),
-                'weight': move.product_id.weight * move.product_qty,
-                'volume': move.product_id.volume * move.product_qty
+                'quantity': qty,
+                'former_cost': sum(move._get_stock_valuation_layer_ids().mapped('value')),
+                'weight': move.product_id.weight * qty,
+                'volume': move.product_id.volume * qty
             }
             lines.append(vals)
 
@@ -327,11 +353,11 @@ class StockLandedCostLine(models.Model):
         SPLIT_METHOD,
         string='Split Method',
         required=True,
-        help="Equal : Cost will be equally divided.\n"
-             "By Quantity : Cost will be divided according to product's quantity.\n"
-             "By Current cost : Cost will be divided according to product's current cost.\n"
-             "By Weight : Cost will be divided depending on its weight.\n"
-             "By Volume : Cost will be divided depending on its volume.")
+        help="Equal: Cost will be equally divided.\n"
+             "By Quantity: Cost will be divided according to product's quantity.\n"
+             "By Current cost: Cost will be divided according to product's current cost.\n"
+             "By Weight: Cost will be divided depending on its weight.\n"
+             "By Volume: Cost will be divided depending on its volume.")
     account_id = fields.Many2one('account.account', 'Account', domain=[('deprecated', '=', False)])
     currency_id = fields.Many2one('res.currency', related='cost_id.currency_id')
 
@@ -399,9 +425,16 @@ class AdjustmentLines(models.Model):
         credit_account_id = self.cost_line_id.account_id.id or cost_product.categ_id.property_stock_account_input_categ_id.id
 
         if not credit_account_id:
-            raise UserError(_('Please configure Stock Expense Account for product: %s.') % (cost_product.name))
+            raise UserError(_('Please configure Stock Expense Account for product: %s.', cost_product.name))
 
         return self._create_account_move_line(move, credit_account_id, debit_account_id, qty_out, already_out_account_id)
+
+    def _prepare_account_move_line_values(self):
+        return {
+            'name': self.name,
+            'product_id': self.product_id.id,
+            'quantity': 0,
+        }
 
     def _create_account_move_line(self, move, credit_account_id, debit_account_id, qty_out, already_out_account_id):
         """
@@ -410,11 +443,7 @@ class AdjustmentLines(models.Model):
         """
         AccountMoveLine = []
 
-        base_line = {
-            'name': self.name,
-            'product_id': self.product_id.id,
-            'quantity': 0,
-        }
+        base_line = self._prepare_account_move_line_values()
         debit_line = dict(base_line, account_id=debit_account_id)
         credit_line = dict(base_line, account_id=credit_account_id)
         diff = self.additional_landed_cost
@@ -430,12 +459,13 @@ class AdjustmentLines(models.Model):
 
         # Create account move lines for quants already out of stock
         if qty_out > 0:
+            name_text = _("%(product)s: %(quantity)s already out", product=self.name, quantity=qty_out)
             debit_line = dict(base_line,
-                              name=(self.name + ": " + str(qty_out) + _(' already out')),
+                              name=name_text,
                               quantity=0,
                               account_id=already_out_account_id)
             credit_line = dict(base_line,
-                               name=(self.name + ": " + str(qty_out) + _(' already out')),
+                               name=name_text,
                                quantity=0,
                                account_id=debit_account_id)
             diff = diff * qty_out / self.quantity
@@ -452,11 +482,11 @@ class AdjustmentLines(models.Model):
             if self.env.company.anglo_saxon_accounting:
                 expense_account_id = self.product_id.product_tmpl_id.get_product_accounts()['expense'].id
                 debit_line = dict(base_line,
-                                  name=(self.name + ": " + str(qty_out) + _(' already out')),
+                                  name=name_text,
                                   quantity=0,
                                   account_id=expense_account_id)
                 credit_line = dict(base_line,
-                                   name=(self.name + ": " + str(qty_out) + _(' already out')),
+                                   name=name_text,
                                    quantity=0,
                                    account_id=already_out_account_id)
 

@@ -3,20 +3,15 @@
 # 	* stock_account
 # 
 # Translators:
-# Odoo Thaidev <odoothaidev@gmail.com>, 2022
-# Pornvibool Tippayawat <pornvibool.t@gmail.com>, 2022
-# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
-# Wichanon Jamwutthipreecha, 2022
-# Martin Trigaux, 2022
 # Wil Odoo, 2024
 # Rasareeyar Lappiam, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
-"PO-Revision-Date: 2022-09-22 05:55+0000\n"
+"POT-Creation-Date: 2024-09-25 08:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:42+0000\n"
 "Last-Translator: Rasareeyar Lappiam, 2024\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
@@ -28,37 +23,42 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
+msgid ""
+"\n"
+"Affected valuation layers: %s"
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
 msgid " Product cost updated from %(previous)s to %(new_cost)s."
 msgstr "อัปเดตต้นทุนผลิตภัณฑ์จาก %(previous)s เป็น %(new_cost)s"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_quant.py:0
-#, python-format
 msgid " [Accounted on %s]"
 msgstr " [ลงบัญชีเมื่อวันที่ %s]"
 
 #. module: stock_account
 #. odoo-python
-#: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid "%(user)s changed cost from %(previous)s to %(new_price)s - %(product)s"
+#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
+msgid " lot/serial number cost updated from %(previous)s to %(new_cost)s."
 msgstr ""
-"%(user)s เปลี่ยนแปลงต้นทุนจาก %(previous)s เป็น %(new_price)s - %(product)s"
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/stock_valuation_layer.py:0
+msgid "%(user)s changed cost from %(previous)s to %(new_price)s - %(record)s"
+msgstr ""
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid ""
-"%(user)s changed stock valuation from  %(previous)s to %(new_value)s - "
-"%(product)s"
+"%(user)s changed stock valuation from  %(previous)s to %(new_value)s - %(product)s\n"
+"%(reason)s"
 msgstr ""
-"%(user)s เปลี่ยนแปลงการประเมินมูลค่าสต็อกจาก  %(previous)s เป็น "
-"%(new_value)s - %(product)s"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
@@ -70,9 +70,20 @@ msgstr ""
 "                            <small class=\"mx-2 fst-italic\">ใช้มูลค่าเพิ่มเชิงลบเพื่อบันทึกมูลค่าสินค้าที่ลดลง</small>"
 
 #. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_account_report_invoice_document
+msgid "6.00"
+msgstr "6.00"
+
+#. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.view_category_property_form
 msgid "<b>Set other input/output accounts on specific </b>"
 msgstr "<b>ตั้งค่าบัญชีขาเข้า/ขาออกแบบเฉพาะ </b>"
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_picking
+#: model_terms:ir.ui.view,arch_db:stock_account.view_production_lot_form_stock_account
+msgid "<span class=\"o_stat_text\">Valuation</span>"
+msgstr "<span class=\"o_stat_text\">การประเมินมูลค่า</span>"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_account_report_invoice_document
@@ -124,7 +135,7 @@ msgstr "ข้อมูลทางบัญชี"
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 msgid "Add Manual Valuation"
-msgstr "เพิ่มการประเมินค่าด้วยตนเอง"
+msgstr "เพิ่มการประเมินมูลค่าด้วยตนเอง"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
@@ -143,6 +154,11 @@ msgid "Added value"
 msgstr "เพิ่มมูลค่า"
 
 #. module: stock_account
+#: model:ir.actions.act_window,name:stock_account.action_revalue_layers
+msgid "Adjust Valuation"
+msgstr ""
+
+#. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_res_config_settings__module_stock_landed_costs
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
 msgid ""
@@ -153,9 +169,19 @@ msgstr ""
 "และแยกออกเป็นสินค้าเพื่ออัปเดตราคาต้นทุน"
 
 #. module: stock_account
-#: model:ir.model.fields,field_description:stock_account.field_stock_move__analytic_account_line_id
+#: model:ir.model,name:stock_account.model_account_analytic_account
+msgid "Analytic Account"
+msgstr "บัญชีวิเคราะห์"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_stock_move__analytic_account_line_ids
 msgid "Analytic Account Line"
 msgstr "รายการบัญชีวิเคราะห์"
+
+#. module: stock_account
+#: model:ir.model,name:stock_account.model_account_analytic_plan
+msgid "Analytic Plans"
+msgstr "แผนการวิเคราะห์"
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_valuation__real_time
@@ -163,14 +189,30 @@ msgid "Automated"
 msgstr "อัตโนมัติ"
 
 #. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_res_config_settings__group_stock_accounting_automatic
+msgid "Automatic Stock Accounting"
+msgstr "การบัญชีสต็อกอัตโนมัติ"
+
+#. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__avg_cost
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__avg_cost
 msgid "Average Cost"
-msgstr "Average Cost"
+msgstr "ต้นทุนเฉลี่ย"
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_cost_method__average
 msgid "Average Cost (AVCO)"
-msgstr "ต้นทุนเฉลี่ย (AVCO)"
+msgstr "Average Cost (AVCO)"
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_account_report_invoice_document
+msgid "BC46282798"
+msgstr "BC46282798"
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_account_report_invoice_document
+msgid "Bacon"
+msgstr "เบคอน"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
@@ -180,32 +222,29 @@ msgstr "ยกเลิก"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "Cannot find a stock input account for the product %s. You must define one on"
 " the product category, or on the location, before processing this operation."
 msgstr ""
 "ไม่พบบัญชีการป้อนข้อมูลสต็อคสำหรับสินค้า %s "
-"คุณต้องกำหนดหนึ่งในประเภทสินค้าหรือในสถานที่ "
+"คุณต้องกำหนดหนึ่งในประเภทสินค้าหรือในตำแหน่ง "
 "ก่อนที่จะประมวลผลการดำเนินการนี้"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "Cannot find a stock output account for the product %s. You must define one "
 "on the product category, or on the location, before processing this "
 "operation."
 msgstr ""
 "ไม่พบบัญชีสต็อกสินค้าสำหรับสินค้า%s "
-"คุณต้องกำหนดหนึ่งในประเภทสินค้าหรือในสถานที่ "
+"คุณต้องกำหนดหนึ่งในประเภทสินค้าหรือในตำแหน่ง "
 "ก่อนที่จะประมวลผลการดำเนินการนี้"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid ""
 "Changing your cost method is an important change that will impact your "
 "inventory valuation. Are you sure you want to make that change?"
@@ -216,13 +255,24 @@ msgstr ""
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quantity_history_inherit_stock_account
 msgid "Choose a date to get the valuation at that date"
-msgstr "เลือกวันที่เพื่อรับการประเมินราคา ณ วันดังกล่าว"
+msgstr "เลือกวันที่เพื่อรับการประเมินมูลค่า ณ วันดังกล่าว"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_account_move_line__cogs_origin_id
+msgid "Cogs Origin"
+msgstr "ต้นกำเนิดของฟันเฟือง"
+
+#. module: stock_account
+#: model:ir.model,name:stock_account.model_res_company
+msgid "Companies"
+msgstr "บริษัท"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__company_id
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__company_id
+#: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
 msgid "Company"
-msgstr "บริษัทเดียว"
+msgstr "บริษัท"
 
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_res_config_settings
@@ -232,13 +282,23 @@ msgstr "ตั้งค่าการกำหนดค่า"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "Configuration error. Please configure the price difference account on the "
 "product or its category to process this operation."
 msgstr ""
 "เกิดข้อผิดพลาดในการกำหนดค่า "
 "โปรดกำหนดค่าบัญชีส่วนต่างราคาของสินค้าหรือหมวดหมู่เพื่อประมวลผลการดำเนินการนี้"
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/stock_move.py:0
+msgid "Correction of %s (modification of past move)"
+msgstr ""
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__standard_price
+msgid "Cost"
+msgstr "ต้นทุน"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_cost_method
@@ -251,9 +311,12 @@ msgstr "วิธีการคิดต้นทุน"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid "Costing method change for product category %s: from %s to %s."
-msgstr "การเปลี่ยนแปลงวิธีการคิดต้นทุนสำหรับหมวดหมู่สินค้า %s: จาก %s เป็น %s"
+msgid ""
+"Costing method change for product category %(category)s: from %(old_method)s"
+" to %(new_method)s."
+msgstr ""
+"การเปลี่ยนแปลงวิธีการคิดต้นทุนสำหรับหมวดหมู่ผลิตภัณฑ์ %(category)s: จาก "
+"%(old_method)s เป็น %(new_method)s"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__account_id
@@ -266,7 +329,7 @@ msgid ""
 "Counterpart journal items for all incoming stock moves will be posted in this account, unless there is a specific valuation account\n"
 "                set on the source location. This is the default value for all products in this category. It can also directly be set on each product."
 msgstr ""
-"รายการสมุดรายวันคู่กันสำหรับการย้ายสต็อกที่เข้ามาทั้งหมดจะถูกผ่านรายการในบัญชีนี้ เว้นแต่จะมีบัญชีการประเมินค่า\n"
+"รายการสมุดรายวันคู่สำหรับการย้ายสต็อกที่เข้ามาทั้งหมดจะถูกผ่านรายการในบัญชีนี้ เว้นแต่จะมีบัญชีการประเมินมูลค่า\n"
 "               เฉพาะที่ตั้งค่าไว้ในตำแหน่งที่ตั้งต้นทาง นี่คือค่าเริ่มต้นสำหรับสินค้าทั้งหมดในหมวดหมู่นี้ นอกจากนี้ยังสามารถตั้งค่าได้โดยตรงในแต่ละสินค้า"
 
 #. module: stock_account
@@ -307,6 +370,7 @@ msgstr "ค่าปัจจุบัน"
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_form
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
+#: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
 msgid "Date"
 msgstr "วันที่"
 
@@ -346,22 +410,16 @@ msgid "Display Serial & Lot Number on Invoices"
 msgstr "แสดงหมายเลขซีเรียลและหมายเลขล็อตบนใบแจ้งหนี้"
 
 #. module: stock_account
-#: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
-msgid "Documentation"
-msgstr "เอกสารประกอบ"
-
-#. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid ""
-"Due to a change of product category (from %s to %s), the costing method"
-"                                has changed for product template %s: from %s"
-" to %s."
+"Due to a change of product category (from %(old_category)s to "
+"%(new_category)s), the costing method has changed for product %(product)s: "
+"from %(old_method)s to %(new_method)s."
 msgstr ""
-"เนื่องจากการเปลี่ยนแปลงหมวดหมู่สินค้า (จาก %s เป็น %s) วิธีการคิดต้นทุน"
-"                                มีการเปลี่ยนแปลงสำหรับเทมเพลตสินค้า %s: จาก "
-"%s เป็น %s"
+"เนื่องจากการเปลี่ยนแปลงหมวดหมู่ผลิตภัณฑ์ (จาก %(old_category)s เป็น "
+"%(new_category)s) วิธีการคิดต้นทุนจึงมีการเปลี่ยนแปลงสำหรับผลิตภัณฑ์ "
+"%(product)s: จาก %(old_method)s เป็น %(new_method)s"
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_cost_method__fifo
@@ -385,9 +443,15 @@ msgid "ID"
 msgstr "ไอดี"
 
 #. module: stock_account
+#: model:ir.model.fields,help:stock_account.field_product_product__lot_valuated
+#: model:ir.model.fields,help:stock_account.field_product_template__lot_valuated
+msgid "If checked, the valuation will be specific by Lot/Serial number."
+msgstr ""
+
+#. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
 msgid "Incoming"
-msgstr "สายเข้า"
+msgstr "ขาเข้า"
 
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_location
@@ -396,7 +460,6 @@ msgstr "ตำแหน่งคลังสินค้า"
 
 #. module: stock_account
 #. odoo-python
-#: code:addons/stock_account/__init__.py:0
 #: code:addons/stock_account/models/account_chart_template.py:0
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_valuation
 #: model:ir.model.fields,field_description:stock_account.field_product_product__valuation
@@ -404,7 +467,6 @@ msgstr "ตำแหน่งคลังสินค้า"
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__property_valuation
 #: model_terms:ir.ui.view,arch_db:stock_account.view_category_property_form_stock
 #: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
-#, python-format
 msgid "Inventory Valuation"
 msgstr "การประเมินมูลค่าสินค้าคงคลัง"
 
@@ -426,6 +488,7 @@ msgstr "สมุดบันทึก"
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_account_move
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__account_move_id
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 msgid "Journal Entry"
 msgstr "รายการบันทึกประจำวัน"
 
@@ -437,13 +500,7 @@ msgstr "รายการบันทึก"
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_res_config_settings__module_stock_landed_costs
 msgid "Landed Costs"
-msgstr "Landed Costs"
-
-#. module: stock_account
-#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer____last_update
-#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation____last_update
-msgid "Last Modified on"
-msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+msgstr "ต้นทุนแฝง"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__write_uid
@@ -463,9 +520,46 @@ msgid "Linked To"
 msgstr "ที่เชื่อมโยงกับ"
 
 #. module: stock_account
-#: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
-msgid "Lots &amp; Serial numbers will appear on the invoice"
+#. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid ""
+"Lot %(lot)s has a negative quantity in stock. Correct this"
+"                         quantity before enabling lot valuation"
 msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/stock_lot.py:0
+msgid "Lot value manually modified (from %(old)s to %(new)s)"
+msgstr ""
+
+#. module: stock_account
+#: model:ir.model,name:stock_account.model_stock_lot
+msgid "Lot/Serial"
+msgstr "ล็อต/ซีเรียล"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__lot_id
+#: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
+msgid "Lot/Serial Number"
+msgstr "ล็อต/หมายเลขซีเรียล"
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/stock_lot.py:0
+msgid "Lot/Serial number Revaluation"
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/stock_move_line.py:0
+msgid "Lot/Serial number is mandatory for product valuated by lot"
+msgstr ""
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
+msgid "Lots & Serial numbers will appear on the invoice"
+msgstr "ล็อตและหมายเลขซีเรียลจะแสดงบนใบแจ้งหนี้"
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_valuation__manual_periodic
@@ -475,16 +569,8 @@ msgstr "ด้วยตัวเอง"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "Manual Stock Valuation: %s."
 msgstr "การประเมินมูลค่าสต็อกด้วยตนเอง: %s"
-
-#. module: stock_account
-#. odoo-python
-#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
-msgid "Manual Stock Valuation: No Reason Given."
-msgstr "การประเมินมูลค่าสต็อกด้วยตนเอง: ไม่มีเหตุผล"
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_product_category__property_valuation
@@ -500,14 +586,9 @@ msgstr ""
 "อัตโนมัติ: รายการทางบัญชีจะถูกสร้างขึ้นโดยอัตโนมัติเพื่อประเมินมูลค่าสินค้าคงคลังเมื่อสินค้าเข้าหรือออกจากบริษัท"
 
 #. module: stock_account
-#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
-msgid "Moved Quantity"
-msgstr "จำนวนที่ย้ายแล้ว"
-
-#. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__new_value
 msgid "New value"
-msgstr "ค่าใหม่"
+msgstr "มูลค่าใหม่"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__new_value_by_qty
@@ -515,14 +596,15 @@ msgid "New value by quantity"
 msgstr "มูลค่าใหม่ตามปริมาณ"
 
 #. module: stock_account
-#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
-msgid "Open Valuation Layer"
-msgstr "เปิดชั้นการประเมินมูลค่า"
+#. odoo-python
+#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
+msgid "No Reason Given"
+msgstr ""
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_form
 msgid "Other Info"
-msgstr "ข้อมูลอื่น ๆ"
+msgstr "ข้อมูลอื่นๆ"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
@@ -539,6 +621,7 @@ msgstr "สินค้า"
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_product_category
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__categ_id
+#: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
 msgid "Product Category"
 msgstr "หมวดหมู่สินค้า"
 
@@ -551,9 +634,8 @@ msgstr "ย้ายสินค้า ( ไลน์เคลื่อนย้
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
-#, python-format
 msgid "Product Revaluation"
-msgstr "การประเมินราคาสินค้าใหม่"
+msgstr "การประเมินมูลค่าสินค้าใหม่"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__product_tmpl_id
@@ -568,17 +650,30 @@ msgstr "ตัวแปรสินค้า"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid "Product value manually modified (from %s to %s)"
-msgstr "มูลค่าสินค้าแก้ไขด้วยตนเอง (จาก %s เป็น %s)"
+msgid ""
+"Product value manually modified (from %(original_price)s to %(new_price)s)"
+msgstr ""
+"แก้ไขมูลค่าผลิตภัณฑ์ด้วยตนเอง (จาก %(original_price)s เป็น %(new_price)s)"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_res_company__account_production_wip_account_id
+msgid "Production WIP Account"
+msgstr ""
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_res_company__account_production_wip_overhead_account_id
+msgid "Production WIP Overhead Account"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__quantity
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 msgid "Quantity"
 msgstr "ปริมาณ"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__quantity_svl
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__quantity_svl
 msgid "Quantity Svl"
 msgstr "ปริมาณ Svl"
 
@@ -595,12 +690,22 @@ msgstr "เหตุผล"
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_valuation_layer_revaluation__reason
 msgid "Reason of the revaluation"
-msgstr "เหตุผลในการประเมินราคาใหม่"
+msgstr "เหตุผลในการประเมินมูลค่าใหม่"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__warehouse_id
+msgid "Receipt WH"
+msgstr "ใบเสร็จรับเงิน WH"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__reference
 msgid "Reference"
 msgstr "การอ้างอิง"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__lot_id
+msgid "Related lot/serial number"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__product_id
@@ -618,11 +723,6 @@ msgid "Remaining Value"
 msgstr "มูลค่าคงเหลือ"
 
 #. module: stock_account
-#: model:ir.model,name:stock_account.model_stock_return_picking
-msgid "Return Picking"
-msgstr "ส่งคืนการรับ"
-
-#. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_return_picking_line
 msgid "Return Picking Line"
 msgstr "รายการการส่งคืนสินค้า"
@@ -630,14 +730,19 @@ msgstr "รายการการส่งคืนสินค้า"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "Revaluation of %s"
-msgstr "การประเมินราคาใหม่ของ %s"
+msgstr "การประเมินมูลค่าใหม่ของ %s"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
 msgid "Revalue"
 msgstr "ประเมินราคาใหม่"
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/stock_lot.py:0
+msgid "Select an existing lot/serial number to be reevaluated"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_cost_method__standard
@@ -660,9 +765,14 @@ msgstr ""
 "First In First Out (FIFO): สินค้ามีมูลค่าโดยสมมติว่าสินค้าที่เข้าบริษัทก่อนจะออกก่อนเช่นกัน"
 
 #. module: stock_account
+#: model:res.groups,name:stock_account.group_stock_accounting_automatic
+msgid "Stock Accounting Automatic"
+msgstr "การบัญชีสต็อกอัตโนมัติ"
+
+#. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_stock_account_input_categ_id
 msgid "Stock Input Account"
-msgstr "บัญชีเข้าสต็อก"
+msgstr "บัญชีสต็อกสินค้าขาเข้า"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_stock_journal
@@ -673,10 +783,9 @@ msgstr "สมุดรายวันสต็อก"
 #: model:ir.model,name:stock_account.model_stock_move
 #: model:ir.model.fields,field_description:stock_account.field_account_bank_statement_line__stock_move_id
 #: model:ir.model.fields,field_description:stock_account.field_account_move__stock_move_id
-#: model:ir.model.fields,field_description:stock_account.field_account_payment__stock_move_id
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__stock_move_id
 msgid "Stock Move"
-msgstr "ย้ายสต๊อก"
+msgstr "ย้ายสต็อก"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_stock_account_output_categ_id
@@ -689,9 +798,9 @@ msgid "Stock Quantity History"
 msgstr "ประวัติปริมาณสต็อค"
 
 #. module: stock_account
-#: model:ir.model,name:stock_account.model_report_stock_report_product_product_replenishment
+#: model:ir.model,name:stock_account.model_stock_forecasted_product_product
 msgid "Stock Replenishment Report"
-msgstr "รายงานการเติมสต๊อก"
+msgstr "รายงานการเติมสต็อก"
 
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_request_count
@@ -704,14 +813,13 @@ msgstr "แจ้งขอนับสินค้าคงคลัง"
 #: model:ir.actions.act_window,name:stock_account.stock_valuation_layer_action
 #: model:ir.actions.act_window,name:stock_account.stock_valuation_layer_report_action
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quant_tree_editable_inherit
-#, python-format
 msgid "Stock Valuation"
-msgstr "การประเมินมูลค่าหุ้น"
+msgstr "การประเมินมูลค่าสต็อก"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_stock_valuation_account_id
 msgid "Stock Valuation Account"
-msgstr "บัญชีประเมินราคาสต็อก"
+msgstr "บัญชีประเมินมูลค่าสต็อก"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_location__valuation_in_account_id
@@ -728,8 +836,8 @@ msgstr "บัญชีประเมินมูลค่าสต็อก (�
 #: model:ir.model.fields,field_description:stock_account.field_account_bank_statement_line__stock_valuation_layer_ids
 #: model:ir.model.fields,field_description:stock_account.field_account_move__stock_valuation_layer_ids
 #: model:ir.model.fields,field_description:stock_account.field_account_move_line__stock_valuation_layer_ids
-#: model:ir.model.fields,field_description:stock_account.field_account_payment__stock_valuation_layer_ids
 #: model:ir.model.fields,field_description:stock_account.field_product_product__stock_valuation_layer_ids
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__stock_valuation_layer_ids
 #: model:ir.model.fields,field_description:stock_account.field_stock_move__stock_valuation_layer_ids
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__stock_valuation_layer_ids
 msgid "Stock Valuation Layer"
@@ -756,7 +864,6 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid ""
 "The Stock Input and/or Output accounts cannot be the same as the Stock "
 "Valuation account."
@@ -767,26 +874,20 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid ""
 "The action leads to the creation of a journal entry, for which you don't "
 "have the access rights."
-msgstr ""
-"การดำเนินการนี้จะนำไปสู่การสร้างรายการสมุดรายวัน "
-"ซึ่งคุณไม่มีสิทธิ์ในการเข้าถึง"
+msgstr "การดำเนินการนี้จะสร้างรายการสมุดรายวัน ซึ่งคุณไม่มีสิทธิ์ในการเข้าถึง"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "The added value doesn't have any impact on the stock valuation"
 msgstr "มูลค่าเพิ่มไม่มีผลกระทบต่อการประเมินมูลค่าสต็อก"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "The move lines are not in a consistent state: some are entering and other "
 "are leaving the company."
@@ -797,7 +898,6 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "The move lines are not in a consistent states: they are doing an "
 "intercompany in a single step while they should go through the intercompany "
@@ -805,12 +905,11 @@ msgid ""
 msgstr ""
 "รายการย้ายไม่อยู่ในสถานะที่สอดคล้องกัน: "
 "กำลังดำเนินการระหว่างบริษัทในขั้นตอนเดียว "
-"ในขณะที่ควรเดินทางผ่านสถานที่ขนส่งระหว่างบริษัท"
+"ในขณะที่ควรเดินทางผ่านตำแหน่งขนส่งระหว่างบริษัท"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "The move lines are not in a consistent states: they do not share the same "
 "origin or destination company."
@@ -820,8 +919,14 @@ msgstr ""
 
 #. module: stock_account
 #. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid ""
+"The stock accounts should be set in order to use the automatic valuation."
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid ""
 "The value of a stock valuation layer cannot be negative. Landed cost could "
 "be use to correct a specific transfer."
@@ -841,17 +946,41 @@ msgstr ""
 "ซึ่งส่งผลกระทบต่อการประเมินมูลค่าสต็อก"
 
 #. module: stock_account
+#. odoo-javascript
+#: code:addons/stock_account/static/src/fields/boolean_confirm.js:0
+msgid ""
+"This operation might lead in a loss of data. Valuation will be identical for"
+" all lots/SN. Do you want to proceed ? "
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid ""
+"This product is valuated by lot/serial number. Changing the cost will update"
+" the cost of every lot/serial number in stock."
+msgstr ""
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
+msgid "Total Moved Quantity"
+msgstr "ปริมาณการเคลื่อนย้ายทั้งหมด"
+
+#. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_report_tree
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 msgid "Total Remaining Quantity"
 msgstr "ปริมาณคงเหลือทั้งหมด"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_report_tree
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 msgid "Total Remaining Value"
 msgstr "มูลค่าคงเหลือทั้งหมด"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__total_value
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__total_value
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__value
 #: model_terms:ir.ui.view,arch_db:stock_account.product_product_stock_tree_inherit_stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
@@ -874,6 +1003,11 @@ msgstr ""
 "กระตุ้นให้ปริมาณ การส่งมอบ/รับ ลดลงใน ใบสั่งขาย/ใบสั่งซื้อ ที่เกี่ยวข้อง"
 
 #. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
+msgid "Unit"
+msgstr "หน่วย"
+
+#. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.product_product_stock_tree_inherit_stock_account
 msgid "Unit Cost"
 msgstr "ต้นทุนต่อหน่วย"
@@ -894,6 +1028,12 @@ msgstr "หน่วยวัด"
 #: model:ir.model.fields,field_description:stock_account.field_stock_return_picking_line__to_refund
 msgid "Update quantities on SO/PO"
 msgstr "อัปเดตปริมาณใน SO/PO"
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid "Updating lot valuation for product %s."
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_location__valuation_in_account_id
@@ -929,15 +1069,20 @@ msgstr ""
 #: model:ir.ui.menu,name:stock_account.menu_valuation
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_form
-#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_picking
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quant_tree_editable_inherit
 msgid "Valuation"
 msgstr "การประเมินมูลค่า"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__company_currency_id
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__company_currency_id
 msgid "Valuation Currency"
-msgstr "สกุลเงินการประเมินมูลค่า"
+msgstr "สกุลเงินของการประเมินมูลค่า"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__adjusted_layer_ids
+msgid "Valuation Layers"
+msgstr ""
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.product_product_stock_tree_inherit_stock_account
@@ -945,20 +1090,31 @@ msgid "Valuation Report"
 msgstr "รายงานการประเมินมูลค่า"
 
 #. module: stock_account
-#. odoo-javascript
-#: code:addons/stock_account/static/src/xml/inventory_report.xml:0
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quantity_history_inherit_stock_account
-#, python-format
 msgid "Valuation at Date"
 msgstr "การประเมินมูลค่า ณ วันที่"
 
 #. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_product_product__lot_valuated
+#: model:ir.model.fields,field_description:stock_account.field_product_template__lot_valuated
+msgid "Valuation by Lot/Serial number"
+msgstr ""
+
+#. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid "Valuation method change for product category %s: from %s to %s."
+msgid ""
+"Valuation method change for product category %(category)s: from "
+"%(old_method)s to %(new_method)s."
 msgstr ""
-"การเปลี่ยนแปลงวิธีการประเมินมูลค่าสำหรับประเภทสินค้า %s: จาก %s เป็น %s"
+"การเปลี่ยนแปลงวิธีการประเมินมูลค่าสำหรับหมวดหมู่ผลิตภัณฑ์ %(category)s: จาก "
+"%(old_method)s เป็น %(new_method)s"
+
+#. module: stock_account
+#: model:ir.model.fields,help:stock_account.field_stock_valuation_layer_revaluation__adjusted_layer_ids
+msgid "Valuations layers being adjusted"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_quant__value
@@ -968,19 +1124,29 @@ msgstr "ค่า"
 #. module: stock_account
 #. odoo-javascript
 #: code:addons/stock_account/static/src/stock_account_forecasted/forecasted_header.xml:0
-#, python-format
 msgid "Value On Hand:"
 msgstr "มูลค่าคงเหลือ:"
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__value_svl
+#: model:ir.model.fields,field_description:stock_account.field_stock_lot__value_svl
 msgid "Value Svl"
 msgstr "มูลค่า Svl"
 
 #. module: stock_account
+#: model:ir.model.fields,help:stock_account.field_stock_lot__standard_price
+msgid ""
+"Value of the lot (automatically computed in AVCO).\n"
+"        Used to value the product when the purchase cost is not known (e.g. inventory adjustment).\n"
+"        Used to compute margins on sale orders."
+msgstr ""
+"มูลค่าของล็อต (คำนวณอัตโนมัติใน AVCO)\n"
+"        ใช้ในการประเมินมูลค่าผลิตภัณฑ์เมื่อไม่ทราบต้นทุนการซื้อ (เช่น การปรับสินค้าคงคลัง)\n"
+"        ใช้ในการคำนวณมาร์จิ้นในการสั่งซื้อสินค้า"
+
+#. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "Warning"
 msgstr "คำเตือน"
 
@@ -1021,21 +1187,53 @@ msgstr "โปรแกรมแบบจำลอง เพื่อประ�
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
+msgid "You cannot adjust the valuation of a layer with zero quantity"
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
+msgid "You cannot adjust valuation without a product"
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid ""
+"You cannot change the costing method of product valuated by lot/serial "
+"number."
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid ""
+"You cannot change the product category of a product valuated by lot/serial "
+"number."
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
+#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
 msgid "You cannot revalue a product with a standard cost method."
 msgstr "คุณไม่สามารถประเมินมูลค่าสินค้าใหม่ด้วยวิธีต้นทุนมาตรฐานได้"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "You cannot revalue a product with an empty or negative stock."
 msgstr "คุณไม่สามารถประเมินมูลค่าใหม่ของสินค้าที่มีสต็อกว่างเปล่าหรือติดลบได้"
 
 #. module: stock_account
 #. odoo-python
+#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
+msgid "You cannot revalue multiple products at once"
+msgstr ""
+
+#. module: stock_account
+#. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
+#: code:addons/stock_account/models/stock_lot.py:0
 msgid ""
 "You cannot update the cost of a product in automated valuation as it leads "
 "to the creation of a journal entry, for which you don't have the access "
@@ -1047,7 +1245,6 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid ""
 "You don't have any input valuation account defined on your product category."
 " You must define one before processing this operation."
@@ -1058,18 +1255,6 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"You don't have any stock input account defined on your product category. You"
-" must define one before processing this operation."
-msgstr ""
-"คุณไม่มีบัญชีการป้อนข้อมูลสต็อกที่กำหนดไว้ในหมวดหมู่สินค้าของคุณ "
-"คุณต้องกำหนดหนึ่งรายการก่อนที่จะประมวลผลการดำเนินการนี้"
-
-#. module: stock_account
-#. odoo-python
-#: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid ""
 "You don't have any output valuation account defined on your product "
 "category. You must define one before processing this operation."
@@ -1079,8 +1264,17 @@ msgstr ""
 
 #. module: stock_account
 #. odoo-python
+#: code:addons/stock_account/models/product.py:0
+msgid ""
+"You don't have any stock input account defined on your product category. You"
+" must define one before processing this operation."
+msgstr ""
+"คุณไม่มีบัญชีการป้อนข้อมูลสต็อกที่กำหนดไว้ในหมวดหมู่สินค้าของคุณ "
+"คุณต้องกำหนดหนึ่งรายการก่อนที่จะประมวลผลการดำเนินการนี้"
+
+#. module: stock_account
+#. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
 msgid ""
 "You don't have any stock journal defined on your product category, check if "
 "you have installed a chart of accounts."
@@ -1091,10 +1285,8 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
+#: code:addons/stock_account/models/stock_valuation_layer.py:0
 msgid ""
 "You don't have any stock valuation account defined on your product category."
 " You must define one before processing this operation."
@@ -1104,8 +1296,7 @@ msgstr ""
 
 #. module: stock_account
 #. odoo-python
-#: code:addons/stock_account/models/product.py:0
-#, python-format
+#: code:addons/stock_account/models/stock_valuation_layer.py:0
 msgid "You must set a counterpart account on your product category."
 msgstr "คุณต้องตั้งค่าบัญชีคู่ในหมวดหมู่สินค้าของคุณ"
 
@@ -1123,3 +1314,13 @@ msgstr "สำหรับ"
 #: model_terms:ir.ui.view,arch_db:stock_account.view_category_property_form
 msgid "locations"
 msgstr "ตำแหน่ง"
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_account_report_invoice_document
+msgid "units"
+msgstr "หน่วย"
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_graph
+msgid "valuation graph"
+msgstr ""

@@ -1,26 +1,26 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase_stock
-# 
+#
 # Translators:
 # Cozmin Candea <office@terrabit.ro>, 2022
 # Martin Trigaux, 2022
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
+# Dorin Hongu <dhongu@gmail.com>, 2023
 # Claudia Baisan, 2023
-# Dorin Hongu <dhongu@gmail.com>, 2024
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"POT-Creation-Date: 2023-05-16 13:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Dorin Hongu <dhongu@gmail.com>, 2024\n"
+"Last-Translator: Claudia Baisan, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: ro\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #. module: purchase_stock
@@ -31,45 +31,18 @@ msgstr "% Livrare la timp"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
-#: code:addons/purchase_stock/models/stock_rule.py:0
-#: code:addons/purchase_stock/models/stock_rule.py:0
-#, python-format
 msgid "+ %d day(s)"
 msgstr "+ %d zi(le)"
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
-msgid ""
-"<span attrs=\"{'invisible': [('on_time_rate', '&gt;=', 0)]}\">No On-time "
-"Delivery Data</span>"
-msgstr ""
-"<span attrs=\"{'invisible': [('on_time_rate', '&gt;=', 0)]}\">Fără date de "
-"livrare la timp</span>"
-
-#. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
-msgid ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" aria-label=\"Values set here are company-specific.\" "
-"groups=\"base.group_multi_company\"/>"
-msgstr ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Valorile stabilite aici sunt "
-"specifice companiei.\" aria-label=\"Valorile stabilite aici sunt specifice "
-"companiei.\" groups=\"base.group_multi_company\"/>"
-
-#. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
-msgid ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" groups=\"base.group_multi_company\"/>"
-msgstr ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Valorile stabilite aici sunt "
-"specifice companiei.\" groups=\"base.group_multi_company\"/>"
+msgid "<span attrs=\"{'invisible': [('on_time_rate', '&gt;=', 0)]}\">No On-time Delivery Data</span>"
+msgstr "<span attrs=\"{'invisible': [('on_time_rate', '&gt;=', 0)]}\">Fără date de livrare la timp</span>"
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_partner_view_purchase_buttons_inherit
 msgid "<span class=\"o_stat_text\">On-time Rate</span>"
-msgstr "<span class=\"o_stat_text\">Rata la timp</span>"
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.stock_production_lot_view_form
@@ -80,6 +53,11 @@ msgstr "<span class=\"o_stat_text\">Achiziții</span>"
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_partner_view_purchase_buttons_inherit
 msgid "<span class=\"o_stat_value\">%</span>"
 msgstr "<span class=\"o_stat_value\">%</span>"
+
+#. module: purchase_stock
+#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
+msgid "<span> days</span>"
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.report_purchaseorder_document
@@ -96,13 +74,10 @@ msgstr "<strong>Adresa livrare:</strong>"
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order_line__qty_received_method
 msgid ""
-"According to product configuration, the received quantity can be automatically computed by mechanism :\n"
+"According to product configuration, the received quantity can be automatically computed by mechanism:\n"
 "  - Manual: the quantity is set manually on the line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
-"În funcție de configurația produsului, cantitatea primită poate fi calculată automat prin mecanism :\n"
-"  - Manual: cantitatea este setată manual pe linie\n"
-"  - Mutare stoc: cantitatea provine din culesuri confirmate\n"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_rule__action
@@ -110,27 +85,9 @@ msgid "Action"
 msgstr "Acțiune"
 
 #. module: purchase_stock
-#: model:ir.model.fields,help:purchase_stock.field_purchase_report__avg_receipt_delay
-msgid ""
-"Amount of time between expected and effective receipt date. Due to a hack "
-"needed to calculate this,               every record will show the same "
-"average value, therefore only use this as an aggregated value with "
-"group_operator=avg"
-msgstr ""
-"Valoare de timp între data preconizată a primirii și data efectivă a "
-"primirii. Datorită unui hack necesar pentru a calcula acest lucru, fiecare "
-"înregistrare va arăta aceeași valoare medie, prin urmare, folosiți aceasta "
-"doar ca valoare agregată cu group_operator = avg"
-
-#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__effective_date
 msgid "Arrival"
 msgstr "Sosire"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_purchase_report__avg_receipt_delay
-msgid "Average Receipt Delay"
-msgstr "Întârziere medie la încasări"
 
 #. module: purchase_stock
 #. odoo-python
@@ -138,7 +95,6 @@ msgstr "Întârziere medie la încasări"
 #: model:ir.model.fields.selection,name:purchase_stock.selection__stock_rule__action__buy
 #: model:stock.route,name:purchase_stock.route_warehouse0_buy
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_report_stock_rule
-#, python-format
 msgid "Buy"
 msgstr "Cumpără"
 
@@ -175,20 +131,17 @@ msgstr "Contact"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
 msgid "Corresponding receipt not found."
-msgstr "Recepția corespunzătoare nu a fost găsită."
+msgstr ""
 
 #. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_stock_move__created_purchase_line_id
-msgid "Created Purchase Order Line"
-msgstr "Linie Comandă de Achiziție Creată"
+#: model:ir.model.fields,field_description:purchase_stock.field_stock_move__created_purchase_line_ids
+msgid "Created Purchase Order Lines"
+msgstr ""
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_move.py:0
-#: code:addons/purchase_stock/models/stock_move.py:0
-#, python-format
 msgid "Currency exchange rate difference"
 msgstr "Diferența curs valutar"
 
@@ -200,22 +153,19 @@ msgstr "Descriere Personalizată"
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
 msgid "Days needed to confirm a PO"
-msgstr "Zile necesare pentru confirmarea unui CA"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_res_company__days_to_purchase
 #: model:ir.model.fields,help:purchase_stock.field_res_config_settings__days_to_purchase
 msgid "Days needed to confirm a PO, define when a PO should be validated"
-msgstr ""
-"Zilele necesare pentru confirmarea unui PO, definiți când trebuie să fie "
-"validat un PO"
+msgstr "Zilele necesare pentru confirmarea unui PO, definiți când trebuie să fie validat un PO"
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
 #: model:ir.model.fields,field_description:purchase_stock.field_res_company__days_to_purchase
 #: model:ir.model.fields,field_description:purchase_stock.field_res_config_settings__days_to_purchase
-#, python-format
 msgid "Days to Purchase"
 msgstr "Zile pentru Achiziție"
 
@@ -227,13 +177,8 @@ msgstr "Livrare la"
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_product_product__route_ids
 #: model:ir.model.fields,help:purchase_stock.field_product_template__route_ids
-msgid ""
-"Depending on the modules installed, this will allow you to define the route "
-"of the product: whether it will be bought, manufactured, replenished on "
-"order, etc."
-msgstr ""
-"În funcție de modulele instalate, acest lucru vă va permite să definiți ruta"
-" produsului: dacă va fi cumpărat, fabricat, completat la comandă, etc."
+msgid "Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, replenished on order, etc."
+msgstr "În funcție de modulele instalate, acest lucru vă va permite să definiți ruta produsului: dacă va fi cumpărat, fabricat, completat la comandă, etc."
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__default_location_dest_id_usage
@@ -246,15 +191,9 @@ msgid "Display Name"
 msgstr "Nume afișat"
 
 #. module: purchase_stock
-#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_purchase
-#: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
-msgid "Documentation"
-msgstr "Documentație"
-
-#. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__move_dest_ids
-msgid "Downstream Moves"
-msgstr "Mișcări în aval"
+msgid "Downstream moves alt"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__dest_address_id
@@ -290,15 +229,8 @@ msgstr "Excepție:"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
-msgid ""
-"For the product %s, the warehouse of the operation type (%s) is inconsistent"
-" with the location (%s) of the reordering rule (%s). Change the operation "
-"type or cancel the request for quotation."
+msgid "For the product %s, the warehouse of the operation type (%s) is inconsistent with the location (%s) of the reordering rule (%s). Change the operation type or cancel the request for quotation."
 msgstr ""
-"Pentru produsul %s, tipului de operațiune (%s) este incompatibil cu locația "
-"(%s) regulii de reordonare (%s). Schimbați tipul de operațiune sau anulați "
-"cererea de ofertă."
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
@@ -308,27 +240,24 @@ msgstr "Raport prognoză"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__forecasted_issue
 msgid "Forecasted Issue"
-msgstr "Probleme prognozate"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields.selection,name:purchase_stock.selection__purchase_order__receipt_status__full
 msgid "Fully Received"
-msgstr "Complet primit"
+msgstr ""
 
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
-#, python-format
 msgid "Generate the draft vendor bill."
 msgstr "Generați facturi furnizor ciornă."
 
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
-#, python-format
 msgid "Go back to the purchase order to generate the vendor bill."
-msgstr ""
-"Reveniți la comanda de cumpărare pentru a genera factura furnizorului."
+msgstr "Reveniți la comanda de cumpărare pentru a genera factura furnizorului."
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__id
@@ -338,7 +267,7 @@ msgstr "ID"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__incoming_picking_count
 msgid "Incoming Shipment count"
-msgstr "Nr. Recepții"
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
@@ -353,16 +282,12 @@ msgstr "Incoterm"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__incoterm_location
 msgid "Incoterm Location"
-msgstr "Locație Incoterm"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order__incoterm_id
-msgid ""
-"International Commercial Terms are a series of predefined commercial terms "
-"used in international transactions."
-msgstr ""
-"Termenii Comerciali Internationali sunt o serie de termeni comerciali "
-"predefiniți folosiți in tranzacțiile internaționale."
+msgid "International Commercial Terms are a series of predefined commercial terms used in international transactions."
+msgstr "Termenii Comerciali Internationali sunt o serie de termeni comerciali predefiniți folosiți in tranzacțiile internaționale."
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__is_shipped
@@ -383,11 +308,6 @@ msgstr "Notă contabilă"
 #: model:ir.model,name:purchase_stock.model_account_move_line
 msgid "Journal Item"
 msgstr "Element jurnal"
-
-#. module: purchase_stock
-#: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report____last_update
-msgid "Last Modified on"
-msgstr "Ultima modificare la"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_product_supplierinfo__last_purchase_date
@@ -411,15 +331,8 @@ msgstr "Pot fi necesare acțiuni manuale."
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
-msgid ""
-"Margin of error for vendor lead times. When the system generates Purchase "
-"Orders for reordering products,they will be scheduled that many days earlier"
-" to cope with unexpected vendor delays."
-msgstr ""
-"Marja de eroare pentru termenele de plată ale vânzătorilor. Când sistemul "
-"generează comenzi de achiziție pentru comandare de produse, acestea vor fi "
-"programate cu multe zile mai devreme, să facă față întârzierilor neașteptate"
-" ale vânzătorilor."
+msgid "Margin of error for vendor lead times. When the system generates Purchase Orders for reordering products,they will be scheduled that many days earlier to cope with unexpected vendor delays."
+msgstr "Marja de eroare pentru termenele de plată ale vânzătorilor. Când sistemul generează comenzi de achiziție pentru comandare de produse, acestea vor fi programate cu multe zile mai devreme, să facă față întârzierilor neașteptate ale vânzătorilor."
 
 #. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_stock_warehouse_orderpoint
@@ -429,7 +342,7 @@ msgstr "Regula inventarului minim"
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
 msgid "Move forward expected request creation date by"
-msgstr "Mutare înainte a datei de creare a cererii așteptate cu"
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.exception_on_po
@@ -449,13 +362,8 @@ msgstr "Nu a fost primit"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_move.py:0
-#, python-format
-msgid ""
-"Odoo is not able to generate the anglo saxon entries. The total valuation of"
-" %s is zero."
-msgstr ""
-"Odoo nu este capabil să genereze intrări anglo saxon. Evaluarea totală a%s "
-"este 0."
+msgid "Odoo is not able to generate the anglo saxon entries. The total valuation of %s is zero."
+msgstr "Odoo nu este capabil să genereze intrări anglo saxon. Evaluarea totală a%s este 0."
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.vendor_delay_report_view_graph
@@ -484,7 +392,7 @@ msgstr "Livrare la timp"
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_partner_view_purchase_buttons_inherit
 msgid "On-time Rate"
-msgstr "Rata la timp"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order_line__orderpoint_id
@@ -495,29 +403,29 @@ msgstr "Orderpoint"
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order__on_time_rate
 #: model:ir.model.fields,help:purchase_stock.field_res_partner__on_time_rate
 #: model:ir.model.fields,help:purchase_stock.field_res_users__on_time_rate
-msgid ""
-"Over the past x days; the number of products received on time divided by the"
-" number of ordered products.x is either the System Parameter "
-"purchase_stock.on_time_delivery_days or the default 365"
-msgstr ""
-"În ultimele x zile; numărul de produse primite la timp împărțit la numărul "
-"de produse comandate. x este fie Parametrul de Sistem "
-"purchase_stock.on_time_delivery_days sau implicit 365"
+msgid "Over the past 12 months; the number of products received on time divided by the number of ordered products."
+msgstr "În ultimele 12 luni; numărul de produse primite la timp împărțit la numărul de produse comandate."
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_product_product__purchase_order_line_ids
 msgid "PO Lines"
-msgstr "Linii CA"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields.selection,name:purchase_stock.selection__purchase_order__receipt_status__partial
 msgid "Partially Received"
-msgstr "Parțial primit"
+msgstr ""
+
+#. module: purchase_stock
+#: model:ir.model.fields,field_description:purchase_stock.field_product_category__property_account_creditor_price_difference_categ
+#: model:ir.model.fields,field_description:purchase_stock.field_product_product__property_account_creditor_price_difference
+#: model:ir.model.fields,field_description:purchase_stock.field_product_template__property_account_creditor_price_difference
+msgid "Price Difference Account"
+msgstr ""
 
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
-#, python-format
 msgid "Process all the receipt quantities."
 msgstr "Procesați toate cantitățile de primire."
 
@@ -534,6 +442,7 @@ msgid "Product"
 msgstr "Produs"
 
 #. module: purchase_stock
+#: model:ir.model,name:purchase_stock.model_product_category
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__category_id
 msgid "Product Category"
 msgstr "Categorie produs"
@@ -586,14 +495,13 @@ msgstr "Raport Achiziție"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
-#, python-format
 msgid "Purchase Security Lead Time"
 msgstr "Perioadă Termen Achiziție Securitate"
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__purchase_visibility_days
 msgid "Purchase Visibility Days"
-msgstr "Zile vizibilitate achiziție"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_lot__purchase_order_count
@@ -602,12 +510,8 @@ msgstr "Nr. Comenzi de achiziție"
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order__dest_address_id
-msgid ""
-"Put an address if you want to deliver directly from the vendor to the "
-"customer. Otherwise, keep empty to deliver to your own company."
-msgstr ""
-"Puneți o adresă dacă doriți să livrați direct de la furnizor către client. "
-"În caz contrar, păstrați-vă gol pentru a vă livra companiei."
+msgid "Put an address if you want to deliver directly from the vendor to the customer. Otherwise, keep empty to deliver to your own company."
+msgstr "Puneți o adresă dacă doriți să livrați direct de la furnizor către client. În caz contrar, păstrați-vă gol pentru a vă livra companiei."
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
@@ -617,7 +521,7 @@ msgstr "Recepție"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_purchase_order__receipt_status
 msgid "Receipt Status"
-msgstr "Stare recepție"
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.purchase_order_view_form_inherit
@@ -627,7 +531,6 @@ msgstr "Primire Produse"
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
-#, python-format
 msgid "Receive the ordered products."
 msgstr "Primiți produsele comandate"
 
@@ -649,7 +552,6 @@ msgstr "Solicitați furnizorilor să livreze clienților"
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/purchase_stock_forecasted/forecasted_details.xml:0
-#, python-format
 msgid "Requests for quotation"
 msgstr "Cereri de ofertă"
 
@@ -672,7 +574,7 @@ msgstr "Rute"
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_stock
 msgid "Schedule request for quotations earlier to avoid delays"
-msgstr "Programați cererile de ofertă mai devreme pentru a evita întârzierile"
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.product_supplierinfo_replenishment_tree_view
@@ -682,7 +584,7 @@ msgstr "Setează ca furnizor"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_product_supplierinfo__show_set_supplier_button
 msgid "Show Set Supplier Button"
-msgstr "Afișare buton Setează Furnizor"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_warehouse_orderpoint__show_supplier
@@ -701,7 +603,7 @@ msgid "Stock Moves"
 msgstr "Mișcări stoc"
 
 #. module: purchase_stock
-#: model:ir.model,name:purchase_stock.model_report_stock_report_product_product_replenishment
+#: model:ir.model,name:purchase_stock.model_stock_forecasted_product_product
 msgid "Stock Replenishment Report"
 msgstr "Raport Reaprovizionare Stoc"
 
@@ -728,7 +630,7 @@ msgstr "Lista de preturi Furnizor"
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_stock_replenishment_info__supplierinfo_ids
 msgid "Supplierinfo"
-msgstr "Informații furnizor"
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order__default_location_dest_id_usage
@@ -738,49 +640,36 @@ msgstr "Câmpul tehnic utilizat pentru afișarea adresei de livrare directe"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock.py:0
-#, python-format
 msgid "The following replenishment order has been generated"
 msgstr "A fost generată următoarea comandă de completare"
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
-msgid ""
-"The quantities on your purchase order indicate less than billed. You should "
-"ask for a refund."
-msgstr ""
-"Cantitățile din comanda dvs. de achiziție indică mai puțin decât facturarea."
-" Ar trebui să solicitați o stornare."
+msgid "The quantities on your purchase order indicate less than billed. You should ask for a refund."
+msgstr "Cantitățile din comanda dvs. de achiziție indică mai puțin decât facturarea. Ar trebui să solicitați o stornare."
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
-#, python-format
-msgid ""
-"There is no matching vendor price to generate the purchase order for product"
-" %s (no vendor defined, minimum quantity not reached, dates not valid, ...)."
-" Go on the product form and complete the list of vendors."
+msgid "There is no matching vendor price to generate the purchase order for product %s (no vendor defined, minimum quantity not reached, dates not valid, ...). Go on the product form and complete the list of vendors."
+msgstr "Nu există niciun furnizor pentru a genera comanda de achiziție pentru produsului %s (nu a fost definit furnizorul, cantitatea minimă neatinsă, datele nevalide, ...). Accesați formularul de produs și completați lista furnizori."
+
+#. module: purchase_stock
+#: model:ir.model.fields,help:purchase_stock.field_product_product__property_account_creditor_price_difference
+#: model:ir.model.fields,help:purchase_stock.field_product_template__property_account_creditor_price_difference
+msgid "This account is used in automated inventory valuation to record the price difference between a purchase order and its related vendor bill when validating this vendor bill."
 msgstr ""
-"Nu există niciun furnizor pentru a genera comanda de achiziție pentru "
-"produsului %s (nu a fost definit furnizorul, cantitatea minimă neatinsă, "
-"datele nevalide, ...). Accesați formularul de produs și completați lista "
-"furnizori."
+
+#. module: purchase_stock
+#: model:ir.model.fields,help:purchase_stock.field_product_category__property_account_creditor_price_difference_categ
+msgid "This account will be used to value price difference between purchase price and accounting cost."
+msgstr ""
 
 #. module: purchase_stock
 #: model_terms:ir.ui.view,arch_db:purchase_stock.res_config_settings_view_form_purchase
-msgid ""
-"This adds a dropshipping route to apply on products in order to request your"
-" vendors to deliver to your customers. A product to dropship will generate a"
-" purchase request for quotation once the sales order confirmed. This is a "
-"on-demand flow. The requested delivery address will be the customer delivery"
-" address and not your warehouse."
-msgstr ""
-"Acest lucru adaugă un traseu de livrare directă  aplicabil le produse  in "
-"comandă pentru a solicita furnizorilor să le livreze clienților. Un produs "
-"cu livrare directă va genera o cerere de achiziție pentru ofertă odată "
-"confirmată comanda de vânzare. Acesta este un flux la cerere. Adresa de "
-"livrare solicitată va fi adresa de livrare a clientului și nu depozitul dvs."
+msgid "This adds a dropshipping route to apply on products in order to request your vendors to deliver to your customers. A product to dropship will generate a purchase request for quotation once the sales order confirmed. This is a on-demand flow. The requested delivery address will be the customer delivery address and not your warehouse."
+msgstr "Acest lucru adaugă un traseu de livrare directă  aplicabil le produse  in comandă pentru a solicita furnizorilor să le livreze clienților. Un produs cu livrare directă va genera o cerere de achiziție pentru ofertă odată confirmată comanda de vânzare. Acesta este un flux la cerere. Adresa de livrare solicitată va fi adresa de livrare a clientului și nu depozitul dvs."
 
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_purchase_order__picking_type_id
@@ -790,20 +679,14 @@ msgstr "Aceasta va determina tipul de operație pentru recepție"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
-msgid ""
-"Those dates couldn’t be modified accordingly on the receipt %s which had "
-"already been validated."
+msgid "Those dates couldn’t be modified accordingly on the receipt %s which had already been validated."
 msgstr ""
-"Nu se pot modifica aceste date în consecință pe recepția %s care a fost deja"
-" validată."
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
 msgid "Those dates have been updated accordingly on the receipt %s."
-msgstr "Aceste date au fost actualizate în consecință pe recepția %s."
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model.fields,field_description:purchase_stock.field_vendor_delay_report__qty_total
@@ -818,18 +701,12 @@ msgstr "Transfer"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
-msgid ""
-"Unable to cancel purchase order %s as some receptions have already been "
-"done."
-msgstr ""
-"Nu se poate anula comanda de achiziție  %s deoarece unele recepții au fost "
-"deja efectuate."
+msgid "Unable to cancel purchase order %s as some receptions have already been done."
+msgstr "Nu se poate anula comanda de achiziție  %s deoarece unele recepții au fost deja efectuate."
 
 #. module: purchase_stock
 #. odoo-javascript
 #: code:addons/purchase_stock/static/src/js/tours/purchase_stock.js:0
-#, python-format
 msgid "Validate the receipt of all ordered products."
 msgstr "Validați primirea tuturor produselor comandate."
 
@@ -848,7 +725,6 @@ msgstr "Raport întârziere furnizor"
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
-#, python-format
 msgid "Vendor Lead Time"
 msgstr "Termen Livrare Vânzători"
 
@@ -865,7 +741,7 @@ msgstr "Furnizori"
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_stock_warehouse_orderpoint__purchase_visibility_days
 msgid "Visibility Days applied on the purchase routes."
-msgstr "Zile de vizibilitate aplicate pe rutele de achiziție."
+msgstr ""
 
 #. module: purchase_stock
 #: model:ir.model,name:purchase_stock.model_stock_warehouse
@@ -876,26 +752,17 @@ msgstr "Depozit"
 #. module: purchase_stock
 #: model:ir.model.fields,help:purchase_stock.field_stock_warehouse__buy_to_resupply
 msgid "When products are bought, they can be delivered to this warehouse"
-msgstr ""
-"Când produsele sunt achiziționate, se pot trimite către această magazie"
+msgstr "Când produsele sunt achiziționate, se pot trimite către această magazie"
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/stock_rule.py:0
-#, python-format
-msgid ""
-"When products are needed in <b>%s</b>, <br/> a request for quotation is "
-"created to fulfill the need.<br/>Note: This rule will be used in combination"
-" with the rules<br/>of the reception route(s)"
+msgid "When products are needed in <b>%s</b>, <br/> a request for quotation is created to fulfill the need.<br/>Note: This rule will be used in combination with the rules<br/>of the reception route(s)"
 msgstr ""
-"Când produsele sunt necesare în <b>%s</b>, <br/> se creează o cerere de "
-"ofertă pentru a satisface nevoia.<br/>Notă: Această regulă va fi utilizată "
-"în combinație cu regulile<br/>traseului de recepție"
 
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
 msgid ""
 "You cannot decrease the ordered quantity below the received quantity.\n"
 "Create a return first."
@@ -906,7 +773,6 @@ msgstr ""
 #. module: purchase_stock
 #. odoo-python
 #: code:addons/purchase_stock/models/purchase.py:0
-#, python-format
 msgid "You must set a Vendor Location for this partner %s"
 msgstr "Trebuie să setați un Punct de Vânzare pentru acest partener %s"
 

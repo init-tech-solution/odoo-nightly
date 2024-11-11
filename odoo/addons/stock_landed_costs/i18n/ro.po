@@ -1,34 +1,31 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* stock_landed_costs
-# 
+#
 # Translators:
 # Hongu Cosmin <cosmin513@gmail.com>, 2022
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
 # Martin Trigaux, 2022
 # Cozmin Candea <office@terrabit.ro>, 2023
-# Dorin Hongu <dhongu@gmail.com>, 2024
-# 
+# Dorin Hongu <dhongu@gmail.com>, 2023
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:01+0000\n"
+"POT-Creation-Date: 2023-05-16 13:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
-"Last-Translator: Dorin Hongu <dhongu@gmail.com>, 2024\n"
+"Last-Translator: Dorin Hongu <dhongu@gmail.com>, 2023\n"
 "Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: ro\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
 msgid " already out"
 msgstr "deja ieșit"
 
@@ -36,6 +33,11 @@ msgstr "deja ieșit"
 #: model_terms:ir.ui.view,arch_db:stock_landed_costs.stock_landed_cost_view_kanban
 msgid "<i class=\"fa fa-clock-o\" title=\"Date\" role=\"img\" aria-label=\"Date\"/>"
 msgstr "<i class=\"fa fa-clock-o\" title=\"Data\" role=\"img\" aria-label=\"Data\"/>"
+
+#. module: stock_landed_costs
+#: model_terms:ir.ui.view,arch_db:stock_landed_costs.view_stock_landed_cost_form
+msgid "<span class=\"o_stat_text\">Valuation</span>"
+msgstr ""
 
 #. module: stock_landed_costs
 #: model:ir.model.fields,help:stock_landed_costs.field_account_move_line__product_type
@@ -179,14 +181,10 @@ msgid "Cost Lines"
 msgstr "Linii cost"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
-msgid ""
-"Cost and adjustments lines do not match. You should maybe recompute the "
-"landed costs."
-msgstr ""
-"Costurile și liniile de ajustare nu se potrivesc. Ar trebui să recalculați "
-"costurile adiționale."
+msgid "Cost and adjustments lines do not match. You should maybe recompute the landed costs."
+msgstr "Costurile și liniile de ajustare nu se potrivesc. Ar trebui să recalculați costurile adiționale."
 
 #. module: stock_landed_costs
 #: model_terms:ir.ui.view,arch_db:stock_landed_costs.account_view_move_form_inherited
@@ -277,17 +275,12 @@ msgstr "Egal"
 #. module: stock_landed_costs
 #: model:ir.model.fields,help:stock_landed_costs.field_stock_landed_cost_lines__split_method
 msgid ""
-"Equal : Cost will be equally divided.\n"
-"By Quantity : Cost will be divided according to product's quantity.\n"
-"By Current cost : Cost will be divided according to product's current cost.\n"
-"By Weight : Cost will be divided depending on its weight.\n"
-"By Volume : Cost will be divided depending on its volume."
+"Equal: Cost will be equally divided.\n"
+"By Quantity: Cost will be divided according to product's quantity.\n"
+"By Current cost: Cost will be divided according to product's current cost.\n"
+"By Weight: Cost will be divided depending on its weight.\n"
+"By Volume: Cost will be divided depending on its volume."
 msgstr ""
-"Egal: Costul va fi egal împărțit\n"
-"Cantitate: Costul va fi împărțit în funcție de cantitatea produsului\n"
-"Cost: Costul va fi împărțit în funcție de costul curent al produsului\n"
-"Masă: Costul va fi împărțit în funcție de masa sa\n"
-"Volum: Costul va fi împărțit în funcție de volumul său."
 
 #. module: stock_landed_costs
 #: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost__message_follower_ids
@@ -350,9 +343,7 @@ msgstr "Dacă este bifată, unele mesaje au o eroare de livrare."
 #. module: stock_landed_costs
 #: model:ir.model.fields,help:stock_landed_costs.field_product_product__landed_cost_ok
 #: model:ir.model.fields,help:stock_landed_costs.field_product_template__landed_cost_ok
-msgid ""
-"Indicates whether the product is a landed cost: when receiving a vendor "
-"bill, you can allocate this cost on preceding receipts."
+msgid "Indicates whether the product is a landed cost: when receiving a vendor bill, you can allocate this cost on preceding receipts."
 msgstr ""
 
 #. module: stock_landed_costs
@@ -427,11 +418,9 @@ msgid "Landed cost validated"
 msgstr "Costuri adiționale validate"
 
 #. module: stock_landed_costs
-#: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost____last_update
-#: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost_lines____last_update
-#: model:ir.model.fields,field_description:stock_landed_costs.field_stock_valuation_adjustment_lines____last_update
-msgid "Last Modified on"
-msgstr "Ultima modificare la"
+#: model_terms:ir.actions.act_window,help:stock_landed_costs.action_stock_landed_cost
+msgid "Landed costs allow you to include additional costs (shipment, insurance, customs duties, etc) into the cost of the product."
+msgstr ""
 
 #. module: stock_landed_costs
 #: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost__write_uid
@@ -458,11 +447,6 @@ msgid "Lc Journal"
 msgstr "Jurnal Lc"
 
 #. module: stock_landed_costs
-#: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Atașament principal"
-
-#. module: stock_landed_costs
 #: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost__message_has_error
 msgid "Message Delivery error"
 msgstr "Eroare livrare mesaj"
@@ -484,10 +468,8 @@ msgid "Name"
 msgstr "Nume"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
 msgid "New"
 msgstr "Nou(ă)"
 
@@ -528,8 +510,8 @@ msgstr "Numărul de erori"
 
 #. module: stock_landed_costs
 #: model:ir.model.fields,help:stock_landed_costs.field_stock_landed_cost__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Numărul de mesaje care necesită acțiune"
+msgid "Number of messages which requires an action"
+msgstr "Număr de mesaje ce necesită intervenție"
 
 #. module: stock_landed_costs
 #: model:ir.model.fields,help:stock_landed_costs.field_stock_landed_cost__message_has_error_counter
@@ -537,8 +519,8 @@ msgid "Number of messages with delivery error"
 msgstr "Numărul de mesaje cu eroare de livrare"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
 msgid "Only draft landed costs can be validated"
 msgstr "Numai costurile adiționale ciornă pot fi validate"
 
@@ -553,18 +535,16 @@ msgid "Picking"
 msgstr "Ridicare"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
 msgid "Please configure Stock Expense Account for product: %s."
 msgstr "Configurați vă rog Contul de cheltuială pentru produsul: %s."
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
 msgid "Please define %s on which those additional costs should apply."
-msgstr ""
-"Vă rugăm definiți %s pentru care ar trebui să se aplice aceste costuri "
-"suplimentare."
+msgstr "Vă rugăm definiți %s pentru care ar trebui să se aplice aceste costuri suplimentare."
 
 #. module: stock_landed_costs
 #: model:ir.model.fields.selection,name:stock_landed_costs.selection__stock_landed_cost__state__done
@@ -594,6 +574,11 @@ msgid "Quantity"
 msgstr "Cantitate"
 
 #. module: stock_landed_costs
+#: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: stock_landed_costs
 #: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost__activity_user_id
 msgid "Responsible User"
 msgstr "Utilizator responsabil"
@@ -606,8 +591,7 @@ msgstr "Eroare livrare SMS"
 #. module: stock_landed_costs
 #: model_terms:ir.ui.view,arch_db:stock_landed_costs.view_stock_landed_cost_search
 msgid "Show all records which has next action date is before today"
-msgstr ""
-"Afișați toate înregistrările care au data următoarei acțiuni în trecut"
+msgstr "Afișați toate înregistrările care au data următoarei acțiuni în trecut"
 
 #. module: stock_landed_costs
 #: model:ir.model.fields,field_description:stock_landed_costs.field_stock_landed_cost_lines__split_method
@@ -685,19 +669,10 @@ msgid "Validate"
 msgstr "Validează"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
-msgid ""
-"Validated landed costs cannot be cancelled, but you could create negative "
-"landed costs to reverse them"
-msgstr ""
-"Costurile de adiționale validate nu pot fi anulate, dar puteți crea costuri "
-"adiționale negative pentru a le inversa"
-
-#. module: stock_landed_costs
-#: model_terms:ir.ui.view,arch_db:stock_landed_costs.view_stock_landed_cost_form
-msgid "Valuation"
-msgstr "Evaluare"
+msgid "Validated landed costs cannot be cancelled, but you could create negative landed costs to reverse them"
+msgstr "Costurile de adiționale validate nu pot fi anulate, dar puteți crea costuri adiționale negative pentru a le inversa"
 
 #. module: stock_landed_costs
 #: model:ir.model,name:stock_landed_costs.model_stock_valuation_adjustment_lines
@@ -736,17 +711,13 @@ msgid "Weight"
 msgstr "Masă"
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/stock_landed_cost.py:0
-#, python-format
-msgid ""
-"You cannot apply landed costs on the chosen %s(s). Landed costs can only be "
-"applied for products with FIFO or average costing method."
+msgid "You cannot apply landed costs on the chosen %s(s). Landed costs can only be applied for products with FIFO or average costing method."
 msgstr ""
 
 #. module: stock_landed_costs
+#. odoo-python
 #: code:addons/stock_landed_costs/models/product.py:0
-#, python-format
-msgid ""
-"You cannot change the product type or disable landed cost option because the"
-" product is used in an account move line."
+msgid "You cannot change the product type or disable landed cost option because the product is used in an account move line."
 msgstr ""

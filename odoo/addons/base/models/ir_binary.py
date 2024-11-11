@@ -21,7 +21,7 @@ class IrBinary(models.AbstractModel):
 
     def _find_record(
             self, xmlid=None, res_model='ir.attachment', res_id=None,
-            access_token=None,
+            access_token=None, field=None
     ):
         """
         Find and return a record either using an xmlid either a model+id
@@ -46,15 +46,14 @@ class IrBinary(models.AbstractModel):
         if not record:
             raise MissingError(f"No record found for xmlid={xmlid}, res_model={res_model}, id={res_id}")
 
-        record = self._find_record_check_access(record, access_token)
+        record = self._find_record_check_access(record, access_token, field)
         return record
 
-    def _find_record_check_access(self, record, access_token):
+    def _find_record_check_access(self, record, access_token, field):
         if record._name == 'ir.attachment':
             return record.validate_access(access_token)
 
-        record.check_access_rights('read')
-        record.check_access_rule('read')
+        record.check_access('read')
         return record
 
     def _record_to_stream(self, record, field_name):
@@ -70,24 +69,21 @@ class IrBinary(models.AbstractModel):
         :rtype: odoo.http.Stream
         """
         if record._name == 'ir.attachment' and field_name in ('raw', 'datas', 'db_datas'):
-            return Stream.from_attachment(record)
+            return record._to_http_stream()
 
         record.check_field_access_rights('read', [field_name])
-        field_def = record._fields[field_name]
 
-        # fields.Binary(attachment=False) or compute/related
-        if not field_def.attachment or field_def.compute or field_def.related:
-            return Stream.from_binary_field(record, field_name)
+        if record._fields[field_name].attachment:
+            field_attachment = self.env['ir.attachment'].sudo().search(
+                domain=[('res_model', '=', record._name),
+                        ('res_id', '=', record.id),
+                        ('res_field', '=', field_name)],
+                limit=1)
+            if not field_attachment:
+                raise MissingError("The related attachment does not exist.")
+            return field_attachment._to_http_stream()
 
-        # fields.Binary(attachment=True)
-        field_attachment = self.env['ir.attachment'].sudo().search(
-            domain=[('res_model', '=', record._name),
-                    ('res_id', '=', record.id),
-                    ('res_field', '=', field_name)],
-            limit=1)
-        if not field_attachment:
-            raise MissingError("The related attachment does not exist.")
-        return Stream.from_attachment(field_attachment)
+        return Stream.from_binary_field(record, field_name)
 
     def _get_stream_from(
         self, record, field_name='raw', filename=None, filename_field='name',
@@ -214,16 +210,17 @@ class IrBinary(models.AbstractModel):
             if not placeholder:
                 placeholder = record._get_placeholder_filename(field_name)
             stream = self._get_placeholder_stream(placeholder)
-            if (width, height) == (0, 0):
-                width, height = image_guess_size_from_field_name(field_name)
 
         if stream.type == 'url':
             return stream  # Rezising an external URL is not supported
         if not stream.mimetype.startswith('image/'):
             stream.mimetype = 'application/octet-stream'
+
+        if (width, height) == (0, 0):
+            width, height = image_guess_size_from_field_name(field_name)
+
         if isinstance(stream.etag, str):
             stream.etag += f'-{width}x{height}-crop={crop}-quality={quality}'
-
         if isinstance(stream.last_modified, (int, float)):
             stream.last_modified = datetime.fromtimestamp(stream.last_modified, tz=None)
         modified = werkzeug.http.is_resource_modified(

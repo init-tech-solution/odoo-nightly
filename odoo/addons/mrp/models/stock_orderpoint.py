@@ -5,6 +5,7 @@ from odoo import _, api, fields, models
 from odoo.tools.float_utils import float_is_zero
 from odoo.osv.expression import AND
 from dateutil.relativedelta import relativedelta
+from datetime import datetime, time
 
 
 class StockWarehouseOrderpoint(models.Model):
@@ -20,10 +21,9 @@ class StockWarehouseOrderpoint(models.Model):
         self.ensure_one()
         domain = [('orderpoint_id', 'in', self.ids)]
         if self.env.context.get('written_after'):
-            domain = AND([domain, [('write_date', '>', self.env.context.get('written_after'))]])
+            domain = AND([domain, [('write_date', '>=', self.env.context.get('written_after'))]])
         production = self.env['mrp.production'].search(domain, limit=1)
         if production:
-            action = self.env.ref('mrp.action_mrp_production_form')
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
@@ -32,7 +32,7 @@ class StockWarehouseOrderpoint(models.Model):
                     'message': '%s',
                     'links': [{
                         'label': production.name,
-                        'url': f'#action={action.id}&id={production.id}&model=mrp.production'
+                        'url': f'/odoo/action-mrp.action_mrp_production_form/{production.id}'
                     }],
                     'sticky': False,
                     'next': {'type': 'ir.actions.act_window_close'},
@@ -66,7 +66,8 @@ class StockWarehouseOrderpoint(models.Model):
         res = super()._compute_days_to_order()
         for orderpoint in self:
             if 'manufacture' in orderpoint.rule_ids.mapped('action'):
-                orderpoint.days_to_order = orderpoint.product_id.days_to_prepare_mo
+                boms = (orderpoint.product_id.variant_bom_ids or orderpoint.product_id.bom_ids)
+                orderpoint.days_to_order = boms and boms[0].days_to_prepare_mo or 0
         return res
 
     def _quantity_in_progress(self):
@@ -85,7 +86,7 @@ class StockWarehouseOrderpoint(models.Model):
             ratios_total = []
             for bom_line, bom_line_data in bom_sub_lines:
                 component = bom_line.product_id
-                if component.type != 'product' or float_is_zero(bom_line_data['qty'], precision_rounding=bom_line.product_uom_id.rounding):
+                if not component.is_storable or float_is_zero(bom_line_data['qty'], precision_rounding=bom_line.product_uom_id.rounding):
                     continue
                 uom_qty_per_kit = bom_line_data['qty'] / bom_line_data['original_qty']
                 qty_per_kit = bom_line.product_uom_id._compute_quantity(uom_qty_per_kit, bom_line.product_id.uom_id, raise_if_failure=False)
@@ -103,15 +104,34 @@ class StockWarehouseOrderpoint(models.Model):
 
         bom_manufacture = self.env['mrp.bom']._bom_find(orderpoints_without_kit.product_id, bom_type='normal')
         bom_manufacture = self.env['mrp.bom'].concat(*bom_manufacture.values())
-        productions_group = self.env['mrp.production'].read_group(
-            [('bom_id', 'in', bom_manufacture.ids), ('state', '=', 'draft'), ('orderpoint_id', 'in', orderpoints_without_kit.ids)],
-            ['orderpoint_id', 'product_qty', 'product_uom_id'],
-            ['orderpoint_id', 'product_uom_id'], lazy=False)
-        for p in productions_group:
-            uom = self.env['uom.uom'].browse(p['product_uom_id'][0])
-            orderpoint = self.env['stock.warehouse.orderpoint'].browse(p['orderpoint_id'][0])
+        # add quantities coming from draft MOs
+        productions_group = self.env['mrp.production']._read_group(
+            [
+                ('bom_id', 'in', bom_manufacture.ids),
+                ('state', '=', 'draft'),
+                ('orderpoint_id', 'in', orderpoints_without_kit.ids),
+                ('id', 'not in', self.env.context.get('ignore_mo_ids', [])),
+            ],
+            ['orderpoint_id', 'product_uom_id'],
+            ['product_qty:sum'])
+        for orderpoint, uom, product_qty_sum in productions_group:
             res[orderpoint.id] += uom._compute_quantity(
-                p['product_qty'], orderpoint.product_uom, round=False)
+                product_qty_sum, orderpoint.product_uom, round=False)
+
+        # add quantities coming from confirmed MO to be started but not finished
+        # by the end of the stock forecast
+        in_progress_productions = self.env['mrp.production'].search([
+            ('bom_id', 'in', bom_manufacture.ids),
+            ('state', '=', 'confirmed'),
+            ('orderpoint_id', 'in', orderpoints_without_kit.ids),
+            ('id', 'not in', self.env.context.get('ignore_mo_ids', [])),
+        ])
+        for prod in in_progress_productions:
+            date_start, date_finished, orderpoint = prod.date_start, prod.date_finished, prod.orderpoint_id
+            lead_days_date = datetime.combine(orderpoint.lead_days_date, time.max)
+            if date_start <= lead_days_date < date_finished:
+                res[orderpoint.id] += prod.product_uom_id._compute_quantity(
+                        prod.product_qty, orderpoint.product_uom, round=False)
         return res
 
     def _get_qty_multiple_to_order(self):

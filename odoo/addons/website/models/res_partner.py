@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import werkzeug.urls
 
-from odoo import models, fields
+from odoo import models, fields, api
 
 class Partner(models.Model):
     _name = 'res.partner'
@@ -31,13 +30,12 @@ class Partner(models.Model):
         }
         return 'https://maps.google.com/maps?' + werkzeug.urls.url_encode(params)
 
-    def _get_name(self):
-        name = super(Partner, self)._get_name()
-        if self._context.get('display_website') and self.env.user.has_group('website.group_multi_website'):
-            if self.website_id:
-                name += ' [%s]' % self.website_id.name
-        return name
-
+    @api.depends('website_id')
+    @api.depends_context('display_website')
     def _compute_display_name(self):
-        self2 = self.with_context(display_website=False)
-        super(Partner, self2)._compute_display_name()
+        super()._compute_display_name()
+        if not self._context.get('display_website') or not self.env.user.has_group('website.group_multi_website'):
+            return
+        for partner in self:
+            if partner.website_id:
+                partner.display_name += f' [{partner.website_id.name}]'

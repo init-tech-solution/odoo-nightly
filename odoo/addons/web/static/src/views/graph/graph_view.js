@@ -1,6 +1,4 @@
-/** @odoo-module **/
-
-import { _lt } from "@web/core/l10n/translation";
+import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { GraphArchParser } from "./graph_arch_parser";
 import { GraphModel } from "./graph_model";
@@ -12,9 +10,6 @@ const viewRegistry = registry.category("views");
 
 export const graphView = {
     type: "graph",
-    display_name: _lt("Graph"),
-    icon: "fa fa-area-chart",
-    multiRecord: true,
     Controller: GraphController,
     Renderer: GraphRenderer,
     Model: GraphModel,
@@ -43,7 +38,8 @@ export const graphView = {
                 resModel: resModel,
                 stacked: "stacked" in archInfo ? archInfo.stacked : true,
                 cumulated: archInfo.cumulated || false,
-                title: archInfo.title || _lt("Untitled"),
+                cumulatedStart: archInfo.cumulatedStart || false,
+                title: archInfo.title || _t("Untitled"),
             };
         }
 

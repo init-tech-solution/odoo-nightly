@@ -2,19 +2,19 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-
-const { Component, useState } = owl;
+import { Component, useState } from "@odoo/owl";
 
 class MobilePreviewSystray extends Component {
+    static template = "website.MobilePreviewSystray";
+    static props = {};
     setup() {
         this.websiteService = useService('website');
         this.state = useState(this.websiteService.context);
     }
 }
-MobilePreviewSystray.template = "website.MobilePreviewSystray";
 
 export const systrayItem = {
     Component: MobilePreviewSystray,
 };
 
-registry.category("website_systray").add("MobilePreview", systrayItem, { sequence: 12 });
+registry.category("website_systray").add("MobilePreview", systrayItem, { sequence: 11 });

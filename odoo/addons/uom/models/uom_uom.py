@@ -24,7 +24,7 @@ class UoMCategory(models.Model):
             self.uom_ids[0].factor = 1
         else:
             reference_count = sum(uom.uom_type == 'reference' for uom in self.uom_ids)
-            if reference_count == 0 and self._origin.id:
+            if reference_count == 0 and self._origin.id and self.uom_ids:
                 raise UserError(_('UoM category %s must have at least one reference unit of measure.', self.name))
             if self.reference_uom_id:
                 new_reference = self.uom_ids.filtered(lambda o: o.uom_type == 'reference' and o._origin.id != self.reference_uom_id.id)
@@ -99,9 +99,9 @@ class UoM(models.Model):
         for category in self.category_id:
             reference_count = ref_by_category.get(category.id, 0)
             if reference_count > 1:
-                raise ValidationError(_("UoM category %s should only have one reference unit of measure.") % category.name)
+                raise ValidationError(_("UoM category %s should only have one reference unit of measure.", category.name))
             elif reference_count == 0 and uom_by_category.get(category.id, 0) > 0:
-                raise ValidationError(_("UoM category %s should have a reference unit of measure.") % category.name)
+                raise ValidationError(_("UoM category %s should have a reference unit of measure.", category.name))
 
     @api.depends('factor')
     def _compute_factor_inv(self):
@@ -206,7 +206,7 @@ class UoM(models.Model):
             else:
                 values['category_id'] = EnglishUoMCateg.name_create('Unsorted/Imported Units')[0]
         new_uom = self.create(values)
-        return new_uom.name_get()[0]
+        return new_uom.id, new_uom.display_name
 
     def _compute_quantity(self, qty, to_unit, round=True, rounding_method='UP', raise_if_failure=True):
         """ Convert the given quantity from the current UoM `self` into a given one
@@ -222,7 +222,9 @@ class UoM(models.Model):
 
         if self != to_unit and self.category_id.id != to_unit.category_id.id:
             if raise_if_failure:
-                raise UserError(_('The unit of measure %s defined on the order line doesn\'t belong to the same category as the unit of measure %s defined on the product. Please correct the unit of measure defined on the order line or on the product, they should belong to the same category.') % (self.name, to_unit.name))
+                raise UserError(_(
+                    'The unit of measure %(unit)s defined on the order line doesn\'t belong to the same category as the unit of measure %(product_unit)s defined on the product. Please correct the unit of measure defined on the order line or on the product. They should belong to the same category.',
+                    unit=self.name, product_unit=to_unit.name))
             else:
                 return qty
 

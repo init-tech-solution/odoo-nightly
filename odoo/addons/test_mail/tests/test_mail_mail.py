@@ -3,44 +3,40 @@
 
 import psycopg2
 import pytz
+import re
 import smtplib
+from email import message_from_string
 
 from datetime import datetime, timedelta
 from freezegun import freeze_time
+from markupsafe import Markup
 from OpenSSL.SSL import Error as SSLError
 from socket import gaierror, timeout
-from unittest.mock import call, patch
+from unittest.mock import call, patch, PropertyMock
 
-from odoo import api, Command, tools
+from odoo import api, Command, fields, SUPERUSER_ID
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
-from odoo.addons.test_mail.tests.common import TestMailCommon
+from odoo.addons.mail.tests.common import MailCommon
 from odoo.exceptions import AccessError
 from odoo.tests import common, tagged, users
-from odoo.tools import mute_logger, DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools import formataddr, mute_logger
 
 
 @tagged('mail_mail')
-class TestMailMail(TestMailCommon):
+class TestMailMail(MailCommon):
 
     @classmethod
     def setUpClass(cls):
         super(TestMailMail, cls).setUpClass()
-        cls._init_mail_servers()
-
-        cls.server_domain_2 = cls.env['ir.mail_server'].create({
-            'name': 'Server 2',
-            'smtp_host': 'test_2.com',
-            'from_filter': 'test_2.com',
-        })
 
         cls.test_record = cls.env['mail.test.gateway'].with_context(cls._test_context).create({
             'name': 'Test',
             'email_from': 'ignasse@example.com',
         }).with_context({})
 
-        cls.test_message = cls.test_record.message_post(body='<p>Message</p>', subject='Subject')
+        cls.test_message = cls.test_record.message_post(body=Markup('<p>Message</p>'), subject='Subject')
         cls.test_mail = cls.env['mail.mail'].create([{
-            'body': '<p>Body</p>',
+            'body': Markup('<p>Body</p>'),
             'email_from': False,
             'email_to': 'test@example.com',
             'is_notification': True,
@@ -127,6 +123,35 @@ class TestMailMail(TestMailCommon):
             self.assertEqual(len(mail.sudo().unrestricted_attachment_ids), 0)
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
+    def test_mail_mail_headers(self):
+        """ Test headers management when set on outgoing mail. """
+        # mail without thread-enabled record
+        base_values = {
+            'body_html': '<p>Test</p>',
+            'email_to': 'test@example.com',
+            'headers': {'foo': 'bar'},
+        }
+
+        for headers, expected in [
+            ({'foo': 'bar'}, {'foo': 'bar'}),
+            ("{'foo': 'bar'}", {'foo': 'bar'}),
+            ("{'foo': 'bar', 'baz': '3+2'}", {'foo': 'bar', 'baz': '3+2'}),
+            (['not_a_dict'], {}),
+            ('alsonotadict', {}),
+            ("['not_a_dict']", {}),
+            ("{'invaliddict'}", {}),
+        ]:
+            with self.subTest(headers=headers, expected=expected):
+                mail = self.env['mail.mail'].create([
+                    dict(base_values, headers=headers)
+                ])
+                with self.mock_mail_gateway():
+                    mail.send()
+                for key, value in expected.items():
+                    self.assertIn(key, self._mails[0]['headers'])
+                    self.assertEqual(self._mails[0]['headers'][key], value)
+
+    @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_mail_recipients(self):
         """ Partner_ids is a field used from mail_message, but not from mail_mail. """
         mail = self.env['mail.mail'].sudo().create({
@@ -166,9 +191,10 @@ class TestMailMail(TestMailCommon):
         self.assertSentEmail(mail.env.user.partner_id,
                              ['test.rec.1@example.com', '"Raoul" <test.rec.2@example.com>'],
                              email_cc=['test.cc.1@example.com', 'test.cc.2@example.com'])
-        # Mail: currently cc are put as copy of all sent emails (aka spam)
+        # don't put CCs as copy of each outgoing email, only the first one (and never
+        # with partner based recipients as those may receive specific links)
         self.assertSentEmail(mail.env.user.partner_id, [self.user_employee.email_formatted],
-                             email_cc=['test.cc.1@example.com', 'test.cc.2@example.com'])
+                             email_cc=[])
         self.assertEqual(len(self._mails), 2)
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
@@ -222,8 +248,8 @@ class TestMailMail(TestMailCommon):
             # datetimes (UTC/GMT +10 hours for Australia/Brisbane)
             now, pytz.timezone('Australia/Brisbane').localize(now),
             # string
-            (now - timedelta(days=1)).strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-            (now + timedelta(days=1)).strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            fields.Datetime.to_string(now - timedelta(days=1)),
+            fields.Datetime.to_string(now + timedelta(days=1)),
             (now + timedelta(days=1)).strftime("%H:%M:%S %d-%m-%Y"),
             # tz: is actually 1 hour before now in UTC
             (now + timedelta(hours=3)).strftime("%H:%M:%S %d-%m-%Y") + " +0400",
@@ -262,80 +288,106 @@ class TestMailMail(TestMailCommon):
             for mail, expected_state in zip(mails, expected_states):
                 self.assertEqual(mail.state, expected_state)
 
+    @mute_logger('odoo.addons.mail.models.mail_mail', 'odoo.tests')
+    def test_mail_mail_send_configuration(self):
+        """ Test configuration and control of email queue """
+        self.env['mail.mail'].search([]).unlink()  # cleanup queue
+
+        # test 'mail.mail.queue.batch.size': cron fetch size
+        for queue_batch_size, exp_send_count in [
+            (3, 3),
+            (0, 10),  # maximum available
+            (False, 10),  # maximum available
+        ]:
+            with self.subTest(queue_batch_size=queue_batch_size), \
+                 self.mock_mail_gateway():
+                self.env['ir.config_parameter'].sudo().set_param('mail.mail.queue.batch.size', queue_batch_size)
+                mails = self.env['mail.mail'].create([
+                    {
+                        'auto_delete': False,
+                        'body_html': f'Batch Email {idx}',
+                        'email_from': 'test.from@mycompany.example.com',
+                        'email_to': 'test.outgoing@test.example.com',
+                        'state': 'outgoing',
+                    }
+                    for idx in range(10)
+                ])
+
+                self.env['mail.mail'].process_email_queue()
+                self.assertEqual(len(self._mails), exp_send_count)
+                mails.write({'state': 'sent'})  # avoid conflicts between batch
+
+        # test 'mail.session.batch.size': batch send size
+        self.env['ir.config_parameter'].sudo().set_param('mail.mail.queue.batch.size', False)
+        for session_batch_size, exp_call_count in [
+            (3, 4),  # 10 mails -> 4 iterations of 3
+            (0, 1),
+            (False, 1),
+        ]:
+            with self.subTest(session_batch_size=session_batch_size), \
+                 self.mock_mail_gateway():
+                self.env['ir.config_parameter'].sudo().set_param('mail.session.batch.size', session_batch_size)
+                mails = self.env['mail.mail'].create([
+                    {
+                        'auto_delete': False,
+                        'body_html': f'Batch Email {idx}',
+                        'email_from': 'test.from@mycompany.example.com',
+                        'email_to': 'test.outgoing@test.example.com',
+                        'state': 'outgoing',
+                    }
+                    for idx in range(10)
+                ])
+
+                self.env['mail.mail'].process_email_queue()
+                self.assertEqual(self.mail_mail_private_send_mocked.call_count, exp_call_count)
+                mails.write({'state': 'sent'})  # avoid conflicts between batch
+
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_mail_send_exceptions_origin(self):
         """ Test various use case with exceptions and errors and see how they are
         managed and stored at mail and notification level. """
         mail, notification = self.test_mail, self.test_notification
 
-        # MailServer.build_email(): invalid from
-        self.env['ir.config_parameter'].set_param('mail.default.from', '')
-        self._reset_data()
-        with self.mock_mail_gateway(), mute_logger('odoo.addons.mail.models.mail_mail'):
-            mail.send(raise_exception=False)
-        self.assertFalse(self._mails[0]['email_from'])
-        self.assertEqual(
-            mail.failure_reason,
-            'You must either provide a sender address explicitly or configure using the combination of `mail.catchall.domain` and `mail.default.from` ICPs, in the server configuration file or with the --email-from startup parameter.')
-        self.assertFalse(mail.failure_type, 'Mail: void from: no failure type, should be updated')
-        self.assertEqual(mail.state, 'exception')
-        self.assertEqual(
-            notification.failure_reason,
-            'You must either provide a sender address explicitly or configure using the combination of `mail.catchall.domain` and `mail.default.from` ICPs, in the server configuration file or with the --email-from startup parameter.')
-        self.assertEqual(notification.failure_type, 'unknown', 'Mail: void from: unknown failure type, should be updated')
-        self.assertEqual(notification.notification_status, 'exception')
+        # MailServer.build_email(): invalid from (missing)
+        for default_from in [False, '']:
+            self.mail_alias_domain.default_from = default_from
+            self._reset_data()
+            with self.mock_mail_gateway(), mute_logger('odoo.addons.mail.models.mail_mail'):
+                mail.send(raise_exception=False)
+            self.assertFalse(self._mails[0]['email_from'])
+            self.assertEqual(
+                mail.failure_reason,
+                'You must either provide a sender address explicitly or configure using the combination of `mail.catchall.domain` and `mail.default.from` ICPs, in the server configuration file or with the --email-from startup parameter.')
+            self.assertEqual(mail.failure_type, 'mail_from_missing')
+            self.assertEqual(mail.state, 'exception')
+            self.assertEqual(
+                notification.failure_reason,
+                'You must either provide a sender address explicitly or configure using the combination of `mail.catchall.domain` and `mail.default.from` ICPs, in the server configuration file or with the --email-from startup parameter.')
+            self.assertEqual(notification.failure_type, 'mail_from_missing')
+            self.assertEqual(notification.notification_status, 'exception')
 
-        # MailServer.send_email(): _prepare_email_message: unexpected ASCII
-        # Force catchall domain to void otherwise bounce is set to postmaster-odoo@domain
-        self.env['ir.config_parameter'].set_param('mail.catchall.domain', '')
-        self._reset_data()
-        mail.write({'email_from': 'strange@example¢¡.com'})
-        with self.mock_mail_gateway():
-            mail.send(raise_exception=False)
-        self.assertEqual(self._mails[0]['email_from'], 'strange@example¢¡.com')
-        self.assertEqual(mail.failure_reason, "Malformed 'Return-Path' or 'From' address: strange@example¢¡.com - It should contain one valid plain ASCII email")
-        self.assertFalse(mail.failure_type, 'Mail: bugged from (ascii): no failure type, should be updated')
-        self.assertEqual(mail.state, 'exception')
-        self.assertEqual(notification.failure_reason, "Malformed 'Return-Path' or 'From' address: strange@example¢¡.com - It should contain one valid plain ASCII email")
-        self.assertEqual(notification.failure_type, 'unknown', 'Mail: bugged from (ascii): unknown failure type, should be updated')
-        self.assertEqual(notification.notification_status, 'exception')
-
-        # MailServer.send_email(): _prepare_email_message: unexpected ASCII based on catchall domain
-        self.env['ir.config_parameter'].set_param('mail.catchall.domain', 'domain¢¡.com')
-        self._reset_data()
-        mail.write({'email_from': 'test.user@example.com'})
-        with self.mock_mail_gateway():
-            mail.send(raise_exception=False)
-        self.assertEqual(self._mails[0]['email_from'], 'test.user@example.com')
-        self.assertIn("Malformed 'Return-Path' or 'From' address: bounce.test@domain¢¡.com", mail.failure_reason)
-        self.assertFalse(mail.failure_type, 'Mail: bugged catchall domain (ascii): no failure type, should be updated')
-        self.assertEqual(mail.state, 'exception')
-        self.assertEqual(notification.failure_reason, "Malformed 'Return-Path' or 'From' address: bounce.test@domain¢¡.com - It should contain one valid plain ASCII email")
-        self.assertEqual(notification.failure_type, 'unknown', 'Mail: bugged catchall domain (ascii): unknown failure type, should be updated')
-        self.assertEqual(notification.notification_status, 'exception')
-
-        # MailServer.send_email(): _prepare_email_message: Malformed 'Return-Path' or 'From' address
-        self.env['ir.config_parameter'].set_param('mail.catchall.domain', '')
-        self._reset_data()
-        mail.write({'email_from': 'robert'})
-        with self.mock_mail_gateway():
-            mail.send(raise_exception=False)
-        self.assertEqual(self._mails[0]['email_from'], 'robert')
-        self.assertEqual(mail.failure_reason, "Malformed 'Return-Path' or 'From' address: robert - It should contain one valid plain ASCII email")
-        self.assertFalse(mail.failure_type, 'Mail: bugged from (ascii): no failure type, should be updated')
-        self.assertEqual(mail.state, 'exception')
-        self.assertEqual(notification.failure_reason, "Malformed 'Return-Path' or 'From' address: robert - It should contain one valid plain ASCII email")
-        self.assertEqual(notification.failure_type, 'unknown', 'Mail: bugged from (ascii): unknown failure type, should be updated')
-        self.assertEqual(notification.notification_status, 'exception')
+        # MailServer.send_email(): _prepare_email_message: unexpected ASCII / Malformed 'Return-Path' or 'From' address
+        # Force bounce alias to void, will force usage of email_from
+        self.mail_alias_domain.bounce_alias = False
+        self.env.company.invalidate_recordset(fnames={'bounce_email', 'bounce_formatted'})
+        for email_from in ['strange@example¢¡.com', 'robert']:
+            self._reset_data()
+            mail.write({'email_from': email_from})
+            with self.mock_mail_gateway():
+                mail.send(raise_exception=False)
+            self.assertEqual(self._mails[0]['email_from'], email_from)
+            self.assertEqual(mail.failure_reason, f"Malformed 'Return-Path' or 'From' address: {email_from} - It should contain one valid plain ASCII email")
+            self.assertEqual(mail.failure_type, 'mail_from_invalid')
+            self.assertEqual(mail.state, 'exception')
+            self.assertEqual(notification.failure_reason, f"Malformed 'Return-Path' or 'From' address: {email_from} - It should contain one valid plain ASCII email")
+            self.assertEqual(notification.failure_type, 'mail_from_invalid')
+            self.assertEqual(notification.notification_status, 'exception')
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_mail_send_exceptions_recipients_emails(self):
         """ Test various use case with exceptions and errors and see how they are
         managed and stored at mail and notification level. """
         mail, notification = self.test_mail, self.test_notification
-
-        self.env['ir.config_parameter'].set_param('mail.catchall.domain', self.alias_domain)
-        self.env['ir.config_parameter'].set_param('mail.default.from', self.default_from)
 
         # MailServer.send_email(): _prepare_email_message: missing To
         for email_to in self.emails_falsy:
@@ -356,8 +408,10 @@ class TestMailMail(TestMailCommon):
                 self.assertEqual(notification.notification_status, 'sent', 'Mail: missing email_to: notification is wrongly set as sent')
 
         # MailServer.send_email(): _prepare_email_message: invalid To
-        for email_to, failure_type in zip(self.emails_invalid,
-                                          ['mail_email_missing', 'mail_email_missing']):
+        for email_to, failure_type in zip(
+            self.emails_invalid,
+            ['mail_email_missing', 'mail_email_missing']
+        ):
             self._reset_data()
             mail.write({'email_to': email_to})
             with self.mock_mail_gateway():
@@ -621,7 +675,7 @@ class TestMailMail(TestMailCommon):
                 self._reset_data()
                 mail.send(raise_exception=False)
                 self.assertEqual(mail.failure_reason, msg)
-                self.assertFalse(mail.failure_type, 'Mail: unlogged failure type to fix')
+                self.assertEqual(mail.failure_type, 'unknown', 'Mail: unlogged failure type to fix')
                 self.assertEqual(mail.state, 'exception')
                 self.assertEqual(notification.failure_reason, msg)
                 self.assertEqual(notification.failure_type, 'unknown', 'Mail: generic failure type')
@@ -629,13 +683,38 @@ class TestMailMail(TestMailCommon):
 
             self.send_email_mocked.side_effect = _send_current
 
+    def test_mail_mail_values_misc(self):
+        """ Test various values on mail.mail, notably default values """
+        msg = self.env['mail.mail'].create({})
+        self.assertEqual(msg.message_type, 'email_outgoing', 'Mails should have outgoing email type by default')
+
+@tagged('mail_mail', 'mail_server')
+class TestMailMailServer(MailCommon):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.mail_server_domain_2 = cls.env['ir.mail_server'].create({
+            'from_filter': 'test_2.com',
+            'name': 'Server 2',
+            'smtp_host': 'test_2.com',
+        })
+        cls.test_record = cls.env['mail.test.gateway'].with_context(cls._test_context).create({
+            'name': 'Test',
+            'email_from': 'ignasse@example.com',
+        }).with_context({})
+
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_mail_send_server(self):
         """Test that the mails are send in batch.
 
         Batch are defined by the mail server and the email from field.
         """
-        self.assertEqual(self.env['ir.mail_server']._get_default_from_address(), 'notifications@test.com')
+        self.assertEqual(
+            self.env['ir.mail_server']._get_default_from_address(),
+            f'{self.default_from}@{self.alias_domain}'
+        )
 
         mail_values = {
             'body_html': '<p>Test</p>',
@@ -654,19 +733,19 @@ class TestMailMail(TestMailCommon):
         # Should use the test_2 mail server
         # Once with "user_1@test_2.com" as login
         # Once with "user_2@test_2.com" as login
-        mails |= self.env['mail.mail'].create([{
+        mails += self.env['mail.mail'].create([{
             **mail_values,
             'email_from': 'user_1@test_2.com',
-        } for _ in range(5)]) | self.env['mail.mail'].create([{
+        } for _ in range(5)]) + self.env['mail.mail'].create([{
             **mail_values,
             'email_from': 'user_2@test_2.com',
         } for _ in range(5)])
 
         # Mail server is forced
-        mails |= self.env['mail.mail'].create([{
+        mails += self.env['mail.mail'].create([{
             **mail_values,
             'email_from': 'user_1@test_2.com',
-            'mail_server_id': self.server_domain.id,
+            'mail_server_id': self.mail_server_domain.id,
         } for _ in range(5)])
 
         with self.mock_smtplib_connection():
@@ -680,21 +759,21 @@ class TestMailMail(TestMailCommon):
         self.assertEqual(self.connect_mocked.call_count, 4, 'Must be called once per batch which share the same mail server and the same smtp from')
         self.connect_mocked.assert_has_calls(
             calls=[
-                call(smtp_from='notifications@test.com', mail_server_id=self.server_notification.id),
-                call(smtp_from='user_1@test_2.com', mail_server_id=self.server_domain_2.id),
-                call(smtp_from='user_2@test_2.com', mail_server_id=self.server_domain_2.id),
-                call(smtp_from='user_1@test_2.com', mail_server_id=self.server_domain.id),
+                call(smtp_from=f'{self.default_from}@{self.alias_domain}', mail_server_id=self.mail_server_notification.id),
+                call(smtp_from='user_1@test_2.com', mail_server_id=self.mail_server_domain_2.id),
+                call(smtp_from='user_2@test_2.com', mail_server_id=self.mail_server_domain_2.id),
+                call(smtp_from='user_1@test_2.com', mail_server_id=self.mail_server_domain.id),
             ],
             any_order=True,
         )
 
-        self.assert_email_sent_smtp(message_from='"test" <notifications@test.com>',
-                                    emails_count=5, from_filter=self.server_notification.from_filter)
-        self.assert_email_sent_smtp(message_from='"test_2" <notifications@test.com>',
-                                    emails_count=5, from_filter=self.server_notification.from_filter)
-        self.assert_email_sent_smtp(message_from='user_1@test_2.com', emails_count=5, from_filter=self.server_domain_2.from_filter)
-        self.assert_email_sent_smtp(message_from='user_2@test_2.com', emails_count=5, from_filter=self.server_domain_2.from_filter)
-        self.assert_email_sent_smtp(message_from='user_1@test_2.com', emails_count=5, from_filter=self.server_domain.from_filter)
+        self.assertSMTPEmailsSent(message_from=f'"test" <{self.default_from}@{self.alias_domain}>',
+                                  emails_count=5, from_filter=self.mail_server_notification.from_filter)
+        self.assertSMTPEmailsSent(message_from=f'"test_2" <{self.default_from}@{self.alias_domain}>',
+                                  emails_count=5, from_filter=self.mail_server_notification.from_filter)
+        self.assertSMTPEmailsSent(message_from='user_1@test_2.com', emails_count=5, mail_server=self.mail_server_domain_2)
+        self.assertSMTPEmailsSent(message_from='user_2@test_2.com', emails_count=5, mail_server=self.mail_server_domain_2)
+        self.assertSMTPEmailsSent(message_from='user_1@test_2.com', emails_count=5, mail_server=self.mail_server_domain)
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_mail_values_email_formatted(self):
@@ -715,15 +794,15 @@ class TestMailMail(TestMailCommon):
         self.assertEqual(
             sorted(sorted(_mail['email_to']) for _mail in self._mails),
             sorted([sorted(['"Raoul, le Grand" <test.email.1@test.example.com>', '"Micheline, l\'immense" <test.email.2@test.example.com>']),
-                    [tools.formataddr((self.user_employee.name, self.user_employee.email_normalized))],
-                    [tools.formataddr(("Tony Customer", 'tony.customer@test.example.com'))]
+                    [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
+                    [formataddr(("Tony Customer", 'tony.customer@test.example.com'))]
                    ]),
             'Mail: formatting issues should have been removed as much as possible'
         )
-        # Currently broken: CC are added to ALL emails (spammy)
+        # CC are added to first email
         self.assertEqual(
             [_mail['email_cc'] for _mail in self._mails],
-            [['test.cc.1@test.example.com']] * 3,
+            [['test.cc.1@test.example.com'], [], []],
             'Mail: currently always removing formatting in email_cc'
         )
 
@@ -747,17 +826,17 @@ class TestMailMail(TestMailCommon):
         self.assertEqual(
             sorted(sorted(_mail['email_to']) for _mail in self._mails),
             sorted([sorted(['test.email.1@test.example.com', 'test.email.2@test.example.com']),
-                    [tools.formataddr((self.user_employee.name, self.user_employee.email_normalized))],
-                    sorted([tools.formataddr(("Tony Customer", 'tony.customer@test.example.com')),
-                            tools.formataddr(("Tony Customer", 'norbert.customer@test.example.com'))]),
+                   [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
+                    sorted([formataddr(("Tony Customer", 'tony.customer@test.example.com')),
+                            formataddr(("Tony Customer", 'norbert.customer@test.example.com'))]),
                    ]),
             'Mail: formatting issues should have been removed as much as possible (multi emails in a single address are managed '
             'like separate emails when sending with recipient_ids'
         )
-        # Currently broken: CC are added to ALL emails (spammy)
+        # CC are added to first email
         self.assertEqual(
             [_mail['email_cc'] for _mail in self._mails],
-            [['test.cc.1@test.example.com', 'test.cc.2@test.example.com']] * 3,
+            [['test.cc.1@test.example.com', 'test.cc.2@test.example.com'], [], []],
         )
 
         # Multi + formatting
@@ -777,17 +856,17 @@ class TestMailMail(TestMailCommon):
         self.assertEqual(
             sorted(sorted(_mail['email_to']) for _mail in self._mails),
             sorted([sorted(['test.email.1@test.example.com', 'test.email.2@test.example.com']),
-                    [tools.formataddr((self.user_employee.name, self.user_employee.email_normalized))],
-                    sorted([tools.formataddr(("Tony Customer", 'tony.customer@test.example.com')),
-                            tools.formataddr(("Tony Customer", 'norbert.customer@test.example.com'))]),
+                   [formataddr((self.user_employee.name, self.user_employee.email_normalized))],
+                    sorted([formataddr(("Tony Customer", 'tony.customer@test.example.com')),
+                            formataddr(("Tony Customer", 'norbert.customer@test.example.com'))]),
                    ]),
             'Mail: formatting issues should have been removed as much as possible (multi emails in a single address are managed '
             'like separate emails when sending with recipient_ids (and partner name is always used as name part)'
         )
-        # Currently broken: CC are added to ALL emails (spammy)
+        # CC are added to first email
         self.assertEqual(
             [_mail['email_cc'] for _mail in self._mails],
-            [['test.cc.1@test.example.com', 'test.cc.2@test.example.com']] * 3,
+            [['test.cc.1@test.example.com', 'test.cc.2@test.example.com'], [], []],
         )
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
@@ -804,17 +883,116 @@ class TestMailMail(TestMailCommon):
         self.assertEqual(self._mails[0]['email_cc'], ['test.😊.cc@example.com'])
         self.assertEqual(self._mails[0]['email_to'], ['test.😊@example.com'])
 
+    @mute_logger('odoo.addons.mail.models.mail_mail')
+    @patch('odoo.addons.base.models.ir_attachment.IrAttachment.file_size', new_callable=PropertyMock)
+    def test_mail_mail_send_server_attachment_to_download_link(self, mock_attachment_file_size):
+        """ Test that when the mail size exceeds the max email size limit,
+        attachments are turned into download links added at the end of the
+        email content.
+
+        The feature is tested in the following conditions:
+        - using a specified server or the default one (to test command ICP parameter)
+        - in batch mode
+        - with mail that exceed (with one or more attachments) or not the limit
+        - with attachment owned by a business record or not: attachments not owned by a
+        business record are never turned into links because their lifespans are not
+        controlled by the user (might even be deleted right after the message is sent).
+        """
+        def count_attachments(message):
+            if isinstance(message, str):
+                return 0
+            elif message.is_multipart():
+                return sum(count_attachments(part) for part in message.get_payload())
+            elif 'attachment' in message.get('Content-Disposition', ''):
+                return 1
+            return 0
+
+        mock_attachment_file_size.return_value = 1024 * 128
+        # Define some constant to ease the understanding of the test
+        test_mail_server = self.mail_server_domain_2
+        max_size_always_exceed = 0.1
+        max_size_never_exceed = 10
+
+        for n_attachment, mail_server, business_attachment, expected_is_links in (
+                # 1 attachment which doesn't exceed max size
+                (1, self.env['ir.mail_server'], True, False),
+                # 3 attachment: exceed max size
+                (3, self.env['ir.mail_server'], True, True),
+                # 1 attachment: exceed max size
+                (1, self.env['ir.mail_server'], True, True),
+                # Same as above with a specific server. Note that the default and server max_email size are reversed.
+                (1, test_mail_server, True, False),
+                (3, test_mail_server, True, True),
+                (1, test_mail_server, True, True),
+                # Attachments not linked to a business record are never turned to link
+                (3, self.env['ir.mail_server'], False, False),
+                (1, test_mail_server, False, False),
+        ):
+            # Setup max email size to check that the right maximum is used (default or mail server one)
+            if expected_is_links:
+                max_size_test_succeed = max_size_always_exceed * n_attachment
+                max_size_test_fail = max_size_never_exceed
+            else:
+                max_size_test_succeed = max_size_never_exceed
+                max_size_test_fail = max_size_always_exceed * n_attachment
+            if mail_server:
+                self.env['ir.config_parameter'].sudo().set_param('base.default_max_email_size', max_size_test_fail)
+                mail_server.max_email_size = max_size_test_succeed
+            else:
+                self.env['ir.config_parameter'].sudo().set_param('base.default_max_email_size', max_size_test_succeed)
+
+            attachments = self.env['ir.attachment'].sudo().create([{
+                'name': f'attachment{idx_attachment}',
+                'res_name': 'test',
+                'res_model': self.test_record._name if business_attachment else 'mail.message',
+                'res_id': self.test_record.id if business_attachment else 0,
+                'datas': 'IA==',  # a non-empty base64 content. We mock attachment file_size to simulate bigger size.
+            } for idx_attachment in range(n_attachment)])
+            with self.mock_smtplib_connection():
+                mails = self.env['mail.mail'].create([{
+                    'attachment_ids': attachments.ids,
+                    'body_html': '<p>Test</p>',
+                    'email_from': 'test@test_2.com',
+                    'email_to': f'mail_{mail_idx}@test.com',
+                } for mail_idx in range(2)])
+                mails._send(mail_server=mail_server)
+
+            self.assertEqual(len(self.emails), 2)
+            for mail, outgoing_email in zip(mails, self.emails):
+                message_raw = outgoing_email['message']
+                message_parsed = message_from_string(message_raw)
+                message_cleaned = re.sub(r'[\s=]', '', message_raw)
+                with self.subTest(n_attachment=n_attachment, mail_server=mail_server,
+                                  business_attachment=business_attachment, expected_is_links=expected_is_links):
+                    if expected_is_links:
+                        self.assertEqual(count_attachments(message_parsed), 0,
+                                         'Attachments should have been removed (replaced by download links)')
+                        self.assertTrue(all(attachment.access_token for attachment in attachments),
+                                        'Original attachment should have been modified (access_token added)')
+                        self.assertTrue(all(attachment.access_token in message_cleaned for attachment in attachments),
+                                         'All attachments should have been turned into download links')
+                    else:
+                        self.assertEqual(count_attachments(message_parsed), n_attachment,
+                                         'All attachments should be present')
+                        self.assertEqual(message_cleaned.count('access_token'), 0,
+                                         'Attachments should not have been turned into download links')
+                        self.assertTrue(all(not attachment.access_token for attachment in attachments),
+                                        'Original attachment should not have been modified (access_token not added)')
+
 
 @tagged('mail_mail')
 class TestMailMailRace(common.TransactionCase):
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_bounce_during_send(self):
-        self.partner = self.env['res.partner'].create({
+        cr = self.registry.cursor()
+        env = api.Environment(cr, SUPERUSER_ID, {})
+
+        self.partner = env['res.partner'].create({
             'name': 'Ernest Partner',
         })
         # we need to simulate a mail sent by the cron task, first create mail, message and notification by hand
-        mail = self.env['mail.mail'].sudo().create({
+        mail = env['mail.mail'].sudo().create({
             'body_html': '<p>Test</p>',
             'is_notification': True,
             'state': 'outgoing',
@@ -822,7 +1000,7 @@ class TestMailMailRace(common.TransactionCase):
         })
         mail_message = mail.mail_message_id
 
-        message = self.env['mail.message'].create({
+        message = env['mail.message'].create({
             'subject': 'S',
             'body': 'B',
             'subtype_id': self.ref('mail.mt_comment'),
@@ -834,9 +1012,9 @@ class TestMailMailRace(common.TransactionCase):
                 'notification_status': 'ready',
             })],
         })
-        notif = self.env['mail.notification'].search([('res_partner_id', '=', self.partner.id)])
+        notif = env['mail.notification'].search([('res_partner_id', '=', self.partner.id)])
         # we need to commit transaction or cr will keep the lock on notif
-        self.cr.commit()
+        cr.commit()
 
         # patch send_email in order to create a concurent update and check the notif is already locked by _send()
         this = self  # coding in javascript ruinned my life
@@ -857,7 +1035,8 @@ class TestMailMailRace(common.TransactionCase):
                     # In practice, the update will wait the end of the send() transaction and set the notif as bounce, as expeced
                     cr.execute("UPDATE mail_notification SET notification_status='bounce' WHERE id = %s", [notif.id])
             return message['Message-Id']
-        self.env['ir.mail_server']._patch_method('send_email', send_email)
+
+        self.patch(self.registry['ir.mail_server'], 'send_email', send_email)
 
         mail.send()
 
@@ -865,14 +1044,10 @@ class TestMailMailRace(common.TransactionCase):
         self.assertEqual(notif.notification_status, 'sent')
 
         # some cleaning since we commited the cr
-        self.env['ir.mail_server']._revert_method('send_email')
 
         notif.unlink()
         mail.unlink()
         (mail_message | message).unlink()
         self.partner.unlink()
-        self.env.cr.commit()
-
-        # because we committed the cursor, the savepoint of the test method is
-        # gone, and this would break TransactionCase cleanups
-        self.cr.execute('SAVEPOINT test_%d' % self._savepoint_id)
+        cr.commit()
+        cr.close()

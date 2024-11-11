@@ -3,19 +3,15 @@
 # 	* website_slides
 # 
 # Translators:
-# Chatcha Mee, 2022
-# Odoo Thaidev <odoothaidev@gmail.com>, 2022
-# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
-# Martin Trigaux, 2022
-# Wichanon Jamwutthipreecha, 2022
+# Wil Odoo, 2024
 # Rasareeyar Lappiam, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
-"PO-Revision-Date: 2022-09-22 05:57+0000\n"
+"POT-Creation-Date: 2024-10-25 07:48+0000\n"
+"PO-Revision-Date: 2024-09-25 09:42+0000\n"
 "Last-Translator: Rasareeyar Lappiam, 2024\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
@@ -23,6 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Language: th\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_engaged_count
+msgid "# Active Attendees"
+msgstr "# ผู้เข้าร่วมที่ใช้งานอยู่"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_tree_report
@@ -35,9 +36,29 @@ msgid "# Completed"
 msgstr "# เสร็จสิ้น"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_completed_count
+msgid "# Completed Attendees"
+msgstr "# ผู้เข้าร่วมเสร็จสมบูรณ์"
+
+#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__completed_slides_count
-msgid "# Completed Slides"
-msgstr "# สไลด์ที่เสร็จสมบูรณ์"
+msgid "# Completed Contents"
+msgstr "# เนื้อหาที่เสร็จสมบูรณ์"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_count
+msgid "# Enrolled Attendees"
+msgstr "# ผู้เข้าร่วมที่ลงทะเบียนแล้ว"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_all_count
+msgid "# Enrolled or Invited Attendees"
+msgstr "# ผู้เข้าร่วมที่ลงทะเบียนหรือได้รับเชิญ"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_invited_count
+msgid "# Invited Attendees"
+msgstr "# ผู้เข้าร่วมที่ได้รับเชิญ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_slide_partner_view_tree
@@ -88,8 +109,8 @@ msgstr "# ยอดเข้าชมเว็บไซต์"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__completion
-msgid "% Completed Slides"
-msgstr "% สไลด์ที่เสร็จสมบูรณ์"
+msgid "% Completed Contents"
+msgstr "% เนื้อหาที่เสร็จสมบูรณ์"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.mail_notification_channel_invite
@@ -105,15 +126,12 @@ msgstr "กำลังแสดงผลลัพธ์สำหรับ "
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_slides_list.js:0
 #: code:addons/website_slides/static/src/js/slides_slide_archive.js:0
-#, python-format
 msgid "(empty)"
 msgstr "(ว่างเปล่า)"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ". This way, they will be secured."
 msgstr "ด้วยวิธีนี้พวกเขาจะปลอดภัย"
 
@@ -125,7 +143,6 @@ msgstr "3 วิธีการหลัก"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "<b>%s</b> is requesting access to this course."
 msgstr "<b>%s</b>กำลังร้องขอการเข้าถึงคอร์สนี้"
 
@@ -142,7 +159,6 @@ msgstr "<b>เรียงลำดับโดย</b>"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "<b>Save & Publish</b> your lesson to make it available to your attendees."
 msgstr ""
@@ -151,7 +167,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "<b>Save</b> your question."
 msgstr "<b>บันทึก</b> คำถามของคุณ"
 
@@ -161,16 +176,42 @@ msgid "<b>Uncategorized</b>"
 msgstr "<b>ไม่ได้จัดหมวดหมู่</b>"
 
 #. module: website_slides
+#: model:mail.template,body_html:website_slides.mail_template_slide_channel_enroll
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"        Hello<br><br>\n"
+"        You have been enrolled to a new course: <t t-out=\"object.channel_id.name or ''\">Basics of Gardening</t>.\n"
+"    </p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"        สวัสดี<br><br>\n"
+"        คุณได้ลงทะเบียนเรียนหลักสูตรใหม่: <t t-out=\"object.channel_id.name or ''\">พื้นฐานของการทำสวน</t>\n"
+"    </p>\n"
+"</div>\n"
+"            "
+
+#. module: website_slides
 #: model:mail.template,body_html:website_slides.mail_template_slide_channel_invite
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "        Hello<br><br>\n"
-"        You have been invited to join a new course: <t t-out=\"object.channel_id.name or ''\">Basics of Gardening</t>.\n"
+"        You have been invited to check out this course: <t t-out=\"object.channel_id.name or ''\">Basics of Gardening</t>.\n"
 "    </p>\n"
 "</div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"        สวัสดี<br><br>\n"
+"        คุณได้รับเชิญให้เข้าร่วมหลักสูตรนี้: <t t-out=\"object.channel_id.name or ''\">พื้นฐานของการทำสวน</t>\n"
+"    </p>\n"
+"</div>\n"
+"            "
 
 #. module: website_slides
 #: model:mail.template,body_html:website_slides.mail_template_channel_completed
@@ -205,13 +246,13 @@ msgstr ""
 "\n"
 "                        <div style=\"padding: 16px 8px 16px 8px; text-align: center;\">\n"
 "                            <a href=\"/slides/all\" style=\"background-color: #875a7b; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
-"                                Explore courses\n"
+"                                สำรวจหลักสูตร\n"
 "                            </a>\n"
 "                        </div>\n"
-"                        Enjoy this exclusive content!\n"
+"                        เพลิดเพลินกับเนื้อหาสุดพิเศษนี้!\n"
 "                        <t t-if=\"object.channel_id.user_id.signature\">\n"
 "                            <br>\n"
-"                            <t t-out=\"object.channel_id.user_id.signature or ''\">--<br>Mitchell Admin</t>\n"
+"                            <t t-out=\"object.channel_id.user_id.signature or ''\">--<br>แอดมิน Mitchell</t>\n"
 "                        </t>\n"
 "                    </div>\n"
 "                </div>\n"
@@ -358,8 +399,8 @@ msgstr ""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
-msgid "<i class=\"fa fa-arrow-right me-1\"/>All Courses"
-msgstr ""
+msgid "<i class=\"fa fa-arrow-right\"/> Start Learning"
+msgstr "<i class=\"fa fa-arrow-right\"/> เริ่มการเรียนรู้"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
@@ -385,13 +426,6 @@ msgstr "<i class=\"fa fa-check me-1\"/>สมบูรณ์"
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen
 msgid "<i class=\"fa fa-check\"/> Completed"
 msgstr "<i class=\"fa fa-check\"/>เสร็จสิ้น"
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
-msgid ""
-"<i class=\"fa fa-chevron-left me-2\"/> <span class=\"d-none d-sm-inline-"
-"block\">Prev</span>"
-msgstr ""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.embed_slide
@@ -430,11 +464,11 @@ msgstr "<i class=\"fa fa-comments\"/> ความคิดเห็น ("
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid ""
-"<i class=\"fa fa-desktop me-2\"/>\n"
-"                <span class=\"d-none d-sm-inline-block\">Fullscreen</span>"
+"<i class=\"fa fa-desktop me-xl-2 my-1\"/>\n"
+"                <span class=\"d-none d-xl-inline-block\">Fullscreen</span>"
 msgstr ""
-"<i class=\"fa fa-desktop me-2\"/>\n"
-"                <span class=\"d-none d-sm-inline-block\">เต็มจอ</span>"
+"<i class=\"fa fa-desktop me-xl-2 my-1\"/>\n"
+"                <span class=\"d-none d-xl-inline-block\">เต็มจอ</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
@@ -517,8 +551,8 @@ msgstr "<i class=\"fa fa-flag text-warning\"/> ควิซ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen_sidebar_category
-msgid "<i class=\"fa fa-flag-checkered text-warning me-2\"/>Quiz"
-msgstr ""
+msgid "<i class=\"fa fa-flag-checkered text-warning\"/>Quiz"
+msgstr "<i class=\"fa fa-flag-checkered text-warning\"/>แบบทดสอบ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list
@@ -558,6 +592,15 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-home\"/><span class=\"d-none d-md-inline-block "
 "ms-1\">กลับสู่หลักสูตร</span>"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid ""
+"<i class=\"fa fa-lock\"/>\n"
+"                        <span>Course Locked</span>"
+msgstr ""
+"<i class=\"fa fa-lock\"/>\n"
+"                        <span>หลักสูตรถูกล็อค</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list
@@ -603,11 +646,11 @@ msgstr ""
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid ""
-"<i class=\"fa fa-share-alt me-2\"/>\n"
-"                <span class=\"d-none d-sm-inline-block\">Share</span>"
+"<i class=\"fa fa-share-alt me-xl-2 my-1\"/>\n"
+"                <span class=\"d-none d-xl-inline-block\">Share</span>"
 msgstr ""
-"<i class=\"fa fa-share-alt me-2\"/>\n"
-"                <span class=\"d-none d-sm-inline-block\">แชร์</span>"
+"<i class=\"fa fa-share-alt me-xl-2 my-1\"/>\n"
+"                <span class=\"d-none d-xl-inline-block\">แชร์</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.embed_slide
@@ -651,6 +694,20 @@ msgstr ""
 "                      หลักสูตรของฉัน"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
+msgid "<i class=\"oi oi-arrow-right me-1\"/>All Courses"
+msgstr "<i class=\"oi oi-arrow-right me-1\"/>หลักสูตรทั้งหมด"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
+msgid ""
+"<i class=\"oi oi-chevron-left me-2\"/> <span class=\"d-none d-sm-inline-"
+"block\">Prev</span>"
+msgstr ""
+"<i class=\"oi oi-chevron-left me-2\"/> <span class=\"d-none d-sm-inline-"
+"block\">ก่อนหน้า</span>"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_join
 msgid ""
 "<small class=\"text-success\">\n"
@@ -664,90 +721,66 @@ msgstr ""
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_main
 msgid ""
-"<small><span class=\"badge rounded-pill text-bg-success fw-normal\"><i "
-"class=\"fa fa-check\"/> Completed</span></small>"
+"<small><span class=\"badge text-bg-success fw-normal\"><i class=\"fa fa-"
+"check\"/> Completed</span></small>"
 msgstr ""
-"<small><span class=\"badge rounded-pill text-bg-success fw-normal\"><i "
-"class=\"fa fa-check\"/> เสร็จสิ้น</span></small>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_sample
 msgid ""
-"<span class=\"badge fw-bold px-2 py-1 m-1 text-bg-warning\">\n"
+"<span class=\"badge fw-bold m-1 text-bg-warning\">\n"
 "                            <i class=\"fa fa-fw fa-flag\"/> 10 xp\n"
 "                        </span>"
 msgstr ""
-"<span class=\"badge fw-bold px-2 py-1 m-1 text-bg-warning\">\n"
+"<span class=\"badge fw-bold m-1 text-bg-warning\">\n"
 "                            <i class=\"fa fa-fw fa-flag\"/> 10 xp\n"
 "                        </span>"
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.course_card
-msgid ""
-"<span class=\"badge rounded-pill text-bg-success pull-right py-1 px-2\"><i "
-"class=\"fa fa-check\"/> Completed</span>"
-msgstr ""
-"<span class=\"badge rounded-pill text-bg-success pull-right py-1 px-2\"><i "
-"class=\"fa fa-check\"/> เสร็จสิ้น</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_sample
 msgid ""
-"<span class=\"badge text-bg-info badge-arrow-right fw-normal px-2 py-1 "
+"<span class=\"badge text-bg-info badge-arrow-right fw-normal "
 "m-1\">New</span>"
 msgstr ""
-"<span class=\"badge text-bg-info badge-arrow-right fw-normal px-2 py-1 "
+"<span class=\"badge text-bg-info badge-arrow-right fw-normal "
 "m-1\">ใหม่</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
 msgid ""
-"<span class=\"badge text-bg-light badge-hide border fw-normal px-2 py-1 "
-"m-1\">Add Quiz</span>"
+"<span class=\"badge text-bg-primary badge-hide fw-normal m-1\">Add "
+"Quiz</span>"
 msgstr ""
-"<span class=\"badge text-bg-light badge-hide border fw-normal px-2 py-1 "
-"m-1\">เพิ่มแบบทดสอบ</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
 msgid ""
-"<span class=\"badge text-bg-success fw-normal px-2 py-1 "
+"<span class=\"badge text-bg-success fw-normal "
 "m-1\"><span>Preview</span></span>"
 msgstr ""
-"<span class=\"badge text-bg-success fw-normal px-2 py-1 "
+"<span class=\"badge text-bg-success fw-normal "
 "m-1\"><span>ดูตัวอย่าง</span></span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_sample
-msgid ""
-"<span class=\"badge text-bg-success fw-normal px-2 py-1 m-1\">Preview</span>"
-msgstr ""
-"<span class=\"badge text-bg-success fw-normal px-2 py-1 "
-"m-1\">ดูตัวอย่าง</span>"
+msgid "<span class=\"badge text-bg-success fw-normal m-1\">Preview</span>"
+msgstr "<span class=\"badge text-bg-success fw-normal m-1\">ดูตัวอย่าง</span>"
 
 #. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+#: model_terms:ir.ui.view,arch_db:website_slides.course_card
 msgid ""
-"<span class=\"cta-title text_small_caps\">\n"
-"                Join this Course\n"
-"            </span>"
+"<span class=\"badge text-bg-success pull-right\"><i class=\"fa fa-check\"/> "
+"Completed</span>"
 msgstr ""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid ""
-"<span class=\"d-none d-sm-inline-block\">Next</span> <i class=\"fa fa-"
+"<span class=\"d-none d-sm-inline-block\">Next</span> <i class=\"oi oi-"
 "chevron-right ms-2\"/>"
 msgstr ""
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.res_config_settings_view_form
-msgid ""
-"<span class=\"fa fa-arrow-right\"/>\n"
-"                                    Create a Google Project and Get a Key"
-msgstr ""
-"<span class=\"fa fa-arrow-right\"/>\n"
-"                                    สร้างโครงการ Google และรับคีย์"
+"<span class=\"d-none d-sm-inline-block\">ถัดไป</span> <i class=\"oi oi-"
+"chevron-right ms-2\"/>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slides_home_user_profile_small
@@ -765,13 +798,27 @@ msgid "<span class=\"input-group-text\">Start at Page</span>"
 msgstr "<span class=\"input-group-text\">เริ่มต้นที่หน้า</span>"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list
+msgid ""
+"<span class=\"ms-1\">Lessons</span>\n"
+"                                <span class=\"ms-1\">·</span>"
+msgstr ""
+"<span class=\"ms-1\">บทเรียน</span>\n"
+"                                <span class=\"ms-1\"></span>"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.res_config_settings_view_form
 msgid ""
 "<span class=\"o_form_label\">Slides</span>\n"
-"                        <span class=\"fa fa-lg fa-globe\" title=\"Values set here are website-specific.\" groups=\"website.group_multi_website\"/>"
+"                    <span class=\"fa fa-lg fa-globe\" title=\"Values set here are website-specific.\" groups=\"website.group_multi_website\"/>"
 msgstr ""
 "<span class=\"o_form_label\">สไลด์</span>\n"
-"                        <span class=\"fa fa-lg fa-globe\" title=\"ค่าที่ตั้งไว้นี้เป็นค่าเฉพาะเว็บไซต์\" groups=\"website.group_multi_website\"/>"
+"                    <span class=\"fa fa-lg fa-globe\" title=\"Values set here are website-specific.\" groups=\"website.group_multi_website\"/>"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
+msgid "<span class=\"o_stat_text\">Attendees</span>"
+msgstr "<span class=\"o_stat_text\">ผู้เข้าร่วม</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.res_partner_view_form
@@ -789,6 +836,15 @@ msgid "<span class=\"o_wslides_arrow\">New Content</span>"
 msgstr "<span class=\"o_wslides_arrow\">เนื้อหาใหม่</span>"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.res_config_settings_view_form
+msgid ""
+"<span class=\"oi oi-arrow-right\"/>\n"
+"                                Create a Google Project and Get a Key"
+msgstr ""
+"<span class=\"oi oi-arrow-right\"/>\n"
+"                                สร้างโปรเจ็กต์ Google และรับรหัส"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_aside_training
 msgid "<span class=\"p-2\">Course content</span>"
 msgstr "<span class=\"p-2\">เนื้อหาคอร์ส</span>"
@@ -801,15 +857,19 @@ msgstr "<span class=\"text-500 mx-2\">•</span>"
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid ""
-"<span class=\"text-muted fw-bold me-3\">\n"
-"                            Additional Resources\n"
-"                        </span>"
+"<span class=\"text-muted fw-bold col-4 col-md-3\">\n"
+"                        Additional Resources\n"
+"                    </span>"
 msgstr ""
+"<span class=\"text-muted fw-bold col-4 col-md-3\">\n"
+"                        แหล่งข้อมูลเพิ่มเติม\n"
+"                    </span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
-msgid "<span class=\"text-muted fw-bold me-3\">External sources</span>"
+msgid "<span class=\"text-muted fw-bold col-4 col-md-3\">External sources</span>"
 msgstr ""
+"<span class=\"text-muted fw-bold col-4 col-md-3\">แหล่งข้อมูลภายนอก</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
@@ -818,8 +878,22 @@ msgstr "<span class=\"text-muted fw-bold me-3\">การให้คะแน�
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
-msgid "<span class=\"text-muted\">Attendees</span>"
-msgstr "<span class=\"text-muted\">ผู้เข้าร่วม</span>"
+msgid ""
+"<span class=\"text-muted text-truncate mw-100\" "
+"title=\"Invited\">Invited</span>"
+msgstr ""
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
+msgid ""
+"<span class=\"text-muted text-truncate mw-100\" "
+"title=\"Ongoing\">Ongoing</span>"
+msgstr ""
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
+msgid "<span class=\"text-muted text-truncate mw-100\" title=\"Total\">Total</span>"
+msgstr ""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_sample
@@ -831,11 +905,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_sample
 msgid "<span class=\"text-muted\">Parts of computer science</span>"
 msgstr "<span class=\"text-muted\">ส่วนของวิทยาการคอมพิวเตอร์</span>"
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
-msgid "<span class=\"text-muted\">Published Contents</span>"
-msgstr ""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.embed_slide
@@ -874,26 +943,35 @@ msgstr ""
 "<span id=\"zoomout\" class=\"d-none d-sm-inline ms-2 me-2\" title=\"ซูมออก\" aria-label=\"ซูมออก\" role=\"ปุ่ม\">\n"
 "                                            <i class=\"fa fa-search-minus\"/>\n"
 "                                        </span>\n"
-"                                        <span id=\"zoomin\" class=\"d-none d-sm-inline\" title=\"Zoom in\" aria-label=\"Zoom in\" role=\"button\">\n"
+"                                        <span id=\"zoomin\" class=\"d-none d-sm-inline\" title=\"ซูมเข้า\" aria-label=\"ซูมเข้า\" role=\"ปุ่ม\">\n"
 "                                            <i class=\"fa fa-search-plus\"/>\n"
 "                                        </span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
-msgid "<span name=\"done_members_count_label\" class=\"text-muted\">Finished</span>"
-msgstr "<span name=\"done_members_count_label\" class=\"text-muted\">เสร็จสิ้น</span>"
+msgid ""
+"<span name=\"done_members_count_label\" class=\"text-muted text-truncate "
+"mw-100\" title=\"Finished\">Finished</span>"
+msgstr ""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
-msgid "<span name=\"members_done_count_label\" class=\"o_stat_text\">Finished</span>"
+msgid ""
+"<span name=\"members_completed_count_label\" "
+"class=\"o_stat_text\">Finished</span>"
 msgstr ""
-"<span name=\"members_done_count_label\" "
-"class=\"o_stat_text\">เสร็จสิ้น</span>"
+"<span name=\"members_completed_count_label\" "
+"class=\"o_stat_text\">ที่เสร็จเรียบร้อย</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 msgid "<span> hours</span>"
 msgstr "<span>ชั่วโมง</span>"
+
+#. module: website_slides
+#: model_terms:web_tour.tour,rainbow_man_message:website_slides.slides_tour
+msgid "<span><b>Good job!</b> You went through all steps of this tour.</span>"
+msgstr "<span><b>ทำได้ดีมาก!</b> คุณได้ผ่านทุกขั้นตอนของทัวร์นี้แล้ว</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_main
@@ -918,8 +996,8 @@ msgstr "<span>ตอบคำถามที่ถูกต้อง</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
-msgid "<span>Content only accessible to course members.</span>"
-msgstr ""
+msgid "<span>Content only accessible to course attendees.</span>"
+msgstr "<span>เนื้อหาเข้าถึงได้เฉพาะผู้เข้าร่วมหลักสูตรเท่านั้น</span>"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_sample
@@ -981,13 +1059,9 @@ msgstr "ผลไม้"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
-"A good course has a structure. Pick a name for your first section and click "
-"<b>Save</b> to create it."
-msgstr ""
-"คอร์สที่ดีต้องมีโครงสร้าง เลือกชื่อสำหรับส่วนแรกของคุณแล้วคลิก<b>บันทึก</b> "
-"เพื่อสร้าง"
+"A good course has a structure. Pick a name for your first <b>Section</b>."
+msgstr "หลักสูตรที่ดีต้องมีโครงสร้าง เลือกชื่อสำหรับ<b>ส่วน</b>แรกของคุณ"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_1_4
@@ -1080,7 +1154,6 @@ msgstr "API Key"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Access Granted"
 msgstr "ได้รับการเข้าถึง"
 
@@ -1092,7 +1165,6 @@ msgstr "กลุ่มการเข้าถึง"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Access Refused"
 msgstr "การเข้าถึงถูกปฏิเสธ"
 
@@ -1129,9 +1201,16 @@ msgstr "จำเป็นต้องดำเนินการ"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__active
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__active
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__active
 msgid "Active"
 msgstr "เปิดใช้งาน"
+
+#. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel__members_engaged_count
+msgid "Active attendees include both 'joined' and 'ongoing' attendees."
+msgstr ""
+"ผู้เข้าร่วมที่ใช้งานอยู่มีทั้งผู้เข้าร่วมที่ 'เข้าร่วม' และ 'กำลังดำเนินการ'"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__activity_ids
@@ -1155,10 +1234,15 @@ msgstr "ไอคอนประเภทกิจกรรม"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_tag_add.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
 msgid "Add"
 msgstr "เพิ่ม"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
+#: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
+msgid "Add Attendees"
+msgstr "เพิ่มผู้เข้าร่วม"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__karma_slide_comment
@@ -1167,11 +1251,10 @@ msgstr "เพิ่มความคิดเห็น"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model_terms:ir.actions.act_window,help:website_slides.slide_slide_action
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
-#, python-format
 msgid "Add Content"
 msgstr "เพิ่มเนื้อหา"
 
@@ -1187,6 +1270,8 @@ msgid "Add Section"
 msgstr "เพิ่มส่วน"
 
 #. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_main
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_cards
 msgid "Add Tag"
@@ -1195,41 +1280,45 @@ msgstr "เพิ่มแท็ก"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_category_add.js:0
-#, python-format
 msgid "Add a section"
 msgstr "เพิ่มส่วน"
 
 #. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_tag_add.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_tag_group_view_form
-#, python-format
 msgid "Add a tag"
 msgstr "เพิ่มแท็ก"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "Add an answer below this one"
 msgstr "เพิ่มคำตอบใต้ข้อนี้"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "Add comment on this answer"
 msgstr "เพิ่มความคิดเห็นในคำตอบนี้"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_invite_view_form
-msgid "Add existing contacts..."
-msgstr "เพิ่มรายชื่อติดต่อที่มีอยู่..."
+msgid "Add contacts..."
+msgstr "เพิ่มผู้ติดต่อ..."
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
+msgid "Add quiz"
+msgstr "เพิ่มแบบทดสอบ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid "Add your content here..."
 msgstr "เพิ่มเนื้อหาของคุณที่นี่..."
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
+msgid "Added On"
+msgstr "เพิ่มลงบน"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__slide_resource_ids
@@ -1253,6 +1342,11 @@ msgid "Advanced"
 msgstr "ระดับสูง"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__channel_partner_all_ids
+msgid "All Attendees Information"
+msgstr "ข้อมูลผู้เข้าร่วมทั้งหมด"
+
+#. module: website_slides
 #: model:ir.actions.act_window,name:website_slides.slide_channel_action_overview
 #: model_terms:ir.ui.view,arch_db:website_slides.courses_all
 msgid "All Courses"
@@ -1260,22 +1354,30 @@ msgstr "คอร์สทั้งหมด"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_unsubscribe.xml:0
-#, python-format
-msgid "All completed classes and earned karma will be lost."
-msgstr "คลาสที่สำเร็จและกรรมที่ได้รับทั้งหมดจะหายไป"
-
-#. module: website_slides
-#: model:ir.model.fields,help:website_slides.field_slide_channel__partner_ids
-msgid "All members of the channel."
-msgstr "สมาชิกทั้งหมดของช่อง"
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
+msgid "All progress will be lost until you rejoin this course."
+msgstr "All progress will be lost until you rejoin this course."
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
-#, python-format
-msgid "All questions must be answered !"
-msgstr "ต้องตอบทุกคำถาม !"
+msgid "All questions must be answered!"
+msgstr "ทุกคำถามจะต้องมีคำตอบ!"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_question.py:0
+msgid ""
+"All questions must have at least one correct answer and one incorrect answer: \n"
+"%s\n"
+msgstr ""
+"คำถามทั้งหมดต้องมีคำตอบที่ถูกต้องอย่างน้อยหนึ่งคำตอบและคำตอบที่ผิดอย่างน้อยหนึ่งคำตอบ:\n"
+"%s\n"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
+msgid "All the courses you attend will appear here. <br/>"
+msgstr "หลักสูตรทั้งหมดที่คุณเข้าร่วมจะแสดงที่นี่ <br/>"
 
 #. module: website_slides
 #: model_terms:slide.channel,description:website_slides.slide_channel_demo_5_furn2
@@ -1330,28 +1432,18 @@ msgstr "อนุญาตให้แสดงความคิดเห็น
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Already Requested"
 msgstr "ได้ร้องขอแล้ว"
 
 #. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "Already installing \"%s\"."
-msgstr "ติดตั้งแล้ว \"%s\""
-
-#. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Already member"
 msgstr "เป็นสมาชิกแล้ว"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.js:0
 msgid "Amazing!"
 msgstr "น่าทึ่ง!"
 
@@ -1379,18 +1471,19 @@ msgstr "ปรากฎใน"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_archive.js:0
-#, python-format
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
 msgid "Archive"
 msgstr "เก็บถาวร"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_archive.js:0
-#, python-format
 msgid "Archive Content"
 msgstr "เก็บถาวรเนื้อหา"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
@@ -1400,31 +1493,29 @@ msgstr "เก็บถาวรแล้ว"
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/slides_slide_archive.js:0
 #: code:addons/website_slides/static/src/xml/slide_management.xml:0
-#, python-format
-msgid "Are you sure you want to archive this content ?"
-msgstr ""
+msgid "Are you sure you want to archive this content?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการเก็บถาวรเนื้อหานี้"
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/slides_category_delete.js:0
 #: code:addons/website_slides/static/src/xml/slide_management.xml:0
-#, python-format
-msgid "Are you sure you want to delete this category ?"
-msgstr "คุณแน่ใจหรือว่าต้องการลบหมวดหมู่นี้ ?"
+msgid "Are you sure you want to delete this category?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
-msgid "Are you sure you want to delete this question :"
-msgstr "คุณแน่ใจหรือว่าต้องการลบหมวดหมู่นี้ :"
+#: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
+msgid "Are you sure you want to delete this question \"<strong>%s</strong>\"?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการลบคำถามนี้ \"<strong>%s</strong>\"?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_category__article
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_type__article
-#, python-format
 msgid "Article"
 msgstr "บทความ"
 
@@ -1447,12 +1538,12 @@ msgstr "แนบ"
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_question__attempts_avg
 msgid "Attempts Avg"
-msgstr "ความพยายามโดยเฉลี่่ย"
+msgstr "จำนวนครั้งโดยเฉลี่ย"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_question__attempts_count
 msgid "Attempts Count"
-msgstr "จำนวนครั้งที่พยยายาม"
+msgstr "จำนวนครั้ง"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_slide_partner_view_form
@@ -1460,32 +1551,29 @@ msgid "Attendee"
 msgstr "ผู้เข้าร่วม"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__member_status
+msgid "Attendee Status"
+msgstr "สถานะผู้เข้าร่วม"
+
+#. module: website_slides
 #: model:ir.actions.act_window,name:website_slides.slide_channel_partner_action
 #: model:ir.actions.act_window,name:website_slides.slide_channel_partner_action_report
 #: model:ir.actions.act_window,name:website_slides.slide_slide_partner_action_from_slide
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__partner_ids
 #: model:ir.ui.menu,name:website_slides.website_slides_menu_report_attendees
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_graph
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_kanban
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_pivot
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_slide_partner_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_slide_partner_view_tree
-#: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 msgid "Attendees"
 msgstr "ผู้เข้าร่วม"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_done_count
-msgid "Attendees Done Count"
-msgstr "จำนวนผู้เข้าร่วมเสร็จสิ้น"
-
-#. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__members_count
-msgid "Attendees count"
-msgstr "จำนวนผู้เข้าร่วม"
-
-#. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Attendees of %s"
 msgstr "ผู้เข้าร่วมของ %s"
 
@@ -1511,23 +1599,26 @@ msgstr "บล็อกสำเร็จรูปที่วางอยู่
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 #: code:addons/website_slides/static/src/js/slides_category_add.js:0
-#: code:addons/website_slides/static/src/js/slides_course_tag_add.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
 msgid "Back"
 msgstr "กลับ"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__website_background_image_url
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen
+msgid "Back to course"
+msgstr "กลับสู่หลักสูตร"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__website_default_background_image_url
 msgid "Background image URL"
 msgstr "URL ภาพพื้นหลัง"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slides_home_user_achievements_small
 msgid "Badges"
-msgstr "ป้ายรางวัล"
+msgstr "เหรียญรางวัล"
 
 #. module: website_slides
 #: model:slide.channel.tag,name:website_slides.slide_channel_tag_level_basic
@@ -1546,10 +1637,14 @@ msgstr "พื้นฐานของการจัดสวน"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_unsubscribe.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
 msgid "Be notified when a new content is added."
 msgstr "ได้รับแจ้งเมื่อมีการเพิ่มเนื้อหาใหม่"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__body_has_template_value
+msgid "Body content is the same as the template"
+msgstr "เนื้อหาเนื้อความเหมือนกับเทมเพลต"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__can_comment
@@ -1597,7 +1692,6 @@ msgstr "สามารถโหวต"
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/website_slides_sidebar.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_sidebar_done_button
-#, python-format
 msgid "Can not be marked as done"
 msgstr "ไม่สามารถทำเครื่องหมายว่าเสร็จสิ้นได้"
 
@@ -1605,20 +1699,14 @@ msgstr "ไม่สามารถทำเครื่องหมายว่
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/website_slides_sidebar.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_sidebar_done_button
-#, python-format
 msgid "Can not be marked as not done"
 msgstr "ไม่สามารถทำเครื่องหมายว่ายังไม่เสร็จสิ้น"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_category_delete.js:0
-#: code:addons/website_slides/static/src/js/slides_course_enroll_email.js:0
-#: code:addons/website_slides/static/src/js/slides_slide_archive.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_invite_view_form
-#, python-format
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -1664,16 +1752,12 @@ msgstr "ความรู้ที่ผ่านการรับรอง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "Change video privacy settings"
 msgstr "เปลี่ยนการตั้งค่าความเป็นส่วนตัวของวิดีโอ"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__channel_id
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide_partner__channel_id
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
 msgid "Channel"
 msgstr "ช่อง"
 
@@ -1686,11 +1770,6 @@ msgstr "ช่องทาง/พาร์ทเนอร์ (สมาชิก
 #: model:ir.model,name:website_slides.model_slide_channel_invite
 msgid "Channel Invitation Wizard"
 msgstr "ตัวช่วยสร้างการเชิญช่อง"
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
-msgid "Channel Member"
-msgstr "สมาชิกช่อง"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__share_channel_template_id
@@ -1706,12 +1785,6 @@ msgstr "ช่องที่แชร์"
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__channel_type
 msgid "Channel type"
 msgstr "ชนิดช่อง"
-
-#. module: website_slides
-#: model:ir.model.fields,help:website_slides.field_slide_channel_partner__completed
-msgid "Channel validated, even if slides / lessons are added once done."
-msgstr ""
-"ตรวจสอบช่องแล้ว แม้ว่าจะมีการเพิ่มสไลด์ / บทเรียนจะเพิ่มเมื่อเสร็จแล้ว"
 
 #. module: website_slides
 #: model:ir.model,name:website_slides.model_slide_channel_tag_group
@@ -1736,37 +1809,31 @@ msgstr "CheatSheet"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
 msgid "Check Profile"
 msgstr "ตรวจสอบโปรไฟล์"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Check answers"
 msgstr "ตรวจคำตอบ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Check your answers"
 msgstr "ตรวจสอบคำตอบของคุณ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Choose a <b>File</b> on your computer."
 msgstr "เลือก <b>ไฟล์</b> บนคอมพิวเตอร์ของคุณ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "Choose a PDF"
 msgstr "เลือกไฟล์ PDF"
 
@@ -1777,20 +1844,30 @@ msgstr "เลือกเลย์เอาท์"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "Choose an Image"
 msgstr "เลือกรูปภาพ"
 
 #. module: website_slides
 #: model:slide.channel,name:website_slides.slide_channel_demo_3_furn0
-msgid "Choose your wood !"
-msgstr "เลือกไม้ของคุณ !"
+msgid "Choose your wood!"
+msgstr "เลือกไม้ของคุณ!"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.courses_all
 msgid "Clear filters"
 msgstr "ล้างตัวกรอง"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
+msgid "Click <b>Save</b> to create it."
+msgstr "คลิก<b>บันทึก</b>เพื่อสร้าง"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.mail_notification_channel_invite
+msgid "Click here to get started"
+msgstr "คลิกที่นี่เพื่อเริ่มต้น"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.mail_notification_channel_invite
@@ -1813,23 +1890,22 @@ msgstr "คลิกปุ่ม \"แก้ไข\" ที่มุมด้า
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
-msgid "Click on the <b>Create</b> button to create your first course."
-msgstr "คลิกที่ปุ่ม <b>สร้าง</b> เพื่อสร้างคอร์สแรกของคุณ"
+msgid "Click on the <b>Save</b> button to create your first course."
+msgstr "คลิกที่ปุ่ม<b>บันทึก</b>เพื่อสร้างหลักสูตรแรกของคุณ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Click on your <b>Course</b> to go back to the table of content."
 msgstr "คลิกที่ <b>คอร์ส</b>เพื่อกลับไปที่สารบัญ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_main
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_invite_view_form
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_modal_header
-#, python-format
 msgid "Close"
 msgstr "ปิด"
 
@@ -1939,7 +2015,6 @@ msgstr "เสร็จสิ้น"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Completed Course"
 msgstr "จบคอร์ส"
 
@@ -1988,7 +2063,6 @@ msgstr "ขอแสดงความยินดี! คุณเสร็จ�
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "Congratulations! Your first lesson is available. Let's see the options "
 "available here. The tag \"<b>New</b>\" indicates that this lesson was "
@@ -2005,7 +2079,6 @@ msgstr "ขอแสดงความยินดี คุณมาถึง�
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "Congratulations, you've created your first course.<br/>Click on the title of"
 " this content to see it in fullscreen mode."
@@ -2016,7 +2089,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "Congratulations, your course has been created, but there isn't any content "
 "yet. First, let's add a <b>Section</b> to give your course a structure."
@@ -2039,14 +2111,12 @@ msgstr "ติดต่อ"
 #: model_terms:slide.channel,enroll_msg:website_slides.slide_channel_demo_4_furn1
 #: model_terms:slide.channel,enroll_msg:website_slides.slide_channel_demo_5_furn2
 #: model_terms:slide.channel,enroll_msg:website_slides.slide_channel_demo_6_furn3
-#, python-format
 msgid "Contact Responsible"
 msgstr "ติดต่อรับผิดชอบ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Contact the responsible to enroll."
 msgstr "ติดต่อผู้รับผิดชอบในการลงทะเบียน"
 
@@ -2071,13 +2141,7 @@ msgstr "เนื้อหา"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 msgid "Content Preview"
 msgstr "ดูตัวอย่างเนื้อหา"
 
@@ -2117,6 +2181,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__body
 #: model:ir.ui.menu,name:website_slides.website_slides_menu_courses_content
 #: model:ir.ui.menu,name:website_slides.website_slides_menu_report_contents
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_slide_view_tree_report
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_tree
 msgid "Contents"
@@ -2125,14 +2191,24 @@ msgstr "เนื้อหา"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Continue"
 msgstr "ต่อไป"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.js:0
+msgid "Copied"
+msgstr "ทำสำเนาแล้ว"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.js:0
+msgid "Copy Embed Code"
+msgstr "คัดลอกโค้ดฝังตัว"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.js:0
 msgid "Copy Link"
 msgstr "คัดลอกลิงก์"
 
@@ -2140,33 +2216,32 @@ msgstr "คัดลอกลิงก์"
 #: model:slide.answer,comment:website_slides.slide_slide_demo_1_4_question_0_0
 #: model:slide.answer,comment:website_slides.slide_slide_demo_2_0_question_0_1
 #: model:slide.answer,comment:website_slides.slide_slide_demo_2_0_question_1_1
-msgid "Correct !"
-msgstr "ถูกต้อง !"
+msgid "Correct!"
+msgstr "ถูกต้อง!"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_0_4_question_1_0
-msgid "Correct ! A shovel is the perfect tool to dig a hole."
-msgstr "ถูกต้อง ! พลั่วเป็นเครื่องมือที่สมบูรณ์แบบในการขุดหลุม"
+msgid "Correct! A shovel is the perfect tool to dig a hole."
+msgstr "ถูกต้อง! จอบเป็นเครื่องมือที่สมบูรณ์แบบในการขุดหลุม"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_0_4_question_0_0
-msgid "Correct ! A strawberry is a fruit because it's the product of a tree."
-msgstr "ถูกต้อง ! สตรอเบอรี่เป็นผลไม้เพราะเป็นผลผลิตของต้นไม้"
+msgid "Correct! A strawberry is a fruit because it's the product of a tree."
+msgstr "ถูกต้อง! สตรอเบอร์รี่เป็นผลไม้เพราะเป็นผลจากต้นไม้"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_1_4_question_1_0
-msgid "Correct ! Congratulations you have time to loose"
-msgstr "ถูกต้อง ! ยินดีด้วยที่คุณมีเวลาพักผ่อน"
+msgid "Correct! Congratulations you have time to loose"
+msgstr "ถูกต้อง! ยินดีด้วยคุณมีเวลาที่จะสูญเสีย"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_5_3_question_0_0
-msgid "Correct ! You did it !"
-msgstr "ถูกต้อง ! คุณทำได้ !"
+msgid "Correct! You did it!"
+msgstr "ถูกต้อง! คุณทำได้!"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid ""
 "Could not find your video. Please check if your link is correct and if the "
 "video can be accessed."
@@ -2176,7 +2251,10 @@ msgstr ""
 
 #. module: website_slides
 #: model:ir.model,name:website_slides.model_slide_channel
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__channel_id
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__channel_id
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__channel_id
+#: model_terms:ir.ui.view,arch_db:website_slides.gamification_karma_tracking_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.rating_rating_view_form_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.rating_rating_view_search_slide_channel
 #: model_terms:ir.ui.view,arch_db:website_slides.rating_rating_view_tree_slide_channel
@@ -2188,10 +2266,21 @@ msgid "Course"
 msgstr "คอร์ส"
 
 #. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__visibility__members
+msgid "Course Attendees"
+msgstr "ผู้เข้าร่วมหลักสูตร"
+
+#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_res_partner__slide_channel_count
 #: model:ir.model.fields,field_description:website_slides.field_res_users__slide_channel_count
 msgid "Course Count"
 msgstr "จำนวนคอร์ส"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "Course Finished"
+msgstr "จบหลักสูตร"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_tag_group_view_form
@@ -2205,6 +2294,16 @@ msgid "Course Groups"
 msgstr "กลุ่มคอร์ส"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__channel_invite_url
+msgid "Course Link"
+msgstr "ลิงค์หลักสูตร"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
+msgid "Course Member"
+msgstr "สมาชิกหลักสูตร"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
 msgid "Course Name"
 msgstr "ชื่อคอร์ส"
@@ -2213,6 +2312,24 @@ msgstr "ชื่อคอร์ส"
 #: model:ir.actions.act_window,name:website_slides.action_slide_channel_pages_list
 msgid "Course Pages"
 msgstr "หน้าหลักสูตร"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/gamification_karma_tracking.py:0
+msgid "Course Quiz"
+msgstr "แบบทดสอบหลักสูตร"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "Course Ranked"
+msgstr "อันดับหลักสูตร"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "Course Set Uncompleted"
+msgstr "ชุดหลักสูตรที่ยังไม่เสร็จสมบูรณ์"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_tag_view_form
@@ -2256,7 +2373,6 @@ msgstr "จบคอร์ส"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Course not published yet"
 msgstr "คอร์สยังไม่เผยแพร่"
 
@@ -2274,12 +2390,12 @@ msgstr "ชนิดคอร์ส"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid "Course: %s"
 msgstr "คอร์ส: %s"
 
 #. module: website_slides
 #. odoo-python
+#: code:addons/website_slides/models/res_partner.py:0
 #: code:addons/website_slides/models/website.py:0
 #: model:ir.actions.act_window,name:website_slides.slide_channel_action_report
 #: model:ir.ui.menu,name:website_slides.menu_slide_channel_pages
@@ -2293,7 +2409,6 @@ msgstr "คอร์ส: %s"
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_tree
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_tree_report
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_searchbar_input_snippet_options
-#, python-format
 msgid "Courses"
 msgstr "คอร์ส"
 
@@ -2303,9 +2418,26 @@ msgid "Courses Page"
 msgstr "หน้าหลักสูตร"
 
 #. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel__prerequisite_of_channel_ids
+msgid "Courses that have this course as prerequisite."
+msgstr "รายวิชาที่มีรายวิชานี้เป็นวิชาบังคับก่อน"
+
+#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__cover_properties
 msgid "Cover Properties"
 msgstr "คุณสมบัติปก"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
+msgid "Create New Category \""
+msgstr "สร้างหมวดหมู่ใหม่ \""
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
+msgid "Create New Tag \""
+msgstr "สร้างแท็กใหม่ \""
 
 #. module: website_slides
 #: model_terms:ir.actions.act_window,help:website_slides.action_slide_tag
@@ -2323,17 +2455,21 @@ msgid "Create a community and let Attendees answer each others' questions."
 msgstr "สร้างคอมมูนิตี้และให้ผู้เข้าร่วมตอบคำถามของกันและกัน"
 
 #. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_tag_add.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "Create new %s '%s'"
-msgstr "สร้างใหม่ %s '%s'"
-
-#. module: website_slides
 #: model_terms:ir.actions.act_window,help:website_slides.slide_slide_action_report
 msgid "Create new content for your eLearning"
 msgstr "สร้างเนื้อหาใหม่สำหรับการอบรมออนไลน์ของคุณ"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
+msgid "Create this tag \""
+msgstr "สร้างแท็กนี้ \""
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
+msgid "Create this tag group\""
+msgstr "สร้างกลุ่มแท็กนี้\""
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_answer__create_uid
@@ -2368,11 +2504,6 @@ msgid "Created on"
 msgstr "สร้างเมื่อ"
 
 #. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.rating_rating_view_search_slide_channel
-msgid "Creation Date"
-msgstr "วันที่สร้าง"
-
-#. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_slide__html_content
 msgid "Custom HTML content for slides of category 'Article'."
 msgstr "เนื้อหา HTML ที่กำหนดเองสำหรับสไลด์ของหมวดหมู่ 'บทความ'"
@@ -2391,6 +2522,11 @@ msgstr "วันที่ (ใหม่ไปเก่า)"
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_searchbar_input_snippet_options
 msgid "Date (old to new)"
 msgstr "วันที่ (เก่าไปใหม่)"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_slide_view_kanban
+msgid "Default training image"
+msgstr ""
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_gamification_challenge__challenge_category
@@ -2425,6 +2561,7 @@ msgstr "กำหนดอีเมลที่ผู้เข้าร่วม
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_channel__visibility
+#: model:ir.model.fields,help:website_slides.field_slide_channel_invite__channel_visibility
 #: model:ir.model.fields,help:website_slides.field_slide_channel_partner__channel_visibility
 msgid "Defines who can access your courses and their content."
 msgstr "กำหนดผู้ที่สามารถเข้าถึงหลักสูตรและเนื้อหาของคุณได้"
@@ -2432,8 +2569,8 @@ msgstr "กำหนดผู้ที่สามารถเข้าถึง
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_category_delete.js:0
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
-#, python-format
 msgid "Delete"
 msgstr "ลบ"
 
@@ -2441,14 +2578,12 @@ msgstr "ลบ"
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_category_delete.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list
-#, python-format
 msgid "Delete Category"
 msgstr "ลบหมวดหมู่"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
-#, python-format
 msgid "Delete Question"
 msgstr "ลบคำถาม"
 
@@ -2468,14 +2603,12 @@ msgstr "คำอธิบายโดยละเอียด"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_1_4_question_1
-msgid "Did you read the whole article ?"
-msgstr "คุณอ่านบทความทั้งหมดหรือไม่?"
+msgid "Did you read the whole article?"
+msgstr "คุณอ่านบทความทั้งหมดแล้วหรือยัง?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
 msgid "Discard"
 msgstr "ละทิ้ง"
 
@@ -2523,51 +2656,47 @@ msgstr "แสดงชื่อ"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_2_0_question_0
-msgid "Do you make beams out of lemon trees ?"
-msgstr "ทำคานจากต้นมะนาว ?"
+msgid "Do you make beams out of lemon trees?"
+msgstr "คุณสร้างคานจากต้นมะนาวหรือไม่?"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_2_0_question_1
-msgid "Do you make lemons out of beams ?"
-msgstr "คุณทำมะนาวจากคาน ?"
+msgid "Do you make lemons out of beams?"
+msgstr "คุณทำมะนาวจากคานหรือไม่?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_unsubscribe.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
 msgid "Do you really want to leave the course?"
 msgstr "คุณต้องการที่จะออกจากคอร์ส?"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_1_4_question_0
-msgid "Do you think Harry Potted has a good name ?"
-msgstr "คุณคิดว่า Harry Potted มีชื่อที่ดีหรือไม่?"
+msgid "Do you think Harry Potted has a good name?"
+msgstr "คุณคิดว่า Harry Potter มีชื่อที่ดีหรือไม่ เพราะอะไร?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "Do you want to install the \"%s\" app?"
-msgstr "คุณต้องการติดตั้ง\"%s\" แอป?"
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_install_module.js:0
+msgid "Do you want to install \"%s\"?"
+msgstr "คุณต้องการติดตั้ง \"%s\" หรือไม่?"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_5_3_question_0
-msgid "Do you want to reply correctly ?"
+msgid "Do you want to reply correctly?"
 msgstr "คุณต้องการตอบกลับอย่างถูกต้องหรือไม่?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
-#, python-format
-msgid "Do you want to request access to this course ?"
-msgstr "คุณต้องการร้องขอการเข้าถึงคอร์สนี้หรือไม่?"
+#: code:addons/website_slides/static/src/js/slides_course_enroll_email.js:0
+msgid "Do you want to request access to this course?"
+msgstr "คุณต้องการขอสิทธิ์เข้าถึงหลักสูตรนี้หรือไม่?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_category__document
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
-#, python-format
 msgid "Document"
 msgstr "เอกสาร"
 
@@ -2578,16 +2707,14 @@ msgstr "เอกสาร (Word, Google Doc, ...)"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__document_google_url
-#, python-format
 msgid "Document Link"
 msgstr "ลิงค์เอกสาร"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "Document Source"
 msgstr "แหล่งที่มาเอกสาร"
 
@@ -2610,8 +2737,7 @@ msgstr "เป็นมิตรกับสุนัข"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
-msgid "Don't have an account ?"
+msgid "Don't have an account?"
 msgstr "ยังไม่มีบัญชี ?"
 
 #. module: website_slides
@@ -2621,16 +2747,15 @@ msgid "Done"
 msgstr "เสร็จสิ้น"
 
 #. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
-msgid "Done !"
-msgstr "เสร็จสิ้น !"
-
-#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_question__done_count
 msgid "Done Count"
 msgstr "นับเสร็จ"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
+msgid "Done!"
+msgstr "เสร็จสิ้น!"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.embed_slide
@@ -2643,6 +2768,11 @@ msgid "Download Content"
 msgstr "ดาวน์โหลดเนื้อหา"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_slide_resource__download_url
+msgid "Download URL"
+msgstr "ดาวน์โหลดเอกสาร"
+
+#. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_4_10
 msgid "Drawing 1"
 msgstr "ภาพร่าง 1"
@@ -2651,11 +2781,6 @@ msgstr "ภาพร่าง 1"
 #: model:slide.slide,name:website_slides.slide_slide_demo_4_11
 msgid "Drawing 2"
 msgstr "ภาพร่าง 2"
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
-msgid "Dropdown menu"
-msgstr "เมนูดรอปดาว์น"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__total_time
@@ -2671,9 +2796,10 @@ msgid "Earn more Karma to leave a comment."
 msgstr "รับ Karma มากขึ้นเพื่อแสดงความคิดเห็น"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
 msgid "Edit"
-msgstr "การแก้ไข"
+msgstr "แก้ไข"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
@@ -2681,14 +2807,14 @@ msgid "Edit in backend"
 msgstr "แก้ไขในส่วนหลัง"
 
 #. module: website_slides
+#: model:mail.template,name:website_slides.mail_template_slide_channel_enroll
+msgid "Elearning: Add Attendees to Course"
+msgstr "Elearning: เพิ่มผู้เข้าร่วมในหลักสูตร"
+
+#. module: website_slides
 #: model:mail.template,name:website_slides.mail_template_channel_completed
 msgid "Elearning: Completed Course"
 msgstr "การอบรมออนไลน์: จบหลักสูตร"
-
-#. module: website_slides
-#: model:mail.template,name:website_slides.mail_template_slide_channel_invite
-msgid "Elearning: Course Invite"
-msgstr ""
 
 #. module: website_slides
 #: model:mail.template,name:website_slides.slide_template_shared
@@ -2699,6 +2825,11 @@ msgstr "การอบรมออนไลน์: แชร์หลักส�
 #: model:mail.template,name:website_slides.slide_template_published
 msgid "Elearning: New Course Content Notification"
 msgstr "Elearning: การแจ้งเตือนเนื้อหาหลักสูตรใหม่"
+
+#. module: website_slides
+#: model:mail.template,name:website_slides.mail_template_slide_channel_invite
+msgid "Elearning: Promotional Course Invitation"
+msgstr "การอบรมออนไลน์: คำเชิญหลักสูตรส่งเสริมการขาย"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__partner_email
@@ -2718,8 +2849,7 @@ msgstr "เทมเพลตอีเมลที่ใช้เมื่อแ
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
 msgid "Email(s) sent."
 msgstr "ส่งอีเมลแล้ว"
 
@@ -2735,6 +2865,14 @@ msgid "Embed Views"
 msgstr "ฝังมุมมอง"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_slide.py:0
+msgid "Embed code"
+msgstr "รหัสที่ถูกฝัง"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_embed
 msgid "Embed in another Website"
 msgstr "ฝังในเว็บไซต์อื่น"
@@ -2746,8 +2884,7 @@ msgstr "ตัวนับการเข้าชมสไลด์แบบฝ
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
 msgid "End course"
 msgstr "จบคอร์ส"
 
@@ -2758,8 +2895,14 @@ msgstr "ข้อมูลประสิทธิภาพพลังงาน
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.mail_notification_channel_invite
-msgid "Enjoy this exclusive content !"
-msgstr "เพลิดเพลินไปกับเนื้อหาพิเศษนี้ !"
+msgid "Enjoy this exclusive content!"
+msgstr "เพลิดเพลินไปกับเนื้อหาสุดพิเศษนี้!"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "Enroll Attendees to %(course_name)s"
+msgstr "ลงทะเบียนผู้เข้าร่วม %(course_name)s"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__enroll_msg
@@ -2773,28 +2916,40 @@ msgid "Enroll Policy"
 msgstr "นโยบายการสมัคร"
 
 #. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
-msgid "Enrolled On"
-msgstr "ลงทะเบียนเมื่อ"
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__enroll_mode
+msgid "Enroll partners"
+msgstr "ลงทะเบียนพาร์ทเนอร์"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__channel_partner_ids
+msgid "Enrolled Attendees Information"
+msgstr "ข้อมูลผู้เข้าร่วมที่ลงทะเบียนแล้ว"
+
+#. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel__partner_ids
+msgid "Enrolled partners in the course"
+msgstr "พาร์ทเนอร์ที่ลงทะเบียนเรียนในหลักสูตร"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Enter at least two possible <b>Answers</b>."
 msgstr "ใส่อย่างน้อยสอง <b>คำตอบ</b>ที่เป็นไปได้"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Enter your <b>Question</b>. Be clear and concise."
 msgstr "ใส่ <b>คำถาม</b> ของคุณ ให้ชัดเจนและกระชับ"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_question__answers_validation_error
+msgid "Error on Answers"
+msgstr "ข้อผิดพลาดในการตอบ"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 msgid "Estimated Completion Time"
 msgstr "เวลาเสร็จสมบูรณ์โดยประมาณ"
 
@@ -2804,9 +2959,19 @@ msgid "Evaluate the knowledge of your Attendees and certify their skills."
 msgstr "ประเมินความรู้ของผู้เข้าร่วมของคุณและรับรองทักษะของพวกเขา"
 
 #. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__visibility__public
+msgid "Everyone"
+msgstr "ทุกคน"
+
+#. module: website_slides
 #: model:slide.tag,name:website_slides.slide_tag_demo_exercises
 msgid "Exercises"
 msgstr "แบบทดสอบ"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen
+msgid "Exit Fullscreen"
+msgstr "ออกจากโหมดเต็มหน้าจอ"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__embed_code_external
@@ -2830,11 +2995,9 @@ msgstr "เว็บไซต์ภายนอก"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "Failed to install \"%s\"."
-msgstr "ติดตั้งไม่สำเร็จ \"%s\""
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_install_module.js:0
+msgid "Failed to install \"%s\""
+msgstr "การติดตั้งล้มเหลว \"%s\""
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__promote_strategy
@@ -2856,8 +3019,7 @@ msgstr "ชื่อไฟล์"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "File is too big. File size cannot exceed 25MB"
 msgstr "ไฟล์มีขนาดใหญ่เกินไป ขนาดไฟล์ต้องไม่เกิน 25MB"
 
@@ -2869,15 +3031,24 @@ msgstr "ตัวกรองและคำสั่ง"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Finally you can click here to enjoy your content in fullscreen"
 msgstr ""
 "ในที่สุดคุณก็สามารถคลิกที่นี่เพื่อเพลิดเพลินกับเนื้อหาของคุณแบบเต็มหน้าจอ"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "Finish"
+msgstr "เสร็จสิ้น"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 msgid "Finish Course"
 msgstr "จบคอร์ส"
+
+#. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel_partner__member_status__completed
+msgid "Finished"
+msgstr "เสร็จสิ้นแล้ว"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
@@ -2886,8 +3057,7 @@ msgstr "ลองครั้งแรก"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "First, create your lesson, then edit it with the website builder. You'll be "
 "able to drop building blocks on your page and edit them."
@@ -2898,39 +3068,26 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "First, let's add a <b>Document</b>. It has to be a .pdf file."
 msgstr "ขั้นแรก เรามาเพิ่ม<b>เอกสาร</b>กันก่อน ต้องเป็นไฟล์ .pdf"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "First, upload the file on your Google Drive account."
 msgstr "ขั้นแรก อัปโหลดไฟล์ไปยังบัญชี Google Drive ของคุณ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "First, upload your videos on Vimeo and mark them as"
 msgstr "ขั้นแรก อัปโหลดวิดีโอของคุณบน Vimeo และทำเครื่องหมายว่าเป็น"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "First, upload your videos on YouTube and mark them as"
 msgstr "ขั้นแรก อัปโหลดวิดีโอของคุณบน YouTube และทำเครื่องหมายเป็น"
-
-#. module: website_slides
-#. odoo-python
-#: code:addons/website_slides/models/res_partner.py:0
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_kanban
-#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
-#, python-format
-msgid "Followed Courses"
-msgstr "คอร์สที่ติดตาม"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__message_follower_ids
@@ -2981,11 +3138,15 @@ msgstr "ตั้งแต่ชิ้นไม้ไปจนถึงเฟอ
 #: model_terms:ir.actions.act_window,help:website_slides.slide_channel_partner_action
 #: model_terms:ir.actions.act_window,help:website_slides.slide_channel_partner_action_report
 #: model_terms:ir.actions.act_window,help:website_slides.slide_slide_partner_action_from_slide
-#, python-format
 msgid ""
 "From here you'll be able to monitor attendees and to track their progress."
 msgstr ""
 "จากที่นี่ คุณจะสามารถติดตามผู้เข้าร่วมและติดตามความคืบหน้าของพวกเขาได้"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
+msgid "Fullscreen"
+msgstr "แบบเต็มหน้าจอ"
 
 #. module: website_slides
 #: model:slide.channel.tag,name:website_slides.slide_channel_tag_role_furniture
@@ -3032,16 +3193,19 @@ msgstr "เริ่มเลย"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Give your course a helpful <b>Description</b>."
 msgstr "ให้<b>รายละเอียด</b>ที่เป็นประโยชน์แก่คอร์สของคุณ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Give your course an engaging <b>Title</b>."
 msgstr "ให้ <b>ชื่อเรื่อง</b>มีส่วนร่วมกับคอร์สของคุณ"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
+msgid "Go through all its content to see a Course in this section. <br/>"
+msgstr "อ่านเนื้อหาทั้งหมดเพื่อดูหลักสูตรในส่วนนี้ <br/>"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_res_config_settings__website_slide_google_app_key
@@ -3050,6 +3214,8 @@ msgid "Google Doc Key"
 msgstr "Google Doc Key"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_slide.py:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__video_source_type__google_drive
 msgid "Google Drive"
 msgstr "Google Drive"
@@ -3071,8 +3237,7 @@ msgstr "วิดีโอของ Google ไดรฟ์"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/components/activity/activity.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/activity/activity_patch.xml:0
 msgid "Grant Access"
 msgstr "ให้สิทธิ์การเข้าถึง"
 
@@ -3115,8 +3280,13 @@ msgstr "เนื้อหา HTML"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_category_demo_5_1
-msgid "Hand on !"
-msgstr "ส่งต่อ !"
+msgid "Hand on!"
+msgstr "ส่งต่อ!"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__prerequisite_user_has_completed
+msgid "Has Completed Prerequisite"
+msgstr "ได้ทำข้อกำหนดเบื้องต้นเรียบร้อยแล้ว"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_tag_group_view_search
@@ -3138,7 +3308,7 @@ msgstr "นี่คือวิธีการที่จะได้สตร
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_nav
 msgid "Home"
-msgstr "โฮม"
+msgstr "หน้าแรก"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_0_1
@@ -3152,9 +3322,7 @@ msgstr "วิธีการสร้างโต๊ะรับประทา
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "How do I add new content?"
 msgstr "ฉันจะเพิ่มเนื้อหาใหม่ได้อย่างไร?"
 
@@ -3172,8 +3340,7 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "How to create a Lesson as an Article?"
 msgstr "จะสร้างบทเรียนเป็นบทความได้อย่างไร?"
 
@@ -3184,27 +3351,24 @@ msgstr "วิธีหาไม้ที่มีคุณภาพ"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_1_3
-msgid "How to plant a potted tree"
-msgstr "วิธีการปลูกต้นไม้ในกระถาง"
+msgid "How to plant a potted.list"
+msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "How to upload your PowerPoint Presentations or Word Documents?"
 msgstr "จะอัปโหลดงานนำเสนอ PowerPoint หรือเอกสาร Word ได้อย่างไร"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
-msgid "How to upload your videos ?"
-msgstr "อัปโหลดวิดีโอของคุณได้อย่างไร ?"
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
+msgid "How to upload your videos?"
+msgstr "วิธีการอัปโหลดวิดีโอของคุณ?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "How to use Google Drive?"
 msgstr "วิธีการใช้งาน Google ไดรฟ์?"
 
@@ -3269,7 +3433,6 @@ msgstr "หากคุณกำลังมองหาข้อกำหนด
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "If you want to be sure that attendees have understood and memorized the "
 "content, you can add a Quiz on the lesson. Click on <b>Add Quiz</b>."
@@ -3279,8 +3442,7 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "If you want to use other types of files, you may want to use an external "
 "source (Google Drive) instead."
@@ -3290,12 +3452,11 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__image_1920
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__image_1920
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_category__infographic
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_type__image
-#, python-format
 msgid "Image"
 msgstr "รูปภาพ"
 
@@ -3330,23 +3491,20 @@ msgstr "เนื้อหารูปภาพ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__image_google_url
-#, python-format
 msgid "Image Link"
 msgstr "ลิงค์รูปภาพ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "Image Source"
 msgstr "แหล่งที่มารูปภาพ"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid ""
 "Impossible to send emails. Select a \"Channel Share Template\" for courses "
 "%(course_names)s first"
@@ -3357,7 +3515,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "Impossible to send emails. Select a \"Share Template\" for courses "
 "%(course_names)s first"
@@ -3369,43 +3526,43 @@ msgstr ""
 #: model:slide.answer,comment:website_slides.slide_slide_demo_1_4_question_0_1
 #: model:slide.answer,comment:website_slides.slide_slide_demo_2_0_question_0_0
 #: model:slide.answer,comment:website_slides.slide_slide_demo_2_0_question_1_0
-msgid "Incorrect !"
-msgstr "ไม่ถูกต้อง !"
+msgid "Incorrect!"
+msgstr "ไม่ถูกต้อง!"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_0_4_question_0_1
-msgid "Incorrect ! A strawberry is not a vegetable."
-msgstr "ไม่ถูกต้อง ! สตรอเบอร์รี่ไม่ใช่ผัก"
+msgid "Incorrect! A strawberry is not a vegetable."
+msgstr "ไม่ถูกต้อง! สตรอเบอร์รี่ไม่ใช่ผัก"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_0_4_question_0_2
-msgid "Incorrect ! A table is a piece of furniture."
-msgstr "ไม่ถูกต้อง ! โต๊ะเป็นเฟอร์นิเจอร์ชิ้นหนึ่ง"
+msgid "Incorrect! A table is a piece of furniture."
+msgstr "ไม่ถูกต้อง! โต๊ะเป็นเฟอร์นิเจอร์ชิ้นหนึ่ง"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_0_4_question_1_1
-msgid "Incorrect ! Good luck digging a hole with a spoon..."
-msgstr "ไม่ถูกต้อง ! ขอให้โชคดี ขุดหลุมด้วยช้อน..."
+msgid "Incorrect! Good luck digging a hole with a spoon..."
+msgstr "ไม่ถูกต้อง! ขอให้โชคดี..."
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_1_4_question_1_2
-msgid "Incorrect ! Seriously ?"
-msgstr "ไม่ถูกต้อง ! จริงจังป่ะเนี้ย ?"
+msgid "Incorrect! Seriously?"
+msgstr "ไม่ถูกต้อง! ถามจริง?"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_5_3_question_0_1
-msgid "Incorrect ! You better think twice..."
-msgstr "ไม่ถูกต้อง ! คุณควรคิดใหม่อีกครั้ง..."
+msgid "Incorrect! You better think twice..."
+msgstr "ไม่ถูกต้อง! คุณควรคิดให้ดีอีกครั้ง..."
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_1_4_question_1_1
-msgid "Incorrect ! You really should read it."
-msgstr "ไม่ถูกต้อง ! คุณควรอ่านมันจริง ๆ"
+msgid "Incorrect! You really should read it."
+msgstr "ไม่ถูกต้อง! คุณควรอ่านมันก่อน"
 
 #. module: website_slides
 #: model:slide.answer,comment:website_slides.slide_slide_demo_2_0_question_1_2
-msgid "Incorrect ! of course not ..."
-msgstr "ไม่ถูกต้อง ! แน่นอนว่าไม่ ..."
+msgid "Incorrect! of course not ..."
+msgstr "ไม่ถูกต้อง! ไม่แน่นอน..."
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__nbr_infographic
@@ -3414,24 +3571,21 @@ msgstr "อินโฟกราฟิกส์"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_install_module.xml:0
 msgid "Install"
 msgstr "ติดตั้ง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog_select.xml:0
 msgid "Install the"
 msgstr "ติดตั้ง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "Installing \"%s\"."
-msgstr "กำลังติดตั้ง \"%s\"."
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_install_module.js:0
+msgid "Installing \"%s\"..."
+msgstr "กำลังติดตั้ง \"%s\"..."
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_category_demo_1_0
@@ -3440,13 +3594,13 @@ msgstr "ข้อเท็จจริงที่น่าสนใจ"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_1_1
-msgid "Interesting Tree Facts"
-msgstr "ข้อเท็จจริงของต้นไม้ที่น่าสนใจ"
+msgid "Interesting List Facts"
+msgstr ""
 
 #. module: website_slides
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_0_1
-msgid "Interesting information about home gardening. Keep it close !"
-msgstr "ข้อมูลที่น่าสนใจเกี่ยวกับการจัดสวนที่บ้าน เอาไว้ใกล้ตัว !"
+msgid "Interesting information about home gardening. Keep it close!"
+msgstr "ข้อมูลที่น่าสนใจเกี่ยวกับการจัดสวนในบ้าน ให้เก็บไว้ใกล้ตัว!"
 
 #. module: website_slides
 #: model:slide.channel.tag,name:website_slides.slide_channel_tag_level_intermediate
@@ -3456,7 +3610,6 @@ msgstr "ปานกลาง"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid ""
 "Internal server error, please try again later or contact administrator.\n"
 "Here is the error message: %s"
@@ -3466,10 +3619,14 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "Invalid file type. Please select pdf or image file"
 msgstr "ประเภทไฟล์ไม่ถูกต้อง กรุณาเลือก pdf หรือไฟล์รูปภาพ"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__invitation_link
+msgid "Invitation Link"
+msgstr "ลิงค์เชิญ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
@@ -3478,14 +3635,31 @@ msgid "Invite"
 msgstr "เชิญ"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__completed
-msgid "Is Completed"
-msgstr "เสร็จแล้ว"
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "Invite Attendees to %(course_name)s"
+msgstr "เชิญผู้เข้าร่วมประชุมไปที่ %(course_name)s"
+
+#. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel_partner__member_status__invited
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
+msgid "Invite Sent"
+msgstr "ส่งคำเชิญ"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_slide__user_has_completed_category
+msgid "Is Category Completed"
+msgstr "เป็นหมวดหมู่ที่เสร็จสมบูรณ์"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__is_mail_template_editor
 msgid "Is Editor"
 msgstr "เป็นผู้แก้ไข"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__is_member
+msgid "Is Enrolled Attendee"
+msgstr "เป็นผู้เข้าร่วมที่ลงทะเบียนแล้ว"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__message_is_follower
@@ -3494,7 +3668,11 @@ msgid "Is Follower"
 msgstr "เป็นผู้ติดตาม"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__is_member
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__is_member_invited
+msgid "Is Invited Attendee"
+msgstr "เป็นผู้เข้าร่วมที่ได้รับเชิญ"
+
+#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__user_has_completed
 msgid "Is Member"
 msgstr "เป็นสมาชิก"
@@ -3506,6 +3684,7 @@ msgstr "เป็นสไลด์ใหม่"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__is_published
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__channel_published
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_tag_group__is_published
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__is_published
 msgid "Is Published"
@@ -3522,12 +3701,18 @@ msgid "Is correct answer"
 msgstr "เป็นคำตอบที่ถูกต้อง"
 
 #. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel__is_member
+msgid "Is the attendee actively enrolled."
+msgstr "ผู้เข้าร่วมได้ลงทะเบียนอย่างกระตือรือร้นหรือไม่"
+
+#. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel__is_member_invited
+msgid "Is the invitation for this attendee pending."
+msgstr "คำเชิญสำหรับผู้เข้าร่วมรายนี้อยู่ระหว่างดำเนินการหรือไม่"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "It should look similar to"
 msgstr "มันควรจะมีลักษณะคล้ายกับ"
 
@@ -3543,32 +3728,34 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
-#, python-format
 msgid "Join & Submit"
 msgstr "เข้าร่วมและส่ง"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
-#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
-#, python-format
 msgid "Join the Course"
 msgstr "เข้าร่วมคอร์ส"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Join the course to take the quiz and verify your answers!"
 msgstr "เข้าร่วมคอร์สเพื่อทำแบบทดสอบและยืนยันคำตอบของคุณ!"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_join.js:0
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
 #: model_terms:ir.ui.view,arch_db:website_slides.join_course_link
-#, python-format
 msgid "Join this Course"
 msgstr "เข้าร่วมหลักสูตรนี้"
+
+#. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel_partner__member_status__joined
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
+msgid "Joined"
+msgstr "เข้าร่วมแล้ว"
 
 #. module: website_slides
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_1_2
@@ -3640,20 +3827,14 @@ msgid "Last Action On"
 msgstr "การดำเนินการล่าสุดเมื่อ"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_answer____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_tag____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_tag_group____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_embed____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_question____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_slide____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_slide_partner____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_slide_resource____last_update
-#: model:ir.model.fields,field_description:website_slides.field_slide_tag____last_update
-msgid "Last Modified on"
-msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
+msgid "Last Invitation"
+msgstr "คำเชิญล่าสุด"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__last_invitation_date
+msgid "Last Invitation Date"
+msgstr "วันที่เชิญครั้งล่าสุด"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__slide_last_update
@@ -3722,8 +3903,8 @@ msgstr ""
 #. module: website_slides
 #: model_terms:slide.channel,description:website_slides.slide_channel_demo_0_gard_0
 #: model_terms:slide.channel,description_short:website_slides.slide_channel_demo_0_gard_0
-msgid "Learn the basics of gardening !"
-msgstr "เรียนรู้พื้นฐานของการทำสวน !"
+msgid "Learn the basics of gardening!"
+msgstr "เรียนรู้พื้นฐานการจัดสวน!"
 
 #. module: website_slides
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_5_1
@@ -3732,9 +3913,8 @@ msgstr "เรียนรู้ที่จะระบุไม้ที่ม
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
 msgid "Leave the course"
 msgstr "ออกจากคอร์ส"
 
@@ -3749,19 +3929,13 @@ msgid "Lesson Nav"
 msgstr "นำทางบทเรียน"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__karma_gen_slide_vote
-msgid "Lesson voted"
-msgstr "บทเรียนที่ถูกโหวต"
-
-#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen
 msgid "Lessons"
 msgstr "บทเรียน"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_quiz_finish.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.js:0
 msgid "Level up!"
 msgstr "เลเวลอัพ!"
 
@@ -3807,11 +3981,25 @@ msgstr ""
 "ลิงก์ของวิดีโอ (เรารองรับ YouTube, Google Drive และ Vimeo เป็นแหล่งที่มา)"
 
 #. module: website_slides
+#: model:slide.slide,name:website_slides.slide_slide_demo_1_0
+msgid "List Infographic"
+msgstr ""
+
+#. module: website_slides
+#: model:slide.slide,name:website_slides.slide_slide_demo_2_2
+msgid "List planting in hanging bottles on wall"
+msgstr ""
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 msgid "Loading content..."
 msgstr "กำลังโหลดเนื้อหา..."
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_main
+msgid "Log in"
+msgstr "เข้าสู่ระบบ"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__template_id
@@ -3822,12 +4010,6 @@ msgstr "เทมเพลตเมล"
 #: model:ir.model.fields,field_description:website_slides.field_res_config_settings__module_mass_mailing_slides
 msgid "Mailing"
 msgstr "ส่งเมล"
-
-#. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__message_main_attachment_id
-#: model:ir.model.fields,field_description:website_slides.field_slide_slide__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "เอกสารหลักที่แนบมา"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_2_0
@@ -3848,7 +4030,6 @@ msgstr "ทำเครื่องหมายว่าเสร็จแล้
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
-#, python-format
 msgid "Mark To Do"
 msgstr "ทำเครื่องหมายเป็นสิ่งที่ต้องทำ"
 
@@ -3856,7 +4037,6 @@ msgstr "ทำเครื่องหมายเป็นสิ่งที่
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/website_slides_sidebar.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_sidebar_done_button
-#, python-format
 msgid "Mark as done"
 msgstr "ทำเครื่องหมายว่าเสร็จสิ้น"
 
@@ -3864,32 +4044,19 @@ msgstr "ทำเครื่องหมายว่าเสร็จสิ้
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/website_slides_sidebar.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_sidebar_done_button
-#, python-format
 msgid "Mark as not done"
 msgstr "ทำเครื่องหมายว่ายังไม่เสร็จ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Mark the correct answer by checking the <b>correct</b> mark."
 msgstr "ทำเครื่องหมายคำตอบที่ถูกต้องโดยทำเครื่องหมาย <b>ถูกต้อง</b> "
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__partner_ids
 #: model_terms:ir.ui.view,arch_db:website_slides.course_sidebar
 msgid "Members"
 msgstr "สมาชิก"
-
-#. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__channel_partner_ids
-msgid "Members Information"
-msgstr "ข้อมูลสมาชิก"
-
-#. module: website_slides
-#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__visibility__members
-msgid "Members Only"
-msgstr "เฉพาะสมาชิก"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
@@ -3946,15 +4113,13 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 msgid "Minutes"
 msgstr "นาที"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "Missing \"Tag Group\" for creating a new \"Tag\"."
 msgstr "ไม่มี \"กลุ่มแท็ก\" สำหรับการสร้าง \"แท็ก\" ใหม่"
 
@@ -4023,21 +4188,15 @@ msgstr "Nav"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Need help? Review related content:"
 msgstr "ต้องการความช่วยเหลือหรือไม่? ตรวจสอบเนื้อหาที่เกี่ยวข้อง:"
 
 #. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/views/slide_channel_partner_list/slide_channel_partner_list_view.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
 msgid "New"
 msgstr "ใหม่"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "New Certification"
-msgstr "ใบรับรองใหม่"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__publish_template_id
@@ -4073,8 +4232,8 @@ msgstr "คอร์สใหม่ล่าสุด"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid "Next"
 msgstr "ถัดไป"
 
@@ -4099,6 +4258,11 @@ msgid "Next Activity Type"
 msgstr "ประเภทกิจกรรมถัดไป"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__next_slide_id
+msgid "Next Lesson"
+msgstr "บทเรียนถัดไป"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slides_home_user_profile_small
 msgid "Next rank:"
 msgstr "อันดับต่อไป:"
@@ -4111,21 +4275,18 @@ msgstr "อันดับต่อไป:"
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_2_0_question_0_1
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_2_0_question_1_1
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_5_3_question_0_1
-#, python-format
 msgid "No"
 msgstr "ไม่"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "No Attendee has completed this course yet!"
 msgstr "ยังไม่มีผู้เข้าร่วมจบหลักสูตรนี้!"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "No Attendees Yet!"
 msgstr "ยังไม่มีผู้เข้าร่วม!"
 
@@ -4176,14 +4337,19 @@ msgid "No data yet!"
 msgstr "ยังไม่มีข้อมูล!"
 
 #. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
-msgid "No followed courses yet!"
-msgstr "ยังไม่มีคอร์สที่ติดตาม!"
-
-#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.toggle_leaderboard
 msgid "No leaderboard currently :("
 msgstr "ขณะนี้ไม่มีกระดานผู้นำ :("
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_placeholder
+msgid "No lessons are available yet."
+msgstr "ยังไม่มีบทเรียนใดๆ"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
+msgid "No ongoing courses yet!"
+msgstr "ยังไม่มีหลักสูตรต่อเนื่อง!"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_aside_documentation
@@ -4208,21 +4374,18 @@ msgstr "ไม่เผยแพร่"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid "Not enough karma to comment"
 msgstr "คะแนน Karma ไม่พอให้ออกความเห็น"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Not enough karma to review"
 msgstr "คะแนน Karma ไม่พอให้รีวิว"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.js:0
 msgid "Notifications"
 msgstr "การแจ้งเตือน"
 
@@ -4310,8 +4473,7 @@ msgstr "เจ้าหน้าที่"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "On Google Drive"
 msgstr "บน Google Drive"
 
@@ -4322,35 +4484,49 @@ msgstr "ตามคำเชิญ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "On Vimeo"
 msgstr "บน Vimeo"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "On YouTube"
 msgstr "บน YouTube"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Once you're done, don't forget to <b>Publish</b> your course."
 msgstr "เมื่อเสร็จแล้ว อย่าลืม <b>เผยแพร่</b> คอร์สของคุณ"
 
 #. module: website_slides
-#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__visibility__public
-msgid "Open To All"
-msgstr ""
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel_partner__member_status__ongoing
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
+msgid "Ongoing"
+msgstr "กำลังดำเนินการ"
 
 #. module: website_slides
-#: code:addons/website_slides/controllers/mail.py:0
-#, python-format
+#: model_terms:ir.ui.view,arch_db:website_slides.user_profile_content
+msgid "Ongoing Courses"
+msgstr "หลักสูตรต่อเนื่อง"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
 msgid "Only a single review can be posted per course."
 msgstr "สามารถโพสต์บทวิจารณ์ได้เพียงรายการเดียวต่อหลักสูตร"
+
+#. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__enroll__public
+msgid "Open"
+msgstr "เปิด"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "Operation not supported"
+msgstr "ไม่รองรับการทำงาน"
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_channel_invite__lang
@@ -4402,88 +4578,63 @@ msgstr "หมุน"
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
+#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_join
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
-#, python-format
 msgid "Please"
 msgstr "กรุณา"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_join.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/slides_slide_like.js:0
 msgid ""
-"Please <a href=\"/web/login?redirect=%s\">login</a> or <a "
-"href=\"/web/signup?redirect=%s\">create an account</a> to join this course"
+"Please <a href=\"/web/login?redirect=%(url)s\">login</a> or <a "
+"href=\"/web/signup?redirect=%(url)s\">create an account</a> to vote for this"
+" lesson"
 msgstr ""
+"กรุณา<a href=\"/web/login?redirect=%(url)s\">เข้าสู่ระบบ</a>หรือ<a "
+"href=\"/web/signup?redirect=%(url)s\">สร้างบัญชี</a>เพื่อลงคะแนนสำหรับบทเรียนนี้"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
 msgid ""
-"Please <a href=\"/web/login?redirect=%s\">login</a> or <a "
-"href=\"/web/signup?redirect=%s\">create an account</a> to vote for this "
+"Please <a href=\"/web/login?redirect=%(url)s\">login</a> to vote for this "
 "lesson"
 msgstr ""
-"กรุณา<a href=\"/web/login?redirect=%s\">เข้าสู่ระบบ</a>หรือ<a "
-"href=\"/web/signup?redirect=%s\">สร้างบัญชี</a>เพื่อลงคะแนนให้กับบทเรียนนี้"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_join.js:0
-#, python-format
-msgid "Please <a href=\"/web/login?redirect=%s\">login</a> to join this course"
-msgstr ""
-"โปรด <a href=\"/web/login?redirect=%s\">ลงชื่อเข้าใช้</a> เพื่อเข้าร่วมคอร์ส"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
-msgid ""
-"Please <a href=\"/web/login?redirect=%s\">login</a> to vote for this lesson"
-msgstr ""
-"กรุณา<a href=\"/web/login?redirect=%s\">เข้าสู่ระบบ</a>เพื่อโหวตบทเรียนนี้"
+"กรุณา<a "
+"href=\"/web/login?redirect=%(url)s\">เข้าสู่ระบบ</a>เพื่อโหวตบทเรียนนี้"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid "Please enter a valid Vimeo video link"
 msgstr "โปรดป้อนลิงก์วิดีโอ Vimeo ที่ถูกต้อง"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "Please enter valid Google Drive Link"
 msgstr "โปรดป้อนลิงก์ Google Drive ที่ถูกต้อง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_fullscreen_player.js:0
-#: code:addons/website_slides/static/src/js/slides_course_fullscreen_player.js:0
-#: code:addons/website_slides/static/src/js/slides_share.js:0
-#: code:addons/website_slides/static/src/js/slides_share.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
-#, python-format
 msgid "Please enter valid email(s)"
 msgstr "กรุณากรอกอีเมลที่ถูกต้อง"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz_question_form.js:0
-#, python-format
 msgid "Please fill in the question"
 msgstr "กรุณากรอกคำถาม"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/wizard/slide_channel_invite.py:0
-#, python-format
 msgid "Please select at least one recipient."
 msgstr "โปรดเลือกผู้รับอย่างน้อยหนึ่งราย"
 
@@ -4504,6 +4655,21 @@ msgid "Powered by"
 msgstr "สนับสนุนโดย"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__prerequisite_of_channel_ids
+msgid "Prerequisite Of"
+msgstr "ข้อกำหนดเบื้องต้นของ"
+
+#. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel__prerequisite_channel_ids
+msgid "Prerequisite courses to complete before accessing this one."
+msgstr "หลักสูตรบังคับก่อนจะต้องทำให้เสร็จสิ้นก่อนที่จะเข้าถึงหลักสูตรนี้"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__prerequisite_channel_ids
+msgid "Prerequisites"
+msgstr "ข้อกำหนดเบื้องต้น"
+
+#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_embed__slide_id
 #: model:slide.slide,name:website_slides.slide_slide_demo_4_12
 msgid "Presentation"
@@ -4516,10 +4682,22 @@ msgid "Presentation Published"
 msgstr "เผยแพร่งานนำเสนอ"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list_slide
 #: model_terms:ir.ui.view,arch_db:website_slides.lesson_card
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 msgid "Preview"
 msgstr "ตัวอย่าง"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
+msgid "Previous"
+msgstr "ก่อนหน้า"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
+msgid "Private"
+msgstr "ส่วนตัว"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_join
@@ -4532,14 +4710,19 @@ msgid "Progress"
 msgstr "ความคืบหน้า"
 
 #. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_xp_progress_bar.xml:0
+#: model_terms:ir.ui.view,arch_db:website_slides.course_card
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_main
+msgid "Progress bar"
+msgstr "แถบความคืบหน้า"
+
+#. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__promoted_slide_id
 msgid "Promoted Slide"
 msgstr "สไลด์ที่ถูกโปรโมต"
-
-#. module: website_slides
-#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__enroll__public
-msgid "Public"
-msgstr "สาธารณะ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
@@ -4558,7 +4741,9 @@ msgstr "วันที่เผยแพร่"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_pages_kanban_view
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_search
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_tree
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_search
 msgid "Published"
@@ -4578,7 +4763,6 @@ msgstr "วันที่เผยแพร่"
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "Publishing is restricted to the responsible of training courses or members "
 "of the publisher group for documentation courses"
@@ -4590,20 +4774,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 msgid "Question"
 msgstr "คำถาม"
-
-#. module: website_slides
-#. odoo-python
-#: code:addons/website_slides/models/slide_question.py:0
-#, python-format
-msgid "Question \"%s\" must have 1 correct answer"
-msgstr "คำถาม \"%s\" ต้องมี 1 คำตอบที่ถูกต้อง"
-
-#. module: website_slides
-#. odoo-python
-#: code:addons/website_slides/models/slide_question.py:0
-#, python-format
-msgid "Question \"%s\" must have 1 correct answer and at least 1 incorrect answer"
-msgstr "คำถาม \"%s\" ต้องมี 1 คำตอบที่ถูกต้อง และอย่างน้อย 1 คำตอบที่ผิด"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_question__question
@@ -4619,22 +4789,33 @@ msgstr "คำถาม"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_category__quiz
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_type__quiz
 #: model:slide.channel.tag,name:website_slides.slide_channel_tag_other_0
+#: model_terms:ir.ui.view,arch_db:website_slides.gamification_karma_tracking_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_question_view_form
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
-#, python-format
 msgid "Quiz"
 msgstr "ควิซ"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_slide.py:0
+msgid "Quiz Completed"
+msgstr "แบบทดสอบเสร็จสมบูรณ์"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "Quiz Demo Data"
 msgstr "ข้อมูลการสาธิตแบบทดสอบ"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_slide.py:0
+msgid "Quiz Set Uncompleted"
+msgstr "แบบทดสอบชุดที่ยังไม่เสร็จสมบูรณ์"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide_partner__quiz_attempts_count
@@ -4649,11 +4830,6 @@ msgstr "จำนวนครั้งที่ร่วมทดสอบ"
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_question_view_tree_report
 msgid "Quizzes"
 msgstr "ควิซ"
-
-#. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__rating_ids
-msgid "Rating"
-msgstr "การให้คะแนน"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__rating_avg_stars
@@ -4698,11 +4874,12 @@ msgstr "จำนวนการให้คะแนน"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "Rating of %s"
 msgstr "คะแนนของ %s"
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__rating_ids
+#: model:ir.model.fields,field_description:website_slides.field_slide_slide__rating_ids
 #: model_terms:ir.ui.view,arch_db:website_slides.rating_rating_view_form_slides
 msgid "Ratings"
 msgstr "การให้คะแนน"
@@ -4725,8 +4902,7 @@ msgstr "ผู้รับ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/components/activity/activity.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/activity/activity_patch.xml:0
 msgid "Refuse Access"
 msgstr "ปฏิเสธการเข้าถึง"
 
@@ -4742,21 +4918,14 @@ msgid "Related"
 msgstr "เกี่ยวข้อง"
 
 #. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
-msgid "Remove"
-msgstr "นำออก"
-
-#. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "Remove the answer comment"
 msgstr "ลบคำตอบความคิดเห็น"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "Remove this answer"
 msgstr "ลบคำตอบ"
 
@@ -4773,37 +4942,31 @@ msgstr "การรายงาน"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_enroll_email.js:0
-#, python-format
 msgid "Request Access."
 msgstr "ร้องขอการเข้าถึง"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_enroll_email.js:0
-#, python-format
-msgid "Request sent !"
-msgstr "คำร้องถูกส่ง !"
+msgid "Request sent!"
+msgstr "ส่งคำขอแล้ว!"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Reset"
 msgstr "ตั้งค่าใหม่"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide_resource.py:0
-#: code:addons/website_slides/models/slide_slide_resource.py:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide_resource__data
-#, python-format
 msgid "Resource"
 msgstr "แหล่งข้อมูล"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide_resource.py:0
-#, python-format
 msgid ""
 "Resource %(resource_name)s is a link and should not contain a data file"
 msgstr "ทรัพยากร %(resource_name)s เป็นลิงก์และไม่ควรมีไฟล์ข้อมูล"
@@ -4817,6 +4980,7 @@ msgstr "ประเภททรัพยากร"
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__user_id
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__channel_user_id
 #: model_terms:ir.ui.view,arch_db:website_slides.course_sidebar
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
 msgid "Responsible"
 msgstr "รับผิดชอบ"
@@ -4829,7 +4993,6 @@ msgstr "ผู้ใช้ที่รับผิดชอบ"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Responsible already contacted."
 msgstr "ผู้รับผิดชอบได้ติดต่อไปแล้ว"
 
@@ -4837,27 +5000,24 @@ msgstr "ผู้รับผิดชอบได้ติดต่อไปแ
 #: model:ir.model.fields,help:website_slides.field_slide_channel__website_id
 #: model:ir.model.fields,help:website_slides.field_slide_channel_partner__channel_website_id
 #: model:ir.model.fields,help:website_slides.field_slide_slide__website_id
-msgid "Restrict publishing to this website."
-msgstr "จำกัดการเผยแพร่ในเว็บไซต์นี้"
+msgid "Restrict to a specific website."
+msgstr "จำกัดเฉพาะเว็บไซต์ใดเว็บไซต์หนึ่ง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_source_types.xml:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__source_type__external
-#, python-format
 msgid "Retrieve from Google Drive"
 msgstr "ดึงข้อมูลจาก Google Drive"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_install_module.xml:0
 msgid "Retry"
 msgstr "ลองใหม่"
 
 #. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.private_profile
+#: model_terms:ir.ui.view,arch_db:website_slides.profile_access_denied
 msgid "Return to the course."
 msgstr "กลับสู่คอร์ส"
 
@@ -4881,13 +5041,6 @@ msgstr "วันที่ตรวจสอบ"
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 msgid "Reviews"
 msgstr "รีวิว"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/portal_chatter.js:0
-#, python-format
-msgid "Reviews (%d)"
-msgstr "รีวิว (%d)"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__quiz_fourth_attempt_reward
@@ -4939,26 +5092,22 @@ msgstr "ตัวอย่าง"
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 #: code:addons/website_slides/static/src/js/slides_category_add.js:0
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "Save"
 msgstr "บันทึก"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
-msgid "Save & Publish"
-msgstr "บันทึก & เผยแพร่"
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
+msgid "Save and Publish"
+msgstr "บันทึกและเผยแพร่"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "Save your presentations or documents as PDF files and upload them."
 msgstr "บันทึกงานนำเสนอหรือเอกสารของคุณเป็นไฟล์ PDF แล้วอัปโหลด"
 
@@ -4968,6 +5117,7 @@ msgid "Score"
 msgstr "คะแนน"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_nav
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_cards
 msgid "Search"
 msgstr "ค้นหา"
@@ -4996,10 +5146,8 @@ msgstr "ลองครั้งที่สอง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__category_id
-#, python-format
 msgid "Section"
 msgstr "ส่วน"
 
@@ -5012,27 +5160,24 @@ msgstr "คำบรรยายส่วน"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_management.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/category_add_dialog/category_add_dialog.xml:0
 msgid "Section name"
 msgstr "ชื่อส่วน"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__access_token
 msgid "Security Token"
-msgstr "โทเคนความปลอดภัย"
+msgstr "โทเค็นความปลอดภัย"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/res_users.py:0
-#, python-format
 msgid "See our eLearning"
 msgstr "ดูการอบรมออนไลน์ของเรา"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid "Select <b>Course</b> to create it and manage it."
 msgstr "เลือก <b>คอร์ส</b> สำหรับสร้างและจัดการ"
 
@@ -5043,10 +5188,33 @@ msgstr "เลือกด้วยตนเอง"
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
+msgid "Select or create a category"
+msgstr "เลือกหรือสร้างหมวดหมู่"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.js:0
+msgid "Select or create a tag"
+msgstr "เลือกหรือสร้างแท็ก"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.js:0
+msgid "Select or create a tag group"
+msgstr "เลือกหรือสร้างกลุ่มแท็ก"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_select_tags.xml:0
+msgid "Select or create tags"
+msgstr "เลือกหรือสร้างแท็ก"
+
+#. module: website_slides
+#. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
-msgid "Select the correct answer below :"
-msgstr "เลือกคำตอบที่ถูกต้องด้านล่าง :"
+msgid "Select the correct answer below:"
+msgstr "เลือกคำตอบที่ถูกต้องด้านล่าง:"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.res_config_settings_view_form
@@ -5065,8 +5233,8 @@ msgstr "ส่ง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__send_email
 msgid "Send Email"
 msgstr "ส่งอีเมล"
 
@@ -5081,9 +5249,14 @@ msgid "Sent to attendees when new course is published"
 msgstr "ส่งถึงผู้เข้าร่วมเมื่อมีการเผยแพร่หลักสูตรใหม่"
 
 #. module: website_slides
-#: model:mail.template,description:website_slides.mail_template_slide_channel_invite
+#: model:mail.template,description:website_slides.mail_template_slide_channel_enroll
 msgid "Sent to attendees when they are added to a course"
 msgstr "ส่งไปยังผู้เข้าร่วมเมื่อมีการเพิ่มลงในหลักสูตร"
+
+#. module: website_slides
+#: model:mail.template,description:website_slides.mail_template_slide_channel_invite
+msgid "Sent to potential attendees to check out the course."
+msgstr "ส่งไปยังผู้มีโอกาสเข้าร่วมเพื่อตรวจสอบหลักสูตร"
 
 #. module: website_slides
 #: model:mail.template,description:website_slides.slide_template_shared
@@ -5103,6 +5276,7 @@ msgstr "ชื่อ Seo"
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_tag_group__sequence
 #: model:ir.model.fields,field_description:website_slides.field_slide_question__sequence
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__sequence
+#: model:ir.model.fields,field_description:website_slides.field_slide_slide_resource__sequence
 msgid "Sequence"
 msgstr "ลำดับ"
 
@@ -5113,6 +5287,7 @@ msgid "Settings"
 msgstr "การตั้งค่า"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_fullscreen
 msgid "Share"
 msgstr "แชร์"
@@ -5124,9 +5299,8 @@ msgstr "แชร์ช่อง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_link
-#, python-format
 msgid "Share Link"
 msgstr "แชร์ลิงก์"
 
@@ -5136,17 +5310,9 @@ msgid "Share Template"
 msgstr "แชร์เทมเพลต"
 
 #. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_fullscreen_player.js:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_modal_header
-#, python-format
 msgid "Share This Content"
 msgstr "แชร์เนื้อหานี้"
-
-#. module: website_slides
-#: model_terms:ir.ui.view,arch_db:website_slides.course_sidebar
-msgid "Share This Course"
-msgstr "แชร์หลักสูตรนี้"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__website_share_url
@@ -5155,69 +5321,68 @@ msgstr "แชร์ URL"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
-#, python-format
 msgid "Share by Email"
 msgstr "แชร์ทางอีเมล"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_social
-#, python-format
 msgid "Share on Facebook"
 msgstr "แชร์บน Facebook"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_social
-#, python-format
 msgid "Share on LinkedIn"
 msgstr "แชร์บน LinkedIn"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_social
-#, python-format
 msgid "Share on Pinterest"
 msgstr "แบ่งปันบน Pinterest"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_modal_body
-#, python-format
 msgid "Share on Social Media"
 msgstr "แชร์บนโซเชียลมีเดีย"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_share_social
-#, python-format
-msgid "Share on Twitter"
-msgstr "แชร์บน Twitter"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#: model_terms:ir.ui.view,arch_db:website_slides.slide_share_social
-#, python-format
 msgid "Share on Whatsapp"
 msgstr "แชร์บน Whatsapp"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_share_social
+msgid "Share on X"
+msgstr "แชร์บน X"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
+msgid "Share this Content"
+msgstr "แชร์เนื้อหานี้"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
+msgid "Share this Course"
+msgstr "แชร์หลักสูตรนี้"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
 msgid "Sharing is caring!"
 msgstr "การแชร์คือการใส่ใจ!"
 
@@ -5232,23 +5397,38 @@ msgid "Short Description"
 msgstr "คำอธิบายสั้น ๆ "
 
 #. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel__visibility
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__channel_visibility
+#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__channel_visibility
+msgid "Show Course To"
+msgstr "แสดงหลักสูตรถึง"
+
+#. module: website_slides
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_0_4
-msgid "Show your newly mastered knowledge !"
-msgstr "แสดงความรู้ที่เชี่ยวชาญใหม่ของคุณ !"
+msgid "Show your newly mastered knowledge!"
+msgstr "แสดงความรู้ใหม่ของคุณ!"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
-msgid "Sign Up !"
-msgstr "ลงชื่อเข้าใช้ !"
+msgid "Sign Up!"
+msgstr "ลงทะเบียน!"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Sign in and join the course to verify your answers!"
 msgstr "ลงชื่อเข้าใช้และเข้าร่วมหลักสูตรเพื่อยืนยันคำตอบของคุณ!"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_main
+msgid "Sign up"
+msgstr "ลงชื่อ"
+
+#. module: website_slides
+#: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__visibility__connected
+msgid "Signed In"
+msgstr "ลงชื่อเข้าใช้แล้ว"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.courses_home
@@ -5268,6 +5448,11 @@ msgstr "สไลด์"
 #: model:ir.model,name:website_slides.model_slide_slide_partner
 msgid "Slide / Partner decorated m2m"
 msgstr "สไลด์ / พาร์ทเนอร์ตกแต่ง m2m"
+
+#. module: website_slides
+#: model:ir.model.fields,field_description:website_slides.field_slide_slide__slide_icon_class
+msgid "Slide Icon fa-class"
+msgstr "ไอคอนสไลด์ fa-class"
 
 #. module: website_slides
 #: model:ir.model,name:website_slides.model_slide_answer
@@ -5290,22 +5475,15 @@ msgid "Slide User Data"
 msgstr "ข้อมูลผู้ใช้สไลด์"
 
 #. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_invite__channel_id
-msgid "Slide channel"
-msgstr "ช่องสไลด์"
-
-#. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/website_slides_fullscreen.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.embed_slide
-#, python-format
 msgid "Slide image"
 msgstr "ภาพสไลด์"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid ""
 "Slide with questions must be marked as done when submitting all good answers"
 " "
@@ -5313,6 +5491,8 @@ msgstr ""
 "สไลด์ที่มีคำถามต้องทำเครื่องหมายว่าเสร็จสิ้นเมื่อส่งคำตอบที่ดีทั้งหมดแล้ว"
 
 #. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/xml/website_slides_fullscreen.xml:0
 #: model:ir.model,name:website_slides.model_slide_slide
 msgid "Slides"
 msgstr "สไลด์"
@@ -5349,9 +5529,15 @@ msgid "Start Course"
 msgstr "เริ่มคอร์ส"
 
 #. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/slide_share_dialog.xml:0
+msgid "Start at Page"
+msgstr "เริ่มต้นที่หน้า"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_join
-msgid "Start Course Channel"
-msgstr "เริ่มช่องหลักสูตร"
+msgid "Start this Course"
+msgstr "เริ่มหลักสูตรนี้"
 
 #. module: website_slides
 #: model_terms:slide.slide,html_content:website_slides.slide_slide_demo_1_4
@@ -5364,6 +5550,12 @@ msgstr "เริ่มที่ลูกค้า ค้นหาสิ่ง�
 #: model_terms:ir.ui.view,arch_db:website_slides.courses_home
 msgid "Start your online course today!"
 msgstr "เริ่มหลักสูตรออนไลน์ของคุณวันนี้!"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_search
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
+msgid "Status"
+msgstr "สถานะ"
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_channel__activity_state
@@ -5390,8 +5582,7 @@ msgstr "หัวเรื่อง..."
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.js:0
 msgid "Subscribe"
 msgstr "ติดตาม"
 
@@ -5427,37 +5618,21 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "Succeed and gain karma"
 msgstr "สำเร็จและ ตะแนน karma เพิ่ม"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_tag_add.js:0
-#: code:addons/website_slides/static/src/xml/website_slides_channel_tag.xml:0
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_tag_form
-#, python-format
 msgid "Tag"
 msgstr "แท็ก"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_channel_tag.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/course_tag_add_dialog/course_tag_add_dialog.xml:0
 msgid "Tag Group"
 msgstr "แท็กกลุ่ม"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_tag_add.js:0
-#, python-format
-msgid "Tag Group (required for new tags)"
-msgstr "แท็กกลุ่ม (จำเป็นสำหรับแท็กใหม่)"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_tag_group_view_form
@@ -5477,16 +5652,15 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__tag_ids
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel_tag_group__tag_ids
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__tag_ids
 #: model:slide.channel.tag.group,name:website_slides.slide_channel_tag_group_data_other
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_form_add
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_search
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_tag_tree
-#, python-format
 msgid "Tags"
 msgstr "แท็ก"
 
@@ -5529,20 +5703,18 @@ msgstr "ทดสอบความรู้ของคุณ"
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_slide_demo_5_3
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_5_3
-msgid "Test your knowledge !"
-msgstr "ทดสอบความรู้ของคุณ !"
+msgid "Test your knowledge!"
+msgstr "ทดสอบความรู้ของคุณ!"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "Test your students with small Quizzes"
 msgstr "ทดสอบนักเรียนของคุณด้วยควิซเล็ก ๆ "
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "The <b>Duration</b> of the lesson is based on the number of pages of your "
 "document. You can change this number if your attendees will need more time "
@@ -5554,7 +5726,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "The <b>Title</b> of your lesson is autocompleted but you can change it if "
 "you want.</br>A <b>Preview</b> of your file is available on the right side "
@@ -5565,10 +5736,17 @@ msgstr ""
 "<b>ตัวอย่าง</b>ของไฟล์ของคุณจะอยู่ทางด้านขวาของหน้าจอ"
 
 #. module: website_slides
+#: model:ir.model.constraint,message:website_slides.constraint_slide_channel_check_enroll
+msgid ""
+"The Enroll Policy should be set to 'On Invitation' when visibility is set to"
+" 'Course Attendees'"
+msgstr ""
+"นโยบายการลงทะเบียนควรตั้งค่าเป็น 'ตามคำเชิญ' เมื่อตั้งค่าการมองเห็นเป็น "
+"'ผู้เข้าร่วมหลักสูตร'"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "The Google Drive link can be obtained by using the 'share' button in the "
 "Google interface."
@@ -5577,8 +5755,7 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "The Google Drive link to use here can be obtained by clicking the \"Share\" "
 "button in the Google interface."
@@ -5592,6 +5769,12 @@ msgid ""
 "The completion of a channel is a percentage and should be between 0% and "
 "100."
 msgstr "ความสมบูรณ์ของช่องเป็นเปอร์เซ็นต์และควรอยู่ระหว่าง 0% ถึง 100"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "The contact associated with this invitation does not seem to be valid."
+msgstr "ดูเหมือนว่าผู้ติดต่อที่เกี่ยวข้องกับคำเชิญนี้ไม่ถูกต้อง"
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_slide__is_preview
@@ -5615,17 +5798,6 @@ msgid ""
 msgstr "คำอธิบายที่แสดงอยู่ด้านบนของหน้าคอร์ส ข้างใต้ชื่อคอร์ส"
 
 #. module: website_slides
-#. odoo-python
-#: code:addons/website_slides/wizard/slide_channel_invite.py:0
-#, python-format
-msgid ""
-"The following recipients have no user account: %s. You should create user "
-"accounts for them or allow external sign up in configuration."
-msgstr ""
-"ผู้รับต่อไปนี้ไม่มีบัญชีผู้ใช้: "
-"%sคุณควรสร้างบัญชีผู้ใช้สำหรับพวกเขาหรืออนุญาตให้ลงชื่อเข้าใช้งานจากภายนอกในการกำหนดค่า"
-
-#. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_channel__website_url
 #: model:ir.model.fields,help:website_slides.field_slide_channel_tag_group__website_url
 #: model:ir.model.fields,help:website_slides.field_slide_slide__website_url
@@ -5644,14 +5816,13 @@ msgstr "สไลด์สามารถทำเครื่องหมาย
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
-"The video link to input here can be obtained by using the 'Share link' "
-"button in the Vimeo interface."
+"The video link to input here can be obtained by using the 'share' button in "
+"the Vimeo interface."
 msgstr ""
-"สามารถรับลิงก์วิดีโอสำหรับป้อนข้อมูลที่นี่ได้โดยใช้ปุ่ม 'แชร์ลิงก์' "
-"ในอินเทอร์เฟซ Vimeo"
+"สามารถรับลิงก์วิดีโอสำหรับป้อนข้อมูลที่นี่ได้โดยใช้ปุ่ม 'แชร์' ในอินเทอร์เฟซ"
+" Vimeo"
 
 #. module: website_slides
 #: model:ir.model.constraint,message:website_slides.constraint_slide_slide_partner_check_vote
@@ -5660,8 +5831,7 @@ msgstr "คะแนนเสียงจะต้องเป็น 1, 0 หร
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "Then, go into the file permissions and set it as \"Anyone with the link\"."
 msgstr "จากนั้นไปที่การอนุญาตของไฟล์และตั้งค่าเป็น \"ใครก็ตามที่มีลิงก์\""
 
@@ -5686,7 +5856,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
-#, python-format
 msgid "There was an error validating this quiz."
 msgstr "เกิดข้อผิดพลาดในการตรวจสอบควิซนี้"
 
@@ -5706,73 +5875,109 @@ msgid "This comment will be displayed to the user if they select this answer"
 msgstr "ความคิดเห็นนี้จะแสดงต่อผู้ใช้หากพวกเขาเลือกคำตอบนี้"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "This course does not exist."
+msgstr "ไม่มีหลักสูตรนี้"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_invite_view_form
+msgid ""
+"This course is not published. Attendees may not be able to access its "
+"contents."
+msgstr ""
+"หลักสูตรนี้ไม่ได้รับการเผยแพร่ ผู้เข้าร่วมอาจไม่สามารถเข้าถึงเนื้อหาได้"
+
+#. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "This course is private."
 msgstr "คอร์สนี้เป็นคอร์สส่วนตัว"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "This identification link does not seem to be valid."
+msgstr "ดูเหมือนว่าลิงก์ระบุตัวตนนี้จะไม่ถูกต้อง"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "This invitation link has an invalid hash."
+msgstr "ลิงก์คำเชิญนี้มีแฮชที่ไม่ถูกต้อง"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "This invitation link has expired."
+msgstr "ลิงก์คำเชิญนี้หมดอายุแล้ว"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "This invitation link is not for this contact."
+msgstr "ลิงก์คำเชิญนี้ไม่ใช่สำหรับผู้ติดต่อรายนี้"
+
+#. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "This is the correct answer"
 msgstr "นี่คือคำตอบที่ถูกต้อง"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "This is the correct answer, congratulations"
 msgstr "นี่คือคำตอบที่ถูกต้อง ยินดีด้วย"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_question.py:0
+msgid ""
+"This question must have at least one correct answer and one incorrect "
+"answer."
+msgstr "คำถามนี้ต้องมีคำตอบที่ถูกและคำตอบที่ผิดอย่างน้อยหนึ่งคำตอบ"
+
+#. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
-#, python-format
 msgid "This quiz is already done. Retaking it is not possible."
 msgstr "แบบทดสอบนี้ได้ทำไปแล้ว ไม่สามารถนำกลับมาใช้ใหม่ได้"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "This slide can not be marked as completed."
 msgstr "สไลด์นี้ไม่สามารถทำเครื่องหมายว่าเสร็จสมบูรณ์ได้"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "This slide can not be marked as uncompleted."
 msgstr "สไลด์นี้ไม่สามารถทำเครื่องหมายว่ายังไม่เสร็จสมบูรณ์"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "This video already exists in this channel on the following content: %s"
-msgstr "วิดีโอนี้มีอยู่แล้วในช่องนี้ในเนื้อหาต่อไปนี้: %s"
+msgstr "วิดีโอนี้มีอยู่แล้วในช่องนี้ ตามเนื้อหาต่อไปนี้: %s"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "Through Google Drive, we support most common types of documents.\n"
-"                                        Including regular documents (Google Doc, .docx), Sheets (Google Sheet, .xlsx), PowerPoints, ..."
+"            Including regular documents (Google Doc, .docx), Sheets (Google Sheet, .xlsx), PowerPoints, ..."
 msgstr ""
-"เราสนับสนุนเอกสารประเภททั่วไป ส่วนใหญ่ผ่าน Google Drive\n"
-"                                        รวมถึงเอกสารทั่วไป (Google Doc, .docx), แผ่นงาน (Google Sheet, .xlsx), PowerPoints, ..."
+"เรารองรับเอกสารประเภททั่วไปส่วนใหญ่ผ่าน Google Drive\n"
+"            รวมถึงเอกสารทั่วไป (Google Doc, .docx), ชีต (Google Sheet, .xlsx), PowerPoints, ..."
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__name
-#, python-format
 msgid "Title"
-msgstr "ชื่อเรื่อง"
+msgstr "คำนำหน้าชื่อ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_cards
@@ -5834,19 +6039,14 @@ msgid "Total Views"
 msgstr "จำนวนยอดเข้าชมทั้งหมด"
 
 #. module: website_slides
+#: model:ir.model,name:website_slides.model_gamification_karma_tracking
+msgid "Track Karma Changes"
+msgstr "ติดตามความเปลี่ยนแปลงของ Karma"
+
+#. module: website_slides
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_channel__channel_type__training
 msgid "Training"
 msgstr "การอบรม"
-
-#. module: website_slides
-#: model:slide.slide,name:website_slides.slide_slide_demo_1_0
-msgid "Tree Infographic"
-msgstr "อินโฟกราฟิกต้นไม้"
-
-#. module: website_slides
-#: model:slide.slide,name:website_slides.slide_slide_demo_2_2
-msgid "Tree planting in hanging bottles on wall"
-msgstr "ปลูกต้นไม้ในขวดแขวนบนผนัง"
 
 #. module: website_slides
 #: model:slide.slide,name:website_slides.slide_category_demo_2_0
@@ -5857,6 +6057,12 @@ msgstr "ต้นไม้"
 #: model:slide.channel,name:website_slides.slide_channel_demo_2_gard2
 msgid "Trees, Wood and Gardens"
 msgstr "ต้นไม้ ไม้ และสวน"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
+msgid "Triumphant hero"
+msgstr "ฮีโร่ผู้มีชัยชนะ"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_channel_form
@@ -5877,16 +6083,18 @@ msgstr "URL ของไฟล์ Google Drive หรือ URL ของวิ�
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/wizard/slide_channel_invite.py:0
-#, python-format
 msgid "Unable to post message, please configure the sender's email address."
 msgstr "ไม่สามารถโพสต์ข้อความ โปรดกำหนดค่าที่อยู่อีเมลของผู้ส่ง"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_partner_view_tree
+msgid "Unarchive"
+msgstr "ยกเลิกการเก็บถาวร"
+
+#. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#: code:addons/website_slides/models/slide_channel.py:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_nav
-#, python-format
 msgid "Uncategorized"
 msgstr "ไม่ถูกจัดหมวด"
 
@@ -5898,7 +6106,6 @@ msgstr "เครื่องมือที่น่าจดจำ"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_embed.py:0
-#, python-format
 msgid "Unknown Website"
 msgstr "เว็บไซต์ที่ไม่รู้จัก"
 
@@ -5906,30 +6113,14 @@ msgstr "เว็บไซต์ที่ไม่รู้จัก"
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_join.js:0
 #: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
 msgid "Unknown error"
 msgstr "ข้อผิดพลาดที่ไม่รู้จัก"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_enroll_email.js:0
-#, python-format
 msgid "Unknown error, try again."
 msgstr "ข้อผิดพลาดที่ไม่รู้จัก โปรดลองอีกครั้ง"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
-msgid "Unlisted"
-msgstr "ไม่อยู่ในรายการ"
-
-#. module: website_slides
-#. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
-msgid "Unlisted (paid account)"
-msgstr "ไม่อยู่ในรายการ (บัญชีที่ชำระเงิน)"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_card
@@ -5941,7 +6132,6 @@ msgstr "ยกเลิกการเผยแพร่"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "Update"
 msgstr "อัปเดต"
 
@@ -5952,7 +6142,6 @@ msgstr "อัปเดตผู้เข้าร่วมทั้งหมด
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_slides_cards
-#: model_terms:ir.ui.view,arch_db:website_slides.course_slides_list
 msgid "Upload Document"
 msgstr "อัปโหลดเอกสาร"
 
@@ -5963,10 +6152,8 @@ msgstr "อัปโหลดกลุ่ม"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_source_types.xml:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__source_type__local_file
-#, python-format
 msgid "Upload from Device"
 msgstr "อัxโหลดจากอุปกรณ์"
 
@@ -5977,8 +6164,7 @@ msgstr "อัปโหลดโดย"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "Uploading document ..."
 msgstr "กำลังอัปโหลดเอกสาร ..."
 
@@ -5991,6 +6177,11 @@ msgstr "ใช้แท็กเนื้อหาเพื่อจัดปร
 #: model_terms:ir.actions.act_window,help:website_slides.slide_channel_tag_group_action
 msgid "Use Course Groups to classify and organize your Courses."
 msgstr "ใช้กลุ่มหลักสูตรเพื่อจัดประเภทและจัดระเบียบหลักสูตรของคุณ"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_invite_view_form
+msgid "Use template"
+msgstr "ใช้เทมเพลต"
 
 #. module: website_slides
 #: model:ir.model.fields,help:website_slides.field_slide_channel__tag_ids
@@ -6013,18 +6204,21 @@ msgid "User vote"
 msgstr "โหวตของผู้ใช้"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.slide_question_view_form
+msgid "Validation error"
+msgstr "ข้อผิดพลาดในการตรวจสอบ"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.js:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_category__video
-#, python-format
 msgid "Video"
 msgstr "วิดีโอ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 #: model:ir.model.fields,field_description:website_slides.field_slide_slide__video_url
-#, python-format
 msgid "Video Link"
 msgstr "การเชื่อมโยงวิดีโอ"
 
@@ -6070,7 +6264,7 @@ msgstr "ดูคอร์ส"
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_kanban
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_content_detailed
 msgid "Views"
-msgstr "ยอดเข้าชม"
+msgstr "มุมมอง"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_aside_card
@@ -6078,6 +6272,8 @@ msgid "Views •"
 msgstr "ยอดเข้าชม •"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_slide.py:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__video_source_type__vimeo
 msgid "Vimeo"
 msgstr "Vimeo"
@@ -6086,12 +6282,6 @@ msgstr "Vimeo"
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__slide_type__vimeo_video
 msgid "Vimeo Video"
 msgstr "วิดีโอ Vimeo"
-
-#. module: website_slides
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel__visibility
-#: model:ir.model.fields,field_description:website_slides.field_slide_channel_partner__channel_visibility
-msgid "Visibility"
-msgstr "การมองเห็น"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_slide_channel__website_published
@@ -6120,7 +6310,6 @@ msgstr "โหวต"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
 msgid "Votes and comments are disabled for this course"
 msgstr "การโหวตและความคิดเห็นถูกปิดการใช้งานสำหรับคอร์สนี้"
 
@@ -6132,7 +6321,6 @@ msgstr "รอการตรวจสอบ"
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "Want to test and certify your students?"
 msgstr "ต้องการทดสอบและรับรองนักเรียนของคุณหรือไม่?"
 
@@ -6145,8 +6333,9 @@ msgstr "ดูผู้เชี่ยวชาญเวลาทำงาน"
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_1_4
 msgid ""
 "We had a little chat with Harry Potted, sure he had interesting things to "
-"say !"
-msgstr "เราได้คุยกับ Harry Potted นิดหน่อย มั่นใจว่าเขามีเรื่องน่าสนใจจะพูด !"
+"say!"
+msgstr ""
+"เราได้พูดคุยกับ Harry Potted เล็กน้อย แน่ใจว่าเขามีเรื่องที่น่าสนใจที่จะพูด!"
 
 #. module: website_slides
 #: model:ir.model,name:website_slides.model_website
@@ -6208,7 +6397,6 @@ msgstr "รูป Opengraph บนเว็บไซต์"
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "Welcome on your course's home page. It's still empty for now. Click on "
 "\"<b>New</b>\" to write your first course."
@@ -6218,55 +6406,58 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "What does"
 msgstr "อะไรคือ"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_0_4_question_0
-msgid "What is a strawberry ?"
-msgstr "สตรอเบอรี่คืออะไร ?"
+msgid "What is a strawberry?"
+msgstr "สตรอเบอรี่คืออะไร?"
 
 #. module: website_slides
 #: model:slide.question,question:website_slides.slide_slide_demo_0_4_question_1
-msgid "What is the best tool to dig a hole for your plants ?"
-msgstr "เครื่องมือใดที่ดีที่สุดในการขุดหลุมให้ต้นไม้ของคุณ ?"
+msgid "What is the best tool to dig a hole for your plants?"
+msgstr "เครื่องมือที่ดีที่สุดในการขุดหลุมสำหรับต้นไม้ของคุณคืออะไร?"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "What types of documents do we support?"
 msgstr "เรารองรับเอกสารประเภทใดบ้าง?"
 
 #. module: website_slides
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_1_4_question_1_2
-msgid "What was the question again ?"
-msgstr "คำถามอะไรนะ ?"
+msgid "What was the question again?"
+msgstr "อ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "When using local files, we only support PDF files."
 msgstr "เมื่อใช้ไฟล์ในเครื่อง เรารองรับเฉพาะไฟล์ PDF เท่านั้น"
+
+#. module: website_slides
+#: model:ir.model.fields,help:website_slides.field_slide_channel_invite__enroll_mode
+msgid ""
+"Whether invited partners will be added as enrolled. Otherwise, they will be "
+"added as invited."
+msgstr ""
+"ไม่ว่าจะเป็นพาร์ทเนอร์ที่ได้รับเชิญจะถูกเพิ่มเป็นการลงทะเบียนหรือไม่ "
+"พวกเขาจะถูกเพิ่มตามที่ได้รับเชิญ"
 
 #. module: website_slides
 #: model_terms:slide.slide,description:website_slides.slide_slide_demo_4_1
 msgid ""
 "Which wood type is best for my solid wood furniture? That's the question we "
-"help you answer in this video !"
+"help you answer in this video!"
 msgstr ""
-"ไม้ชนิดใดที่เหมาะกับกสรทำเฟอร์นิเจอร์ไม้เนื้อแข็งของฉันมากที่สุด? "
-"นั่นคือคำถามที่เราช่วยคุณตอบในวิดีโอนี้ !"
+"ไม้ชนิดใดที่เหมาะกับเฟอร์นิเจอร์ไม้เนื้อแข็งของฉันมากที่สุด "
+"นั่นคือคำถามที่เราช่วยคุณตอบในวิดีโอนี้!"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "With Quizzes you can keep your students focused and motivated by answering "
 "some questions and gaining some karma points"
@@ -6326,11 +6517,8 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "XP"
 msgstr "XP"
 
@@ -6343,14 +6531,12 @@ msgstr "XP"
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_2_0_question_0_0
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_2_0_question_1_0
 #: model:slide.answer,text_value:website_slides.slide_slide_demo_5_3_question_0_0
-#, python-format
 msgid "Yes"
 msgstr "ใช่"
 
 #. module: website_slides
 #. odoo-python
-#: code:addons/website_slides/wizard/slide_channel_invite.py:0
-#, python-format
+#: code:addons/website_slides/models/slide_channel.py:0
 msgid ""
 "You are not allowed to add members to this course. Please contact the course"
 " responsible or an administrator."
@@ -6361,7 +6547,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "You can add <b>comments</b> on answers. This will be visible with the "
 "results if the user select this answer."
@@ -6376,9 +6561,7 @@ msgstr "คุณสามารถเพิ่มคำถามในแบบ
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "You can either upload a file from your computer or insert a Google Drive "
 "link."
@@ -6386,29 +6569,25 @@ msgstr "คุณสามารถอัปโหลดไฟล์จากค
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_upload.js:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.js:0
 msgid "You can not upload password protected file."
 msgstr "คุณไม่สามารถอัปโหลดไฟล์ที่มีการป้องกันด้วยรหัสผ่าน"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "You cannot add tags to this course."
 msgstr "คุณไม่สามารถเพิ่มแท็กในคอร์สนี้"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid "You cannot mark a slide as completed if you are not among its members."
 msgstr "คุณไม่สามารถทำเครื่องหมายสไลด์ว่าเสร็จสิ้นหากคุณไม่ได้เป็นสมาชิก"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "You cannot mark a slide as uncompleted if you are not among its members."
 msgstr ""
@@ -6418,14 +6597,12 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid "You cannot mark a slide as viewed if you are not among its members."
 msgstr "คุณไม่สามารถทำเครื่องหมายว่าดูสไลด์แล้ว หากคุณไม่ได้เป็นสมาชิก"
 
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "You cannot mark a slide quiz as completed if you are not among its members "
 "or it is unpublished."
@@ -6436,7 +6613,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "You cannot mark a slide quiz as not completed if you are not among its "
 "members or it is unpublished."
@@ -6446,54 +6622,63 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/controllers/main.py:0
-#, python-format
 msgid "You cannot upload on this channel."
 msgstr "คุณไม่สามารถอัปโหลดในช่องนี้"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
 msgid "You did it!"
 msgstr "คุณทำได้!"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/controllers/main.py:0
+msgid "You do not have permission to access this course."
+msgstr "คุณไม่ได้รับอนุญาตให้เข้าถึงหลักสูตรนี้"
+
+#. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
 msgid "You don't have access to this lesson"
 msgstr "คุณไม่สามารถเข้าถึงบทเรียนนี้"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
 msgid "You don't have enough karma to vote"
 msgstr "คุณไม่มีคะแนน Karma มากพอที่จะโหวต"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_quiz_finish_dialog/slide_quiz_finish_dialog.xml:0
 msgid "You gained"
 msgstr "คุณได้รับ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_join.js:0
-#, python-format
 msgid "You have already joined this channel"
 msgstr "คุณได้เข้าร่วมช่องนี้แล้ว"
 
 #. module: website_slides
 #: model:mail.template,subject:website_slides.mail_template_slide_channel_invite
+msgid "You have been invited to check out {{ object.channel_id.name }}"
+msgstr "คุณได้รับเชิญให้ลองดู {{ object.channel_id.name }}"
+
+#. module: website_slides
+#: model:mail.template,subject:website_slides.mail_template_slide_channel_enroll
 msgid "You have been invited to join {{ object.channel_id.name }}"
 msgstr "คุณได้รับเชิญให้เข้าร่วม {{ object.channel_id.name }}"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_main
+msgid "You have been invited to this course."
+msgstr "คุณได้รับเชิญให้เข้าร่วมหลักสูตรนี้"
+
+#. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_channel.py:0
-#, python-format
 msgid "You have to sign in before"
 msgstr "คุณต้องลงชื่อเข้าใช้ก่อน"
 
@@ -6506,14 +6691,12 @@ msgstr "ตอนนี้คุณสามารถเข้าร่วมก
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_course_quiz.js:0
-#, python-format
 msgid "You must be logged to submit the quiz."
 msgstr "คุณต้องเข้าสู่ระบบเพื่อส่งควิซ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/slides_slide_like.js:0
-#, python-format
 msgid "You must be member of this course to vote"
 msgstr "คุณต้องเป็นสมาชิกของคอร์สนี้จึงจะลงคะแนนได้"
 
@@ -6533,6 +6716,8 @@ msgid "You're enrolled"
 msgstr "คุณลงทะเบียนแล้ว"
 
 #. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_slide.py:0
 #: model:ir.model.fields.selection,name:website_slides.selection__slide_slide__video_source_type__youtube
 msgid "YouTube"
 msgstr "YouTube"
@@ -6570,7 +6755,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "Your file could not be found on Google Drive, please check the link and/or "
 "privacy settings"
@@ -6581,7 +6765,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/js/tours/slides_tour.js:0
-#, python-format
 msgid ""
 "Your first section is created, now it's time to add lessons to your course. "
 "Click on <b>Add Content</b> to upload a document, create an article or link "
@@ -6593,7 +6776,6 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "Your video could not be found on Vimeo, please check the link and/or privacy"
 " settings"
@@ -6603,14 +6785,18 @@ msgstr ""
 #. module: website_slides
 #. odoo-python
 #: code:addons/website_slides/models/slide_slide.py:0
-#: code:addons/website_slides/models/slide_slide.py:0
-#, python-format
 msgid ""
 "Your video could not be found on YouTube, please check the link and/or "
 "privacy settings"
 msgstr ""
 "ไม่พบวิดีโอของคุณบน YouTube "
 "โปรดตรวจสอบลิงก์และ/หรือการตั้งค่าความเป็นส่วนตัว"
+
+#. module: website_slides
+#. odoo-python
+#: code:addons/website_slides/models/slide_channel.py:0
+msgid "a course"
+msgstr "หลักสูตร"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.achievement_card
@@ -6624,9 +6810,13 @@ msgid "and join this Community"
 msgstr "และเข้าร่วมคอมมูนิตี้นี้"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "anyway"
+msgstr "อย่างไรก็ตาม"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog_select.xml:0
 msgid "app."
 msgstr "แอป"
 
@@ -6637,25 +6827,43 @@ msgstr "เกล็ดขนมปัง"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
-#, python-format
 msgid "by email."
 msgstr "โดยอีเมล"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
+msgid "course"
+msgstr "หลักสูตร"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "courses"
+msgstr "หลักสูตร"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
+msgid "create an account"
+msgstr "สร้างบัญชี"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "direct access"
+msgstr "การเข้าถึงโดยตรง"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_source_types.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_slide_form
-#, python-format
 msgid "e.g \"https://drive.google.com/file/...\""
 msgstr "เช่น \"https://drive.google.com/file/...\""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_source_types.xml:0
 msgid "e.g \"https://www.youtube.com/watch?v=ebBez6bcSEc\""
 msgstr "เช่น \"https://www.youtube.com/watch?v=ebBez6bcSEc\""
 
@@ -6667,12 +6875,11 @@ msgstr "เช่น \"www.youtube.com/watch?v=ebBez6bcSEc\""
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.view_slide_tag_tree
 msgid "e.g 'HowTo'"
-msgstr "เช่น 'HowTo'"
+msgstr "เช่น 'วิธีการ'"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_category.xml:0
 msgid "e.g. \"15\""
 msgstr "เช่น \"15\""
 
@@ -6683,17 +6890,21 @@ msgstr "เช่น “การใช้งานคอมพิวเตอ�
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/slide_management.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/category_add_dialog/category_add_dialog.xml:0
 msgid "e.g. \"Introduction\""
 msgstr "เช่น \"การแนะนำ\""
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
-#, python-format
 msgid "e.g. \"Which animal cannot fly?\""
 msgstr "เช่น “สัตว์ชนิดใดที่บินไม่ได้?”"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/xml/slide_quiz_create.xml:0
+msgid "e.g. \"{{placeholder || \"another animal\"}}\""
+msgstr "เช่น \"{{placeholder || \"another animal\"}}\""
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_view_form_add
@@ -6717,8 +6928,8 @@ msgstr "เช่น การตั้งค่าคอมพิวเตอ�
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_question_view_form
-msgid "e.g. What powers a computer ?"
-msgstr ""
+msgid "e.g. What powers a computer?"
+msgstr "เช่น อะไรให้พลังงานกับคอมพิวเตอร์?"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_channel_tag_group_view_form
@@ -6729,7 +6940,7 @@ msgstr "เช่น ระดับของคุณ"
 #: model:ir.ui.menu,name:website_slides.website_slides_menu_root
 #: model_terms:ir.ui.view,arch_db:website_slides.res_config_settings_view_form
 msgid "eLearning"
-msgstr "eLearning"
+msgstr "การอบรมออนไลน์"
 
 #. module: website_slides
 #: model:ir.model.fields,field_description:website_slides.field_res_partner__slide_channel_ids
@@ -6744,71 +6955,66 @@ msgstr "ภาพรวมการอบรมออนไลน์"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "for 'Private' videos and similar to"
 msgstr "สำหรับวิดีโอ 'ส่วนตัว' และที่คล้ายกัน"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "for public ones."
 msgstr "สำหรับคนสาธารณะ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
 msgid "friend1@email.com, friend2@email.com"
 msgstr "friend1@email.com, friend2@email.com"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "https://drive.google.com/file/d/ABC/view?usp=sharing"
 msgstr "https://drive.google.com/file/d/ABC/view?usp=sharing"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "https://vimeo.com/558907333/30da9ff3d8"
 msgstr "https://vimeo.com/558907333/30da9ff3d8"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "https://vimeo.com/558907555"
 msgstr "https://vimeo.com/558907555"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "join"
+msgstr "เข้าร่วม"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
+#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
-#, python-format
 msgid "login"
 msgstr "ล็อกอิน"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
-"mean? The Vimeo \"Unlisted\" privacy setting means it is a video which can be viewed only by the users with the link to it.\n"
-"                                    Your video will never come up in the search results nor on your channel."
+"mean? The Vimeo \"Private\" privacy setting means it is a video which can be viewed only by the users with the link to it.\n"
+"                Your video will never come up in the search results nor on your channel."
 msgstr ""
-"หมายถึง? การตั้งค่าความเป็นส่วนตัว \"ไม่แสดง\" ของ Vimeo หมายความว่าเป็นวิดีโอที่ผู้ใช้เท่านั้นที่มีลิงก์สามารถดูได้\n"
-"                                    วิดีโอของคุณจะไม่แสดงในผลการค้นหาหรือในช่องของคุณ"
+"หมายถึง? การตั้งค่าความเป็นส่วนตัว \"ส่วนตัว\" ของ Vimeo หมายความว่าเป็นวิดีโอที่ผู้ใช้เท่านั้นที่มีลิงก์สามารถดูได้\n"
+"                วิดีโอของคุณจะไม่ปรากฏในผลการค้นหาหรือในช่องของคุณ"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid ""
 "means? The YouTube \"unlisted\" means it is a video which can be viewed only"
 " by the users with the link to it. Your video will never come up in the "
@@ -6820,18 +7026,33 @@ msgstr ""
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/js/slides_course_unsubscribe.js:0
-#, python-format
+#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "or"
+msgstr "หรือ"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_unsubscribe_dialog/slide_unsubscribe_dialog.xml:0
 msgid "or Leave the course"
 msgstr "หรือออกจากคอร์ส"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "request"
+msgstr "คำขอ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.course_join
-#, python-format
 msgid "sign in"
 msgstr "ลงชื่อเข้าใช้"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "start"
+msgstr "เริ่ม"
 
 #. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_card
@@ -6849,30 +7070,47 @@ msgid "to be the first to leave a comment."
 msgstr "เป็นคนแรกที่แสดงความคิดเห็น"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_main
+msgid "to browse preview content and enroll."
+msgstr "เพื่อเรียกดูเนื้อหาตัวอย่างและลงทะเบียน"
+
+#. module: website_slides
 #: model_terms:ir.ui.view,arch_db:website_slides.course_join
-msgid "to contact responsible."
+msgid "to contact responsible"
 msgstr "เพื่อติดต่อผู้รับผิดชอบ"
 
 #. module: website_slides
 #. odoo-javascript
 #: code:addons/website_slides/static/src/xml/slide_quiz.xml:0
-#, python-format
 msgid "to enroll."
 msgstr "เพื่อลงทะเบียน"
 
 #. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_share.xml:0
+#: code:addons/website_slides/static/src/xml/slide_course_join.xml:0
+msgid "to join this course"
+msgstr "เพื่อเข้าร่วมหลักสูตรนี้"
+
+#. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "to request access"
+msgstr "เพื่อขอการเข้าถึง"
+
+#. module: website_slides
+#. odoo-javascript
+#: code:addons/website_slides/static/src/js/public/components/slide_share_dialog/email_sharing_input.xml:0
 #: model_terms:ir.ui.view,arch_db:website_slides.slide_social_email
-#, python-format
 msgid "to share this"
 msgstr "เพื่อแชร์"
 
 #. module: website_slides
+#: model_terms:ir.ui.view,arch_db:website_slides.course_join
+msgid "to unlock"
+msgstr "เพื่อปลดล็อก"
+
+#. module: website_slides
 #. odoo-javascript
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#: code:addons/website_slides/static/src/xml/website_slides_upload.xml:0
-#, python-format
+#: code:addons/website_slides/static/src/js/public/components/slide_upload_dialog/slide_upload_dialog.xml:0
 msgid "unlisted"
 msgstr "ไม่อยู่ในรายการ"
 

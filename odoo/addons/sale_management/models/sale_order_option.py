@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -17,7 +16,7 @@ class SaleOrderOption(models.Model):
     product_id = fields.Many2one(
         comodel_name='product.product',
         required=True,
-        domain=[('sale_ok', '=', True)])
+        domain=lambda self: self._product_id_domain())
     line_id = fields.Many2one(
         comodel_name='sale.order.line', ondelete='set null', copy=False)
     sequence = fields.Integer(
@@ -89,8 +88,8 @@ class SaleOrderOption(models.Model):
             new_sol = self.env['sale.order.line'].new(values)
             new_sol._compute_price_unit()
             option.price_unit = new_sol.price_unit
-            # Drop the temporary record from the cache
-            new_sol.invalidate_recordset(flush=False)
+            # Avoid attaching the new line when called on template change
+            new_sol.order_id = False
 
     @api.depends('product_id', 'uom_id', 'quantity')
     def _compute_discount(self):
@@ -102,19 +101,21 @@ class SaleOrderOption(models.Model):
             new_sol = self.env['sale.order.line'].new(values)
             new_sol._compute_discount()
             option.discount = new_sol.discount
-            # Drop the temporary record from the cache
-            new_sol.invalidate_recordset(flush=False)
+            # Avoid attaching the new line when called on template change
+            new_sol.order_id = False
 
     def _get_values_to_add_to_order(self):
         self.ensure_one()
         return {
             'order_id': self.order_id.id,
             'price_unit': self.price_unit,
+            'technical_price_unit': self.price_unit,
             'name': self.name,
             'product_id': self.product_id.id,
             'product_uom_qty': self.quantity,
             'product_uom': self.uom_id.id,
             'discount': self.discount,
+            'sequence': max(self.order_id.order_line.mapped('sequence'), default=0) + 1
         }
 
     @api.depends('line_id', 'order_id.order_line', 'product_id')
@@ -129,6 +130,11 @@ class SaleOrderOption(models.Model):
             return [('line_id', '=', False)]
         return [('line_id', '!=', False)]
 
+    @api.model
+    def _product_id_domain(self):
+        """ Returns the domain of the products that can be added as a sale order option. """
+        return [('sale_ok', '=', True)]
+
     #=== ACTION METHODS ===#
 
     def button_add_to_order(self):
@@ -137,14 +143,12 @@ class SaleOrderOption(models.Model):
     def add_option_to_order(self):
         self.ensure_one()
 
-        sale_order = self.order_id
-
-        if sale_order.state not in ['draft', 'sent']:
+        if not self.order_id._can_be_edited_on_portal():
             raise UserError(_('You cannot add options to a confirmed order.'))
 
         values = self._get_values_to_add_to_order()
         order_line = self.env['sale.order.line'].create(values)
 
         self.write({'line_id': order_line.id})
-        if sale_order:
-            sale_order.add_option_to_order_with_taxcloud()
+
+        return order_line

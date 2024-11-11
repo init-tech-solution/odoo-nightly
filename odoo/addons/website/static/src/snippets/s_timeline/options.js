@@ -1,7 +1,6 @@
-odoo.define('website.s_timeline_options', function (require) {
-'use strict';
+/** @odoo-module **/
 
-const options = require('web_editor.snippets.options');
+import options from "@web_editor/js/editor/snippets.options";
 
 options.registry.Timeline = options.Class.extend({
     displayOverlayOptions: true,
@@ -26,9 +25,11 @@ options.registry.Timeline = options.Class.extend({
      *
      * @see this.selectClass for parameters
      */
-    timelineCard: function (previewMode, widgetValue, params) {
-        const $timelineRow = this.$target.closest('.s_timeline_row');
-        $timelineRow.toggleClass('flex-row-reverse flex-row');
+    timelineCard(previewMode, widgetValue, params) {
+        const timelineRowEl = this.$target[0].closest(".s_timeline_row");
+        const timelineCardEls = timelineRowEl.querySelectorAll(".s_timeline_card");
+        const firstContentEl = timelineRowEl.querySelector(".s_timeline_content");
+        timelineRowEl.append(firstContentEl);
+        timelineCardEls.forEach(card => card.classList.toggle("text-md-end"));
     },
-});
 });

@@ -3,19 +3,15 @@
 # 	* website_sale_stock
 # 
 # Translators:
-# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
-# monchai7 <montchye@gmail.com>, 2022
-# Martin Trigaux, 2022
-# Wichanon Jamwutthipreecha, 2022
-# Rasareeyar Lappiam, 2024
+# Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
-"PO-Revision-Date: 2022-09-22 05:57+0000\n"
-"Last-Translator: Rasareeyar Lappiam, 2024\n"
+"POT-Creation-Date: 2024-10-25 07:50+0000\n"
+"PO-Revision-Date: 2024-09-25 09:42+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,9 +21,13 @@ msgstr ""
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.res_config_settings_view_form
-msgid ""
-"<span attrs=\"{'invisible': [('show_availability', '=', "
-"False)]}\">Units</span>"
+msgid "<span invisible=\"not show_availability\">Units</span>"
+msgstr "<span invisible=\"not show_availability\">หน่วย</span>"
+
+#. module: website_sale_stock
+#. odoo-javascript
+#: code:addons/website_sale_stock/static/src/js/product_card/product_card.js:0
+msgid "All available quantity selected"
 msgstr ""
 
 #. module: website_sale_stock
@@ -51,7 +51,7 @@ msgstr "ทำการขายต่อ"
 #: model:ir.model.fields,field_description:website_sale_stock.field_product_template__allow_out_of_stock_order
 #: model:ir.model.fields,field_description:website_sale_stock.field_res_config_settings__allow_out_of_stock_order
 msgid "Continue selling when out-of-stock"
-msgstr "ขายต่อเมื่อหมดสต๊อก"
+msgstr "ขายต่อเมื่อหมดสต็อก"
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.availability_email_body
@@ -75,7 +75,6 @@ msgstr "การมองเห็นเริ่มต้นสำหรับ
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "Get notified when back in stock"
 msgstr "รับการแจ้งเตือนเมื่อมีสินค้าในสต็อก"
 
@@ -87,14 +86,12 @@ msgstr "วิธีแสดงสินค้าที่มีปริมา
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/controllers/main.py:0
-#, python-format
 msgid "Invalid Email"
 msgstr "อีเมลไม่ถูกต้อง"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "Invalid email"
 msgstr "อีเมลไม่ถูกต้อง"
 
@@ -106,7 +103,6 @@ msgstr "ค่าเริ่มต้นของสินค้าคงคล
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "Only"
 msgstr "เท่านั้น"
 
@@ -118,9 +114,14 @@ msgstr "สั่งเลย"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "Out of Stock"
-msgstr "หมดสต๊อก"
+msgstr "หมดสต็อก"
+
+#. module: website_sale_stock
+#. odoo-javascript
+#: code:addons/website_sale_stock/static/src/js/product/product.xml:0
+msgid "Out of stock"
+msgstr "สินค้าหมด"
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.product_template_form_view_inherit_website_sale_stock
@@ -132,13 +133,12 @@ msgstr "Out-of-Stock"
 #: model:ir.model.fields,field_description:website_sale_stock.field_product_product__out_of_stock_message
 #: model:ir.model.fields,field_description:website_sale_stock.field_product_template__out_of_stock_message
 msgid "Out-of-Stock Message"
-msgstr "ข้อความหมดสต๊อก"
+msgstr "ข้อความหมดสต็อก"
 
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/product_product.py:0
 #: model:ir.model,name:website_sale_stock.model_product_template
-#, python-format
 msgid "Product"
 msgstr "สินค้า"
 
@@ -149,7 +149,6 @@ msgstr "ตัวแปรสินค้า"
 
 #. module: website_sale_stock
 #: model:ir.actions.server,name:website_sale_stock.ir_cron_send_availability_email_ir_actions_server
-#: model:ir.cron,cron_name:website_sale_stock.ir_cron_send_availability_email
 msgid "Product: send email regarding products availability"
 msgstr "สินค้า: ส่งอีเมลเกี่ยวกับความพร้อมของผลิตภัณฑ์"
 
@@ -159,6 +158,12 @@ msgid "Regards,"
 msgstr "ขอแสดงความนับถือ,"
 
 #. module: website_sale_stock
+#. odoo-javascript
+#: code:addons/website_sale_stock/static/src/js/product_card/product_card.xml:0
+msgid "Requested quantity not available"
+msgstr ""
+
+#. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_sale_order
 msgid "Sales Order"
 msgstr "คำสั่งขาย"
@@ -166,7 +171,7 @@ msgstr "คำสั่งขาย"
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "ไลน์คำสั่งขาย"
+msgstr "รายการคำสั่งขาย"
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.product_template_form_view_inherit_website_sale_stock
@@ -191,7 +196,6 @@ msgstr "แสดงจำนวนที่มีอยู่"
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order.py:0
-#, python-format
 msgid ""
 "Some products became unavailable and your cart has been updated. We're sorry"
 " for the inconvenience."
@@ -206,15 +210,19 @@ msgstr "มีสินค้าดังต่อไปนี้"
 
 #. module: website_sale_stock
 #. odoo-python
+#: code:addons/website_sale_stock/models/sale_order.py:0
+msgid "The item has not been added to your cart since it is not available."
+msgstr "ยังไม่ได้เพิ่มสินค้าลงในรถเข็นของคุณ เนื่องจากสินค้าไม่พร้อมจำหน่าย"
+
+#. module: website_sale_stock
+#. odoo-python
 #: code:addons/website_sale_stock/models/product_product.py:0
-#, python-format
 msgid "The product '%(product_name)s' is now available"
 msgstr "สินค้า '%(product_name)s' พร้อมแล้ว"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
-#, python-format
 msgid "This product is out of stock."
 msgstr "สินค้านี้หมดสต็อก"
 
@@ -238,7 +246,6 @@ msgstr "โกดังสินค้า"
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "We'll notify you once the product is back in stock."
 msgstr "เราจะแจ้งให้คุณทราบเมื่อสินค้ากลับมาอยู่ในสต็อก"
 
@@ -256,28 +263,24 @@ msgstr "เว็บไซต์ที่ส่งคำสั่งซื้อ
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "You already added"
 msgstr "คุณได้เพิ่มแล้ว"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "You already added all the available product in your cart."
 msgstr "คุณได้เพิ่มสินค้าที่มีทั้งหมดในรถเข็นของคุณแล้ว"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
-#, python-format
 msgid "You already have %s Units in your cart."
 msgstr "คุณมี %s หน่วย ในตะกร้าสินค้าของคุณแล้ว"
 
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order_line.py:0
-#, python-format
 msgid ""
 "You ask for %(desired_qty)s %(product_name)s but only %(new_qty)s is "
 "available"
@@ -286,31 +289,26 @@ msgstr ""
 #. module: website_sale_stock
 #. odoo-python
 #: code:addons/website_sale_stock/models/sale_order.py:0
-#, python-format
 msgid "You ask for %(desired_qty)s products but only %(new_qty)s is available"
 msgstr "คุณขอสินค้า %(desired_qty)s แต่มีสินค้าเพียง %(new_qty)s เท่านั้น"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
-#: code:addons/website_sale_stock/static/src/js/website_sale_reorder.js:0
-#, python-format
-msgid "You ask for %s Units but only %s are available."
-msgstr "คุณขอ %s หน่วยแต่มีเพียง %s เท่านั้นที่พร้อมใช้งาน"
+msgid "You ask for %(quantity1)s Units but only %(quantity2)s are available."
+msgstr ""
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "in your cart."
 msgstr "ในรถเข็น"
 
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "left in stock."
-msgstr "เหลือในสต๊อก"
+msgstr "เหลืออยู่ในสต็อก"
 
 #. module: website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.product_template_form_view_inherit_website_sale_stock
@@ -321,6 +319,5 @@ msgstr "เฉพาะกรณีด้านล่างเท่านั้
 #. module: website_sale_stock
 #. odoo-javascript
 #: code:addons/website_sale_stock/static/src/xml/website_sale_stock_product_availability.xml:0
-#, python-format
 msgid "youremail@gmail.com"
 msgstr "youremail@gmail.com"

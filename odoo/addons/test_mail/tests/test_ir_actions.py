@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.base.tests.test_ir_actions import TestServerActionsBase
-from odoo.addons.test_mail.tests.common import TestMailCommon
+from odoo.addons.mail.tests.common import MailCommon
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
 
 @tagged('ir_actions')
-class TestServerActionsEmail(TestMailCommon, TestServerActionsBase):
+class TestServerActionsEmail(MailCommon, TestServerActionsBase):
 
     def setUp(self):
         super(TestServerActionsEmail, self).setUp()
@@ -78,6 +78,9 @@ class TestServerActionsEmail(TestMailCommon, TestServerActionsBase):
         with self.assertSinglePostNotifications(
                 [{'partner': self.test_partner, 'type': 'email', 'status': 'ready'}],
                 message_info={'content': 'Hello %s' % self.test_partner.name,
+                              'fields_values': {
+                                'author_id': self.env.user.partner_id,
+                              },
                               'message_type': 'notification',
                               'subtype': 'mail.mt_comment',
                              }
@@ -132,3 +135,45 @@ class TestServerActionsEmail(TestMailCommon, TestServerActionsBase):
         self.assertFalse(run_res, 'ir_actions_server: create next activity action correctly finished should return False')
         self.assertEqual(self.env['mail.activity'].search_count([]), before_count + 1)
         self.assertEqual(self.env['mail.activity'].search_count([('summary', '=', 'TestNew')]), 1)
+
+    @mute_logger('odoo.addons.mail.models.mail_mail', 'odoo.models.unlink')
+    def test_action_send_mail_without_mail_thread(self):
+        """ Check running a server action to send an email with custom layout on a non mail.thread model """
+        no_thread_record = self.env['mail.test.nothread'].create({'name': 'Test NoMailThread', 'customer_id': self.test_partner.id})
+        no_thread_template = self._create_template(
+            'mail.test.nothread',
+            {
+                'email_from': 'someone@example.com',
+                'partner_to': '{{ object.customer_id.id }}',
+                'subject': 'About {{ object.name }}',
+                'body_html': '<p>Hello <t t-out="object.name"/></p>',
+                'email_layout_xmlid': 'mail.mail_notification_layout',
+            }
+        )
+
+        # update action: send an email
+        self.action.write({
+            'mail_post_method': 'email',
+            'state': 'mail_post',
+            'model_id': self.env['ir.model'].search([('model', '=', 'mail.test.nothread')], limit=1).id,
+            'model_name': 'mail.test.nothread',
+            'template_id': no_thread_template.id,
+        })
+
+        with self.mock_mail_gateway(), self.mock_mail_app():
+            action_ctx = {
+                'active_model': 'mail.test.nothread',
+                'active_id': no_thread_record.id,
+            }
+            self.action.with_context(action_ctx).run()
+
+        mail = self.assertMailMail(
+            self.test_partner,
+            None,
+            content='Hello Test NoMailThread',
+            fields_values={
+                'email_from': 'someone@example.com',
+                'subject': 'About Test NoMailThread',
+            }
+        )
+        self.assertIn('Powered by', mail.body_html, 'Body should contain the notification layout')

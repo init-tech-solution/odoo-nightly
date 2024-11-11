@@ -3,9 +3,12 @@
 
 from types import SimpleNamespace
 from unittest.mock import patch
+
+from odoo import SUPERUSER_ID
 from odoo.addons.base.models.res_users import is_selection_groups, get_selection_groups, name_selection_groups
-from odoo.exceptions import UserError
-from odoo.tests.common import TransactionCase, Form, tagged, new_test_user
+from odoo.exceptions import UserError, ValidationError
+from odoo.http import _request_stack
+from odoo.tests import Form, TransactionCase, new_test_user, tagged, HttpCase, users
 from odoo.tools import mute_logger
 
 
@@ -133,7 +136,7 @@ class TestUsers(TransactionCase):
         with self.assertRaises(UserError, msg='Internal users should not be able to deactivate their account'):
             user_internal._deactivate_portal_user()
 
-    @mute_logger('odoo.sql_db')
+    @mute_logger('odoo.sql_db', 'odoo.addons.base.models.res_users_deletion')
     def test_deactivate_portal_users_archive_and_remove(self):
         """Test that if the account can not be removed, it's archived instead
         and sensitive information are removed.
@@ -190,6 +193,20 @@ class TestUsers(TransactionCase):
         self.assertTrue(portal_partner_2.exists(), 'Should have kept the partner')
         self.assertEqual(asked_deletion_2.state, 'fail', 'Should have marked the deletion as failed')
 
+    def test_user_home_action_restriction(self):
+        test_user = new_test_user(self.env, 'hello world')
+
+        # Find an action that contains restricted context ('active_id')
+        restricted_action = self.env['ir.actions.act_window'].search([('context', 'ilike', 'active_id')], limit=1)
+        with self.assertRaises(ValidationError):
+            test_user.action_id = restricted_action.id
+
+        # Find an action without restricted context
+        allowed_action = self.env['ir.actions.act_window'].search(['!', ('context', 'ilike', 'active_id')], limit=1)
+
+        test_user.action_id = allowed_action.id
+        self.assertEqual(test_user.action_id.id, allowed_action.id)
+
     def test_context_get_lang(self):
         self.env['res.lang'].with_context(active_test=False).search([
             ('code', 'in', ['fr_FR', 'es_ES', 'de_DE', 'en_US'])
@@ -209,22 +226,36 @@ class TestUsers(TransactionCase):
         request_patch.start()
 
         self.assertEqual(user.context_get()['lang'], 'fr_FR')
-        self.env.registry.clear_caches()
+        self.env.registry.clear_cache()
         user.lang = False
 
         self.assertEqual(user.context_get()['lang'], 'es_ES')
-        self.env.registry.clear_caches()
+        self.env.registry.clear_cache()
         request_patch.stop()
 
         self.assertEqual(user.context_get()['lang'], 'de_DE')
-        self.env.registry.clear_caches()
+        self.env.registry.clear_cache()
         company.lang = False
 
         self.assertEqual(user.context_get()['lang'], 'en_US')
 
-
 @tagged('post_install', '-at_install')
 class TestUsers2(TransactionCase):
+
+    def test_change_user_login(self):
+        """ Check that partner email is updated when changing user's login """
+
+        User = self.env['res.users']
+        with Form(User, view='base.view_users_form') as UserForm:
+            UserForm.name = "Test User"
+            UserForm.login = "test-user1"
+            self.assertFalse(UserForm.email)
+
+            UserForm.login = "test-user1@mycompany.example.org"
+            self.assertEqual(
+                UserForm.email, "test-user1@mycompany.example.org",
+                "Setting a valid email as login should update the partner's email"
+            )
 
     def test_reified_groups(self):
         """ The groups handler doesn't use the "real" view with pseudo-fields
@@ -293,8 +324,8 @@ class TestUsers2(TransactionCase):
         normalized_values = user._remove_reified_groups({fname: group2.id})
         self.assertEqual(normalized_values['groups_id'], [(4, group2.id)])
 
-    def test_read_group_with_reified_field(self):
-        """ Check that read_group gets rid of reified fields"""
+    def test_read_list_with_reified_field(self):
+        """ Check that read_group and search_read get rid of reified fields"""
         User = self.env['res.users']
         fnames = ['name', 'email', 'login']
 
@@ -305,10 +336,14 @@ class TestUsers2(TransactionCase):
             if fname.startswith(('in_group_', 'sel_groups_'))
         )
 
-        # check that the reified field name has no effect in fields
-        res_with_reified = User.read_group([], fnames + [reified_fname], ['company_id'])
-        res_without_reified = User.read_group([], fnames, ['company_id'])
-        self.assertEqual(res_with_reified, res_without_reified, "Reified fields should be ignored")
+        # check that the reified field name is not aggregable
+        self.assertFalse(User.fields_get([reified_fname], ['aggregator'])[reified_fname].get('aggregator'))
+
+        # check that the reified fields are not considered invalid in search_read
+        # and are ignored
+        res_with_reified = User.search_read([], fnames + [reified_fname])
+        res_without_reified = User.search_read([], fnames)
+        self.assertEqual(res_with_reified, res_without_reified, "Reified fields should be ignored in search_read")
 
         # Verify that the read_group is raising an error if reified field is used as groupby
         with self.assertRaises(ValueError):
@@ -325,20 +360,20 @@ class TestUsers2(TransactionCase):
         user_groups_ids = [str(group_id) for group_id in sorted(user_groups.ids)]
         group_field_name = f"sel_groups_{'_'.join(user_groups_ids)}"
 
-        # <group col="4" attrs="{'invisible': [('sel_groups_1_9_10', '!=', 1)]}" groups="base.group_no_one" class="o_label_nowrap">
+        # <group col="4" invisible="sel_groups_1_9_10 != 1" groups="base.group_no_one" class="o_label_nowrap">
         with self.debug_mode():
             user_form = Form(self.env['res.users'], view='base.view_users_form')
         user_form.name = "Test"
         user_form.login = "Test"
         self.assertFalse(user_form.share)
 
-        setattr(user_form, group_field_name, group_portal.id)
+        user_form[group_field_name] = group_portal.id
         self.assertTrue(user_form.share, 'The groups_id onchange should have been triggered')
 
-        setattr(user_form, group_field_name, group_user.id)
+        user_form[group_field_name] = group_user.id
         self.assertFalse(user_form.share, 'The groups_id onchange should have been triggered')
 
-        setattr(user_form, group_field_name, group_public.id)
+        user_form[group_field_name] = group_public.id
         self.assertTrue(user_form.share, 'The groups_id onchange should have been triggered')
 
 
@@ -449,21 +484,14 @@ class TestUsersGroupWarning(TransactionCase):
         warning should be there since 'Sales: Administrator' is required when
         user is having 'Field Service: Administrator'. When user reverts the
         changes, warning should disappear. """
-        # 97 requests if only base is installed
-        # 412 runbot community
-        # 549 runbot enterprise
-        with self.assertQueryCount(__system__=549), \
-             Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
-            UserForm._values[self.sales_categ_field] = False
-            UserForm._perform_onchange([self.sales_categ_field])
-
+        with Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
+            UserForm[self.sales_categ_field] = False
             self.assertEqual(
                 UserForm.user_group_warning,
                 'Since Test Group User is a/an "Field Service: Administrator", they will at least obtain the right "Sales: Administrator"'
             )
 
-            UserForm._values[self.sales_categ_field] = self.group_sales_administrator.id
-            UserForm._perform_onchange([self.sales_categ_field])
+            UserForm[self.sales_categ_field] = self.group_sales_administrator.id
             self.assertFalse(UserForm.user_group_warning)
 
     def test_user_group_inheritance_warning(self):
@@ -471,21 +499,14 @@ class TestUsersGroupWarning(TransactionCase):
         should be there since 'Sales: Administrator' is required when user is
         having 'Field Service: Administrator'. When user reverts the changes,
         warning should disappear. """
-        # 97 requests if only base is installed
-        # 412 runbot community
-        # 549 runbot enterprise
-        with self.assertQueryCount(__system__=549), \
-             Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
-            UserForm._values[self.sales_categ_field] = self.group_sales_user.id
-            UserForm._perform_onchange([self.sales_categ_field])
-
+        with Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
+            UserForm[self.sales_categ_field] = self.group_sales_user.id
             self.assertEqual(
                 UserForm.user_group_warning,
                 'Since Test Group User is a/an "Field Service: Administrator", they will at least obtain the right "Sales: Administrator"'
             )
 
-            UserForm._values[self.sales_categ_field] = self.group_sales_administrator.id
-            UserForm._perform_onchange([self.sales_categ_field])
+            UserForm[self.sales_categ_field] = self.group_sales_administrator.id
             self.assertFalse(UserForm.user_group_warning)
 
     def test_user_group_inheritance_warning_multi(self):
@@ -495,23 +516,15 @@ class TestUsersGroupWarning(TransactionCase):
         are required when user is havning 'Field Service: Administrator'.
         When user reverts the changes For 'Sales: Administrator', warning
         should disappear for Sales Access."""
-        # 101 requests if only base is installed
-        # 416 runbot community
-        # 553 runbot enterprise
-        with self.assertQueryCount(__system__=553), \
-             Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
-            UserForm._values[self.sales_categ_field] = self.group_sales_user.id
-            UserForm._values[self.project_categ_field] = self.group_project_user.id
-            UserForm._perform_onchange([self.sales_categ_field])
-
+        with Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
+            UserForm[self.sales_categ_field] = self.group_sales_user.id
+            UserForm[self.project_categ_field] = self.group_project_user.id
             self.assertTrue(
                 UserForm.user_group_warning,
                 'Since Test Group User is a/an "Field Service: Administrator", they will at least obtain the right "Sales: Administrator", Project: Administrator"',
             )
 
-            UserForm._values[self.sales_categ_field] = self.group_sales_administrator.id
-            UserForm._perform_onchange([self.sales_categ_field])
-
+            UserForm[self.sales_categ_field] = self.group_sales_administrator.id
             self.assertEqual(
                 UserForm.user_group_warning,
                 'Since Test Group User is a/an "Field Service: Administrator", they will at least obtain the right "Project: Administrator"'
@@ -523,33 +536,71 @@ class TestUsersGroupWarning(TransactionCase):
         'Timesheets: User: all timesheets' is at least required when user is
         having 'Project: Administrator'. When user reverts the changes For
         'Timesheets: User: all timesheets', warning should disappear."""
-        # 98 requests if only base is installed
-        # 413 runbot community
-        # 550 runbot enterprise
-        with self.assertQueryCount(__system__=550), \
-             Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
-            UserForm._values[self.timesheets_categ_field] = self.group_timesheets_user_own_timesheet.id
-            UserForm._perform_onchange([self.timesheets_categ_field])
-
+        with Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
+            UserForm[self.timesheets_categ_field] = self.group_timesheets_user_own_timesheet.id
             self.assertEqual(
                 UserForm.user_group_warning,
                 'Since Test Group User is a/an "Project: Administrator", they will at least obtain the right "Timesheets: User: all timesheets"'
             )
 
-            UserForm._values[self.timesheets_categ_field] = self.group_timesheets_user_all_timesheet.id
-            UserForm._perform_onchange([self.timesheets_categ_field])
+            UserForm[self.timesheets_categ_field] = self.group_timesheets_user_all_timesheet.id
             self.assertFalse(UserForm.user_group_warning)
 
     def test_user_group_parent_inheritance_no_warning(self):
         """ User changes 'Field Service: User' from 'Field Service: Administrator'.
         The warning should not be there since 'Field Service: User' is not affected
         by any other groups."""
-        # 83 requests if only base is installed
-        # 397 runbot community
-        # 534 runbot enterprise
-        with self.assertQueryCount(__system__=534), \
-             Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
-            UserForm._values[self.field_service_categ_field] = self.group_field_service_user.id
-            UserForm._perform_onchange([self.field_service_categ_field])
-
+        with Form(self.test_group_user.with_context(show_user_group_warning=True), view='base.view_users_form') as UserForm:
+            UserForm[self.field_service_categ_field] = self.group_field_service_user.id
             self.assertFalse(UserForm.user_group_warning)
+
+
+class TestUsersTweaks(TransactionCase):
+    def test_superuser(self):
+        """ The superuser is inactive and must remain as such. """
+        user = self.env['res.users'].browse(SUPERUSER_ID)
+        self.assertFalse(user.active)
+        with self.assertRaises(UserError):
+            user.write({'active': True})
+
+
+@tagged('post_install', '-at_install')
+class TestUsersIdentitycheck(HttpCase):
+
+    @users('admin')
+    def test_revoke_all_devices(self):
+        """
+        Test to check the revoke all devices by changing the current password as a new password
+        """
+        # Change the password to 8 characters for security reasons
+        self.env.user.password = "admin@odoo"
+
+        # Create a first session that will be used to revoke other sessions
+        session = self.authenticate('admin', 'admin@odoo')
+
+        # Create a second session that will be used to check it has been revoked
+        self.authenticate('admin', 'admin@odoo')
+        # Test the session is valid
+        # Valid session -> not redirected from /web to /web/login
+        self.assertTrue(self.url_open('/web').url.endswith('/web'))
+
+        # Push a fake request to the request stack, because @check_identity requires a request.
+        # Use the first session created above, used to invalid other sessions than itself.
+        _request_stack.push(SimpleNamespace(session=session, env=self.env))
+        self.addCleanup(_request_stack.pop)
+        # The user clicks the button logout from all devices from his profile
+        action = self.env.user.action_revoke_all_devices()
+        # The form of the check identity wizard opens
+        form = Form(self.env[action['res_model']].browse(action['res_id']), action.get('view_id'))
+        # The user fills his password
+        form.password = 'admin@odoo'
+        # The user clicks the button "Log out from all devices", which triggers a save then a call to the button method
+        user_identity_check = form.save()
+        action = user_identity_check.run_check()
+
+        # Test the session is no longer valid
+        # Invalid session -> redirected from /web to /web/login
+        self.assertTrue(self.url_open('/web').url.endswith('/web/login?redirect=%2Fweb%3F'))
+
+        # In addition, the password must have been emptied from the wizard
+        self.assertFalse(user_identity_check.password)

@@ -40,7 +40,7 @@ class User(models.Model):
                     user.im_status = 'leave_online'
                 elif user.im_status == 'away':
                     user.im_status = 'leave_away'
-                else:
+                elif user.im_status == 'offline':
                     user.im_status = 'leave_offline'
 
     @api.model
@@ -51,8 +51,7 @@ class User(models.Model):
         self.env['hr.leave'].flush_model(['user_id', 'state', 'date_from', 'date_to'])
         self.env.cr.execute('''SELECT res_users.%s FROM res_users
                             JOIN hr_leave ON hr_leave.user_id = res_users.id
-                            AND hr_leave.state = 'validate'
-                            AND hr_leave.active = 't'
+                            AND state = 'validate'
                             AND res_users.active = 't'
                             AND date_from <= %%s AND date_to >= %%s''' % field, (now, now))
         return [r[0] for r in self.env.cr.fetchall()]
@@ -66,11 +65,10 @@ class User(models.Model):
         if not any(u.has_group(approver_group) for u in self):
             return
 
-        res = self.env['hr.employee'].read_group(
+        res = self.env['hr.employee']._read_group(
             [('leave_manager_id', 'in', self.ids)],
-            ['leave_manager_id'],
             ['leave_manager_id'])
-        responsibles_to_remove_ids = set(self.ids) - {x['leave_manager_id'][0] for x in res}
+        responsibles_to_remove_ids = set(self.ids) - {leave_manager.id for [leave_manager] in res}
         if responsibles_to_remove_ids:
             self.browse(responsibles_to_remove_ids).write({
                 'groups_id': [Command.unlink(self.env.ref(approver_group).id)],

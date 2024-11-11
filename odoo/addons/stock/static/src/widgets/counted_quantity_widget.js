@@ -1,10 +1,9 @@
 /** @odoo-module **/
 
-import { FloatField } from "@web/views/fields/float/float_field";
+import { FloatField, floatField } from "@web/views/fields/float/float_field";
 import { registry } from "@web/core/registry";
 import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
-
-const { useEffect, useRef } = owl;
+import { useEffect, useRef } from "@odoo/owl";
 
 export class CountedQuantityWidgetField extends FloatField {
     setup() {
@@ -18,9 +17,11 @@ export class CountedQuantityWidgetField extends FloatField {
                 if (inputEl) {
                     inputEl.addEventListener("input", this.onInput.bind(this));
                     inputEl.addEventListener("keydown", this.onKeydown.bind(this));
+                    inputEl.addEventListener("blur", this.onBlur.bind(this));
                     return () => {
                         inputEl.removeEventListener("input", this.onInput.bind(this));
                         inputEl.removeEventListener("keydown", this.onKeydown.bind(this));
+                        inputEl.removeEventListener("blur", this.onBlur.bind(this));
                     };
                 }
             },
@@ -29,19 +30,27 @@ export class CountedQuantityWidgetField extends FloatField {
     }
 
     onInput(ev) {
-        this.props.setDirty(true);
         return this.props.record.update({ inventory_quantity_set: true });
+    }
+
+    updateValue(ev){
+        try {
+           const val = this.parse(ev.target.value);
+            this.props.record.update({ [this.props.name]: val });
+        } catch {} // ignore since it will be handled later
+    }
+
+    onBlur(ev) {
+         if (!this.props.record.data.inventory_quantity_set) {
+           return;
+        }
+        this.updateValue(ev);
     }
 
     onKeydown(ev) {
         const hotkey = getActiveHotkey(ev);
         if (["enter", "tab", "shift+tab"].includes(hotkey)) {
-            try {
-                const val = this.parse(ev.target.value);
-                this.props.update(val);
-            } catch (_e) {
-                // ignore since it will be handled later
-            }
+            this.updateValue(ev);
             this.onInput(ev);
         }
     }
@@ -49,7 +58,7 @@ export class CountedQuantityWidgetField extends FloatField {
     get formattedValue() {
         if (
             this.props.readonly &&
-            !this.props.value & !this.props.record.data.inventory_quantity_set
+            !this.props.record.data[this.props.name] & !this.props.record.data.inventory_quantity_set
         ) {
             return "";
         }
@@ -57,4 +66,9 @@ export class CountedQuantityWidgetField extends FloatField {
     }
 }
 
-registry.category("fields").add("counted_quantity_widget", CountedQuantityWidgetField);
+export const countedQuantityWidgetField = {
+    ...floatField,
+    component: CountedQuantityWidgetField,
+};
+
+registry.category("fields").add("counted_quantity_widget", countedQuantityWidgetField);

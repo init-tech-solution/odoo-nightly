@@ -3,18 +3,18 @@
 # 	* sale_purchase
 # 
 # Translators:
-# hish, 2022
-# Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2022
-# Martin Trigaux, 2022
-# Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2022
+# hish, 2024
+# Martin Trigaux, 2024
+# Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2024
+# Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
-"PO-Revision-Date: 2022-09-22 05:55+0000\n"
-"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2022\n"
+"POT-Creation-Date: 2024-09-26 08:56+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2024\n"
 "Language-Team: Mongolian (https://app.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,11 +33,6 @@ msgstr ""
 "            Гар үйлдэл шаардагдана."
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.product_template_form_view_inherit
-msgid "<span class=\"fa fa-lg fa-building-o fa-fw\" title=\"Service to Purchase\"/>"
-msgstr ""
-
-#. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
 msgid "<span class=\"o_stat_text\">Purchase</span>"
 msgstr ""
@@ -51,7 +46,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_cancel_view_form
 msgid ""
 "<span id=\"display_invoice_alert\" position=\"after\">\n"
-"                <span id=\"display_purchase_orders_alert\" attrs=\"{'invisible': [('display_purchase_orders_alert', '=', False)]}\" groups=\"purchase.group_purchase_user\">\n"
+"                <span id=\"display_purchase_orders_alert\" invisible=\"not display_purchase_orders_alert\" groups=\"purchase.group_purchase_user\">\n"
 "                    There are active purchase orders linked to this sale order that are not cancelled automatically! <br/>\n"
 "                </span>\n"
 "            </span>"
@@ -115,7 +110,6 @@ msgstr "Үүссэн худалдан авалтын мөрийн тоо"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order_line.py:0
-#, python-format
 msgid "Ordered quantity decreased!"
 msgstr "Захиалсан тоо багассан!"
 
@@ -127,7 +121,6 @@ msgstr "Эх баримт: Борлуулалтын мөр"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/product_template.py:0
-#, python-format
 msgid ""
 "Please define the vendor from whom you would like to purchase this service "
 "automatically."
@@ -141,7 +134,6 @@ msgstr "Бараа"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/product_template.py:0
-#, python-format
 msgid "Product that is not a service can not create RFQ."
 msgstr "Үйлчилгээ биш барааны хувьд RfQ үүсэх боломжгүй."
 
@@ -163,7 +155,6 @@ msgstr "Худалдан авалтын захиалгын мөр"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order.py:0
-#, python-format
 msgid "Purchase Order generated from %s"
 msgstr ""
 
@@ -204,7 +195,6 @@ msgstr "Борлуулалтын захиалгын мөр"
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/purchase_order.py:0
-#, python-format
 msgid "Sources Sale Orders %s"
 msgstr ""
 
@@ -217,7 +207,6 @@ msgstr ""
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order_line.py:0
-#, python-format
 msgid ""
 "There is no vendor associated to the product %s. Please define a vendor for "
 "this product."
@@ -228,7 +217,6 @@ msgstr ""
 #. module: sale_purchase
 #. odoo-python
 #: code:addons/sale_purchase/models/sale_order_line.py:0
-#, python-format
 msgid ""
 "You are decreasing the ordered quantity! Do not forget to manually update "
 "the purchase order if needed."

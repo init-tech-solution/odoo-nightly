@@ -1,5 +1,3 @@
-/** @odoo-module */
-
 import { registry } from "@web/core/registry";
 import { SignatureDialog } from "@web/core/signature/signature_dialog";
 import { useService } from "@web/core/utils/hooks";
@@ -8,6 +6,15 @@ import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 import { Component } from "@odoo/owl";
 
 export class SignatureWidget extends Component {
+    static template = "web.SignatureWidget";
+    static props = {
+        ...standardWidgetProps,
+        fullName: { type: String, optional: true },
+        highlight: { type: Boolean, optional: true },
+        string: { type: String },
+        signatureField: { type: String, optional: true },
+    };
+
     setup() {
         this.dialogService = useService("dialog");
         this.orm = useService("orm");
@@ -44,7 +51,7 @@ export class SignatureWidget extends Component {
     }
 
     async uploadSignature({ signatureImage }) {
-        const file = signatureImage[1];
+        const file = signatureImage.split(",")[1];
         const { model, resModel, resId } = this.props.record;
 
         await this.env.services.orm.write(resModel, [resId], {
@@ -55,22 +62,17 @@ export class SignatureWidget extends Component {
     }
 }
 
-SignatureWidget.template = "web.SignatureWidget";
-SignatureWidget.props = {
-    ...standardWidgetProps,
-    fullName: { type: String, optional: true },
-    highlight: { type: Boolean, optional: true },
-    string: { type: String },
-    signatureField: { type: String, optional: true },
-};
-SignatureWidget.extractProps = ({ attrs }) => {
-    const { full_name: fullName, highlight, signature_field, string } = attrs;
-    return {
-        fullName,
-        highlight: !!highlight,
-        string,
-        signatureField: signature_field || "signature",
-    };
+export const signatureWidget = {
+    component: SignatureWidget,
+    extractProps: ({ attrs }) => {
+        const { full_name: fullName, highlight, signature_field, string } = attrs;
+        return {
+            fullName,
+            highlight: !!highlight,
+            string,
+            signatureField: signature_field || "signature",
+        };
+    },
 };
 
-registry.category("view_widgets").add("signature", SignatureWidget);
+registry.category("view_widgets").add("signature", signatureWidget);

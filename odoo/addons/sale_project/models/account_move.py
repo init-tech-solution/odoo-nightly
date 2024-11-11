@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
 
 
-class AccountMoveLine(models.Model):
-    _inherit = 'account.move.line'
+class AccountMove(models.Model):
+    _inherit = "account.move"
 
-    def _compute_analytic_distribution(self):
-        # when a project creates an aml, it adds an analytic account to it. the following filter is to save this
-        # analytic account from being overridden by analytic default rules and lack thereof
-        project_amls = self.filtered(lambda aml: aml.analytic_distribution and any(aml.sale_line_ids.project_id))
-        super(AccountMoveLine, self - project_amls)._compute_analytic_distribution()
+    def _get_action_per_item(self):
+        action = self.env.ref('account.action_move_out_invoice_type').id
+        return {invoice.id: action for invoice in self}

@@ -67,7 +67,7 @@ class AccountMove(models.Model):
             ]
             for code in codes
         )
-        account_ids = self.env["account.account"].search(code_domain).ids
+        account_ids = self.env["account.account"].with_company(company_id).search(code_domain).ids
         code_domain = [("account_id", "in", account_ids)]
         period_domain = expression.OR([balance_domain, pnl_domain])
         domain = expression.AND([code_domain, period_domain, [("company_id", "=", company_id)]])
@@ -112,24 +112,9 @@ class AccountMove(models.Model):
         for args in args_list:
             company_id = args["company_id"] or self.env.company.id
             domain = self._build_spreadsheet_formula_domain(args)
-            # remove this when _search always returns a Query object
-            if expression.is_false(self.env["account.move.line"], domain):
-                results.append({"credit": 0, "debit": 0})
-                continue
             MoveLines = self.env["account.move.line"].with_company(company_id)
-            query = MoveLines._search(domain)
-            query.order = None
-            query_str, params = query.select(
-                "SUM(debit) AS debit", "SUM(credit) AS credit"
-            )
-            self.env.cr.execute(query_str, params)
-            line_values = self.env.cr.dictfetchone()
-            results.append(
-                {
-                    "credit": line_values["credit"] or 0,
-                    "debit": line_values["debit"] or 0,
-                }
-            )
+            [(debit, credit)] = MoveLines._read_group(domain, aggregates=['debit:sum', 'credit:sum'])
+            results.append({'debit': debit or 0, 'credit': credit or 0})
 
         return results
 
@@ -137,11 +122,11 @@ class AccountMove(models.Model):
     def get_account_group(self, account_types):
         data = self._read_group(
             [
+                *self._check_company_domain(self.env.company),
                 ("account_type", "in", account_types),
-                ("company_id", "=", self.env.company.id),
             ],
-            ["code:array_agg"],
-            ["account_type"],
+            ['account_type'],
+            ['code:array_agg'],
         )
-        mapped = {group["account_type"]: group["code"] for group in data}
+        mapped = dict(data)
         return [mapped.get(account_type, []) for account_type in account_types]

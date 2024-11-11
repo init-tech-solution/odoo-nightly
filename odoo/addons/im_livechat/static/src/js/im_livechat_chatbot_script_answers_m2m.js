@@ -1,8 +1,9 @@
-/** @odoo-module **/
-
-
 import { registry } from "@web/core/registry";
-import { Many2ManyTagsField } from "@web/views/fields/many2many_tags/many2many_tags_field";
+import { user } from "@web/core/user";
+import {
+    Many2ManyTagsField,
+    many2ManyTagsField,
+} from "@web/views/fields/many2many_tags/many2many_tags_field";
 
 const fieldRegistry = registry.category("fields");
 
@@ -14,12 +15,17 @@ export class ChatbotScriptTriggeringAnswersMany2Many extends Many2ManyTagsField 
     setup() {
         super.setup();
 
-        if (this.props.record.model.root.data.id) {
-            this.env.services.user.updateContext({
-                force_domain_chatbot_script_id: this.props.record.model.root.data.id
+        if (this.props.record.model.root.resId) {
+            user.updateContext({
+                force_domain_chatbot_script_id: this.props.record.model.root.resId,
             });
         }
     }
+}
+
+export const chatbotScriptTriggeringAnswersMany2Many = {
+    ...many2ManyTagsField,
+    component: ChatbotScriptTriggeringAnswersMany2Many,
 };
 
-fieldRegistry.add("chatbot_triggering_answers_widget", ChatbotScriptTriggeringAnswersMany2Many);
+fieldRegistry.add("chatbot_triggering_answers_widget", chatbotScriptTriggeringAnswersMany2Many);

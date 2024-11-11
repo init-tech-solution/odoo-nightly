@@ -4,9 +4,9 @@
 from ast import literal_eval
 from collections import OrderedDict
 from random import randint, sample
-from werkzeug.exceptions import NotFound, Forbidden
+from werkzeug.exceptions import Forbidden
 
-from odoo import exceptions, http
+from odoo import http
 from odoo.addons.website_event.controllers.main import WebsiteEventController
 from odoo.http import request
 from odoo.osv import expression
@@ -128,9 +128,7 @@ class ExhibitorController(WebsiteEventController):
     @http.route(['''/event/<model("event.event", "[('exhibitor_menu', '=', True)]"):event>/exhibitor/<model("event.sponsor", "[('event_id', '=', event.id)]"):sponsor>'''],
                 type='http', auth="public", website=True, sitemap=True)
     def event_exhibitor(self, event, sponsor, **options):
-        try:
-            sponsor.check_access_rule('read')
-        except exceptions.AccessError:
+        if not sponsor.has_access('read'):
             raise Forbidden()
         sponsor = sponsor.sudo()
 
@@ -200,12 +198,10 @@ class ExhibitorController(WebsiteEventController):
         else:
             sponsor_data['country_name'] = False
             sponsor_data['country_id'] = False
-        if sponsor.sponsor_type_id:
-            sponsor_data['sponsor_type_name'] = sponsor.sponsor_type_id.name
-            sponsor_data['sponsor_type_id'] = sponsor.sponsor_type_id.id
-        else:
-            sponsor_data['sponsor_type_name'] = False
-            sponsor_data['sponsor_type_id'] = False
+        # needs sudo access as public users can't read the model
+        sponsor_type_sudo = sponsor.sponsor_type_id.sudo()
+        sponsor_data['sponsor_type_name'] = sponsor_type_sudo.name
+        sponsor_data['sponsor_type_id'] = sponsor_type_sudo.id
         sponsor_data['event_name'] = sponsor.event_id.name
         sponsor_data['event_is_ongoing'] = sponsor.event_id.is_ongoing
         sponsor_data['event_is_done'] = sponsor.event_id.is_done

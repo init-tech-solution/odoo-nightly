@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form
 from odoo.tests.common import TransactionCase
@@ -35,25 +36,23 @@ class TestBatchPicking(TransactionCase):
 
         cls.productA = cls.env['product.product'].create({
             'name': 'Product A',
-            'type': 'product',
+            'is_storable': True,
             'tracking': 'lot',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
         cls.lots_p_a = cls.env['stock.lot'].create([{
             'name': 'lot_product_a_' + str(i + 1),
             'product_id': cls.productA.id,
-            'company_id': cls.env.company.id,
         } for i in range(4)])
         cls.productB = cls.env['product.product'].create({
             'name': 'Product B',
-            'type': 'product',
+            'is_storable': True,
             'tracking': 'serial',
             'categ_id': cls.env.ref('product.product_category_all').id,
         })
         cls.lots_p_b = cls.env['stock.lot'].create([{
             'name': 'lot_product_a_' + str(i + 1),
             'product_id': cls.productB.id,
-            'company_id': cls.env.company.id,
         } for i in range(10)])
 
         Quant = cls.env['stock.quant']
@@ -67,6 +66,7 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': cls.customer_location.id,
             'picking_type_id': cls.picking_type_out,
             'company_id': cls.env.company.id,
+            'state': 'draft',
         })
 
         cls.env['stock.move'].create({
@@ -94,6 +94,7 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': cls.customer_location.id,
             'picking_type_id': cls.picking_type_out,
             'company_id': cls.env.company.id,
+            'state': 'draft',
         })
 
         cls.env['stock.move'].create({
@@ -111,6 +112,7 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': cls.customer_location.id,
             'picking_type_id': cls.picking_type_out,
             'company_id': cls.env.company.id,
+            'state': 'draft',
         })
 
         cls.env['stock.move'].create({
@@ -128,6 +130,7 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': cls.customer_location.id,
             'picking_type_id': cls.picking_type_internal,
             'company_id': cls.env.company.id,
+            'state': 'draft',
         })
 
         cls.env['stock.move'].create({
@@ -160,7 +163,7 @@ class TestBatchPicking(TransactionCase):
         res_dict = all_lines.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': all_lines.ids}
         self.assertEqual(res_dict.get('res_model'), 'stock.add.to.wave')
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'new'
         wizard_form.user_id = self.user_demo
         wizard_form.save().attach_pickings()
@@ -178,7 +181,7 @@ class TestBatchPicking(TransactionCase):
         action = self.env['ir.actions.actions']._for_xml_id('stock_picking_batch.stock_add_to_wave_action_stock_picking')
         action['context'] = {'active_model': 'stock.picking', 'active_ids': self.all_pickings.ids}
         self.assertEqual(action.get('res_model'), 'stock.add.to.wave')
-        wizard_form = Form(self.env[action['res_model']].with_context(action['context']))
+        wizard_form = Form.from_action(self.env, action)
         wizard_form.mode = 'new'
         wizard = wizard_form.save()
         res = wizard.attach_pickings()
@@ -187,7 +190,7 @@ class TestBatchPicking(TransactionCase):
     def test_add_to_existing_wave_from_lines(self):
         res_dict = self.picking_client_1.move_line_ids.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': self.picking_client_1.move_line_ids.ids}
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'new'
         wizard_form.user_id = self.user_demo
         wizard_form.save().attach_pickings()
@@ -197,7 +200,7 @@ class TestBatchPicking(TransactionCase):
 
         res_dict = self.picking_client_2.move_line_ids.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': self.picking_client_2.move_line_ids.ids}
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'existing'
         wizard_form.wave_id = wave
         wizard_form.save().attach_pickings()
@@ -211,7 +214,7 @@ class TestBatchPicking(TransactionCase):
     def test_add_to_existing_wave_from_pickings(self):
         res_dict = self.picking_client_1.move_line_ids.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': self.picking_client_1.move_line_ids.ids}
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'new'
         wizard_form.user_id = self.user_demo
         action = wizard_form.save().attach_pickings()
@@ -222,7 +225,7 @@ class TestBatchPicking(TransactionCase):
         action = self.env['ir.actions.actions']._for_xml_id('stock_picking_batch.stock_add_to_wave_action_stock_picking')
         action['context'] = {'active_model': 'stock.picking', 'active_ids': self.all_pickings.ids}
         self.assertEqual(action.get('res_model'), 'stock.add.to.wave')
-        wizard_form = Form(self.env[action['res_model']].with_context(action['context']))
+        wizard_form = Form.from_action(self.env, action)
         wizard_form.mode = 'existing'
         wizard_form.wave_id = wave
         wizard = wizard_form.save()
@@ -238,7 +241,7 @@ class TestBatchPicking(TransactionCase):
         res_dict = lines.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': lines.ids}
         self.assertEqual(res_dict.get('res_model'), 'stock.add.to.wave')
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'new'
         wizard_form.save().attach_pickings()
 
@@ -263,7 +266,7 @@ class TestBatchPicking(TransactionCase):
         res_dict = lines.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': lines.ids}
         self.assertEqual(res_dict.get('res_model'), 'stock.add.to.wave')
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'new'
         wizard_form.save().attach_pickings()
 
@@ -289,7 +292,6 @@ class TestBatchPicking(TransactionCase):
         sns = self.env['stock.lot'].create([{
             'name': 'sn-' + str(i),
             'product_id': self.productB.id,
-            'company_id': self.env.company.id
         } for i in range(12)])
 
         for i in range(12):
@@ -312,7 +314,7 @@ class TestBatchPicking(TransactionCase):
         res_dict = lines.action_open_add_to_wave()
         res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': lines.ids}
         self.assertEqual(res_dict.get('res_model'), 'stock.add.to.wave')
-        wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+        wizard_form = Form.from_action(self.env, res_dict)
         wizard_form.mode = 'new'
         wizard_form.save().attach_pickings()
 
@@ -326,7 +328,7 @@ class TestBatchPicking(TransactionCase):
     def test_wave_mutliple_move_lines(self):
         self.productA = self.env['product.product'].create({
             'name': 'Product Test A',
-            'type': 'product',
+            'is_storable': True,
             'categ_id': self.env.ref('product.product_category_all').id,
         })
         picking = self.env['stock.picking'].create({
@@ -334,11 +336,10 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': self.customer_location.id,
             'picking_type_id': self.picking_type_out,
             'company_id': self.env.company.id,
-            'immediate_transfer': True,
         })
         ml1 = self.env['stock.move.line'].create({
             'product_id': self.productA.id,
-            'qty_done': 5,
+            'quantity': 5,
             'product_uom_id': self.productA.uom_id.id,
             'picking_id': picking.id,
             'location_id': self.stock_location.id,
@@ -346,7 +347,7 @@ class TestBatchPicking(TransactionCase):
         })
         self.env['stock.move.line'].create({
             'product_id': self.productA.id,
-            'qty_done': 5,
+            'quantity': 5,
             'product_uom_id': self.productA.uom_id.id,
             'picking_id': picking.id,
             'location_id': self.stock_location.id,
@@ -355,13 +356,12 @@ class TestBatchPicking(TransactionCase):
 
         ml2 = self.env['stock.move.line'].create({
             'product_id': self.productA.id,
-            'qty_done': 5,
+            'quantity': 5,
             'product_uom_id': self.productA.uom_id.id,
             'picking_id': picking.id,
             'location_id': self.stock_location.id,
             'location_dest_id': self.customer_location.id,
         })
-        picking.action_confirm()
 
         ml1._add_to_wave()
         wave = self.env['stock.picking.batch'].search([
@@ -369,15 +369,17 @@ class TestBatchPicking(TransactionCase):
         ])
         self.assertFalse(picking.batch_id)
         self.assertEqual(ml1.picking_id.batch_id.id, wave.id)
+        self.assertEqual(ml1.picking_id.move_ids.quantity, 5)
         self.assertEqual(ml1.picking_id.move_ids.product_uom_qty, 5)
         self.assertEqual(ml2.picking_id.id, picking.id)
-        self.assertEqual(ml2.picking_id.move_ids.product_uom_qty, 10)
+        self.assertEqual(ml2.picking_id.move_ids.quantity, 10)
+        self.assertEqual(ml2.picking_id.move_ids.product_uom_qty, 0)
 
     def test_wave_trigger_errors(self):
         with self.assertRaises(UserError):
             lines = self.picking_client_1.move_line_ids
             res_dict = lines.action_open_add_to_wave()
-            wizard_form = Form(self.env[res_dict['res_model']])
+            wizard_form = Form.from_action(self.env, res_dict)
             wizard_form.mode = 'new'
             wizard = wizard_form.save()
             wizard.attach_pickings()
@@ -388,7 +390,7 @@ class TestBatchPicking(TransactionCase):
             lines = (self.picking_client_1 | self.picking_client_2).move_line_ids
             res_dict = lines.action_open_add_to_wave()
             res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': lines.ids}
-            wizard_form = Form(self.env[res_dict['res_model']].with_context(res_dict['context']))
+            wizard_form = Form.from_action(self.env, res_dict)
             wizard_form.mode = 'new'
             wizard = wizard_form.save()
             wizard.attach_pickings()
@@ -413,6 +415,7 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': self.customer_location.id,
             'picking_type_id': self.picking_type_out,
             'company_id': self.env.company.id,
+            'state': 'draft',
         })
         self.env['stock.move'].create({
             'name': 'Test Wave',
@@ -429,7 +432,8 @@ class TestBatchPicking(TransactionCase):
         self.assertEqual(len(picking_1.move_line_ids), 2)
         move_line_to_wave = picking_1.move_line_ids[0]
         move_line_to_wave._add_to_wave()
-        picking_1.move_line_ids.qty_done = 5
+        picking_1.move_line_ids.quantity = 5
+        picking_1.move_ids.picked = True
         picking_1._action_done()
 
         new_move = self.env['stock.move'].create({
@@ -453,12 +457,12 @@ class TestBatchPicking(TransactionCase):
         warehouse.reception_steps = 'three_steps'
         self.productA = self.env['product.product'].create({
             'name': 'Product Test A',
-            'type': 'product',
+            'is_storable': True,
             'categ_id': self.env.ref('product.product_category_all').id,
         })
         self.productB = self.env['product.product'].create({
             'name': 'Product Test B',
-            'type': 'product',
+            'is_storable': True,
             'categ_id': self.env.ref('product.product_category_all').id,
         })
         picking = self.env['stock.picking'].create({
@@ -466,6 +470,7 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': self.stock_location.id,
             'picking_type_id': self.picking_type_in,
             'company_id': self.env.company.id,
+            'state': 'draft',
         })
         self.env['stock.move'].create({
             'name': self.productA.name,
@@ -486,7 +491,8 @@ class TestBatchPicking(TransactionCase):
             'location_dest_id': warehouse.wh_input_stock_loc_id.id,
         })
         picking.action_confirm()
-        picking.move_ids.move_line_ids.write({'qty_done': 1})
+        picking.move_ids.move_line_ids.write({'quantity': 1})
+        picking.move_ids.picked = True
         res_dict = picking.button_validate()
         self.env[res_dict['res_model']].with_context(res_dict['context']).process()
 
@@ -496,3 +502,146 @@ class TestBatchPicking(TransactionCase):
             ('is_wave', '=', True)
         ])
         self.assertEqual(wave.picking_type_id, move_line.picking_type_id)
+
+    def test_validatation_of_partially_empty_picking(self):
+        """
+            Check that you can validate a wave transfer containing an empty picking,
+            that the picking stays unchanged (except for the 'picked' state of the move)
+            and is removed from the transfer
+        """
+        self.productA.tracking = 'none'
+        self.productB.tracking = 'none'
+        (picking_1, picking_2) = self.env['stock.picking'].create([
+            {
+            'picking_type_id': self.picking_type_in,
+            },
+            {
+            'picking_type_id': self.picking_type_in,
+            },
+        ])
+        self.env['stock.move'].create([
+            {
+            'name': self.productA.name,
+            'product_id': self.productA.id,
+            'product_uom_qty': 2,
+            'product_uom': self.productA.uom_id.id,
+            'picking_id': picking_1.id,
+            'location_id': picking_1.location_id.id,
+            'location_dest_id': picking_1.location_dest_id.id,
+            },
+            {
+            'name': self.productB.name,
+            'product_id': self.productB.id,
+            'product_uom_qty': 3,
+            'product_uom': self.productB.uom_id.id,
+            'picking_id': picking_2.id,
+            'location_id': picking_2.location_id.id,
+            'location_dest_id': picking_2.location_dest_id.id,
+            },
+        ])
+        (picking_1 | picking_2).action_confirm()
+        wave = self.env['stock.picking.batch'].create({
+            'name': 'Wave transfer',
+            'picking_ids': [Command.link(picking_1.id), Command.link(picking_2.id)],
+            'is_wave': True,
+        })
+        wave.move_ids.filtered(lambda m: m.product_id == self.productB).quantity = 0.0
+        wave.move_ids.picked = True
+        wave.action_done()
+        self.assertEqual(wave.state, 'done')
+        self.assertEqual(wave.picking_ids, picking_1)
+        self.assertEqual([picking_1.state, picking_1.move_ids.quantity, picking_1.move_ids.picked], ['done', 2.0, True])
+        self.assertEqual([picking_2.state, picking_2.move_ids.quantity, picking_2.move_ids.picked], ['assigned', 0.0, False])
+
+    def test_add_partially_assigned_move_to_batch(self):
+        """
+            Checks that a picking is linked to the wave transfer in case all of its
+            moves are to be linked with the wave transfer.
+        """
+        picking = self.picking_internal
+        # update a move for the moved qty to be less than the initial demand
+        picking.move_ids[0].quantity = 10.0
+        self.assertRecordValues(picking.move_ids, [{'product_uom_qty': 15.0, 'quantity': 10.0}, {'product_uom_qty': 5.0, 'quantity': 5.0}])
+        lines = picking.move_ids.move_line_ids
+        res_dict = lines.action_open_add_to_wave()
+        res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': lines.ids}
+        wizard_form = Form.from_action(self.env, res_dict)
+        wizard_form.mode = 'new'
+        wizard_form.save().attach_pickings()
+        # check that the picking was added to the wave transfer
+        wave = picking.batch_id.filtered(lambda b: b.is_wave)
+        self.assertTrue(wave)
+        # check that the lines are still linked to the original picking
+        self.assertEqual(lines.move_id.picking_id, picking)
+        # check that no other picking was added to the wave transfer
+        self.assertEqual(wave.move_ids, picking.move_ids)
+
+    def test_dont_add_empty_move_to_batch(self):
+        """
+            Checks that a picking is not linked to the wave transfer in case one
+            of its move is not to be linked with the wave transfer.
+        """
+        picking = self.picking_internal
+        move_1, move_2 = picking.move_ids
+        # update a move for the moved qty to 0
+        move_1.quantity = 0
+        self.assertRecordValues(picking.move_ids, [{'product_uom_qty': 15.0, 'quantity': 0.0}, {'product_uom_qty': 5.0, 'quantity': 5.0}])
+        lines = picking.move_ids.move_line_ids
+        res_dict = lines.action_open_add_to_wave()
+        res_dict['context'] = {'active_model': 'stock.move.line', 'active_ids': lines.ids}
+        wizard_form = Form.from_action(self.env, res_dict)
+        wizard_form.mode = 'new'
+        wizard_form.save().attach_pickings()
+        # check that a new picking was added to the wave transfer
+        new_picking = move_2.picking_id
+        self.assertIsNot(picking, new_picking)
+        wave = new_picking.batch_id.filtered(lambda b: b.is_wave)
+        self.assertTrue(wave)
+        self.assertEqual(wave.move_ids, move_2)
+        # check that the original picking was not added to a wave transfer
+        self.assertFalse(picking.batch_id.filtered(lambda b: b.is_wave))
+        self.assertEqual(picking.move_ids, move_1)
+
+    def test_validate_wave_with_zero_qty_picking(self):
+        """
+            Check that we can validate a wave transfer containing a picking without quantity.
+            In that case, the picking remains unchanged and is removed from the wave
+        """
+        (self.productA | self.productB).tracking = 'none'
+        self.env['stock.quant']._update_available_quantity(self.productA, self.stock_location, 10.0)
+        self.env['stock.quant']._update_available_quantity(self.productB, self.stock_location, 10.0)
+        picking_1, picking_2 = self.env['stock.picking'].create([
+            {'picking_type_id': self.picking_type_out},
+            {'picking_type_id': self.picking_type_out},
+        ])
+        self.env['stock.move'].create([
+            {
+            'name': self.productA.name,
+            'product_id': self.productA.id,
+            'product_uom_qty': 2,
+            'product_uom': self.productA.uom_id.id,
+            'picking_id': picking_1.id,
+            'location_id': picking_1.location_id.id,
+            'location_dest_id': picking_1.location_dest_id.id,
+            },
+            {
+            'name': self.productB.name,
+            'product_id': self.productB.id,
+            'product_uom_qty': 3,
+            'product_uom': self.productB.uom_id.id,
+            'picking_id': picking_2.id,
+            'location_id': picking_2.location_id.id,
+            'location_dest_id': picking_2.location_dest_id.id,
+            },
+        ])
+        (picking_1 | picking_2).action_confirm()
+        wave = self.env['stock.picking.batch'].create({
+            'name': 'Wave transfer',
+            'picking_ids': [Command.link(picking_1.id), Command.link(picking_2.id)],
+        })
+        self.assertEqual((picking_1 | picking_2).mapped('state'), ['assigned', 'assigned'])
+        picking_1.move_ids.quantity = 0.0
+        wave.action_done()
+        self.assertEqual(wave.state, 'done')
+        self.assertRecordValues(picking_1.move_ids, [{'state': 'confirmed', 'quantity': 0.0, 'picked': False}])
+        self.assertRecordValues(picking_2.move_ids, [{'state': 'done', 'quantity': 3.0, 'picked': True}])

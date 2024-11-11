@@ -3,16 +3,16 @@
 # 	* account_edi_proxy_client
 # 
 # Translators:
-# Larissa Manderfeld, 2023
-# Martin Trigaux, 2023
+# Wil Odoo, 2024
+# Larissa Manderfeld, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 05:51+0000\n"
-"PO-Revision-Date: 2022-09-22 05:44+0000\n"
-"Last-Translator: Martin Trigaux, 2023\n"
+"POT-Creation-Date: 2024-09-25 08:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"Last-Translator: Larissa Manderfeld, 2024\n"
 "Language-Team: German (https://app.transifex.com/odoo/teams/41243/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,11 +41,6 @@ msgid "Active"
 msgstr "Aktiv"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_code
-msgid "Code"
-msgstr "Code"
-
-#. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_res_company
 msgid "Companies"
 msgstr "Unternehmen"
@@ -66,6 +61,16 @@ msgid "Created on"
 msgstr "Erstellt am"
 
 #. module: account_edi_proxy_client
+#: model:ir.model,name:account_edi_proxy_client.model_certificate_key
+msgid "Cryptographic Keys"
+msgstr "Kryptografische Schlüssel"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__demo
+msgid "Demo mode"
+msgstr "Demo-Modus"
+
+#. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__display_name
 msgid "Display Name"
 msgstr "Anzeigename"
@@ -81,14 +86,9 @@ msgid "EDI Proxy Users"
 msgstr "EDI-Proxy-Benutzer"
 
 #. module: account_edi_proxy_client
-#: model:ir.model,name:account_edi_proxy_client.model_account_edi_format
-msgid "EDI format"
-msgstr "EDI-Format"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_format_id
-msgid "Edi Format"
-msgstr "EDI-Format"
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_mode
+msgid "EDI operating mode"
+msgstr "EDI-Betriebsmodus"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
@@ -106,11 +106,6 @@ msgid "Id Client"
 msgstr "ID-Client"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user____last_update
-msgid "Last Modified on"
-msgstr "Letzte Änderung am"
-
-#. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__write_uid
 msgid "Last Updated by"
 msgstr "Zuletzt aktualisiert von"
@@ -121,14 +116,19 @@ msgid "Last Updated on"
 msgstr "Zuletzt aktualisiert am"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
 msgid "Private Key"
 msgstr "Privater Schlüssel"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_filename
-msgid "Private Key Filename"
-msgstr "Dateiname des privaten Schlüssels"
+#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__prod
+msgid "Production mode"
+msgstr "Produktionsmodus"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__proxy_type
+msgid "Proxy Type"
+msgstr "Proxy-Typ"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__refresh_token
@@ -136,23 +136,34 @@ msgid "Refresh Token"
 msgstr "Token aktualisieren"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key
+#: model:ir.model.fields.selection,name:account_edi_proxy_client.selection__account_edi_proxy_client_user__edi_mode__test
+msgid "Test mode"
+msgstr "Testmodus"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__private_key_id
 msgid "The key to encrypt all the user's data"
 msgstr "Der Schlüssel zur Verschlüsselung aller Benutzerdaten"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__edi_identification
-msgid ""
-"The unique id that identifies this user for on the edi format, typically the"
-" vat"
+msgid "The unique id that identifies this user, typically the vat"
 msgstr ""
-"Die eindeutige ID, die diesen Benutzer im EDI-Format identifiziert, in der "
-"Regel die MwSt.-Nr."
+"Die eindeutige ID, die diesen Benutzer identifiziert, in der Regel die MwSt."
 
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-#, python-format
+msgid ""
+"The url that this service requested returned an error. The url it tried to "
+"contact was %(url)s. %(error_message)s"
+msgstr ""
+"Die von diesem Dienst angeforderte URL gab einen Fehler zurück. Die "
+"angefragte Url war %(url)s. %(error_message)s"
+
+#. module: account_edi_proxy_client
+#. odoo-python
+#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
 msgid ""
 "The url that this service requested returned an error. The url it tried to "
 "contact was %s"
@@ -163,28 +174,23 @@ msgstr ""
 #. module: account_edi_proxy_client
 #. odoo-python
 #: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-#, python-format
 msgid ""
-"The url that this service requested returned an error. The url it tried to "
-"contact was %s. %s"
-msgstr ""
-"Die von diesem Dienst angeforderte URL gab einen Fehler zurück. Die "
-"angefragte Url war %s. %s "
-
-#. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-#, python-format
-msgid ""
-"The url that this service tried to contact does not exist. The url was %r"
+"The url that this service tried to contact does not exist. The url was “%s”"
 msgstr ""
 "Die URL, die dieser Dienst zu kontaktieren versuchte, existiert nicht. Die "
-"URL lautete %r"
+"URL lautete „%s“"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_edi_identification_per_format
-msgid "This edi identification is already assigned to a user"
-msgstr "Diese EDI-Identifikation ist bereits einem Benutzer zugewiesen"
+#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_company_proxy
+msgid "This company has an active user already created for this EDI type"
+msgstr ""
+"Dieses Unternehmen hat bereits einen aktiven Benutzer für diesen EDI-Typ "
+"erstellt"
+
+#. module: account_edi_proxy_client
+#: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_active_edi_identification
+msgid "This edi identification is already assigned to an active user"
+msgstr "Diese EDI-Id wurde bereits einem aktiven Benutzer zugewiesen"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_id_client

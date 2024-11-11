@@ -7,7 +7,6 @@
     'summary': 'Spreadsheet Accounting formulas',
     'description': 'Spreadsheet Accounting formulas',
     'depends': ['spreadsheet', 'account'],
-    'data': [],
     'installable': True,
     'auto_install': True,
     'license': 'LGPL-3',
@@ -19,8 +18,8 @@
                 'spreadsheet_account/static/src/**/*.js'
             ),
         ],
-        'web.qunit_suite_tests': [
-            'spreadsheet_account/static/tests/**/*.js',
+        'web.assets_unit_tests': [
+            'spreadsheet_account/static/tests/**/*',
         ],
     }
 }

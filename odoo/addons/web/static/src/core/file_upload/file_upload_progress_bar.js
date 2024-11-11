@@ -1,12 +1,15 @@
-/** @odoo-module **/
-
+import { _t } from "@web/core/l10n/translation";
 import { useService } from "../utils/hooks";
-import { sprintf } from "../utils/strings";
 import { ConfirmationDialog } from "../confirmation_dialog/confirmation_dialog";
 
 import { Component } from "@odoo/owl";
 
 export class FileUploadProgressBar extends Component {
+    static template = "web.FileUploadProgressBar";
+    static props = {
+        fileUpload: { type: Object },
+    };
+
     setup() {
         this.dialogService = useService("dialog");
     }
@@ -16,14 +19,10 @@ export class FileUploadProgressBar extends Component {
             return;
         }
         this.dialogService.add(ConfirmationDialog, {
-            body: sprintf(this.env._t("Do you really want to cancel the upload of %s?"), this.props.fileUpload.title),
+            body: _t("Do you really want to cancel the upload of %s?", this.props.fileUpload.title),
             confirm: () => {
                 this.props.fileUpload.xhr.abort();
             },
         });
     }
 }
-FileUploadProgressBar.props = {
-    fileUpload: { type: Object },
-};
-FileUploadProgressBar.template = "web.FileUploadProgressBar";

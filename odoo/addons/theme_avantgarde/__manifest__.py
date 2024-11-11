@@ -5,11 +5,12 @@
     'summary': 'Design, Fine Art, Artwork, Creative, Creativity, Galleries, Trends, Shows, Magazines, Blogs',
     'sequence': 150,
     'version': '2.0.0',
-    'author': 'Odoo S.A.',
     'data': [
+        'data/generate_primary_template.xml',
         'data/ir_asset.xml',
         'views/images_library.xml',
         'views/customizations.xml',
+        'views/new_page_template.xml',
     ],
     'images': [
         'static/description/poster.jpg',
@@ -17,14 +18,12 @@
     ],
     'images_preview_theme': {
         'website.s_cover_default_image': '/theme_avantgarde/static/src/img/pictures/bg_image_08.jpg',
-        'website.s_picture_default_image': '/theme_avantgarde/static/src/img/pictures/bg_image_14.jpg',
-        'website.s_three_columns_default_image_1': '/theme_avantgarde/static/src/img/pictures/bg_image_15',
-        'website.s_three_columns_default_image_2': '/theme_avantgarde/static/src/img/pictures/bg_image_16.jpg',
-        'website.s_three_columns_default_image_3': '/theme_avantgarde/static/src/img/pictures/bg_image_17.jpg',
-        'website.s_text_image_default_image': '/theme_avantgarde/static/src/img/pictures/bg_image_13.jpg',
+        'website.library_image_13': '/theme_avantgarde/static/src/img/pictures/library_image_13.jpg',
+        'website.library_image_03': '/theme_avantgarde/static/src/img/pictures/library_image_03.jpg',
+        'website.library_image_16': '/theme_avantgarde/static/src/img/pictures/library_image_16.jpg',
     },
-    'snippet_lists': {
-        'homepage': ['s_cover', 's_picture', 's_three_columns', 's_text_image', 's_call_to_action'],
+    'configurator_snippets': {
+        'homepage': ['s_sidegrid', 's_features_wall', 's_masonry_block', 's_carousel', 's_timeline', 's_quadrant'],
     },
     'depends': ['theme_common'],
     'license': 'LGPL-3',

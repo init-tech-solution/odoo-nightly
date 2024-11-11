@@ -4,14 +4,45 @@ import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { BomOverviewDisplayFilter } from "../bom_overview_display_filter/mrp_bom_overview_display_filter";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
-
-const { Component } = owl;
+import { Many2XAutocomplete } from "@web/views/fields/relational_utils";
+import { Component } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 export class BomOverviewControlPanel extends Component {
+    static template = "mrp.BomOverviewControlPanel";
+    static components = {
+        Dropdown,
+        DropdownItem,
+        ControlPanel,
+        BomOverviewDisplayFilter,
+        Many2XAutocomplete,
+    };
+    static props = {
+        bomQuantity: Number,
+        showOptions: Object,
+        showVariants: { type: Boolean, optional: true },
+        variants: { type: Object, optional: true },
+        data: { type: Object, optional: true },
+        showUom: { type: Boolean, optional: true },
+        uomName: { type: String, optional: true },
+        currentWarehouse: Object,
+        warehouses: { type: Array, optional: true },
+        print: Function,
+        changeWarehouse: Function,
+        changeVariant: Function,
+        changeBomQuantity: Function,
+        changeDisplay: Function,
+        precision: Number,
+        allFolded: Boolean,
+    };
+    static defaultProps = {
+        variants: {},
+        warehouses: [],
+    };
+
     setup() {
+        this.action = useService("action");
         this.controlPanelDisplay = {};
-        // Cannot use 'control-panel-bottom-right' slot without this, as viewSwitcherEntries doesn't exist in this.env.config here.
-        this.env.config.viewSwitcherEntries = [];
     }
 
     //---- Handlers ----
@@ -22,45 +53,45 @@ export class BomOverviewControlPanel extends Component {
     }
 
     onKeyPress(ev) {
-        if (ev.keyCode === 13 || ev.which === 13) {
+        if (ev.key === "Enter") {
             ev.preventDefault();
             this.updateQuantity(ev);
         }
     }
 
-    clickUnfold() {
-        this.env.overviewBus.trigger("unfold-all");
+    clickTogglefold() {
+        this.env.overviewBus.trigger("toggle-fold-all");
+    }
+
+    getDomain() {
+        const keys = Object.keys(this.props.variants);
+        return [['id', 'in', keys]];
+    }
+
+    async manufactureFromBoM() {
+        const action = {
+            res_model: "mrp.production",
+            name: "Manufacture Orders",
+            type: "ir.actions.act_window",
+            views: [[false, "form"]],
+            target: "current",
+            context: {
+                default_bom_id: this.props.data.bom_id,
+            },
+        };
+        return this.action.doAction(action);
     }
 
     get precision() {
         return this.props.precision;
     }
-}
 
-BomOverviewControlPanel.template = "mrp.BomOverviewControlPanel";
-BomOverviewControlPanel.components = {
-    Dropdown,
-    DropdownItem,
-    ControlPanel,
-    BomOverviewDisplayFilter,
-};
-BomOverviewControlPanel.props = {
-    bomQuantity: Number,
-    showOptions: Object,
-    showVariants: { type: Boolean, optional: true },
-    variants: { type: Object, optional: true },
-    showUom: { type: Boolean, optional: true },
-    uomName: { type: String, optional: true },
-    currentWarehouse: Object,
-    warehouses: { type: Array, optional: true },
-    print: Function,
-    changeWarehouse: Function,
-    changeVariant: Function,
-    changeBomQuantity: Function,
-    changeDisplay: Function,
-    precision: Number,
-};
-BomOverviewControlPanel.defaultProps = {
-    variants: {},
-    warehouses: [],
-};
+    get warehousesItems() {
+        return this.props.warehouses.map(wh => ({
+            id: wh.id,
+            label: wh.name,
+            class: { selected: wh.name === this.props.currentWarehouse.name },
+            onSelected: () => this.props.changeWarehouse(wh.id)
+        }));
+    }
+}

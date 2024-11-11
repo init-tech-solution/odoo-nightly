@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import fields, models, api, SUPERUSER_ID
+from odoo import fields, models, api
 
 
 class UtmCampaign(models.Model):
@@ -9,6 +9,7 @@ class UtmCampaign(models.Model):
     _description = 'UTM Campaign'
     _rec_name = 'title'
 
+    active = fields.Boolean('Active', default=True)
     name = fields.Char(string='Campaign Identifier', required=True, compute='_compute_name',
                        store=True, readonly=False, precompute=True, translate=False)
     title = fields.Char(string='Campaign Name', required=True, translate=True)
@@ -19,7 +20,7 @@ class UtmCampaign(models.Model):
     stage_id = fields.Many2one(
         'utm.stage', string='Stage', ondelete='restrict', required=True,
         default=lambda self: self.env['utm.stage'].search([], limit=1),
-        group_expand='_group_expand_stage_ids')
+        copy=False, group_expand='_group_expand_stage_ids')
     tag_ids = fields.Many2many(
         'utm.tag', 'utm_tag_rel',
         'tag_id', 'campaign_id', string='Tags')
@@ -51,9 +52,9 @@ class UtmCampaign(models.Model):
         return super().create(vals_list)
 
     @api.model
-    def _group_expand_stage_ids(self, stages, domain, order):
+    def _group_expand_stage_ids(self, stages, domain):
         """Read group customization in order to display all the stages in the
         Kanban view, even if they are empty.
         """
-        stage_ids = stages._search([], order=order, access_rights_uid=SUPERUSER_ID)
+        stage_ids = stages.sudo()._search([], order=stages._order)
         return stages.browse(stage_ids)

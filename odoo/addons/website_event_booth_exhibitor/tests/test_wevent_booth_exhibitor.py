@@ -30,14 +30,13 @@ class TestWEventBoothExhibitorCommon(HttpCaseWithUserDemo, HttpCaseWithUserPorta
             'country_id': self.env.ref('base.us').id,
             'state_id': self.env.ref('base.state_us_39').id,
         })
-
+        now = datetime.now()
         self.env['event.event'].create({
             'name': 'Test Online Reveal',
             'date_tz': 'Europe/Brussels',
             'stage_id': self.env.ref('event.event_stage_booked').id,
-            'date_begin': datetime.now() + relativedelta(days=1, hour=5, minute=0, second=0),
-            'date_end': datetime.now() + relativedelta(days=1, hour=5, minute=0, second=0),
-            'auto_confirm': True,
+            'date_begin': now + relativedelta(days=1, hour=5, minute=0, second=0),
+            'date_end': now + relativedelta(days=1, hour=5, minute=0, second=0),
             'is_published': True,
             'website_menu': True,
             'booth_menu': True,
@@ -50,9 +49,4 @@ class TestWEventBoothExhibitorCommon(HttpCaseWithUserDemo, HttpCaseWithUserPorta
                 'booth_category_id': self.env.ref('event_booth.event_booth_category_premium').id,
             })]
         })
-        self.browser_js(
-            '/event',
-            'odoo.__DEBUG__.services["web_tour.tour"].run("webooth_exhibitor_register")',
-            'odoo.__DEBUG__.services["web_tour.tour"].tours.webooth_exhibitor_register.ready',
-            login='admin'
-        )
+        self.start_tour('/event', 'webooth_exhibitor_register', login='admin')

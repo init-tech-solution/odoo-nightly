@@ -30,6 +30,7 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
         """
         mto_route = self.env.ref('stock.route_warehouse0_mto')
         buy_route = self.env.ref('purchase_stock.route_warehouse0_buy')
+        mto_route.rule_ids.procure_method = "make_to_order"
         mto_route.active = True
 
         vendor = self.env['res.partner'].create({'name': 'vendor'})
@@ -40,7 +41,7 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
 
         product = self.env['product.product'].create({
             'name': 'SuperProduct',
-            'type': 'product',
+            'is_storable': True,
             'seller_ids': [(6, 0, seller.ids)],
             'route_ids': [(6, 0, (mto_route + buy_route).ids)]
         })

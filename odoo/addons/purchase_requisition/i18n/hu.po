@@ -1,30 +1,30 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase_requisition
-# 
+#
 # Translators:
 # Tibor Kőnig <konig.tibor@evitalit.hu>, 2022
 # Gergő Kertész <gergo.kertesz@maxflow.hu>, 2022
 # Krisztián Juhász <juhasz.krisztian@josafar.hu>, 2022
+# krnkris, 2022
 # Ákos Nagy <akos.nagy@oregional.hu>, 2022
 # Tamás Németh <ntomasz81@gmail.com>, 2022
 # Martin Trigaux, 2022
-# 5768b353f27900ae76ad88cc42dfd5b8_3bb349f, 2023
-# krnkris, 2023
-# gezza <geza.nagy@oregional.hu>, 2024
-# 
+# gezza <geza.nagy@oregional.hu>, 2023
+# Szabolcs Rádi, 2023
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"POT-Creation-Date: 2023-05-16 13:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: gezza <geza.nagy@oregional.hu>, 2024\n"
+"Last-Translator: Szabolcs Rádi, 2023\n"
 "Language-Team: Hungarian (https://app.transifex.com/odoo/teams/41243/hu/)\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: hu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: purchase_requisition
@@ -51,11 +51,6 @@ msgstr "<strong>Leírás</strong>"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
 msgid "<strong>Product UoM</strong>"
 msgstr "<strong>Termék mértékegység</strong>"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Product</strong>"
-msgstr "<strong>Termék</strong>"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
@@ -159,7 +154,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-#, python-format
 msgid "Alternative Warning"
 msgstr ""
 
@@ -175,8 +169,8 @@ msgstr ""
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__analytic_distribution
-msgid "Analytic"
-msgstr "Analitikus"
+msgid "Analytic Distribution"
+msgstr ""
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__analytic_distribution_search
@@ -206,6 +200,7 @@ msgid "Bid Selection"
 msgstr "Árajánlat licit kiválasztás"
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__requisition_id
 #: model:purchase.requisition.type,name:purchase_requisition.type_single
 msgid "Blanket Order"
 msgstr "Általános megrendelés"
@@ -237,7 +232,6 @@ msgstr "Törölve"
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
 msgid "Cancelled by the agreement associated to this quotation."
 msgstr "Visszavonva ehhez az ajánlathoz tartozó megállapodás szerint."
 
@@ -286,7 +280,6 @@ msgstr "Vállalat"
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
 msgid "Compare Order Lines"
 msgstr ""
 
@@ -309,12 +302,8 @@ msgstr "Megerősített"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"A mértékegységek közötti átváltás csak akkor valósul meg, ha ugyanabba a "
-"kategóriába tartoznak. Az átváltás az arányszámok alapján történik."
+msgid "Conversion between Units of Measure can only occur if they belong to the same category. The conversion will be made based on the ratios."
+msgstr "A mértékegységek közötti átváltás csak akkor valósul meg, ha ugyanabba a kategóriába tartoznak. Az átváltás az arányszámok alapján történik."
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
@@ -338,7 +327,6 @@ msgstr ""
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
 msgid "Create alternative"
 msgstr ""
 
@@ -493,22 +481,16 @@ msgstr "Ha be van jelölve, akkor az új üzenetek figyelmet igényelnek."
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_error
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
-"Ha be van jelölve, akkor néhány üzenetnél kézbesítési hiba lépett fel."
+msgstr "Ha be van jelölve, akkor néhány üzenetnél kézbesítési hiba lépett fel."
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
-msgid ""
-"If the chosen vendor or if any of the products in the original PO have a "
-"blocking warning then we prevent creation of alternative PO. This is because"
-" normally these fields are cleared w/warning message within form view, but "
-"we cannot recreate that in this case."
+msgid "If the chosen vendor or if any of the products in the original PO have a blocking warning then we prevent creation of alternative PO. This is because normally these fields are cleared w/warning message within form view, but we cannot recreate that in this case."
 msgstr ""
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
-msgid ""
-"If this is checked, the product quantities of the original PO will be copied"
+msgid "If this is checked, the product quantities of the original PO will be copied"
 msgstr ""
 
 #. module: purchase_requisition
@@ -525,16 +507,6 @@ msgstr "Követő"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
 msgid "Keep Alternatives"
 msgstr ""
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type____last_update
-msgid "Last Modified on"
-msgstr "Legutóbb frissítve"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__write_uid
@@ -570,11 +542,6 @@ msgstr "Tételek"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
 msgid "Link to Existing RfQ"
 msgstr ""
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Fő melléklet"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_has_error
@@ -634,7 +601,6 @@ msgstr "Következő tevékenység típusa"
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
 msgid "Nothing to clear"
 msgstr ""
 
@@ -655,8 +621,8 @@ msgstr "Hibák száma"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Üzenetek száma, melyek akciót igényelnek"
+msgid "Number of messages which requires an action"
+msgstr "Üzenetek száma, melyek műveletet igényelnek"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_error_counter
@@ -733,7 +699,6 @@ msgid "Products to Purchase"
 msgstr "Beszerzésre váró termékek"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__requisition_id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__requisition_id
 msgid "Purchase Agreement"
 msgstr "Beszerzési megállapodás"
@@ -821,6 +786,11 @@ msgid "RFQs/Orders"
 msgstr "Ajánlatkérések/Megrendelések"
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__name
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
@@ -904,9 +874,7 @@ msgstr "Sorszám"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_type__active
-msgid ""
-"Set active to false to hide the Purchase Agreement Types without removing "
-"it."
+msgid "Set active to false to hide the Purchase Agreement Types without removing it."
 msgstr ""
 
 #. module: purchase_requisition
@@ -917,23 +885,18 @@ msgstr "Mennyiségek kézi beállítása"
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
 msgid "Show all records which has next action date is before today"
-msgstr ""
-"Az összes olyan rekord megjelenítése, melynél a következő művelet dátuma a "
-"mai nap előtti"
+msgstr "Az összes olyan rekord megjelenítése, melynél a következő művelet dátuma a mai nap előtti"
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
 msgid "Some not cleared"
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid ""
-"Some quantities were not cleared because their status is not a RFQ status."
+msgid "Some quantities were not cleared because their status is not a RFQ status."
 msgstr ""
 
 #. module: purchase_requisition
@@ -992,11 +955,8 @@ msgstr "Kikötések és feltételek"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__schedule_date
-msgid ""
-"The expected and scheduled delivery date where all the products are received"
-msgstr ""
-"Az elvárt és a tervezett szállítási dátum az összes termék beérkezésére "
-"vonatkozóan"
+msgid "The expected and scheduled delivery date where all the products are received"
+msgstr "Az elvárt és a tervezett szállítási dátum az összes termék beérkezésére vonatkozóan"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__origin_po_id
@@ -1006,34 +966,24 @@ msgstr ""
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
-msgid ""
-"The vendor you have selected or at least one of the products you are copying"
-" from the original order has a blocking warning on it and cannot be selected"
-" to create an alternative."
+msgid "The vendor you have selected or at least one of the products you are copying from the original order has a blocking warning on it and cannot be selected to create an alternative."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
 msgid "There are no quantities to clear."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid ""
-"There is already an open blanket order for this supplier. We suggest you "
-"complete this open blanket order, instead of creating a new one."
+msgid "There is already an open blanket order for this supplier. We suggest you complete this open blanket order, instead of creating a new one."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
 msgid "This is a blocking warning!\n"
 msgstr ""
 
@@ -1092,7 +1042,6 @@ msgstr ""
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
 msgid ""
 "Warning for %(partner)s:\n"
 "%(warning_message)s\n"
@@ -1101,7 +1050,6 @@ msgstr ""
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
 msgid ""
 "Warning for %(product)s:\n"
 "%(warning_message)s\n"
@@ -1110,7 +1058,6 @@ msgstr ""
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
 msgid "Warning for %s"
 msgstr "Figyelmeztetés erre %s"
 
@@ -1126,9 +1073,7 @@ msgstr "Weboldali kommunikációs előzmények"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_order__has_alternatives
-msgid ""
-"Whether or not this purchase order is linked to another purchase order as an"
-" alternative."
+msgid "Whether or not this purchase order is linked to another purchase order as an alternative."
 msgstr ""
 
 #. module: purchase_requisition
@@ -1144,48 +1089,36 @@ msgstr ""
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
 msgid "You can only delete draft or cancelled requisitions."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
 msgid "You cannot confirm agreement '%s' because there is no product line."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
 msgid "You cannot confirm the blanket order without price."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
 msgid "You cannot confirm the blanket order without quantity."
 msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid ""
-"You have to cancel or validate every RfQ before closing the purchase "
-"requisition."
-msgstr ""
-"Az ajánlatkérést törölnie vagy jóváhagynia kell, mielőtt bezárná a kérelmet."
+msgid "You have to cancel or validate every RfQ before closing the purchase requisition."
+msgstr "Az ajánlatkérést törölnie vagy jóváhagynia kell, mielőtt bezárná a kérelmet."
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-msgid ""
-"alternative request for quotations are still open, do you want to cancel "
-"them?"
+msgid "alternative request for quotations are still open, do you want to cancel them?"
 msgstr ""
 
 #. module: purchase_requisition

@@ -48,13 +48,13 @@ class Partner(models.Model):
         today = fields.Date.today()
         for partner in self:
             partner.membership_start = self.env['membership.membership_line'].search([
-                ('partner', '=', partner.associate_member.id or partner.id), ('date_cancel', '=', False)
+                ('partner', 'in', (partner.associate_member or partner).ids), ('date_cancel', '=', False)
             ], limit=1, order='date_from').date_from
             partner.membership_stop = self.env['membership.membership_line'].search([
-                ('partner', '=', partner.associate_member.id or partner.id), ('date_cancel', '=', False)
+                ('partner', 'in', (partner.associate_member or partner).ids), ('date_cancel', '=', False)
             ], limit=1, order='date_to desc').date_to
             partner.membership_cancel = self.env['membership.membership_line'].search([
-                ('partner', '=', partner.id)
+                ('partner', 'in', partner.ids)
             ], limit=1, order='date_cancel').date_cancel
 
             if partner.associate_member:
@@ -81,13 +81,8 @@ class Partner(models.Model):
 
     @api.constrains('associate_member')
     def _check_recursion_associate_member(self):
-        for partner in self:
-            level = 100
-            while partner:
-                partner = partner.associate_member
-                if not level:
-                    raise ValidationError(_('You cannot create recursive associated members.'))
-                level -= 1
+        if self._has_cycle('associate_member'):
+            raise ValidationError(_('You cannot create recursive associated members.'))
 
     @api.model
     def _cron_update_membership(self):
@@ -110,7 +105,16 @@ class Partner(models.Model):
                 'move_type': 'out_invoice',
                 'partner_id': partner.id,
                 'invoice_line_ids': [
-                    (0, None, {'product_id': product.id, 'quantity': 1, 'price_unit': amount, 'tax_ids': [(6, 0, product.taxes_id.ids)]})
+                    (
+                        0,
+                        None,
+                        {
+                            'product_id': product.id,
+                            'quantity': 1,
+                            'price_unit': amount,
+                            'tax_ids': [(6, 0, product.taxes_id.filtered_domain(self.env['account.tax']._check_company_domain(self.env.company)).ids)]
+                        }
+                     )
                 ]
             })
 

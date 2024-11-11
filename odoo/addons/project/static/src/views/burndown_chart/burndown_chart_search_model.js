@@ -1,5 +1,6 @@
-/** @odoo-module */
+/** @odoo-module **/
 
+import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { SearchModel } from "@web/search/search_model";
 
@@ -22,7 +23,7 @@ export class BurndownChartSearchModel extends SearchModel {
         // Store date and stage_id searchItemId in the SearchModel for reuse in other functions.
         for (const searchItem of Object.values(this.searchItems)) {
             if (['dateGroupBy', 'groupBy'].includes(searchItem.type)) {
-                if (this.stageIdSearchItemId && this.dateSearchItemId) {
+                if (this.stageIdSearchItemId && this.dateSearchItemId && this.isClosedSearchItemId) {
                     return;
                 }
                 switch (searchItem.fieldName) {
@@ -31,6 +32,9 @@ export class BurndownChartSearchModel extends SearchModel {
                         break;
                     case 'stage_id':
                         this.stageIdSearchItemId = searchItem.id;
+                        break;
+                    case 'is_closed':
+                        this.isClosedSearchItemId = searchItem.id;
                         break;
                 }
             }
@@ -41,9 +45,11 @@ export class BurndownChartSearchModel extends SearchModel {
      * @override
      */
     deactivateGroup(groupId) {
-        // Prevent removing Date & Stage group by from the search
-        if (this.searchItems[this.stageIdSearchItemId].groupId == groupId && this.searchItems[this.dateSearchItemId].groupId) {
-            this._addGroupByNotification(this.env._t("Date and Stage"));
+        // Prevent removing 'Date & Stage' and 'Date & is closed' group by from the search
+        if (this.searchItems[this.dateSearchItemId].groupId == groupId) {
+            if (this.query.some(queryElem => [this.stageIdSearchItemId, this.isClosedSearchItemId].includes(queryElem.searchItemId))){
+                this._addGroupByNotification(_t("The report should be grouped either by \"Stage\" to represent a Burndown Chart or by \"Is Closed\" to represent a Burn-up chart. Without one of these groupings applied, the report will not provide relevant information."));
+            }
             return;
         }
         super.deactivateGroup(groupId);
@@ -67,7 +73,7 @@ export class BurndownChartSearchModel extends SearchModel {
             if (filtered_query.length !== this.query.length) {
                 this.query = filtered_query;
                 if (triggerNotification) {
-                    this._addGroupByNotification(this.env._t("Date"));
+                    this._addGroupByNotification(_t("The Burndown Chart must be grouped by Date"));
                 }
             }
         }
@@ -76,26 +82,26 @@ export class BurndownChartSearchModel extends SearchModel {
 
     /**
      * @override
+     * Ensure here that there is always either the 'stage' or the 'is_closed' searchItemId inside the query.
      */
     toggleSearchItem(searchItemId) {
-        // Ensure that stage_id is always selected.
-        if (searchItemId === this.stageIdSearchItemId
-            && this.query.some(queryElem => queryElem.searchItemId === searchItemId)) {
-            this._addGroupByNotification(this.env._t("Stage"));
-            return;
+        // if the current searchItem stage/is_closed, the counterpart is added before removing the current searchItem
+        if (searchItemId === this.isClosedSearchItemId){
+            super.toggleSearchItem(this.stageIdSearchItemId);
+        } else if (searchItemId === this.stageIdSearchItemId){
+            super.toggleSearchItem(this.isClosedSearchItemId);
         }
         super.toggleSearchItem(...arguments);
     }
 
     /**
-     * Adds a notification relative to the group by constraint of the Burndown Chart.
-     * @param fieldName The field name(s) the notification has to be related to.
+     * Adds a notification related to the group by constraint of the Burndown Chart.
+     * @param body The message to display in the notification.
      * @private
      */
-    _addGroupByNotification(fieldName) {
-        const notif = this.env._t("The Burndown Chart must be grouped by");
+    _addGroupByNotification(body) {
         this.notificationService.add(
-            `${notif} ${fieldName}`,
+            body,
             { type: "danger" }
         );
     }
@@ -104,11 +110,12 @@ export class BurndownChartSearchModel extends SearchModel {
      * @override
      */
     async _notify() {
-        // Ensure that we always group by date firstly and by stage_id secondly
+        // Ensure that we always group by date first and by stage_id/is_closed second
         let stageIdIndex = -1;
         let dateIndex = -1;
+        let isClosedIndex = -1;
         for (const [index, queryElem] of this.query.entries()) {
-            if (stageIdIndex !== -1 && dateIndex !== -1) {
+            if (dateIndex !== -1 && (stageIdIndex !== -1 || isClosedIndex !== -1)) {
                 break;
             }
             switch (queryElem.searchItemId) {
@@ -118,9 +125,17 @@ export class BurndownChartSearchModel extends SearchModel {
                 case this.stageIdSearchItemId:
                     stageIdIndex = index;
                     break;
+                case this.isClosedSearchItemId:
+                    isClosedIndex = index;
+                    break;
             }
         }
-        if (stageIdIndex > 0) {
+        if (isClosedIndex > 0) {
+            if (isClosedIndex > dateIndex) {
+                dateIndex += 1;
+            }
+            this.query.splice(0, 0, this.query.splice(stageIdIndex, 1)[0]);
+        } else if (stageIdIndex > 0) {
             if (stageIdIndex > dateIndex) {
                 dateIndex += 1;
             }

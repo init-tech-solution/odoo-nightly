@@ -6,7 +6,7 @@ from pytz import timezone, utc
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-from odoo.addons.resource.models.resource import Intervals, sum_intervals
+from odoo.addons.resource.models.utils import Intervals, sum_intervals
 from odoo.addons.test_resource.tests.common import TestResourceCommon
 from odoo.tests.common import TransactionCase
 
@@ -123,7 +123,7 @@ class TestCalendar(TestResourceCommon):
 
     def test_get_work_hours_count(self):
         self.env['resource.calendar.leaves'].create({
-            'name': 'Global Leave',
+            'name': 'Global Time Off',
             'resource_id': False,
             'calendar_id': self.calendar_jean.id,
             'date_from': datetime_str(2018, 4, 3, 0, 0, 0, tzinfo=self.jean.tz),
@@ -247,7 +247,7 @@ class TestCalendar(TestResourceCommon):
 
         # 2 weeks calendar week 2, leave during a day where he doesn't work this week
         leave = self.env['resource.calendar.leaves'].create({
-            'name': 'Leave Jules week 2',
+            'name': 'Time Off Jules week 2',
             'calendar_id': self.calendar_jules.id,
             'resource_id': False,
             'date_from': datetime_str(2018, 4, 11, 4, 0, 0, tzinfo=self.jules.tz),
@@ -264,7 +264,7 @@ class TestCalendar(TestResourceCommon):
 
         # 2 weeks calendar week 2, leave during a day where he works this week
         leave = self.env['resource.calendar.leaves'].create({
-            'name': 'Leave Jules week 2',
+            'name': 'Time Off Jules week 2',
             'calendar_id': self.calendar_jules.id,
             'resource_id': False,
             'date_from': datetime_str(2018, 4, 9, 0, 0, 0, tzinfo=self.jules.tz),
@@ -368,8 +368,28 @@ class TestCalendar(TestResourceCommon):
         self.assertEqual(hours, 8)
 
     def test_calendar_working_hours_count(self):
-        calendar = self.env.ref('resource.resource_calendar_std_35h')
-        calendar.tz = 'UTC'
+        calendar = self.env['resource.calendar'].create({
+            'name': 'Standard 35 hours/week',
+            'company_id': self.env.company.id,
+            'tz': 'UTC',
+            'attendance_ids': [(5, 0, 0),
+                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Monday Lunch', 'dayofweek': '0', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Tuesday Lunch', 'dayofweek': '1', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Lunch', 'dayofweek': '2', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Thursday Lunch', 'dayofweek': '3', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Friday Lunch', 'dayofweek': '4', 'hour_from': 12, 'hour_to': 13, 'day_period': 'lunch'}),
+                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'})
+            ],
+        })
         res = calendar.get_work_hours_count(
             fields.Datetime.from_string('2017-05-03 14:03:00'),  # Wednesday (8:00-12:00, 13:00-16:00)
             fields.Datetime.from_string('2017-05-04 11:03:00'),  # Thursday (8:00-12:00, 13:00-16:00)
@@ -531,6 +551,25 @@ class TestCalendar(TestResourceCommon):
         calendar_dt = self.calendar_john._get_closest_work_time(dt, resource=self.john.resource_id)
         self.assertEqual(calendar_dt, start, "It should have found the attendance on the 3rd April")
 
+    def test_attendance_interval_edge_tz(self):
+        # When genereting the attendance intervals in an edge timezone, the last interval shouldn't
+        # be truncated if the timezone is correctly set
+        self.env.user.tz = "America/Los_Angeles"
+        self.calendar_jean.tz = "America/Los_Angeles"
+        attendances = self.calendar_jean._attendance_intervals_batch(
+            datetime.combine(date(2023, 1, 1), datetime.min.time(), tzinfo=timezone("UTC")),
+            datetime.combine(date(2023, 1, 31), datetime.max.time(), tzinfo=timezone("UTC")))
+        last_attendance = list(attendances[False])[-1]
+        self.assertEqual(last_attendance[0].replace(tzinfo=None), datetime(2023, 1, 31, 8))
+        self.assertEqual(last_attendance[1].replace(tzinfo=None), datetime(2023, 1, 31, 15, 59, 59, 999999))
+
+        attendances = self.calendar_jean._attendance_intervals_batch(
+            datetime.combine(date(2023, 1, 1), datetime.min.time(), tzinfo=timezone("America/Los_Angeles")),
+            datetime.combine(date(2023, 1, 31), datetime.max.time(), tzinfo=timezone("America/Los_Angeles")))
+        last_attendance = list(attendances[False])[-1]
+        self.assertEqual(last_attendance[0].replace(tzinfo=None), datetime(2023, 1, 31, 8))
+        self.assertEqual(last_attendance[1].replace(tzinfo=None), datetime(2023, 1, 31, 16))
+
     def test_resource_calendar_update(self):
         """ Ensure leave calendar gets set correctly when updating resource calendar. """
         holiday = self.env['resource.calendar.leaves'].create({
@@ -551,8 +590,8 @@ class TestCalendar(TestResourceCommon):
 
         # Jean changes working schedule to Jules'
         self.jean.resource_calendar_id = self.calendar_jules
-        self.assertEqual(leave.calendar_id, self.calendar_jules, "leave calendar should be updated")
-        self.assertEqual(holiday.calendar_id, self.calendar_jean, "global leave shouldn't change")
+        self.assertEqual(leave.calendar_id, self.calendar_jules, "Leave calendar should update")
+        self.assertEqual(holiday.calendar_id, self.calendar_jean, "Global leave shouldn't change")
 
 
 class TestResMixin(TestResourceCommon):
@@ -670,6 +709,14 @@ class TestResMixin(TestResourceCommon):
             datetime_tz(2018, 4, 6, 16, 0, 0, tzinfo=self.jean.tz),
         )[self.jean.id]
         self.assertEqual(data, {'days': 5, 'hours': 40})
+
+        # Viewing it as Bob
+        data = self.bob._get_work_days_data_batch(
+            datetime_tz(2018, 4, 2, 0, 0, 0, tzinfo=self.bob.tz),
+            datetime_tz(2018, 4, 6, 16, 0, 0, tzinfo=self.bob.tz),
+        )[self.bob.id]
+        self.assertEqual(data, {'days': 5, 'hours': 40})
+
 
         # Viewing it as Patel
         # Views from 2018/04/01 20:00:00 to 2018/04/06 12:00:00
@@ -850,8 +897,7 @@ class TestResMixin(TestResourceCommon):
             datetime_tz(2018, 4, 9, 0, 0, 0, tzinfo=self.john.tz),
             datetime_tz(2018, 4, 13, 23, 59, 59, tzinfo=self.john.tz),
         )[self.john.id]
-        # For some reason float_round fails to limit precision to 3 decimals here
-        self.assertEqual(data, {'days': 0.9580000000000001, 'hours': 10})
+        self.assertEqual(data, {'days': 0.958, 'hours': 10})
 
         # half days
         leave = self.env['resource.calendar.leaves'].create({
@@ -975,10 +1021,10 @@ class TestResMixin(TestResourceCommon):
         leave.unlink()
 
     def test_list_work_time_per_day(self):
-        working_time = self.john.list_work_time_per_day(
+        working_time = self.john._list_work_time_per_day(
             datetime_tz(2018, 4, 9, 0, 0, 0, tzinfo=self.john.tz),
             datetime_tz(2018, 4, 13, 23, 59, 59, tzinfo=self.john.tz),
-        )
+        )[self.john.id]
         self.assertEqual(working_time, [
             (date(2018, 4, 10), 8),
             (date(2018, 4, 13), 12),
@@ -988,10 +1034,10 @@ class TestResMixin(TestResourceCommon):
         self.john.resource_id.tz = 'Europe/Brussels'
         self.assertEqual(self.john.tz, 'Europe/Brussels')
         self.assertEqual(self.calendar_john.tz, 'America/Los_Angeles')
-        working_time = self.john.list_work_time_per_day(
+        working_time = self.john._list_work_time_per_day(
             datetime_tz(2018, 4, 9, 0, 0, 0, tzinfo=self.john.tz),
             datetime_tz(2018, 4, 13, 23, 59, 59, tzinfo=self.john.tz),
-        )
+        )[self.john.id]
         self.assertEqual(working_time, [
             (date(2018, 4, 10), 8),
             (date(2018, 4, 13), 12),
@@ -1006,10 +1052,10 @@ class TestResMixin(TestResourceCommon):
             'date_to': datetime_str(2018, 4, 2, 14, 0, 0, tzinfo=self.jean.tz),
         })
 
-        working_time = self.jean.list_work_time_per_day(
+        working_time = self.jean._list_work_time_per_day(
             datetime_tz(2018, 4, 2, 0, 0, 0, tzinfo=self.jean.tz),
             datetime_tz(2018, 4, 6, 23, 0, 0, tzinfo=self.jean.tz),
-        )
+        )[self.jean.id]
         self.assertEqual(working_time, [
             (date(2018, 4, 2), 4),
             (date(2018, 4, 3), 8),
@@ -1029,10 +1075,10 @@ class TestResMixin(TestResourceCommon):
             'date_to': datetime_str(2018, 4, 2, 10, 0, 1, tzinfo=self.jean.tz),
         })
 
-        working_time = self.jean.list_work_time_per_day(
+        working_time = self.jean._list_work_time_per_day(
             datetime_tz(2018, 4, 2, 0, 0, 0, tzinfo=self.jean.tz),
             datetime_tz(2018, 4, 6, 23, 0, 0, tzinfo=self.jean.tz),
-        )
+        )[self.jean.id]
         self.assertEqual(len(working_time), 5)
         self.assertEqual(working_time[0][0], date(2018, 4, 2))
         self.assertAlmostEqual(working_time[0][1], 8, 2)
@@ -1048,10 +1094,10 @@ class TestResMixin(TestResourceCommon):
             'date_to': datetime_str(2018, 4, 2, 10, 0, 0, tzinfo=self.jean.tz),
         })
 
-        working_time = self.jean.list_work_time_per_day(
+        working_time = self.jean._list_work_time_per_day(
             datetime_tz(2018, 4, 2, 0, 0, 0, tzinfo=self.jean.tz),
             datetime_tz(2018, 4, 6, 23, 0, 0, tzinfo=self.jean.tz),
-        )
+        )[self.jean.id]
         self.assertEqual(working_time, [
             (date(2018, 4, 2), 8),
             (date(2018, 4, 3), 8),
@@ -1227,10 +1273,10 @@ class TestTimezones(TestResourceCommon):
         self.assertEqual(leaves, [(date(2018, 4, 9), 6, leave)])
 
     def test_works(self):
-        work = self.jean.list_work_time_per_day(
+        work = self.jean._list_work_time_per_day(
             datetime_tz(2018, 4, 9, 8, 0, 0),
             datetime_tz(2018, 4, 13, 16, 0, 0),
-        )
+        )[self.jean.id]
         self.assertEqual(work, [
             (date(2018, 4, 9), 6),
             (date(2018, 4, 10), 8),
@@ -1239,10 +1285,10 @@ class TestTimezones(TestResourceCommon):
             (date(2018, 4, 13), 8),
         ])
 
-        work = self.jean.list_work_time_per_day(
+        work = self.jean._list_work_time_per_day(
             datetime_tz(2018, 4, 9, 8, 0, 0, tzinfo=self.tz3),
             datetime_tz(2018, 4, 13, 16, 0, 0, tzinfo=self.tz3),
-        )
+        )[self.jean.id]
         self.assertEqual(len(work), 4)
         self.assertEqual(work, [
             (date(2018, 4, 9), 8),
@@ -1251,10 +1297,10 @@ class TestTimezones(TestResourceCommon):
             (date(2018, 4, 12), 8),
         ])
 
-        work = self.jean.list_work_time_per_day(
+        work = self.jean._list_work_time_per_day(
             datetime_tz(2018, 4, 9, 8, 0, 0, tzinfo=self.tz2),
             datetime_tz(2018, 4, 13, 16, 0, 0, tzinfo=self.tz4),
-        )
+        )[self.jean.id]
         self.assertEqual(work, [
             (date(2018, 4, 9), 8),
             (date(2018, 4, 10), 8),
@@ -1362,3 +1408,28 @@ class TestResource(TestResourceCommon):
         """
         self.env.company.resource_calendar_id = self.two_weeks_resource
         self.env['res.company'].create({'name': 'New Company'})
+
+    def test_empty_working_hours_for_two_weeks_resource(self):
+        resource = self._define_calendar_2_weeks(
+            'Two weeks resource',
+            [],
+            'Europe/Brussels'
+        )
+        resource_attendance = self.env['resource.calendar.attendance'].create({
+            'name': 'test',
+            'calendar_id': self.calendar_jean.id,
+            'hour_from': 0,
+            'hour_to': 0
+        })
+        resource_hour = resource._get_hours_per_day(resource_attendance)
+        self.assertEqual(resource_hour, 0.0)
+
+    def test_resource_without_calendar(self):
+        resource = self.env['resource.resource'].create({
+            'name': 'resource',
+            'calendar_id': False,
+        })
+
+        resource.company_id.resource_calendar_id = False
+        unavailabilities = resource._get_unavailable_intervals(datetime(2024, 7, 11), datetime(2024, 7, 12))
+        self.assertFalse(unavailabilities)

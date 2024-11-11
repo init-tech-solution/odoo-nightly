@@ -1,5 +1,4 @@
-/** @odoo-module alias=web_editor.convertInline */
-'use strict';
+/** @odoo-module */
 
 import { getAdjacentPreviousSiblings, isBlock, rgbToHex, commonParentGet } from '../editor/odoo-editor/src/utils/utils';
 
@@ -13,7 +12,7 @@ const RE_OFFSET_MATCH = /(^| )offset(-[\w\d]+)*( |$)/;
 const RE_PADDING_MATCH = /[ ]*padding[^;]*;/g;
 const RE_PADDING = /([\d.]+)/;
 const RE_WHITESPACE = /[\s\u200b]*/;
-const SELECTORS_IGNORE = /(^\*$|:hover|:before|:after|:active|:link|::|'|\([^(),]+[,(])/;
+const SELECTORS_IGNORE = /(^\*$|:hover|:before|:after|:active|:link|::|'|\([^(),]+[,(])|@page/;
 // CSS properties relating to font, which Outlook seem to have trouble inheriting.
 const FONT_PROPERTIES_TO_INHERIT = [
     'color',
@@ -40,6 +39,19 @@ export const TABLE_STYLES = {
     'text-align': 'inherit',
     'font-size': 'unset',
     'line-height': 'inherit',
+};
+
+const GROUPED_STYLES = {
+    border: [
+        "border-top-width", "border-right-width", "border-bottom-width", "border-left-width",
+        "border-top-style", "border-right-style", "border-bottom-style", "border-left-style",
+    ],
+    padding: ["padding-top", "padding-bottom", "padding-left", "padding-right"],
+    margin: ["margin-top", "margin-bottom", "margin-left", "margin-right"],
+    "border-radius": [
+        "border-top-left-radius", "border-top-right-radius",
+        "border-bottom-right-radius", "border-bottom-left-radius",
+    ],
 };
 
 //--------------------------------------------------------------------------
@@ -426,7 +438,7 @@ function classToStyle($editable, cssRules) {
 
     for (const node of nodeToRules.keys()) {
         const nodeRules = nodeToRules.get(node);
-        const css = nodeRules ? _getMatchedCSSRules(node, nodeRules) : {};
+        const css = nodeRules ? _getMatchedCSSRules(node, nodeRules, true) : {};
         // Flexbox
         for (const styleName of node.style) {
             if (styleName.includes('flex') || `${node.style[styleName]}`.includes('flex')) {
@@ -443,7 +455,7 @@ function classToStyle($editable, cssRules) {
                 style = `${key}:${value};${style}`;
             }
         };
-        if (_.isEmpty(style)) {
+        if (Object.keys(style || {}).length === 0) {
             writes.push(() => { node.removeAttribute('style'); });
         } else {
             writes.push(() => {
@@ -676,18 +688,16 @@ function enforceImagesResponsivity(editable) {
  * will be computed for the editable element's owner document.
  *
  * @param {JQuery} $editable
- * @param {Object[]} [cssRules] Array<{selector: string;
- *                                   style: {[styleName]: string};
- *                                   specificity: number;}>
- * @param {JQuery} [$iframe] the iframe containing the editable, if any
+ * @param {Object} options {$iframe: JQuery;
+ *                          wysiwyg: Object}
  */
-async function toInline($editable, cssRules, $iframe) {
+export async function toInline($editable, options) {
     $editable.removeClass('odoo-editor-editable');
     const editable = $editable.get(0);
-    const iframe = $iframe && $iframe.get(0);
-    const wysiwyg = $editable.data('wysiwyg');
+    const iframe = options.$iframe && options.$iframe.get(0);
+    const wysiwyg = $editable.data('wysiwyg') || options.wysiwyg;
     const doc = editable.ownerDocument;
-    cssRules = cssRules || wysiwyg && wysiwyg._rulesCache;
+    let cssRules = wysiwyg && wysiwyg._rulesCache;
     if (!cssRules) {
         cssRules = getCSSRules(doc);
         if (wysiwyg) {
@@ -720,6 +730,7 @@ async function toInline($editable, cssRules, $iframe) {
     attachmentThumbnailToLinkImg($editable);
     fontToImg($editable);
     await svgToPng($editable);
+    await webpToPng($editable);
 
     // Fix img-fluid for Outlook.
     for (const image of editable.querySelectorAll('img.img-fluid')) {
@@ -827,7 +838,7 @@ function flattenBackgroundImages(editable) {
  */
 function fontToImg($editable) {
     const editable = $editable.get(0);
-    const fonts = odoo.__DEBUG__.services["wysiwyg.fonts"];
+    const { fonts } = odoo.loader.modules.get("@web_editor/js/wysiwyg/fonts");
 
     for (const font of editable.querySelectorAll('.fa')) {
         let icon, content;
@@ -1050,7 +1061,7 @@ function formatTables($editable) {
  *                            style: {[styleName]: string};
  *                            specificity: number;}>
  */
-function getCSSRules(doc) {
+export function getCSSRules(doc) {
     const cssRules = [];
     for (const sheet of doc.styleSheets) {
         // try...catch because browser may not able to enumerate rules for cross-domain sheets
@@ -1233,6 +1244,40 @@ function normalizeRem($editable, rootFontSize=16) {
         _hideForOutlook(td, 'opening');
     }
 }
+
+/**
+ * Convert image element to an image element with type png
+ *
+ * @param {img} HTMLElement
+ */
+
+async function convertToPng(img) {
+    // Make sure the image is loaded before we convert it.
+    await new Promise(resolve => {
+        img.onload = () => resolve();
+        if (img.complete) {
+            resolve();
+        }
+    });
+    const image = document.createElement('img');
+    const canvas = document.createElement('CANVAS');
+    const width = _getWidth(img);
+    const height = _getHeight(img);
+
+    canvas.setAttribute('width', width);
+    canvas.setAttribute('height', height);
+    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+    for (const attribute of img.attributes) {
+        image.setAttribute(attribute.name, attribute.value);
+    }
+
+    image.setAttribute('src', canvas.toDataURL('png'));
+    image.setAttribute('width', width);
+    image.setAttribute('height', height);
+    return image;
+}
+
 /**
  * Convert images of type svg to png.
  *
@@ -1240,32 +1285,37 @@ function normalizeRem($editable, rootFontSize=16) {
  */
 async function svgToPng($editable) {
     for (const svg of $editable.find('img[src*=".svg"]')) {
-        // Make sure the svg is loaded before we convert it.
-        await new Promise(resolve => {
-            svg.onload = () => resolve();
-            if (svg.complete) {
-                resolve();
-            }
-        });
-        const image = document.createElement('img');
-        const canvas = document.createElement('CANVAS');
-        const width = _getWidth(svg);
-        const height = _getHeight(svg);
-
-        canvas.setAttribute('width', width);
-        canvas.setAttribute('height', height);
-        canvas.getContext('2d').drawImage(svg, 0, 0, width, height);
-
-        for (const attribute of svg.attributes) {
-            image.setAttribute(attribute.name, attribute.value);
-        }
-
-        image.setAttribute('src', canvas.toDataURL('png'));
-        image.setAttribute('width', width);
-        image.setAttribute('height', height);
-
+        const image = await convertToPng(svg);
         svg.before(image);
         svg.remove();
+    }
+}
+
+/**
+ * Convert images of type webp to png.
+ *
+ * @param {JQuery} $editable
+ */
+async function webpToPng($editable) {
+    for (const webp of $editable.find('img[src*=".webp"]')) {
+        const image = await convertToPng(webp);
+        webp.before(image);
+        webp.remove();
+    }
+
+    for (const webp of $editable.find('[style*="background-image"][style*=".webp"]')) {
+        // Create an image element with the background image and replace the url
+        // with the png converted image url
+        const width = _getWidth(webp);
+        const height = _getHeight(webp);
+        const tempImage = document.createElement("img");
+        tempImage.setAttribute("src", webp.style.backgroundImage.slice(5, -2));
+        tempImage.setAttribute("width", width);
+        tempImage.setAttribute("height", height);
+        webp.before(tempImage);
+        const image = await convertToPng(tempImage);
+        webp.style.backgroundImage = `url(${image.getAttribute("src")})`;
+        tempImage.remove();
     }
 }
 
@@ -1399,8 +1449,15 @@ function _createColumnGrid() {
  * @param {string} content
  * @returns {Comment}
  */
-function _createMso(content='') {
-    return document.createComment(`[if mso]>${content}<![endif]`)
+function _createMso(content = "") {
+    // We remove commets having opposite condition fron the one we will insert
+    // We remove comment tags having the same condition
+    const showRegex = /<!--\[if\s+mso\]>([\s\S]*?)<!\[endif\]-->/g;
+    const hideRegex = /<!--\[if\s+!mso\]>([\s\S]*?)<!\[endif\]-->/g;
+    let contentToInsert = content;
+    contentToInsert = contentToInsert.replace(showRegex, (matchedContent, group) => group);
+    contentToInsert = contentToInsert.replace(hideRegex, "");
+    return document.createComment(`[if mso]>${contentToInsert}<![endif]`);
 }
 /**
  * Return a table element, with its default styles and attributes, as well as
@@ -1464,6 +1521,29 @@ function _getColumnOffsetSize(column) {
     const offsetSize = offsetOptions && (offsetOptions.length === 2 ? +offsetOptions[1] : +offsetOptions[0]) || 0;
     return offsetSize;
 }
+
+
+function isBlacklistedStyle(node, selector, key) {
+    return (
+        node.matches("table, thead, tbody, tfoot, tr, td, th") &&
+        ["table", "thead", "tbody", "tfoot", "tr", "td", "th"].some((elName) => selector.includes(elName)) &&
+        key.includes("color")
+    );
+}
+
+function removeBlacklistedStyles(rule, node, checkBlacklisted) {
+    if (!checkBlacklisted || !rule.style) {
+        return rule.style;
+    }
+    const styles = {};
+    for (const [key, value] of Object.entries(rule.style)) {
+        if (isBlacklistedStyle(node, rule.selector, key)) {
+            continue;
+        }
+        styles[key] = value;
+    }
+    return styles;
+}
 /**
  * Return the CSS rules which applies on an element, tweaked so that they are
  * browser/mail client ok.
@@ -1474,9 +1554,11 @@ function _getColumnOffsetSize(column) {
  *                          specificity: number;}>
  * @returns {Object} {[styleName]: string}
  */
-function _getMatchedCSSRules(node, cssRules) {
+function _getMatchedCSSRules(node, cssRules, checkBlacklisted = false) {
     node.matches = node.matches || node.webkitMatchesSelector || node.mozMatchesSelector || node.msMatchesSelector || node.oMatchesSelector;
-    const styles = cssRules.map((rule) => rule.style).filter(Boolean);
+    const styles = cssRules
+        .map((rule) => removeBlacklistedStyles(rule, node, checkBlacklisted))
+        .filter(Boolean);
 
     // Add inline styles at the highest specificity.
     if (node.style.length) {
@@ -1501,6 +1583,29 @@ function _getMatchedCSSRules(node, cssRules) {
             processedStyle[key] = value.replace(/\s*!important\s*$/, '');
         }
     };
+    // In case the groupStyle have var in its value, the substyles will not have
+    // any value assigned in cssRules thus we loose the style since the groupStyle
+    // doesn't appear too in cssRules. As a solution we added those substyle using
+    // their computed values
+    const computedStyle = getComputedStyle(node);
+    for (const groupName in GROUPED_STYLES) {
+        // We exclude the 'margin' and 'padding' styles from force apply because
+        // it's common that they have a value set by auto which doesn't make sense to
+        // force their computed value.
+        const force = !groupName.includes("margin") && !groupName.includes("padding");
+        const hasSubStyleApplied = GROUPED_STYLES[groupName].some(
+            (styleName) => styleName in processedStyle
+        );
+        if (!force && hasSubStyleApplied) {
+            continue;
+        }
+        for (const styleName of GROUPED_STYLES[groupName]) {
+            const styleValue = computedStyle.getPropertyValue(styleName);
+            if (styleValue && typeof styleValue === "string" && styleValue.length) {
+                processedStyle[styleName] = styleValue;
+            }
+        }
+    }
 
     if (processedStyle.display === 'block' && !(node.classList && node.classList.contains('oe-nested'))) {
         delete processedStyle.display;
@@ -1540,6 +1645,13 @@ function _getMatchedCSSRules(node, cssRules) {
         delete processedStyle['border-bottom-right-radius'];
         delete processedStyle['border-top-left-radius'];
         delete processedStyle['border-top-right-radius'];
+    }
+    if (processedStyle['border-left-width']) {
+        processedStyle['border-width'] = processedStyle['border-left-width'];
+        delete processedStyle['border-right-width'];
+        delete processedStyle['border-bottom-width'];
+        delete processedStyle['border-top-width'];
+        delete processedStyle['border-left-width'];
     }
 
     // If the border styling is initial we remove it to simplify the css tags
@@ -1645,7 +1757,12 @@ function _normalizeStyle(style) {
     const normalizedStyle = {};
     for (const styleName of style) {
         const value = style[styleName];
-        if (value && !styleName.includes('animation') && !styleName.includes('-webkit') && _.isString(value)) {
+        if (
+            value &&
+            !styleName.includes("animation") &&
+            !styleName.includes("-webkit") &&
+            typeof value === "string"
+        ) {
             const normalizedStyleName = styleName.replace(/-(.)/g, (a, b) => b.toUpperCase());
             normalizedStyle[styleName] = style[normalizedStyleName];
             if (style.getPropertyPriority(styleName) === 'important') {
@@ -1690,4 +1807,5 @@ export default {
     normalizeColors: normalizeColors,
     normalizeRem: normalizeRem,
     toInline: toInline,
+    createMso: _createMso,
 };

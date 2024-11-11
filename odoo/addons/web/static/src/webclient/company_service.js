@@ -1,84 +1,142 @@
-/** @odoo-module **/
-
 import { browser } from "@web/core/browser/browser";
+import { rpcBus } from "@web/core/network/rpc";
 import { registry } from "@web/core/registry";
-import { symmetricalDifference } from "../core/utils/arrays";
 import { session } from "@web/session";
+import { UPDATE_METHODS } from "@web/core/orm_service";
+import { cookie } from "@web/core/browser/cookie";
+import { user } from "@web/core/user";
+import { router } from "@web/core/browser/router";
 
-function parseCompanyIds(cidsFromHash) {
-    const cids = [];
-    if (typeof cidsFromHash === "string") {
-        cids.push(...cidsFromHash.split(",").map(Number));
-    } else if (typeof cidsFromHash === "number") {
-        cids.push(cidsFromHash);
+const CIDS_SEPARATOR = "-";
+
+function parseCompanyIds(cids, separator = CIDS_SEPARATOR) {
+    if (typeof cids === "string") {
+        return cids.split(separator).map(Number);
+    } else if (typeof cids === "number") {
+        return [cids];
     }
-    return cids;
+    return [];
 }
 
-function computeAllowedCompanyIds(cids) {
+function computeActiveCompanyIds(cids) {
     const { user_companies } = session;
-    let allowedCompanyIds = cids || [];
+    let activeCompanyIds = cids || [];
     const availableCompaniesFromSession = user_companies.allowed_companies;
-    const notReallyAllowedCompanies = allowedCompanyIds.filter(
+    const notAllowedCompanies = activeCompanyIds.filter(
         (id) => !(id in availableCompaniesFromSession)
     );
 
-    if (!allowedCompanyIds.length || notReallyAllowedCompanies.length) {
-        allowedCompanyIds = [user_companies.current_company];
+    if (!activeCompanyIds.length || notAllowedCompanies.length) {
+        activeCompanyIds = [user_companies.current_company];
     }
-    return allowedCompanyIds;
+    return activeCompanyIds;
+}
+
+function getCompanyIds() {
+    let cids;
+    // backward compatibility, in old urls cid was still used.
+    // deprecated as of saas-17.3
+    const state = router.current;
+    if ("cids" in state) {
+        // backward compatibility s.t. old urls (still using "," as separator) keep working
+        // deprecated as of 17.0
+        if (typeof state.cids === "string" && !state.cids.includes(CIDS_SEPARATOR)) {
+            cids = parseCompanyIds(state.cids, ",");
+        } else {
+            cids = parseCompanyIds(state.cids);
+        }
+    } else if (cookie.get("cids")) {
+        cids = parseCompanyIds(cookie.get("cids"));
+    }
+    return cids || [];
 }
 
 export const companyService = {
-    dependencies: ["user", "router", "cookie"],
-    start(env, { user, router, cookie }) {
-        let cids;
-        if ("cids" in router.current.hash) {
-            cids = parseCompanyIds(router.current.hash.cids);
-        } else if ("cids" in cookie.current) {
-            cids = parseCompanyIds(cookie.current.cids);
-        }
-        const allowedCompanyIds = computeAllowedCompanyIds(cids);
+    dependencies: ["action", "orm"],
+    start(env, { action, orm }) {
+        const allowedCompanies = session.user_companies.allowed_companies;
+        const disallowedAncestorCompanies = session.user_companies.disallowed_ancestor_companies;
+        const allowedCompaniesWithAncestors = {
+            ...allowedCompanies,
+            ...disallowedAncestorCompanies,
+        };
+        const activeCompanyIds = computeActiveCompanyIds(getCompanyIds());
 
-        const stringCIds = allowedCompanyIds.join(",");
-        router.replaceState({ cids: stringCIds }, { lock: true });
-        cookie.setCookie("cids", stringCIds);
+        // update browser data
+        cookie.set("cids", activeCompanyIds.join(CIDS_SEPARATOR));
+        user.updateContext({ allowed_company_ids: activeCompanyIds });
 
-        user.updateContext({ allowed_company_ids: allowedCompanyIds });
-        const availableCompanies = session.user_companies.allowed_companies;
+        // reload the page if changes are being done to `res.company`
+        rpcBus.addEventListener("RPC:RESPONSE", (ev) => {
+            const { data, error } = ev.detail;
+            const { model, method } = data.params;
+            if (!error && model === "res.company" && UPDATE_METHODS.includes(method)) {
+                if (!browser.localStorage.getItem("running_tour")) {
+                    action.doAction("reload_context");
+                }
+            }
+        });
 
         return {
-            availableCompanies,
-            get allowedCompanyIds() {
-                return allowedCompanyIds.slice();
+            allowedCompanies,
+            allowedCompaniesWithAncestors,
+            disallowedAncestorCompanies,
+
+            get activeCompanyIds() {
+                return activeCompanyIds.slice();
             },
+
             get currentCompany() {
-                return availableCompanies[allowedCompanyIds[0]];
+                return allowedCompanies[activeCompanyIds[0]];
             },
-            setCompanies(mode, ...companyIds) {
-                // compute next company ids
-                let nextCompanyIds;
-                if (mode === "toggle") {
-                    nextCompanyIds = symmetricalDifference(allowedCompanyIds, companyIds);
-                } else if (mode === "loginto") {
-                    const companyId = companyIds[0];
-                    if (allowedCompanyIds.length === 1) {
-                        // 1 enabled company: stay in single company mode
-                        nextCompanyIds = [companyId];
-                    } else {
-                        // multi company mode
-                        nextCompanyIds = [
-                            companyId,
-                            ...allowedCompanyIds.filter((id) => id !== companyId),
-                        ];
+
+            getCompany(companyId) {
+                return allowedCompaniesWithAncestors[companyId];
+            },
+
+            /**
+             * @param {Array<>} companyIds - List of companies to log into
+             * @param {boolean} [includeChildCompanies=true] - If true, will also
+             * log into each child of each companyIds (default is true)
+             */
+            async setCompanies(companyIds, includeChildCompanies = true) {
+                const newCompanyIds = companyIds.length ? companyIds : [activeCompanyIds[0]];
+
+                function addCompanies(companyIds) {
+                    for (const companyId of companyIds) {
+                        if (!newCompanyIds.includes(companyId)) {
+                            newCompanyIds.push(companyId);
+                            addCompanies(allowedCompanies[companyId].child_ids);
+                        }
                     }
                 }
-                nextCompanyIds = nextCompanyIds.length ? nextCompanyIds : [companyIds[0]];
 
-                // apply them
-                router.pushState({ cids: nextCompanyIds }, { lock: true });
-                cookie.setCookie("cids", nextCompanyIds);
-                browser.setTimeout(() => browser.location.reload()); // history.pushState is a little async
+                if (includeChildCompanies) {
+                    addCompanies(
+                        companyIds.flatMap((companyId) => allowedCompanies[companyId].child_ids)
+                    );
+                }
+
+                cookie.set("cids", newCompanyIds.join(CIDS_SEPARATOR));
+                user.updateContext({ allowed_company_ids: newCompanyIds });
+
+                const controller = action.currentController;
+                const state = {};
+                const options = { reload: true };
+                if (controller?.props.resId && controller?.props.resModel) {
+                    const hasReadRights = await user.checkAccessRight(
+                        controller.props.resModel,
+                        "read",
+                        controller.props.resId
+                    );
+
+                    if (!hasReadRights) {
+                        options.replace = true;
+                        state.actionStack = router.current.actionStack.slice(0, -1);
+                    }
+                }
+
+                router.pushState(state, options);
             },
         };
     },

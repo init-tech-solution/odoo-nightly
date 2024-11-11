@@ -17,14 +17,10 @@ class ResCompany(models.Model):
         """
         return ['FR', 'MF', 'MQ', 'NC', 'PF', 'RE', 'GF', 'GP', 'TF'] # These codes correspond to France and DOM-TOM.
 
-    @api.model
-    def _get_unalterable_country(self):
-        return self._get_france_country_codes()
-
     def _is_accounting_unalterable(self):
         if not self.vat and not self.country_id:
             return False
-        return self.country_id and self.country_id.code in self._get_unalterable_country()
+        return self.country_id and self.country_id.code in self._get_france_country_codes()
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -55,7 +51,7 @@ class ResCompany(models.Model):
             for seq_field in sequence_fields:
                 if not company[seq_field]:
                     vals = {
-                        'name': _('Securisation of %s - %s') % (seq_field, company.name),
+                        'name': _('Securisation of %(field)s - %(company)s', field=seq_field, company=company.name),
                         'code': 'FRSECURE%s-%s' % (company.id, seq_field),
                         'implementation': 'no_gap',
                         'prefix': '',

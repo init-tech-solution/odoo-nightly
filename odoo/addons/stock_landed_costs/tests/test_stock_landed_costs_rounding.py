@@ -168,7 +168,7 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
         products = self.Product.create([{
             'name': 'Super Product %s' % price,
             'categ_id': fifo_pc.id,
-            'type': 'product',
+            'is_storable': True,
             'standard_price': price,
         } for price in [0.91, 0.93, 75.17, 20.54]])
 
@@ -190,9 +190,7 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
         })
         po.button_confirm()
 
-        res_dict = po.picking_ids.button_validate()
-        validate_wizard = Form(self.env[(res_dict.get('res_model'))].with_context(res_dict.get('context'))).save()
-        validate_wizard.process()
+        po.picking_ids.button_validate()
 
         lc_form = Form(self.LandedCost)
         lc_form.picking_ids.add(po.picking_ids)
@@ -218,7 +216,7 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
             10
         At the end, the SVL value should be zero
         """
-        self.product_a.type = 'product'
+        self.product_a.is_storable = True
         self.product_a.categ_id.property_cost_method = 'average'
 
         stock_location = self.warehouse.lot_stock_id
@@ -247,7 +245,7 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
 
         receipts.action_confirm()
         for m in receipts.move_ids:
-            m.quantity_done = m.product_uom_qty
+            m.quantity = m.product_uom_qty
         receipts.button_validate()
 
         landed_costs = self.env['stock.landed.cost'].create([{
@@ -281,7 +279,7 @@ class TestStockLandedCostsRounding(TestStockLandedCostsCommon):
 
         deliveries.action_confirm()
         for m in deliveries.move_ids:
-            m.quantity_done = m.product_uom_qty
+            m.quantity = m.product_uom_qty
         deliveries.button_validate()
 
         self.assertEqual(self.product_a.value_svl, 0)

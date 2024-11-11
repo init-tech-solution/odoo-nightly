@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Argentina - Accounting',
-    'icon': '/base/static/img/country_flags/ar.png',
-    'version': "3.5",
+    'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations/argentina.html',
+    'icon': '/account/static/description/l10n.png',
+    'countries': ['ar'],
+    'version': '3.5',
     'description': """
 Functional
 ----------
@@ -29,10 +30,10 @@ Demo data for testing:
 * Partners example for the different responsibility types:
 
   * ADHOC (IVA Responsable Inscripto)
-  * Consejo Municipal Rosario (IVA Sujeto Exento)
+  * Servicios Globales (IVA Sujeto Exento)
   * Gritti (Monotributo)
-  * Cerro Castor. IVA Liberado in Zona Franca
-  * Expresso (Cliente del Exterior)
+  * Montana Sur. IVA Liberado in Zona Franca
+  * Barcelona food (Cliente del Exterior)
   * Odoo (Proveedor del Exterior)
 
 Highlights:
@@ -71,18 +72,14 @@ Master Data:
     'depends': [
         'l10n_latam_invoice_document',
         'l10n_latam_base',
+        'account',
     ],
+    'auto_install': ['account'],
     'data': [
         'security/ir.model.access.csv',
         'data/l10n_latam_identification_type_data.xml',
         'data/l10n_ar_afip_responsibility_type_data.xml',
-        'data/account_chart_template_data.xml',
-        'data/account.group.template.csv',
-        'data/account.account.template.csv',
         'data/account_chart_template_data2.xml',
-        'data/account_tax_group_data.xml',
-        'data/account_tax_template_data.xml',
-        'data/account_fiscal_template.xml',
         'data/uom_uom_data.xml',
         'data/l10n_latam.document.type.csv',
         'data/l10n_latam.document.type.xml',
@@ -103,11 +100,8 @@ Master Data:
         'views/report_invoice.xml',
         'views/res_config_settings_view.xml',
         'report/invoice_report_view.xml',
-        'data/account_chart_template_configure_data.xml',
     ],
     'demo': [
-        # we create demo data on different companies (not main_company) to
-        # allow different setups and also to allow multi-localization demo data
         'demo/exento_demo.xml',
         'demo/mono_demo.xml',
         'demo/respinsc_demo.xml',
@@ -119,10 +113,5 @@ Master Data:
         'demo/account_supplier_refund_demo.xml',
     ],
     'installable': True,
-    'assets': {
-        'web.assets_backend': [
-            'l10n_ar/static/src/**/*',
-        ],
-    },
     'license': 'LGPL-3',
 }

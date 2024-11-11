@@ -3,25 +3,25 @@
 # 	* website_livechat
 # 
 # Translators:
-# ilan kl <ilan@qaroads.co.il>, 2022
-# Mor Kir <morki@013.net.il>, 2022
-# דודי מלכה <Dudimalka6@gmail.com>, 2022
-# Yihya Hugirat <hugirat@gmail.com>, 2022
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
-# Martin Trigaux, 2022
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
-# Roy Sayag, 2022
-# NoaFarkash, 2022
-# Ha Ketem <haketem@gmail.com>, 2022
+# ilan kl <ilan@qaroads.co.il>, 2024
+# Martin Trigaux, 2024
+# Yihya Hugirat <hugirat@gmail.com>, 2024
+# Mor Kir <morki@013.net.il>, 2024
+# Roy Sayag, 2024
 # Orel Nahmany, 2024
+# דודי מלכה <Dudimalka6@gmail.com>, 2024
+# NoaFarkash, 2024
+# Lilach Gilliam <lilach.gilliam@gmail.com>, 2024
+# Ha Ketem <haketem@gmail.com>, 2024
+# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
-"PO-Revision-Date: 2022-09-22 05:56+0000\n"
-"Last-Translator: Orel Nahmany, 2024\n"
+"POT-Creation-Date: 2024-09-26 08:56+0000\n"
+"PO-Revision-Date: 2024-09-25 09:42+0000\n"
+"Last-Translator: ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024\n"
 "Language-Team: Hebrew (https://app.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,21 +36,11 @@ msgstr "מספר הפעלות"
 
 #. module: website_livechat
 #. odoo-python
-#: code:addons/website_livechat/models/mail_channel.py:0
-#, python-format
-msgid "%s has left the conversation."
-msgstr "%s עזב/ה את השיחה."
-
-#. module: website_livechat
-#. odoo-python
-#: code:addons/website_livechat/models/mail_channel.py:0
-#, python-format
+#: code:addons/website_livechat/models/discuss_channel.py:0
 msgid ""
-"%s has started a conversation with %s. \n"
-"                        The chat request has been canceled."
+"%(visitor)s started a conversation with %(operator)s.\n"
+"The chat request has been cancelled"
 msgstr ""
-"%s התחיל/ה שיחה עם %s.\n"
-"                                  בקשות לצ'אט בוטלו"
 
 #. module: website_livechat
 #: model_terms:ir.ui.view,arch_db:website_livechat.channel_page
@@ -69,8 +59,7 @@ msgstr "זמין"
 
 #. module: website_livechat
 #. odoo-javascript
-#: code:addons/website_livechat/static/src/components/visitor_banner/visitor_banner.xml:0
-#, python-format
+#: code:addons/website_livechat/static/src/web/thread_patch.xml:0
 msgid "Avatar"
 msgstr "אווטר"
 
@@ -119,7 +108,7 @@ msgstr "צ'אטים"
 #. module: website_livechat
 #: model:ir.model,name:website_livechat.model_res_config_settings
 msgid "Config Settings"
-msgstr "הגדר הגדרות"
+msgstr "הגדרות תצורה"
 
 #. module: website_livechat
 #: model:ir.model.fields,help:website_livechat.field_im_livechat_channel__website_description
@@ -127,7 +116,7 @@ msgid "Description of the channel displayed on the website page"
 msgstr "תיאור של הערוץ שיוצג בדף באתר"
 
 #. module: website_livechat
-#: model:ir.model,name:website_livechat.model_mail_channel
+#: model:ir.model,name:website_livechat.model_discuss_channel
 msgid "Discussion Channel"
 msgstr "ערוץ דיון"
 
@@ -148,8 +137,7 @@ msgstr "פרצוף שמח"
 
 #. module: website_livechat
 #. odoo-javascript
-#: code:addons/website_livechat/static/src/components/visitor_banner/visitor_banner.xml:0
-#, python-format
+#: code:addons/website_livechat/static/src/web/thread_patch.xml:0
 msgid "History"
 msgstr "היסטוריה"
 
@@ -165,15 +153,13 @@ msgstr "מפורסם"
 
 #. module: website_livechat
 #. odoo-javascript
-#: code:addons/website_livechat/static/src/components/visitor_banner/visitor_banner.xml:0
-#, python-format
+#: code:addons/website_livechat/static/src/web/thread_patch.xml:0
 msgid "Lang"
 msgstr "שפה"
 
 #. module: website_livechat
 #. odoo-python
 #: code:addons/website_livechat/models/website.py:0
-#, python-format
 msgid "Live Support"
 msgstr "תמיכה בזמן אמת"
 
@@ -200,7 +186,6 @@ msgstr "ערוץ חדש"
 #. module: website_livechat
 #. odoo-python
 #: code:addons/website_livechat/models/website_visitor.py:0
-#, python-format
 msgid "No Livechat Channel allows you to send a chat request for website %s."
 msgstr ""
 
@@ -215,13 +200,6 @@ msgid "Okay"
 msgstr "בסדר"
 
 #. module: website_livechat
-#. odoo-javascript
-#: code:addons/website_livechat/static/src/components/visitor_banner/visitor_banner.xml:0
-#, python-format
-msgid "Online"
-msgstr "מקוון"
-
-#. module: website_livechat
 #: model_terms:ir.ui.view,arch_db:website_livechat.website_visitor_view_kanban
 msgid "Operator Avatar"
 msgstr ""
@@ -234,7 +212,6 @@ msgstr ""
 #. module: website_livechat
 #. odoo-python
 #: code:addons/website_livechat/models/website_visitor.py:0
-#, python-format
 msgid ""
 "Recipients are not available. Please refresh the page to get latest visitors"
 " status."
@@ -292,8 +269,7 @@ msgstr "כתובת האתר המלאה לגישה למסמך דרך אתר הא�
 
 #. module: website_livechat
 #. odoo-python
-#: code:addons/website_livechat/models/mail_channel.py:0
-#, python-format
+#: code:addons/website_livechat/models/discuss_channel.py:0
 msgid "The visitor"
 msgstr "האורח"
 
@@ -313,15 +289,39 @@ msgid "Visible on current website"
 msgstr "גלוי באתר האינטרנט הנוכחי"
 
 #. module: website_livechat
-#: model:ir.model.fields,field_description:website_livechat.field_mail_channel__livechat_visitor_id
+#: model:ir.model.fields,field_description:website_livechat.field_discuss_channel__livechat_visitor_id
 msgid "Visitor"
 msgstr "מבקר"
 
 #. module: website_livechat
-#. odoo-javascript
-#: code:addons/website_livechat/static/src/components/visitor_banner/visitor_banner.xml:0
-#, python-format
-msgid "Visitor is online"
+#. odoo-python
+#: code:addons/website_livechat/models/discuss_channel.py:0
+msgid "Visitor #%(id)d left the conversation."
+msgstr ""
+
+#. module: website_livechat
+#. odoo-python
+#: code:addons/website_livechat/models/discuss_channel.py:0
+msgid "Visitor #%(id)d."
+msgstr ""
+
+#. module: website_livechat
+#. odoo-python
+#: code:addons/website_livechat/controllers/main.py:0
+#: code:addons/website_livechat/models/website_visitor.py:0
+msgid "Visitor #%d"
+msgstr ""
+
+#. module: website_livechat
+#. odoo-python
+#: code:addons/website_livechat/controllers/main.py:0
+msgid "Visitor #%s"
+msgstr ""
+
+#. module: website_livechat
+#. odoo-python
+#: code:addons/website_livechat/models/discuss_channel.py:0
+msgid "Visitor left the conversation."
 msgstr ""
 
 #. module: website_livechat
@@ -330,7 +330,7 @@ msgid "Visitor's Sessions"
 msgstr ""
 
 #. module: website_livechat
-#: model:ir.model.fields,field_description:website_livechat.field_website_visitor__mail_channel_ids
+#: model:ir.model.fields,field_description:website_livechat.field_website_visitor__discuss_channel_ids
 msgid "Visitor's livechat channels"
 msgstr ""
 
@@ -341,16 +341,15 @@ msgstr "מבקרים"
 
 #. module: website_livechat
 #. odoo-javascript
-#: code:addons/website_livechat/static/src/components/visitor_banner/visitor_banner.xml:0
+#: code:addons/website_livechat/static/src/web/thread_patch.xml:0
 #: model:ir.model,name:website_livechat.model_website
-#, python-format
 msgid "Website"
 msgstr "אתר אינטרנט"
 
 #. module: website_livechat
 #: model:ir.model.fields,field_description:website_livechat.field_res_config_settings__channel_id
 msgid "Website Live Channel"
-msgstr " צ'אט חי  באתר"
+msgstr " צ'אט באתר"
 
 #. module: website_livechat
 #: model:ir.model.fields,field_description:website_livechat.field_website__channel_id
@@ -366,7 +365,6 @@ msgstr "כתובת אתר אינטרנט"
 #. odoo-python
 #: code:addons/website_livechat/tests/test_livechat_basic_flow.py:0
 #: model:ir.model,name:website_livechat.model_website_visitor
-#, python-format
 msgid "Website Visitor"
 msgstr "מבקר באתר האינטרנט"
 
@@ -377,8 +375,7 @@ msgstr "תיאור אתר אינטרנט"
 
 #. module: website_livechat
 #. odoo-python
-#: code:addons/website_livechat/models/mail_channel.py:0
-#, python-format
+#: code:addons/website_livechat/models/discuss_channel.py:0
 msgid "an operator"
 msgstr ""
 

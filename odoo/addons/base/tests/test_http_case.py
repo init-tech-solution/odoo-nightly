@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import logging
 
 from odoo.tests.common import HttpCase, tagged, ChromeBrowser
-from odoo.tools import config, logging
+from odoo.tools import config
 from unittest.mock import patch
 
 @tagged('-at_install', 'post_install')
@@ -46,29 +47,26 @@ class TestHttpCase(HttpCase):
                 text = log.split('.browser:', 1)[1]
                 if text == 'test successful':
                     continue
+                if text.startswith('heap '):
+                    continue
                 self.assertEqual(text, "Object(custom=Object, value=1, description='dummy')")
                 console_log_count += 1
         self.assertEqual(console_log_count, 1)
 
-    @patch.dict(config.options, {"dev_mode": []})
-    def test_404_assets(self):
-        IrAttachment = self.env['ir.attachment']
-        # Ensure no assets exists
-        IrAttachment.search([('url', '=like', '/web/assets/%')]).unlink()
-        response = self.url_open('/NoSuchPage')
-        self.assertEqual(response.status_code, 404, "Page should not exist")
-        self.assertFalse(
-            IrAttachment.search_count([('url', '=like', '/web/assets/%')]),
-            "Assets should not have been generated because the transaction was rolled back"
-            # Well, they should - but this is part of a compromise to avoid
-            # being in the way of the read-only mode.
-        )
-        response = self.url_open('/')
-        self.assertEqual(response.status_code, 200, "Page should exist")
-        self.assertTrue(
-            IrAttachment.search_count([('url', '=like', '/web/assets/%')]),
-            "Assets should have been generated"
-        )
+@tagged('-at_install', 'post_install')
+class TestRunbotLog(HttpCase):
+    def test_runbot_js_log(self):
+        """Test that a ChromeBrowser console.dir is handled server side as a log of level RUNBOT."""
+        log_message = 'this is a small test'
+        with self.assertLogs() as log_catcher:
+            self.browser_js("about:blank", f"console.runbot = console.dir; console.runbot('{log_message}'); console.log('test successful');")
+        found = False
+        for record in log_catcher.records:
+            if record.message == log_message:
+                self.assertEqual(record.levelno, logging.RUNBOT)
+                self.assertTrue(record.name.endswith('browser'))
+                found = True
+        self.assertTrue(found, "Runbot log not found")
 
 
 @tagged('-at_install', 'post_install')
@@ -79,7 +77,6 @@ class TestChromeBrowser(HttpCase):
         with patch.dict(config.options, {'screencasts': screencasts_dir, 'screenshots': config['screenshots']}):
             self.browser = ChromeBrowser(self)
         self.addCleanup(self.browser.stop)
-        self.addCleanup(self.browser.clear)
 
     def test_screencasts(self):
         self.browser.start_screencast()

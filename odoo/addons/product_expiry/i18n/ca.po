@@ -1,9 +1,9 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* product_expiry
-# 
+#
 # Translators:
-# Josep Anton Belchi, 2022
+# jabelchi, 2022
 # Quim - eccit <quim@eccit.com>, 2022
 # Eugeni Chafer <eugeni@chafer.cat>, 2022
 # Martin Trigaux, 2022
@@ -11,30 +11,26 @@
 # Arnau Ros, 2022
 # marcescu, 2022
 # Ivan Espinola, 2022
-# Óscar Fonseca <tecnico@pyming.com>, 2023
-# 
+# Óscar Fonseca <tecnico@extreme-micro.com>, 2023
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
+"POT-Creation-Date: 2023-05-16 13:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Óscar Fonseca <tecnico@pyming.com>, 2023\n"
+"Last-Translator: Óscar Fonseca <tecnico@extreme-micro.com>, 2023\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: product_expiry
 #: model_terms:ir.ui.view,arch_db:product_expiry.view_move_form_expiry
-msgid ""
-"<span class=\"badge text-bg-danger\" attrs=\"{'invisible': "
-"[('product_expiry_alert', '=', False)]}\">Expiration Alert</span>"
-msgstr ""
-"<span class=\"badge text-bg-danger\" attrs=\"{'invisible': "
-"[('productexpiryalert', '=', False)]}\">Alerta de caducitat</span>"
+msgid "<span class=\"badge text-bg-danger\" attrs=\"{'invisible': [('product_expiry_alert', '=', False)]}\">Expiration Alert</span>"
+msgstr "<span class=\"badge text-bg-danger\" attrs=\"{'invisible': [('productexpiryalert', '=', False)]}\">Alerta de caducitat</span>"
 
 #. module: product_expiry
 #: model_terms:ir.ui.view,arch_db:product_expiry.view_product_form_expiry
@@ -75,6 +71,11 @@ msgid "Best before Date"
 msgstr "Data de consum preferent "
 
 #. module: product_expiry
+#: model:ir.model,name:product_expiry.model_stock_quant_reserve_line
+msgid "Choose quantity to reserve from each stock quant"
+msgstr ""
+
+#. module: product_expiry
 #: model:ir.model,name:product_expiry.model_res_config_settings
 msgid "Config Settings"
 msgstr "Ajustos de configuració"
@@ -93,7 +94,6 @@ msgstr "Confirmar la caducitat"
 #. odoo-python
 #: code:addons/product_expiry/models/stock_picking.py:0
 #: model_terms:ir.ui.view,arch_db:product_expiry.confirm_expiry_view
-#, python-format
 msgid "Confirmation"
 msgstr "Confirmació"
 
@@ -109,12 +109,8 @@ msgstr "Creat el"
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_stock_lot__alert_date
-msgid ""
-"Date to determine the expired lots and serial numbers using the filter "
-"\"Expiration Alerts\"."
-msgstr ""
-"Data per a determinar els lots i números de sèrie caducats utilitzant el "
-"filtre \"Alertes de caducitat\"."
+msgid "Date to determine the expired lots and serial numbers using the filter \"Expiration Alerts\"."
+msgstr "Data per a determinar els lots i números de sèrie caducats utilitzant el filtre \"Alertes de caducitat\"."
 
 #. module: product_expiry
 #: model_terms:ir.ui.view,arch_db:product_expiry.view_move_form_expiry
@@ -158,6 +154,8 @@ msgstr "Alertes de caducitat"
 #: model:ir.model.fields,field_description:product_expiry.field_product_template__expiration_time
 #: model:ir.model.fields,field_description:product_expiry.field_stock_lot__expiration_date
 #: model:ir.model.fields,field_description:product_expiry.field_stock_move_line__expiration_date
+#: model:ir.model.fields,field_description:product_expiry.field_stock_quant__expiration_date
+#: model:ir.model.fields,field_description:product_expiry.field_stock_quant_reserve_line__expiration_date
 #: model_terms:ir.ui.view,arch_db:product_expiry.stock_report_delivery_document_inherit_product_expiry
 #: model_terms:ir.ui.view,arch_db:product_expiry.view_product_form_expiry
 msgid "Expiration Date"
@@ -189,11 +187,6 @@ msgid "Include expiration dates on delivery slip"
 msgstr "Incluir las fechas de caducidad en la llista d'entrega"
 
 #. module: product_expiry
-#: model:ir.model.fields,field_description:product_expiry.field_expiry_picking_confirmation____last_update
-msgid "Last Modified on"
-msgstr "Última modificació el "
-
-#. module: product_expiry
 #: model:ir.model.fields,field_description:product_expiry.field_expiry_picking_confirmation__write_uid
 msgid "Last Updated by"
 msgstr "Última actualització per"
@@ -214,51 +207,33 @@ msgid "Lot/Serial"
 msgstr "Lot/núm. de sèrie"
 
 #. module: product_expiry
+#: model:ir.model,name:product_expiry.model_stock_quant_reserve
+msgid "Manually reserve stock"
+msgstr ""
+
+#. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_product_product__expiration_time
 #: model:ir.model.fields,help:product_expiry.field_product_template__expiration_time
-msgid ""
-"Number of days after the receipt of the products (from the vendor or in "
-"stock after production) after which the goods may become dangerous and must "
-"not be consumed. It will be computed on the lot/serial number."
-msgstr ""
-"Nombre de dies després de la recepció dels productes (del venedor o en estoc"
-" després de la producció) després dels quals els productes poden arribar a "
-"ser perillosos i no han de ser consumits. Es calcularà en el número de "
-"lot/sèrie."
+msgid "Number of days after the receipt of the products (from the vendor or in stock after production) after which the goods may become dangerous and must not be consumed. It will be computed on the lot/serial number."
+msgstr "Nombre de dies després de la recepció dels productes (del venedor o en estoc després de la producció) després dels quals els productes poden arribar a ser perillosos i no han de ser consumits. Es calcularà en el número de lot/sèrie."
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_product_product__alert_time
 #: model:ir.model.fields,help:product_expiry.field_product_template__alert_time
-msgid ""
-"Number of days before the Expiration Date after which an alert should be "
-"raised on the lot/serial number. It will be computed on the lot/serial "
-"number."
-msgstr ""
-"Nombre de dies abans de la data de caducitat després dels quals s'hauria "
-"d'alçar una alerta sobre el número de lot/sèrie. Es calcularà en el número "
-"de lot/sèrie."
+msgid "Number of days before the Expiration Date after which an alert should be raised on the lot/serial number. It will be computed on the lot/serial number."
+msgstr "Nombre de dies abans de la data de caducitat després dels quals s'hauria d'alçar una alerta sobre el número de lot/sèrie. Es calcularà en el número de lot/sèrie."
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_product_product__removal_time
 #: model:ir.model.fields,help:product_expiry.field_product_template__removal_time
-msgid ""
-"Number of days before the Expiration Date after which the goods should be "
-"removed from the stock. It will be computed on the lot/serial number."
-msgstr ""
-"Nombre de dies abans de la data de caducitat després de la qual els béns "
-"s'han de retirar de l'estoc. Es calcularà en el número de lot/sèrie."
+msgid "Number of days before the Expiration Date after which the goods should be removed from the stock. It will be computed on the lot/serial number."
+msgstr "Nombre de dies abans de la data de caducitat després de la qual els béns s'han de retirar de l'estoc. Es calcularà en el número de lot/sèrie."
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_product_product__use_time
 #: model:ir.model.fields,help:product_expiry.field_product_template__use_time
-msgid ""
-"Number of days before the Expiration Date after which the goods starts "
-"deteriorating, without being dangerous yet. It will be computed on the "
-"lot/serial number."
-msgstr ""
-"Nombre de dies abans de la data de caducitat després de la qual les "
-"mercaderies comencen a deteriorar-se, sense ser perilloses encara. Es "
-"calcularà en el número de lot/sèrie."
+msgid "Number of days before the Expiration Date after which the goods starts deteriorating, without being dangerous yet. It will be computed on the lot/serial number."
+msgstr "Nombre de dies abans de la data de caducitat després de la qual les mercaderies comencen a deteriorar-se, sense ser perilloses encara. Es calcularà en el número de lot/sèrie."
 
 #. module: product_expiry
 #: model:ir.model.fields,field_description:product_expiry.field_expiry_picking_confirmation__picking_ids
@@ -328,39 +303,27 @@ msgstr "S'ha assolit la data de caducitat."
 #. module: product_expiry
 #. odoo-python
 #: code:addons/product_expiry/models/production_lot.py:0
-#, python-format
 msgid "The alert date has been reached for this lot/serial number"
 msgstr "S'ha assolit la data d'alerta per a aquest número de lot/sèrie"
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_stock_lot__expiration_date
 #: model:ir.model.fields,help:product_expiry.field_stock_move_line__expiration_date
-msgid ""
-"This is the date on which the goods with this Serial Number may become "
-"dangerous and must not be consumed."
-msgstr ""
-"Aquesta és la data en la qual els béns amb aquest número de sèrie poden "
-"arribar a ser perillosos i no han de consumir-se."
+#: model:ir.model.fields,help:product_expiry.field_stock_quant__expiration_date
+#: model:ir.model.fields,help:product_expiry.field_stock_quant_reserve_line__expiration_date
+msgid "This is the date on which the goods with this Serial Number may become dangerous and must not be consumed."
+msgstr "Aquesta és la data en la qual els béns amb aquest número de sèrie poden arribar a ser perillosos i no han de consumir-se."
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_stock_lot__removal_date
 #: model:ir.model.fields,help:product_expiry.field_stock_quant__removal_date
-msgid ""
-"This is the date on which the goods with this Serial Number should be "
-"removed from the stock. This date will be used in FEFO removal strategy."
-msgstr ""
-"Aquesta és la data en la qual els béns amb aquest número de sèrie haurien de"
-" ser retirats de l'estoc. Aquesta data s'utilitzarà en l'estratègia "
-"d'eliminació de FEFO."
+msgid "This is the date on which the goods with this Serial Number should be removed from the stock. This date will be used in FEFO removal strategy."
+msgstr "Aquesta és la data en la qual els béns amb aquest número de sèrie haurien de ser retirats de l'estoc. Aquesta data s'utilitzarà en l'estratègia d'eliminació de FEFO."
 
 #. module: product_expiry
 #: model:ir.model.fields,help:product_expiry.field_stock_lot__use_date
-msgid ""
-"This is the date on which the goods with this Serial Number start "
-"deteriorating, without being dangerous yet."
-msgstr ""
-"Aquesta és la data en la qual els béns amb aquest número de sèrie comencen a"
-" deteriorar-se, sense ser perillosos encara."
+msgid "This is the date on which the goods with this Serial Number start deteriorating, without being dangerous yet."
+msgstr "Aquesta és la data en la qual els béns amb aquest número de sèrie comencen a deteriorar-se, sense ser perillosos encara."
 
 #. module: product_expiry
 #: model_terms:ir.ui.view,arch_db:product_expiry.view_stock_move_line_detailed_operation_tree_expiry
@@ -386,6 +349,7 @@ msgstr "Transferència"
 #: model:ir.model.fields,field_description:product_expiry.field_stock_move__use_expiration_date
 #: model:ir.model.fields,field_description:product_expiry.field_stock_move_line__use_expiration_date
 #: model:ir.model.fields,field_description:product_expiry.field_stock_quant__use_expiration_date
+#: model:ir.model.fields,field_description:product_expiry.field_stock_quant_reserve__show_expiry
 msgid "Use Expiration Date"
 msgstr "Utilitza la data de venciment"
 
@@ -396,36 +360,25 @@ msgstr "Utilitza la data de venciment"
 #: model:ir.model.fields,help:product_expiry.field_stock_move__use_expiration_date
 #: model:ir.model.fields,help:product_expiry.field_stock_move_line__use_expiration_date
 #: model:ir.model.fields,help:product_expiry.field_stock_quant__use_expiration_date
-msgid ""
-"When this box is ticked, you have the possibility to specify dates to manage"
-" product expiration, on the product and on the corresponding lot/serial "
-"numbers"
-msgstr ""
-"Quan aquesta caixa està marcada, teniu la possibilitat d'especificar les "
-"dates per gestionar la caducitat del producte, el producte i els nombres de "
-"lot/sèrie corresponents"
+#: model:ir.model.fields,help:product_expiry.field_stock_quant_reserve__show_expiry
+msgid "When this box is ticked, you have the possibility to specify dates to manage product expiration, on the product and on the corresponding lot/serial numbers"
+msgstr "Quan aquesta caixa està marcada, teniu la possibilitat d'especificar les dates per gestionar la caducitat del producte, el producte i els nombres de lot/sèrie corresponents"
 
 #. module: product_expiry
 #. odoo-python
 #: code:addons/product_expiry/wizard/confirm_expiry.py:0
-#, python-format
 msgid ""
 "You are going to deliver some product expired lots.\n"
-"Do you confirm you want to proceed ?"
+"Do you confirm you want to proceed?"
 msgstr ""
-"Lliurarà uns lots de productes caducats.\n"
-"Confirmes que vols continuar?"
 
 #. module: product_expiry
 #. odoo-python
 #: code:addons/product_expiry/wizard/confirm_expiry.py:0
-#, python-format
 msgid ""
 "You are going to deliver the product %(product_name)s, %(lot_name)s which is expired.\n"
-"Do you confirm you want to proceed ?"
+"Do you confirm you want to proceed?"
 msgstr ""
-"Es lliurarà el producte %(product_name)s, %(lot_name)s el qual ha caducat.\n"
-"¿Confirmes que vols continuar?"
 
 #. module: product_expiry
 #: model_terms:ir.ui.view,arch_db:product_expiry.label_lot_template_view_expiry

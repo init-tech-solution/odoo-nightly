@@ -1,7 +1,6 @@
 /** @odoo-module */
 
 import { registry } from '@web/core/registry';
-import { patch } from '@web/core/utils/patch';
 
 import { ExpenseDashboard } from '../components/expense_dashboard';
 import { ExpenseMobileQRCode } from '../mixins/qrcode';
@@ -11,17 +10,20 @@ import { kanbanView } from '@web/views/kanban/kanban_view';
 import { KanbanController } from '@web/views/kanban/kanban_controller';
 import { KanbanRenderer } from '@web/views/kanban/kanban_renderer';
 
-export class ExpenseKanbanController extends KanbanController {}
-patch(ExpenseKanbanController.prototype, 'expense_kanban_controller_upload', ExpenseDocumentUpload);
+export class ExpenseKanbanController extends ExpenseDocumentUpload(KanbanController) {
+    static template = "hr_expense.KanbanView";
+}
 
-export class ExpenseKanbanRenderer extends KanbanRenderer {}
-patch(ExpenseKanbanRenderer.prototype, 'expense_kanban_renderer_qrcode', ExpenseMobileQRCode);
-patch(ExpenseKanbanRenderer.prototype, 'expense_kanban_renderer_qrcode_dzone', ExpenseDocumentDropZone);
-ExpenseKanbanRenderer.template = 'hr_expense.KanbanRenderer';
+export class ExpenseKanbanRenderer extends ExpenseDocumentDropZone(
+    ExpenseMobileQRCode(KanbanRenderer)
+) {
+    static template = "hr_expense.KanbanRenderer";
+}
 
-export class ExpenseDashboardKanbanRenderer extends ExpenseKanbanRenderer {}
-ExpenseDashboardKanbanRenderer.components = { ...ExpenseDashboardKanbanRenderer.components, ExpenseDashboard};
-ExpenseDashboardKanbanRenderer.template = 'hr_expense.DashboardKanbanRenderer';
+export class ExpenseDashboardKanbanRenderer extends ExpenseKanbanRenderer {
+    static components = { ...ExpenseDashboardKanbanRenderer.components, ExpenseDashboard };
+    static template = "hr_expense.DashboardKanbanRenderer";
+}
 
 registry.category('views').add('hr_expense_kanban', {
     ...kanbanView,

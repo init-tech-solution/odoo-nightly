@@ -1,9 +1,13 @@
-/** @odoo-module **/
+import { Component, markRaw, reactive, useChildSubEnv, xml } from "@odoo/owl";
+import { registry } from "@web/core/registry";
 
-import { registry } from "../registry";
-import { DialogContainer } from "./dialog_container";
-
-import { markRaw, reactive } from "@odoo/owl";
+class DialogWrapper extends Component {
+    static template = xml`<t t-component="props.subComponent" t-props="props.subProps" />`;
+    static props = ["*"];
+    setup() {
+        useChildSubEnv({ dialogData: this.props.subEnv });
+    }
+}
 
 /**
  *  @typedef {{
@@ -13,7 +17,7 @@ import { markRaw, reactive } from "@odoo/owl";
 /**
  *  @typedef {{
  *      add(
- *          Component: any,
+ *          Component: typeof import("@odoo/owl").Component,
  *          props: {},
  *          options?: DialogServiceInterfaceAddOptions
  *      ): () => void;
@@ -21,57 +25,66 @@ import { markRaw, reactive } from "@odoo/owl";
  */
 
 export const dialogService = {
+    dependencies: ["overlay"],
     /** @returns {DialogServiceInterface} */
-    start(env) {
-        const dialogs = reactive({});
-        let dialogId = 0;
+    start(env, { overlay }) {
+        const stack = [];
+        let nextId = 0;
 
-        registry.category("main_components").add("DialogContainer", {
-            Component: DialogContainer,
-            props: { dialogs },
-        });
-
-        function add(dialogClass, props, options = {}) {
-            for (const dialog of Object.values(dialogs)) {
-                dialog.dialogData.isActive = false;
+        const deactivate = () => {
+            for (const subEnv of stack) {
+                subEnv.isActive = false;
             }
-            const id = ++dialogId;
-            function close() {
-                if (dialogs[id]) {
-                    delete dialogs[id];
-                    Object.values(dialogs).forEach((dialog, i, dialogArr) => {
-                        dialog.dialogData.isActive = i === dialogArr.length - 1;
-                    });
-                    if (options.onClose) {
-                        options.onClose();
-                    }
-                }
-            }
+        };
 
-            const dialog = {
+        const add = (dialogClass, props, options = {}) => {
+            const id = nextId++;
+            const close = () => remove();
+            const subEnv = reactive({
                 id,
-                class: dialogClass,
-                props: markRaw({ ...props, close }),
-                dialogData: {
-                    isActive: true,
-                    close,
-                    id,
-                },
-            };
+                close,
+                isActive: true,
+            });
+
+            deactivate();
+            stack.push(subEnv);
+            document.body.classList.add("modal-open");
+
             const scrollOrigin = { top: window.scrollY, left: window.scrollX };
-            dialog.dialogData.scrollToOrigin = () => {
-                if (!Object.keys(dialogs).length) {
+            subEnv.scrollToOrigin = () => {
+                if (!stack.length) {
                     window.scrollTo(scrollOrigin);
                 }
             };
-            dialogs[id] = dialog;
 
-            return close;
-        }
+            const remove = overlay.add(
+                DialogWrapper,
+                {
+                    subComponent: dialogClass,
+                    subProps: markRaw({ ...props, close }),
+                    subEnv,
+                },
+                {
+                    onRemove: () => {
+                        stack.pop();
+                        deactivate();
+                        if (stack.length) {
+                            stack.at(-1).isActive = true;
+                        } else {
+                            document.body.classList.remove("modal-open");
+                        }
+                        options.onClose?.();
+                    },
+                    rootId: options.context?.root?.el.getRootNode()?.host?.id,
+                }
+            );
+
+            return remove;
+        };
 
         function closeAll() {
-            for (const id in dialogs) {
-                dialogs[id].dialogData.close();
+            for (const dialog of [...stack].reverse()) {
+                dialog.close();
             }
         }
 

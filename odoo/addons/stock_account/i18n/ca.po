@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* stock_account
-# 
+#
 # Translators:
 # M Palau <mpalau@tda.ad>, 2022
 # Sandra Franch <sandra.franch@upc.edu>, 2022
@@ -10,7 +10,7 @@
 # César López Ramírez <cesar.lopez@coopdevs.org>, 2022
 # RGB Consulting <odoo@rgbconsulting.com>, 2022
 # Quim - eccit <quim@eccit.com>, 2022
-# Josep Anton Belchi, 2022
+# jabelchi, 2022
 # Jonatan Gk, 2022
 # Martin Trigaux, 2022
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
@@ -18,54 +18,44 @@
 # marcescu, 2022
 # Cristian Cruz, 2022
 # Ivan Espinola, 2023
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"POT-Creation-Date: 2023-05-16 13:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:55+0000\n"
 "Last-Translator: Ivan Espinola, 2023\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid " Product cost updated from %(previous)s to %(new_cost)s."
 msgstr " Cost de producte actualitzat des de %(previous)s to %(new_cost)s."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_quant.py:0
-#, python-format
 msgid " [Accounted on %s]"
 msgstr "[Comptat a %s]"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "%(user)s changed cost from %(previous)s to %(new_price)s - %(product)s"
 msgstr "%(user)scanvi de cost de %(previous)s a %(new_price)s - %(product)s"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
-msgid ""
-"%(user)s changed stock valuation from  %(previous)s to %(new_value)s - "
-"%(product)s"
-msgstr ""
-"%(user)s ha canviat la valoració de l'estoc des de  %(previous)s a "
-"%(new_value)s - %(product)s"
+msgid "%(user)s changed stock valuation from  %(previous)s to %(new_value)s - %(product)s"
+msgstr "%(user)s ha canviat la valoració de l'estoc des de  %(previous)s a %(new_value)s - %(product)s"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
@@ -80,6 +70,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_account.view_category_property_form
 msgid "<b>Set other input/output accounts on specific </b>"
 msgstr "<b>Estableix altres comptes d'entrada/sortida en concret </b>"
+
+#. module: stock_account
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_picking
+msgid "<span class=\"o_stat_text\">Valuation</span>"
+msgstr ""
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_account_report_invoice_document
@@ -135,11 +130,8 @@ msgstr "Afegir valoració manual"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
-msgid ""
-"Add additional cost (transport, customs, ...) in the value of the product."
-msgstr ""
-"Afegeix un cost addicional (transport, duanes, ...) en el valor del "
-"producte."
+msgid "Add additional cost (transport, customs, ...) in the value of the product."
+msgstr "Afegeix un cost addicional (transport, duanes, ...) en el valor del producte."
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
@@ -154,12 +146,8 @@ msgstr "Valor afegit"
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_res_config_settings__module_stock_landed_costs
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
-msgid ""
-"Affect landed costs on reception operations and split them among products to"
-" update their cost price."
-msgstr ""
-"Afecta als preus d'entrega en les operacions de recepció i els divideix "
-"entre productes per actualitzar el seu preu de cost."
+msgid "Affect landed costs on reception operations and split them among products to update their cost price."
+msgstr "Afecta als preus d'entrega en les operacions de recepció i els divideix entre productes per actualitzar el seu preu de cost."
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_move__analytic_account_line_id
@@ -170,6 +158,11 @@ msgstr "Línia de compte analítica"
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_valuation__real_time
 msgid "Automated"
 msgstr "Automatitzat"
+
+#. module: stock_account
+#: model:ir.model.fields,field_description:stock_account.field_res_config_settings__group_stock_accounting_automatic
+msgid "Automatic Stock Accounting"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_product__avg_cost
@@ -189,38 +182,20 @@ msgstr "Cancel·lar"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"Cannot find a stock input account for the product %s. You must define one on"
-" the product category, or on the location, before processing this operation."
-msgstr ""
-"No es pot trobar un compte d'entrada d'estoc del producte %s. Heu de definir"
-" un a la categoria de producte o a la ubicació abans de processar aquesta "
-"operació"
+msgid "Cannot find a stock input account for the product %s. You must define one on the product category, or on the location, before processing this operation."
+msgstr "No es pot trobar un compte d'entrada d'estoc del producte %s. Heu de definir un a la categoria de producte o a la ubicació abans de processar aquesta operació"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"Cannot find a stock output account for the product %s. You must define one "
-"on the product category, or on the location, before processing this "
-"operation."
-msgstr ""
-"No es pot trobar un compte de sortida d'estoc del producte %s. Heu de "
-"definir un a la categoria de producte o a la ubicació abans de processar "
-"aquesta operació"
+msgid "Cannot find a stock output account for the product %s. You must define one on the product category, or on the location, before processing this operation."
+msgstr "No es pot trobar un compte de sortida d'estoc del producte %s. Heu de definir un a la categoria de producte o a la ubicació abans de processar aquesta operació"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"Changing your cost method is an important change that will impact your "
-"inventory valuation. Are you sure you want to make that change?"
-msgstr ""
-"Canviar el mètode de cost suposa un canvi important que impactarà en la "
-"valoració de l'inventari. Segur que vols fer aquest canvi?"
+msgid "Changing your cost method is an important change that will impact your inventory valuation. Are you sure you want to make that change?"
+msgstr "Canviar el mètode de cost suposa un canvi important que impactarà en la valoració de l'inventari. Segur que vols fer aquest canvi?"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quantity_history_inherit_stock_account
@@ -241,13 +216,8 @@ msgstr "Ajustos de configuració"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"Configuration error. Please configure the price difference account on the "
-"product or its category to process this operation."
-msgstr ""
-"Error de configuració. Configureu el compte de diferència de preu al "
-"producte o la seva categoria per processar aquesta operació."
+msgid "Configuration error. Please configure the price difference account on the product or its category to process this operation."
+msgstr "Error de configuració. Configureu el compte de diferència de preu al producte o la seva categoria per processar aquesta operació."
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_cost_method
@@ -260,10 +230,8 @@ msgstr "Mètode cost"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "Costing method change for product category %s: from %s to %s."
-msgstr ""
-"Canvi del mètode de cost per a la categoria de producte %s: de %s a %s."
+msgstr "Canvi del mètode de cost per a la categoria de producte %s: de %s a %s."
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__account_id
@@ -322,18 +290,13 @@ msgstr "Data"
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_quant__accounting_date
-msgid ""
-"Date at which the accounting entries will be created in case of automated "
-"inventory valuation. If empty, the inventory date will be used."
-msgstr ""
-"Data en què es crearan les entrades comptables en cas de valoració "
-"automàtica de l'inventari. Si està buit, s'utilitzarà la data d'inventari."
+msgid "Date at which the accounting entries will be created in case of automated inventory valuation. If empty, the inventory date will be used."
+msgstr "Data en què es crearan les entrades comptables en cas de valoració automàtica de l'inventari. Si està buit, s'utilitzarà la data d'inventari."
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_valuation_layer__uom_id
 msgid "Default unit of measure used for all stock operations."
-msgstr ""
-"Unit de mesura per defecte utilitzada per totes les operacions d'estoc."
+msgstr "Unit de mesura per defecte utilitzada per totes les operacions d'estoc."
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__description
@@ -357,21 +320,10 @@ msgid "Display Serial & Lot Number on Invoices"
 msgstr "Mostrar el número de sèrie i de lot en les factures"
 
 #. module: stock_account
-#: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
-msgid "Documentation"
-msgstr "Documentació "
-
-#. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"Due to a change of product category (from %s to %s), the costing method"
-"                                has changed for product template %s: from %s"
-" to %s."
-msgstr ""
-"A causa d'un canvi de categoria de producte (de %s a %s), el mètode de cost "
-"ha canviat per a la plantilla de producte %s:de %sa %s."
+msgid "Due to a change of product category (from %s to %s), the costing method                                has changed for product template %s: from %s to %s."
+msgstr "A causa d'un canvi de categoria de producte (de %s a %s), el mètode de cost ha canviat per a la plantilla de producte %s:de %sa %s."
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_cost_method__fifo
@@ -406,7 +358,6 @@ msgstr "Ubicacions d'inventari"
 
 #. module: stock_account
 #. odoo-python
-#: code:addons/stock_account/__init__.py:0
 #: code:addons/stock_account/models/account_chart_template.py:0
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_valuation
 #: model:ir.model.fields,field_description:stock_account.field_product_product__valuation
@@ -414,7 +365,6 @@ msgstr "Ubicacions d'inventari"
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__property_valuation
 #: model_terms:ir.ui.view,arch_db:stock_account.view_category_property_form_stock
 #: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
-#, python-format
 msgid "Inventory Valuation"
 msgstr "Valoració del inventari"
 
@@ -450,12 +400,6 @@ msgid "Landed Costs"
 msgstr "Costos en destí"
 
 #. module: stock_account
-#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer____last_update
-#: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation____last_update
-msgid "Last Modified on"
-msgstr "Última modificació el "
-
-#. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__write_uid
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer_revaluation__write_uid
 msgid "Last Updated by"
@@ -474,8 +418,8 @@ msgstr "Enllaçat a"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
-msgid "Lots &amp; Serial numbers will appear on the invoice"
-msgstr "Lots i segell; els números de sèrie apareixeran en la factura"
+msgid "Lots & Serial numbers will appear on the invoice"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields.selection,name:stock_account.selection__product_category__property_valuation__manual_periodic
@@ -485,14 +429,12 @@ msgstr "Manual"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "Manual Stock Valuation: %s."
 msgstr "Manual Stock Valuation: %s."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "Manual Stock Valuation: No Reason Given."
 msgstr "Valoració manual d'estoc: No s'ha donat cap raó."
 
@@ -549,6 +491,7 @@ msgstr "Producte"
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_product_category
 #: model:ir.model.fields,field_description:stock_account.field_stock_valuation_layer__categ_id
+#: model_terms:ir.ui.view,arch_db:stock_account.view_inventory_valuation_search
 msgid "Product Category"
 msgstr "Categoria del producte"
 
@@ -561,7 +504,6 @@ msgstr "Moviment del producte (línia de moviment d'estoc)"
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view
-#, python-format
 msgid "Product Revaluation"
 msgstr "Revaluació del producte"
 
@@ -578,7 +520,6 @@ msgstr "Variants de producte"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "Product value manually modified (from %s to %s)"
 msgstr "Valor del producte modificat manualment (de%s a %s)"
 
@@ -640,7 +581,6 @@ msgstr "Retorn de la línia de recollida"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "Revaluation of %s"
 msgstr " Revaluació de%s"
 
@@ -668,6 +608,11 @@ msgstr ""
 "Preu estàndard: Els productes es valoren segons el seu cost estàndard definit on el producte.\n"
 "Cost mitjà (AVCO): Els productes es valoren al cost mitjà ponderat.\n"
 "First In First Out (FIFO): Els productes estan valorats suposant que els que entrin primer seran els que surtin primer."
+
+#. module: stock_account
+#: model:res.groups,name:stock_account.group_stock_accounting_automatic
+msgid "Stock Accounting Automatic"
+msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_product_category__property_stock_account_input_categ_id
@@ -699,7 +644,7 @@ msgid "Stock Quantity History"
 msgstr "Historial de quantitats d'estoc"
 
 #. module: stock_account
-#: model:ir.model,name:stock_account.model_report_stock_report_product_product_replenishment
+#: model:ir.model,name:stock_account.model_stock_forecasted_product_product
 msgid "Stock Replenishment Report"
 msgstr "Informe de la recuperació de la pila principal"
 
@@ -714,7 +659,6 @@ msgstr "La pila principal sol·licita un comptador d'inventoris"
 #: model:ir.actions.act_window,name:stock_account.stock_valuation_layer_action
 #: model:ir.actions.act_window,name:stock_account.stock_valuation_layer_report_action
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quant_tree_editable_inherit
-#, python-format
 msgid "Stock Valuation"
 msgstr "Valoració d'estoc"
 
@@ -747,12 +691,8 @@ msgstr "Capa de valoració d'estoc"
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_product_product__company_currency_id
-msgid ""
-"Technical field to correctly show the currently selected company's currency "
-"that corresponds to the totaled value of the product's valuation layers"
-msgstr ""
-"Camp tècnic per a mostrar correctament la moneda de l'empresa seleccionada "
-"que correspon al valor total de les capes de valoració del producte"
+msgid "Technical field to correctly show the currently selected company's currency that corresponds to the totaled value of the product's valuation layers"
+msgstr "Camp tècnic per a mostrar correctament la moneda de l'empresa seleccionada que correspon al valor total de les capes de valoració del producte"
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_picking__country_code
@@ -766,86 +706,44 @@ msgstr ""
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"The Stock Input and/or Output accounts cannot be the same as the Stock "
-"Valuation account."
-msgstr ""
-"Els comptes d'entrada i/o sortida d'estoc no poden ser els mateixos que el "
-"compte de Valuació d'estoc."
+msgid "The Stock Input and/or Output accounts cannot be the same as the Stock Valuation account."
+msgstr "Els comptes d'entrada i/o sortida d'estoc no poden ser els mateixos que el compte de Valuació d'estoc."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"The action leads to the creation of a journal entry, for which you don't "
-"have the access rights."
-msgstr ""
-"L'acció Iniciatives condueix a la creació d'una entrada de diari, per a la "
-"qual no tens els drets d'accés."
+msgid "The action leads to the creation of a journal entry, for which you don't have the access rights."
+msgstr "L'acció Iniciatives condueix a la creació d'una entrada de diari, per a la qual no tens els drets d'accés."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "The added value doesn't have any impact on the stock valuation"
 msgstr "El valor afegit no té cap impacte en la valoració de l'estoc"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"The move lines are not in a consistent state: some are entering and other "
-"are leaving the company."
-msgstr ""
-"Les línies de moviment no estan en un estat consistent: unes entren i altres"
-" surten de la companyia."
+msgid "The move lines are not in a consistent state: some are entering and other are leaving the company."
+msgstr "Les línies de moviment no estan en un estat consistent: unes entren i altres surten de la companyia."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"The move lines are not in a consistent states: they are doing an "
-"intercompany in a single step while they should go through the intercompany "
-"transit location."
-msgstr ""
-"Les línies de moviment no estan en estats consistents: estan fent una "
-"intercompanyia en un sol pas mentre haurien de passar per la ubicació de "
-"trànsit"
+msgid "The move lines are not in a consistent states: they are doing an intercompany in a single step while they should go through the intercompany transit location."
+msgstr "Les línies de moviment no estan en estats consistents: estan fent una intercompanyia en un sol pas mentre haurien de passar per la ubicació de trànsit"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"The move lines are not in a consistent states: they do not share the same "
-"origin or destination company."
-msgstr ""
-"Les línies de moviment no estan en un estat consistent: No comparteixen la "
-"mateixa empresa d'origen o destí."
-
-#. module: stock_account
-#. odoo-python
-#: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
-msgid ""
-"The value of a stock valuation layer cannot be negative. Landed cost could "
-"be use to correct a specific transfer."
-msgstr ""
+msgid "The move lines are not in a consistent states: they do not share the same origin or destination company."
+msgstr "Les línies de moviment no estan en un estat consistent: No comparteixen la mateixa empresa d'origen o destí."
 
 #. module: stock_account
 #: model_terms:ir.actions.act_window,help:stock_account.stock_valuation_layer_action
 #: model_terms:ir.actions.act_window,help:stock_account.stock_valuation_layer_report_action
-msgid ""
-"There are no valuation layers. Valuation layers are created when there are "
-"product moves that impact the valuation of the stock."
-msgstr ""
-"No hi ha capes de valoració. Les capes de valoració es creen quan hi ha "
-"moviments de producte que afecten la valoració de l'estoc."
+msgid "There are no valuation layers. Valuation layers are created when there are product moves that impact the valuation of the stock."
+msgstr "No hi ha capes de valoració. Les capes de valoració es creen quan hi ha moviments de producte que afecten la valoració de l'estoc."
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_report_tree
@@ -874,12 +772,8 @@ msgstr "Transferència"
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_move__to_refund
 #: model:ir.model.fields,help:stock_account.field_stock_return_picking_line__to_refund
-msgid ""
-"Trigger a decrease of the delivered/received quantity in the associated Sale"
-" Order/Purchase Order"
-msgstr ""
-"Desactiva la disminució de la quantitat entregada/rebuda a la comanda de "
-"compra/compra associada"
+msgid "Trigger a decrease of the delivered/received quantity in the associated Sale Order/Purchase Order"
+msgstr "Desactiva la disminució de la quantitat entregada/rebuda a la comanda de compra/compra associada"
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.product_product_stock_tree_inherit_stock_account
@@ -905,40 +799,18 @@ msgstr "Actualitza les quantitats en SO/PO"
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_location__valuation_in_account_id
-msgid ""
-"Used for real-time inventory valuation. When set on a virtual location (non "
-"internal type), this account will be used to hold the value of products "
-"being moved from an internal location into this location, instead of the "
-"generic Stock Output Account set on the product. This has no effect for "
-"internal locations."
-msgstr ""
-"Utilitzat per una valoració en temps real de l'inventari. Quan està "
-"establert en una ubicació virtual (no de temps intern), aquest compte "
-"s'utilitzarà per mantenir el valor dels productes que són moguts d'una "
-"ubicació interna a aquesta ubicació, en lloc del compte de sortida "
-"d'existències genèric establert en el producte. No té efecte per ubicacions "
-"internes."
+msgid "Used for real-time inventory valuation. When set on a virtual location (non internal type), this account will be used to hold the value of products being moved from an internal location into this location, instead of the generic Stock Output Account set on the product. This has no effect for internal locations."
+msgstr "Utilitzat per una valoració en temps real de l'inventari. Quan està establert en una ubicació virtual (no de temps intern), aquest compte s'utilitzarà per mantenir el valor dels productes que són moguts d'una ubicació interna a aquesta ubicació, en lloc del compte de sortida d'existències genèric establert en el producte. No té efecte per ubicacions internes."
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_stock_location__valuation_out_account_id
-msgid ""
-"Used for real-time inventory valuation. When set on a virtual location (non "
-"internal type), this account will be used to hold the value of products "
-"being moved out of this location and into an internal location, instead of "
-"the generic Stock Output Account set on the product. This has no effect for "
-"internal locations."
-msgstr ""
-"Utilitzat per una valoració en temps real de l'inventari. Quan està "
-"establert en una ubicació virtual (no de temps intern), aquest compte "
-"s'utilitzarà per mantenir el valor dels productes que són moguts fora de la "
-"ubicació a una ubicació interna, en lloc del compte de sortida d'existències"
-" genèric establert en el producte. No té efecte per ubicacions internes."
+msgid "Used for real-time inventory valuation. When set on a virtual location (non internal type), this account will be used to hold the value of products being moved out of this location and into an internal location, instead of the generic Stock Output Account set on the product. This has no effect for internal locations."
+msgstr "Utilitzat per una valoració en temps real de l'inventari. Quan està establert en una ubicació virtual (no de temps intern), aquest compte s'utilitzarà per mantenir el valor dels productes que són moguts fora de la ubicació a una ubicació interna, en lloc del compte de sortida d'existències genèric establert en el producte. No té efecte per ubicacions internes."
 
 #. module: stock_account
 #: model:ir.ui.menu,name:stock_account.menu_valuation
 #: model_terms:ir.ui.view,arch_db:stock_account.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_form
-#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_picking
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quant_tree_editable_inherit
 msgid "Valuation"
 msgstr "Valoració"
@@ -954,20 +826,16 @@ msgid "Valuation Report"
 msgstr "Informe de valoració"
 
 #. module: stock_account
-#. odoo-javascript
-#: code:addons/stock_account/static/src/xml/inventory_report.xml:0
+#: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_tree
 #: model_terms:ir.ui.view,arch_db:stock_account.view_stock_quantity_history_inherit_stock_account
-#, python-format
 msgid "Valuation at Date"
 msgstr "Valoració a la data"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "Valuation method change for product category %s: from %s to %s."
-msgstr ""
-"Canvi de mètode de valoració per a la categoria de productes %s: de %s a %s."
+msgstr "Canvi de mètode de valoració per a la categoria de productes %s: de %s a %s."
 
 #. module: stock_account
 #: model:ir.model.fields,field_description:stock_account.field_stock_quant__value
@@ -977,7 +845,6 @@ msgstr "Valor"
 #. module: stock_account
 #. odoo-javascript
 #: code:addons/stock_account/static/src/stock_account_forecasted/forecasted_header.xml:0
-#, python-format
 msgid "Value On Hand:"
 msgstr "Valor a mà:"
 
@@ -989,18 +856,13 @@ msgstr "Valor Svl"
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "Warning"
 msgstr "Avís"
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_product_category__property_stock_valuation_account_id
-msgid ""
-"When automated inventory valuation is enabled on a product, this account "
-"will hold the current value of the products."
-msgstr ""
-"Quan la valoració automàtica de l'inventari està activada en un producte, "
-"aquest compte tindrà el valor actual dels productes."
+msgid "When automated inventory valuation is enabled on a product, this account will hold the current value of the products."
+msgstr "Quan la valoració automàtica de l'inventari està activada en un producte, aquest compte tindrà el valor actual dels productes."
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_product_category__property_stock_account_output_categ_id
@@ -1015,111 +877,62 @@ msgstr ""
 
 #. module: stock_account
 #: model:ir.model.fields,help:stock_account.field_product_category__property_stock_journal
-msgid ""
-"When doing automated inventory valuation, this is the Accounting Journal in "
-"which entries will be automatically posted when stock moves are processed."
-msgstr ""
-"En realitzar la valoració automatitzada de l'inventari, aquest és el Diari "
-"de Comptabilitat en el qual les entrades es publicaran automàticament quan "
-"es processin els moviments d'estoc."
+msgid "When doing automated inventory valuation, this is the Accounting Journal in which entries will be automatically posted when stock moves are processed."
+msgstr "En realitzar la valoració automatitzada de l'inventari, aquest és el Diari de Comptabilitat en el qual les entrades es publicaran automàticament quan es processin els moviments d'estoc."
 
 #. module: stock_account
 #: model:ir.model,name:stock_account.model_stock_valuation_layer_revaluation
 msgid "Wizard model to reavaluate a stock inventory for a product"
-msgstr ""
-"Model d'assistent per a reavaluar un inventari d'existències per a un "
-"producte"
+msgstr "Model d'assistent per a reavaluar un inventari d'existències per a un producte"
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "You cannot revalue a product with a standard cost method."
 msgstr "No es pot revaloritzar un producte amb un mètode de cost estàndard."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/wizard/stock_valuation_layer_revaluation.py:0
-#, python-format
 msgid "You cannot revalue a product with an empty or negative stock."
 msgstr "No es pot revaloritzar un producte amb un estoc buit o negatiu."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"You cannot update the cost of a product in automated valuation as it leads "
-"to the creation of a journal entry, for which you don't have the access "
-"rights."
-msgstr ""
-"No es pot actualitzar el cost d'un producte en la valoració automatitzada, "
-"ja que condueix a la creació iniciatives d'una entrada de diari, per a la "
-"qual no es tenen els drets d'accés."
+msgid "You cannot update the cost of a product in automated valuation as it leads to the creation of a journal entry, for which you don't have the access rights."
+msgstr "No es pot actualitzar el cost d'un producte en la valoració automatitzada, ja que condueix a la creació iniciatives d'una entrada de diari, per a la qual no es tenen els drets d'accés."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"You don't have any input valuation account defined on your product category."
-" You must define one before processing this operation."
-msgstr ""
-"No teniu cap compte de valoració d'entrada definit a la categoria del "
-"producte. Heu de definir-ne una abans de processar aquesta operació."
+msgid "You don't have any input valuation account defined on your product category. You must define one before processing this operation."
+msgstr "No teniu cap compte de valoració d'entrada definit a la categoria del producte. Heu de definir-ne una abans de processar aquesta operació."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"You don't have any stock input account defined on your product category. You"
-" must define one before processing this operation."
-msgstr ""
-"No teniu cap compte d'entrada d'estoc definit a la categoria del producte. "
-"Heu de definir-ne una abans de processar aquesta operació."
-
-#. module: stock_account
-#. odoo-python
-#: code:addons/stock_account/models/product.py:0
-#, python-format
-msgid ""
-"You don't have any output valuation account defined on your product "
-"category. You must define one before processing this operation."
-msgstr ""
+msgid "You don't have any stock input account defined on your product category. You must define one before processing this operation."
+msgstr "No teniu cap compte d'entrada d'estoc definit a la categoria del producte. Heu de definir-ne una abans de processar aquesta operació."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"You don't have any stock journal defined on your product category, check if "
-"you have installed a chart of accounts."
-msgstr ""
-"No teniu cap diari d'estoc definit a la vostra categoria de producte, "
-"comproveu si heu instal·lat un gràfic de comptes."
+msgid "You don't have any stock journal defined on your product category, check if you have installed a chart of accounts."
+msgstr "No teniu cap diari d'estoc definit a la vostra categoria de producte, comproveu si heu instal·lat un gràfic de comptes."
 
 #. module: stock_account
 #. odoo-python
-#: code:addons/stock_account/models/product.py:0
-#: code:addons/stock_account/models/product.py:0
 #: code:addons/stock_account/models/product.py:0
 #: code:addons/stock_account/models/stock_move.py:0
-#, python-format
-msgid ""
-"You don't have any stock valuation account defined on your product category."
-" You must define one before processing this operation."
-msgstr ""
-"No té cap compte de valoració d'estoc definida en la seva categoria de "
-"producte. Ha de definir un abans de processar aquesta operació."
+msgid "You don't have any stock valuation account defined on your product category. You must define one before processing this operation."
+msgstr "No té cap compte de valoració d'estoc definida en la seva categoria de producte. Ha de definir un abans de processar aquesta operació."
 
 #. module: stock_account
 #. odoo-python
 #: code:addons/stock_account/models/product.py:0
-#, python-format
 msgid "You must set a counterpart account on your product category."
-msgstr ""
-"Heu d'establir un compte de contrapartida a la categoria del producte."
+msgstr "Heu d'establir un compte de contrapartida a la categoria del producte."
 
 #. module: stock_account
 #: model_terms:ir.ui.view,arch_db:stock_account.stock_valuation_layer_revaluation_form_view

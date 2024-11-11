@@ -1,5 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo import Command
+
 from odoo.addons.payment.tests.common import PaymentCommon
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
@@ -7,14 +9,14 @@ from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 class AsiaPayCommon(AccountTestInvoicingCommon, PaymentCommon):
 
     @classmethod
-    def setUpClass(cls, chart_template_ref=None):
-        super().setUpClass(chart_template_ref=chart_template_ref)
+    def setUpClass(cls):
+        super().setUpClass()
 
         cls.asiapay = cls._prepare_provider('asiapay', update_values={
             'asiapay_merchant_id': '123456789',
-            'asiapay_currency_id': cls.currency_euro,
             'asiapay_secure_hash_secret': 'coincoin_motherducker',
             'asiapay_secure_hash_function': 'sha1',
+            'available_currency_ids': [Command.set(cls.currency_euro.ids)],
         })
 
         cls.provider = cls.asiapay

@@ -1,14 +1,13 @@
 /** @odoo-module **/
 
-import { patch } from 'web.utils';
+import { patch } from "@web/core/utils/patch";
 import { useService } from '@web/core/utils/hooks';
 import { WebsiteSwitcherSystray } from '@website/systray_items/website_switcher';
+import { onMounted, useState } from "@odoo/owl";
 
-const { onMounted, useState } = owl;
-
-patch(WebsiteSwitcherSystray.prototype, 'test_themes_website_switcher_systray', {
+patch(WebsiteSwitcherSystray.prototype, {
     setup() {
-        this._super();
+        super.setup();
 
         this.orm = useService('orm');
         this.tooltips = useState({});
@@ -19,10 +18,10 @@ patch(WebsiteSwitcherSystray.prototype, 'test_themes_website_switcher_systray', 
             const themesWebsites = await this.orm.call('website', 'get_test_themes_websites_theme_preview');
             for (const themeId in themesWebsites) {
                 this.tooltips[themeId] = {
-                    tooltipTemplate: 'test_themes.ThemeTooltip',
-                    tooltipPosition: 'left',
-                    tooltipDelay: 100,
-                    tooltipInfo: JSON.stringify({url: themesWebsites[themeId]}),
+                    "data-tooltip-template": 'test_themes.ThemeTooltip',
+                    "data-tooltip-position": 'left',
+                    "data-tooltip-delay": 100,
+                    "data-tooltip-info": JSON.stringify({url: themesWebsites[themeId]}),
                 };
             }
         });

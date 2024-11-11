@@ -1,47 +1,67 @@
-/** @odoo-module **/
-
+import { onWillUnmount, status, useComponent } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
-import { onWillUnmount, status, useComponent } from "@odoo/owl";
+/**
+ * @typedef {import("@web/core/popover/popover_service").PopoverServiceAddFunction} PopoverServiceAddFunction
+ * @typedef {import("@web/core/popover/popover_service").PopoverServiceAddOptions} PopoverServiceAddOptions
+ */
 
-export function usePopover() {
-    const removeFns = new Set();
-    const service = useService("popover");
-    const component = useComponent();
+/**
+ * @typedef PopoverHookReturnType
+ * @property {(target: string | HTMLElement, props: object) => void} open
+ *  - Signals the manager to open the configured popover
+ *    component on the target, with the given props.
+ * @property {() => void} close
+ *  - Signals the manager to remove the popover.
+ * @property {boolean} isOpen
+ *  - Whether the popover is currently open.
+ */
 
-    onWillUnmount(function () {
-        for (const removeFn of removeFns) {
-            removeFn();
-        }
-        removeFns.clear();
-    });
+/**
+ * @param {PopoverServiceAddFunction} addFn
+ * @param {typeof import("@odoo/owl").Component} component
+ * @param {PopoverServiceAddOptions} options
+ * @returns {PopoverHookReturnType}
+ */
+export function makePopover(addFn, component, options) {
+    let removeFn = null;
+    function close() {
+        removeFn?.();
+    }
     return {
-        /**
-         * Signals the manager to add a popover.
-         *
-         * @param {string | HTMLElement}    target
-         * @param {any}                     Component
-         * @param {Object}                  props
-         * @param {Object}                  [options]
-         * @param {boolean}                 [options.closeOnClickAway=true]
-         * @param {function()}              [options.onClose]
-         * @param {function()}              [options.preventClose]
-         * @param {string}                  [options.popoverClass]
-         * @param {string}                  [options.position]
-         * @returns {function()}
-         */
-        add(target, Component, props, options = {}) {
+        open(target, props) {
+            close();
             const newOptions = Object.create(options);
-            newOptions.onClose = function () {
-                removeFns.delete(removeFn);
-                if (options.onClose && status(component) !== "destroyed") {
-                    options.onClose();
-                }
+            newOptions.onClose = () => {
+                removeFn = null;
+                options.onClose?.();
             };
-
-            const removeFn = service.add(target, Component, props, newOptions);
-            removeFns.add(removeFn);
-            return removeFn;
+            removeFn = addFn(target, component, props, newOptions);
+        },
+        close,
+        get isOpen() {
+            return Boolean(removeFn);
         },
     };
+}
+
+/**
+ * Manages a component to be used as a popover.
+ *
+ * @param {typeof import("@odoo/owl").Component} component
+ * @param {PopoverServiceAddOptions} [options]
+ * @returns {PopoverHookReturnType}
+ */
+export function usePopover(component, options = {}) {
+    const popoverService = useService("popover");
+    const owner = useComponent();
+    const newOptions = Object.create(options);
+    newOptions.onClose = () => {
+        if (status(owner) !== "destroyed") {
+            options.onClose?.();
+        }
+    };
+    const popover = makePopover(popoverService.add, component, newOptions);
+    onWillUnmount(popover.close);
+    return popover;
 }

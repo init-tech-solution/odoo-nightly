@@ -2,12 +2,13 @@
 
 import { registry } from "@web/core/registry";
 import { useService, useBus } from "@web/core/utils/hooks";
-
-const { Component, onWillStart, useState } = owl;
+import { Component, onWillStart, useState } from "@odoo/owl";
 
 const websiteSystrayRegistry = registry.category('website_systray');
 
 export class EditInBackendSystray extends Component {
+    static template = "website.EditInBackendSystray";
+    static props = {};
     setup() {
         this.websiteService = useService('website');
         this.actionService = useService('action');
@@ -32,11 +33,10 @@ export class EditInBackendSystray extends Component {
         this.state.mainObjectName = await this.websiteService.getUserModelName();
     }
 }
-EditInBackendSystray.template = "website.EditInBackendSystray";
 
 export const systrayItem = {
     Component: EditInBackendSystray,
     isDisplayed: env => env.services.website.currentWebsite && env.services.website.currentWebsite.metadata.editableInBackend,
 };
 
-registry.category("website_systray").add("EditInBackend", systrayItem, { sequence: 9 });
+registry.category("website_systray").add("EditInBackend", systrayItem, { sequence: 10 });

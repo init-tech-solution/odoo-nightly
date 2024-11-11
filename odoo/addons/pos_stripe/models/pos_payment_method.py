@@ -19,6 +19,12 @@ class PosPaymentMethod(models.Model):
     # Stripe
     stripe_serial_number = fields.Char(help='[Serial number of the stripe terminal], for example: WSC513105011295', copy=False)
 
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        params = super()._load_pos_data_fields(config_id)
+        params += ['stripe_serial_number']
+        return params
+
     @api.constrains('stripe_serial_number')
     def _check_stripe_serial_number(self):
         for payment_method in self:
@@ -28,8 +34,8 @@ class PosPaymentMethod(models.Model):
                                                    ('stripe_serial_number', '=', payment_method.stripe_serial_number)],
                                                   limit=1)
             if existing_payment_method:
-                raise ValidationError(_('Terminal %s is already used on payment method %s.',\
-                     payment_method.stripe_serial_number, existing_payment_method.display_name))
+                raise ValidationError(_('Terminal %(terminal)s is already used on payment method %(payment_method)s.',
+                     terminal=payment_method.stripe_serial_number, payment_method=existing_payment_method.display_name))
 
     def _get_stripe_payment_provider(self):
         stripe_payment_provider = self.env['payment.provider'].search([
@@ -96,14 +102,11 @@ class PosPaymentMethod(models.Model):
         try:
             data = werkzeug.urls.url_encode(params)
             resp = requests.post(endpoint, data=data, auth=(self.sudo()._get_stripe_secret_key(), ''), timeout=TIMEOUT)
-            resp = resp.json()
-            redacted_resp = {k: '<redacted in odoo logs>' if k == 'client_secret' else v for k, v in resp.items()}
-            _logger.info("Stripe payment intent response: %s", redacted_resp)
         except requests.exceptions.RequestException:
             _logger.exception("Failed to call stripe_payment_intent endpoint")
             raise UserError(_("There are some issues between us and Stripe, try again later."))
 
-        return resp
+        return resp.json()
 
     @api.model
     def stripe_capture_payment(self, paymentIntentId, amount=None):

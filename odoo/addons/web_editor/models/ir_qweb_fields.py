@@ -8,28 +8,26 @@ as well as render a few fields differently.
 Also, adds methods to convert values back to Odoo models.
 """
 
-import babel
 import base64
 import io
 import json
 import logging
 import os
 import re
+from datetime import datetime
 
+import babel
 import pytz
 import requests
-from datetime import datetime
 from lxml import etree, html
+from markupsafe import Markup, escape_silent
 from PIL import Image as I
 from werkzeug import urls
 
-import odoo.modules
-
 from odoo import _, api, models, fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import ustr, posix_to_ldml, pycompat
-from odoo.tools import html_escape as escape
-from odoo.tools.misc import get_lang, babel_locale_parse
+from odoo.tools import posix_to_ldml
+from odoo.tools.misc import file_open, get_lang, babel_locale_parse
 
 REMOTE_CONNECTION_TIMEOUT = 2.5
 
@@ -59,10 +57,17 @@ class IrQWeb(models.AbstractModel):
                 sub_call = el.get('t-call')
                 if sub_call:
                     el.set('t-options', f"{{'snippet-key': '{snippet_key}', 'snippet-sub-call-key': '{sub_call}'}}")
-                # If it already has a data-snippet it is a saved or an inherited snippet.
-                # Do not override it.
-                elif 'data-snippet' not in el.attrib:
-                    el.attrib['data-snippet'] = snippet_key.split('.', 1)[-1]
+                else:
+                    # If it already has a data-snippet it is a saved or an
+                    # inherited snippet. Do not override it.
+                    if 'data-snippet' not in el.attrib:
+                        el.attrib['data-snippet'] = snippet_key.split('.', 1)[-1]
+
+                    # If it already has a data-name it is a saved or an
+                    # inherited snippet. Do not override it.
+                    snippet_name = compile_context.get('snippet-name')
+                    if snippet_name and 'data-name' not in el.attrib:
+                        el.attrib['data-name'] = snippet_name
 
         return super()._compile_node(el, compile_context, indent)
 
@@ -79,16 +84,22 @@ class IrQWeb(models.AbstractModel):
         view = self.env['ir.ui.view']._get(key).sudo()
         name = el.attrib.pop('string', view.name)
         thumbnail = el.attrib.pop('t-thumbnail', "oe-thumbnail")
+        image_preview = el.attrib.pop('t-image-preview', None)
         # Forbid sanitize contains the specific reason:
         # - "true": always forbid
         # - "form": forbid if forms are sanitized
         forbid_sanitize = el.attrib.pop('t-forbid-sanitize', None)
-        div = '<div name="%s" data-oe-type="snippet" data-oe-thumbnail="%s" data-oe-snippet-id="%s" data-oe-keywords="%s" %s>' % (
-            escape(pycompat.to_text(name)),
-            escape(pycompat.to_text(thumbnail)),
-            escape(pycompat.to_text(view.id)),
-            escape(pycompat.to_text(el.findtext('keywords'))),
-            f'data-oe-forbid-sanitize="{forbid_sanitize}"' if forbid_sanitize else '',
+        snippet_group = el.attrib.pop('snippet-group', None)
+        group = el.attrib.pop('group', None)
+        div = Markup('<div name="%s" data-oe-type="snippet" data-o-image-preview="%s" data-oe-thumbnail="%s" data-oe-snippet-id="%s" data-oe-keywords="%s" %s %s %s>') % (
+            name,
+            escape_silent(image_preview),
+            thumbnail,
+            view.id,
+            escape_silent(el.findtext('keywords')),
+            Markup('data-oe-forbid-sanitize="%s"') % forbid_sanitize if forbid_sanitize else '',
+            Markup('data-o-snippet-group="%s"') % snippet_group if snippet_group else '',
+            Markup('data-o-group="%s"') % group if group else '',
         )
         self._append_text(div, compile_context)
         code = self._compile_node(el, compile_context, indent)
@@ -97,22 +108,27 @@ class IrQWeb(models.AbstractModel):
 
     def _compile_directive_snippet_call(self, el, compile_context, indent):
         key = el.attrib.pop('t-snippet-call')
+        snippet_name = el.attrib.pop('string', None)
         el.set('t-call', key)
-        el.set('t-options', f"{{'snippet-key': {key!r}}}")
+        el.set('t-options', f"{{'snippet-key': {key!r}, 'snippet-name': {snippet_name!r}}}")
         return self._compile_node(el, compile_context, indent)
 
     def _compile_directive_install(self, el, compile_context, indent):
         key = el.attrib.pop('t-install')
         thumbnail = el.attrib.pop('t-thumbnail', 'oe-thumbnail')
-        if self.user_has_groups('base.group_system'):
+        image_preview = el.attrib.pop('t-image-preview', None)
+        group = el.attrib.pop('group', None)
+        if self.env.user.has_group('base.group_system'):
             module = self.env['ir.module.module'].search([('name', '=', key)])
             if not module or module.state == 'installed':
                 return []
             name = el.attrib.get('string') or 'Snippet'
-            div = '<div name="%s" data-oe-type="snippet" data-module-id="%s" data-oe-thumbnail="%s"><section/></div>' % (
-                escape(pycompat.to_text(name)),
+            div = Markup('<div name="%s" data-oe-type="snippet" data-module-id="%s" data-o-image-preview="%s" data-oe-thumbnail="%s" %s><section/></div>') % (
+                name,
                 module.id,
-                escape(pycompat.to_text(thumbnail))
+                escape_silent(image_preview),
+                thumbnail,
+                Markup('data-o-group="%s"') % group if group else '',
             )
             self._append_text(div, compile_context)
         return []
@@ -215,6 +231,10 @@ class ManyToOne(models.AbstractModel):
             if many2one:
                 attrs['data-oe-many2one-id'] = many2one.id
                 attrs['data-oe-many2one-model'] = many2one._name
+            if options.get('null_text'):
+                attrs['data-oe-many2one-allowreset'] = 1
+                if not many2one:
+                    attrs['data-oe-many2one-model'] = record._fields[field_name].comodel_name
         return attrs
 
     @api.model
@@ -224,12 +244,18 @@ class ManyToOne(models.AbstractModel):
         M2O = self.env[field.comodel_name]
         field_name = element.get('data-oe-field')
         many2one_id = int(element.get('data-oe-many2one-id'))
+
+        allow_reset = element.get('data-oe-many2one-allowreset')
+        if allow_reset and not many2one_id:
+            # Reset the id of the many2one
+            Model.browse(id).write({field_name: False})
+            return None
+
         record = many2one_id and M2O.browse(many2one_id)
         if record and record.exists():
             # save the new id of the many2one
             Model.browse(id).write({field_name: many2one_id})
 
-        # not necessary, but might as well be explicit about it
         return None
 
 
@@ -267,13 +293,13 @@ class Date(models.AbstractModel):
                 attrs['data-oe-type'] = 'datetime'
                 return attrs
 
-            lg = self.env['res.lang']._lang_get(self.env.user.lang) or get_lang(self.env)
+            lg = get_lang(self.env, self.env.user.lang)
             locale = babel_locale_parse(lg.code)
             babel_format = value_format = posix_to_ldml(lg.date_format, locale=locale)
 
             if record[field_name]:
                 date = fields.Date.from_string(record[field_name])
-                value_format = pycompat.to_text(babel.dates.format_date(date, format=babel_format, locale=locale))
+                value_format = babel.dates.format_date(date, format=babel_format, locale=locale)
 
             attrs['data-oe-original-with-format'] = value_format
         return attrs
@@ -284,7 +310,7 @@ class Date(models.AbstractModel):
         if not value:
             return False
 
-        lg = self.env['res.lang']._lang_get(self.env.user.lang) or get_lang(self.env)
+        lg = get_lang(self.env, self.env.user.lang)
         date = datetime.strptime(value, lg.date_format)
         return fields.Date.to_string(date)
 
@@ -301,7 +327,7 @@ class DateTime(models.AbstractModel):
         if options.get('inherit_branding'):
             value = record[field_name]
 
-            lg = self.env['res.lang']._lang_get(self.env.user.lang) or get_lang(self.env)
+            lg = get_lang(self.env, self.env.user.lang)
             locale = babel_locale_parse(lg.code)
             babel_format = value_format = posix_to_ldml('%s %s' % (lg.date_format, lg.time_format), locale=locale)
             tz = record.env.context.get('tz') or self.env.user.tz
@@ -312,7 +338,7 @@ class DateTime(models.AbstractModel):
             if value:
                 # convert from UTC (server timezone) to user timezone
                 value = fields.Datetime.context_timestamp(self.with_context(tz=tz), timestamp=value)
-                value_format = pycompat.to_text(babel.dates.format_datetime(value, format=babel_format, locale=locale))
+                value_format = babel.dates.format_datetime(value, format=babel_format, locale=locale)
                 value = fields.Datetime.to_string(value)
 
             attrs['data-oe-original'] = value
@@ -327,12 +353,12 @@ class DateTime(models.AbstractModel):
             return False
 
         # parse from string to datetime
-        lg = self.env['res.lang']._lang_get(self.env.user.lang) or get_lang(self.env)
+        lg = get_lang(self.env, self.env.user.lang)
         try:
             datetime_format = f'{lg.date_format} {lg.time_format}'
             dt = datetime.strptime(value, datetime_format)
         except ValueError:
-            raise ValidationError(_("The datetime %s does not match the format %s", value, datetime_format))
+            raise ValidationError(_("The datetime %(value)s does not match the format %(format)s", value=value, format=datetime_format))
 
         # convert back from user's timezone to UTC
         tz_name = element.attrib.get('data-oe-original-tz') or self.env.context.get('tz') or self.env.user.tz
@@ -373,8 +399,6 @@ class Selection(models.AbstractModel):
         value = element.text_content().strip()
         selection = field.get_description(self.env)['selection']
         for k, v in selection:
-            if isinstance(v, str):
-                v = ustr(v)
             if value == v:
                 return k
 
@@ -393,19 +417,25 @@ class HTML(models.AbstractModel):
         if options.get('inherit_branding'):
             field = record._fields[field_name]
             if field.sanitize:
-                if field.sanitize_overridable and not record.user_has_groups('base.group_sanitize_override'):
-                    try:
-                        field.convert_to_column(record[field_name], record)
-                    except UserError:
-                        # The field contains element(s) that would be removed if
-                        # sanitized. It means that someone who was part of a
-                        # group allowing to bypass the sanitation saved that
-                        # field previously. Mark the field as not editable.
-                        attrs['data-oe-sanitize-prevent-edition'] = 1
-                if not (field.sanitize_overridable and record.user_has_groups('base.group_sanitize_override')):
-                    # Don't mark the field as 'sanitize' if the sanitize is
-                    # defined as overridable and the user has the right to do so
-                    attrs['data-oe-sanitize'] = 1 if field.sanitize_form else 'allow_form'
+                if field.sanitize_overridable:
+                    if record.env.user.has_group('base.group_sanitize_override'):
+                        # Don't mark the field as 'sanitize' if the sanitize
+                        # is defined as overridable and the user has the right
+                        # to do so
+                        return attrs
+                    else:
+                        try:
+                            field.convert_to_column_insert(record[field_name], record)
+                        except UserError:
+                            # The field contains element(s) that would be
+                            # removed if sanitized. It means that someone who
+                            # was part of a group allowing to bypass the
+                            # sanitation saved that field previously. Mark the
+                            # field as not editable.
+                            attrs['data-oe-sanitize-prevent-edition'] = 1
+                            return attrs
+                # The field edition is not fully prevented and the sanitation cannot be bypassed
+                attrs['data-oe-sanitize'] = 'no_block' if field.sanitize_attributes else 1 if field.sanitize_form else 'allow_form'
 
         return attrs
 
@@ -431,6 +461,7 @@ class Image(models.AbstractModel):
     _inherit = 'ir.qweb.field.image'
 
     local_url_re = re.compile(r'^/(?P<module>[^]]+)/static/(?P<rest>.+)$')
+    redirect_url_re = re.compile(r'\/web\/image\/\d+-redirect\/')
 
     @api.model
     def from_html(self, model, field, element):
@@ -454,6 +485,8 @@ class Image(models.AbstractModel):
                 oid = query.get('id', fragments[4])
                 field = query.get('field', fragments[5])
             item = self.env[model].browse(int(oid))
+            if self.redirect_url_re.match(url_object.path):
+                return self.load_remote_url(item.url)
             return item[field]
 
         if self.local_url_re.match(url_object.path):
@@ -463,20 +496,13 @@ class Image(models.AbstractModel):
 
     def load_local_url(self, url):
         match = self.local_url_re.match(urls.url_parse(url).path)
-
         rest = match.group('rest')
-        for sep in os.sep, os.altsep:
-            if sep and sep != '/':
-                rest.replace(sep, '/')
 
-        path = odoo.modules.get_module_resource(
-            match.group('module'), 'static', *(rest.split('/')))
-
-        if not path:
-            return None
+        path = os.path.join(
+            match.group('module'), 'static', rest)
 
         try:
-            with open(path, 'rb') as f:
+            with file_open(path, 'rb') as f:
                 # force complete image load to ensure it's valid image data
                 image = I.open(f)
                 image.load()

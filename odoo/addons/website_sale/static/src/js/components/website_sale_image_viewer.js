@@ -1,21 +1,27 @@
 /** @odoo-module **/
 
-import { useWowlService } from '@web/legacy/utils';
 import { Dialog } from "@web/core/dialog/dialog";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
-
-const { Component, onRendered, useRef, useEffect, useState, xml } = owl;
+import { onRendered, useRef, useEffect, useState } from "@odoo/owl";
 
 const ZOOM_STEP = 0.1;
 
 export class ProductImageViewer extends Dialog {
+    static template = "website_sale.ProductImageViewer";
+    static props = {
+        ...Dialog.props,
+        images: { type: NodeList, required: true },
+        selectedImageIdx: { type: Number, optional: true },
+        close: Function,
+    };
+
     setup() {
         super.setup();
         this.imageContainerRef = useRef("imageContainer");
         this.images = [...this.props.images].map(image => {
             return {
                 src: image.dataset.zoomImage || image.src,
-                thumbnailSrc: image.src.replace('/image_1024/', '/image_128/'),
+                thumbnailSrc: image.src.replace('/image_1024/', '/image_256/'),
             };
         });
         this.state = useState({
@@ -137,22 +143,4 @@ export class ProductImageViewer extends Dialog {
         this.updateImage();
     }
 }
-ProductImageViewer.props = {
-    ...Dialog.props,
-    images: { type: NodeList, required: true },
-    selectedImageIdx: { type: Number, optional: true },
-    close: Function,
-};
 delete ProductImageViewer.props.slots;
-ProductImageViewer.template = "website_sale.ProductImageViewer";
-
-export class ProductImageViewerWrapper extends Component {
-    setup() {
-        this.dialogs = useWowlService('dialog');
-
-        onRendered(() => {
-            this.dialogs.add(ProductImageViewer, this.props);
-        });
-    }
-}
-ProductImageViewerWrapper.template = xml``;

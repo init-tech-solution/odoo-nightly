@@ -6,13 +6,15 @@ from unittest.mock import patch
 from lxml import objectify
 
 from odoo.fields import Command
-from odoo.tests.common import TransactionCase
+from odoo.osv.expression import AND
 from odoo.tools.misc import hmac as hmac_tool
+
+from odoo.addons.base.tests.common import BaseCommon
 
 _logger = logging.getLogger(__name__)
 
 
-class PaymentCommon(TransactionCase):
+class PaymentCommon(BaseCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -30,18 +32,8 @@ class PaymentCommon(TransactionCase):
         cls.group_public = cls.env.ref('base.group_public')
 
         cls.admin_user = cls.env.ref('base.user_admin')
-        cls.internal_user = cls.env['res.users'].create({
-            'name': 'Internal User (Test)',
-            'login': 'internal',
-            'password': 'internal',
-            'groups_id': [Command.link(cls.group_user.id)]
-        })
-        cls.portal_user = cls.env['res.users'].create({
-            'name': 'Portal User (Test)',
-            'login': 'payment_portal',
-            'password': 'payment_portal',
-            'groups_id': [Command.link(cls.group_portal.id)]
-        })
+        cls.internal_user = cls._create_new_internal_user()
+        cls.portal_user = cls._create_new_portal_user()
         cls.public_user = cls.env.ref('base.public_user')
 
         cls.admin_partner = cls.admin_user.partner_id
@@ -77,11 +69,24 @@ class PaymentCommon(TransactionCase):
             'code': 'none',
             'state': 'test',
             'is_published': True,
+            'payment_method_ids': [Command.set([cls.env.ref('payment.payment_method_unknown').id])],
             'allow_tokenization': True,
             'redirect_form_view_id': redirect_form.id,
+            'available_currency_ids': [Command.set(
+                (cls.currency_euro + cls.currency_usd + cls.env.company.currency_id).ids
+            )],
+        })
+        # Activate pm
+        cls.env.ref('payment.payment_method_unknown').write({
+            'active': True,
+            'support_tokenization': True,
         })
 
         cls.provider = cls.dummy_provider
+        cls.payment_methods = cls.provider.payment_method_ids
+        cls.payment_method = cls.payment_methods[:1]
+        cls.payment_method_id = cls.payment_method.id
+        cls.payment_method_code = cls.payment_method.code
         cls.amount = 1111.11
         cls.company = cls.env.company
         cls.company_id = cls.company.id
@@ -91,17 +96,17 @@ class PaymentCommon(TransactionCase):
 
         account_payment_module = cls.env['ir.module.module']._get('account_payment')
         cls.account_payment_installed = account_payment_module.state in ('installed', 'to upgrade')
-        cls.enable_reconcile_after_done_patcher = True
+        cls.enable_post_process_patcher = True
 
     def setUp(self):
         super().setUp()
-        if self.account_payment_installed and self.enable_reconcile_after_done_patcher:
+        if self.account_payment_installed and self.enable_post_process_patcher:
             # disable account payment generation if account_payment is installed
             # because the accounting setup of providers is not managed in this common
-            self.reconcile_after_done_patcher = patch(
-                'odoo.addons.account_payment.models.payment_transaction.PaymentTransaction._reconcile_after_done',
+            self.post_process_patcher = patch(
+                'odoo.addons.account_payment.models.payment_transaction.PaymentTransaction._post_process',
             )
-            self.startPatcher(self.reconcile_after_done_patcher)
+            self.startPatcher(self.post_process_patcher)
 
     #=== Utils ===#
 
@@ -129,14 +134,16 @@ class PaymentCommon(TransactionCase):
         """
         company = company or cls.env.company
         update_values = update_values or {}
+        provider_domain = cls._get_provider_domain(code)
 
         provider = cls.env['payment.provider'].sudo().search(
-            [('code', '=', code), ('company_id', '=', company.id)], limit=1
+            AND([provider_domain, [('company_id', '=', company.id)]]), limit=1
         )
         if not provider:
-            base_provider = cls.env['payment.provider'].sudo().search(
-                [('code', '=', code)], limit=1
-            )
+            if code != 'none':
+                base_provider = cls.env['payment.provider'].sudo().search(provider_domain, limit=1)
+            else:
+                base_provider = cls.provider
             if not base_provider:
                 _logger.error("no payment.provider found for code %s", code)
                 return cls.env['payment.provider']
@@ -148,6 +155,10 @@ class PaymentCommon(TransactionCase):
         return provider
 
     @classmethod
+    def _get_provider_domain(cls, code):
+        return [('code', '=', code)]
+
+    @classmethod
     def _prepare_user(cls, user, group_xmlid):
         user.groups_id = [Command.link(cls.env.ref(group_xmlid).id)]
         # Flush and invalidate the cache to allow checking access rights.
@@ -157,6 +168,7 @@ class PaymentCommon(TransactionCase):
 
     def _create_transaction(self, flow, sudo=True, **values):
         default_values = {
+            'payment_method_id': self.payment_method_id,
             'amount': self.amount,
             'currency_id': self.currency.id,
             'provider_id': self.provider.id,
@@ -168,8 +180,9 @@ class PaymentCommon(TransactionCase):
 
     def _create_token(self, sudo=True, **values):
         default_values = {
-            'payment_details': "1234",
             'provider_id': self.provider.id,
+            'payment_method_id': self.payment_method_id,
+            'payment_details': "1234",
             'partner_id': self.partner.id,
             'provider_ref': "provider Ref (TEST)",
             'active': True,

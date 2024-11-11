@@ -1,20 +1,21 @@
 /** @odoo-module **/
 
+import { rpc } from '@web/core/network/rpc';
 import { registry } from '@web/core/registry';
 import { UploadProgressToast } from './upload_progress_toast';
-import { getDataURLFromFile } from 'web.utils';
 import { _t } from "@web/core/l10n/translation";
 import { checkFileSize } from "@web/core/utils/files";
 import { humanNumber } from "@web/core/utils/numbers";
+import { getDataURLFromFile } from "@web/core/utils/urls";
 import { sprintf } from "@web/core/utils/strings";
-
 import { reactive } from "@odoo/owl";
 
 export const AUTOCLOSE_DELAY = 3000;
+export const AUTOCLOSE_DELAY_LONG = 8000;
 
 export const uploadService = {
-    dependencies: ['rpc'],
-    start(env, { rpc }) {
+    dependencies: ['notification'],
+    start(env, { notification }) {
         let fileId = 0;
         const progressToast = reactive({
             files: {},
@@ -73,18 +74,11 @@ export const uploadService = {
                 const sortedFiles = Array.from(files).sort((a, b) => a.size - b.size);
                 for (const file of sortedFiles) {
                     let fileSize = file.size;
-                    if (!checkFileSize(fileSize, env.services.notification)) {
-                        // FIXME
-                        // Note that the notification service is not added as a
-                        // dependency of this service, in order to avoid introducing
-                        // a breaking change in a stable version.
-                        // If the notification service is not available, the
-                        // checkFileSize function will not display any notification
-                        // but will still return the correct value.
+                    if (!checkFileSize(fileSize, notification)) {
                         return null;
                     }
                     if (!fileSize) {
-                        fileSize = null;
+                        fileSize = "";
                     } else {
                         fileSize = humanNumber(fileSize) + "B";
                     }
@@ -97,10 +91,6 @@ export const uploadService = {
                         id,
                         name: file.name,
                         size: fileSize,
-                        progress: 0,
-                        hasError: false,
-                        uploaded: false,
-                        errorMessage: '',
                     });
                 }
 
@@ -145,13 +135,38 @@ export const uploadService = {
                             file.hasError = true;
                             file.errorMessage = attachment.error;
                         } else {
+                            if (attachment.mimetype === 'image/webp') {
+                                // Generate alternate format for reports.
+                                const image = document.createElement('img');
+                                image.src = `data:image/webp;base64,${dataURL.split(',')[1]}`;
+                                await new Promise(resolve => image.addEventListener('load', resolve));
+                                const canvas = document.createElement('canvas');
+                                canvas.width = image.width;
+                                canvas.height = image.height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.fillStyle = 'rgb(255, 255, 255)';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                ctx.drawImage(image, 0, 0);
+                                const altDataURL = canvas.toDataURL('image/jpeg', 0.75);
+                                await rpc('/web_editor/attachment/add_data', {
+                                    'name': file.name.replace(/\.webp$/, '.jpg'),
+                                    'data': altDataURL.split(',')[1],
+                                    'res_id': attachment.id,
+                                    'res_model': 'ir.attachment',
+                                    'is_image': true,
+                                    'width': 0,
+                                    'quality': 0,
+                                }, {xhr});
+                            }
                             file.uploaded = true;
                             await onUploaded(attachment);
                         }
-                        setTimeout(() => deleteFile(file.id), AUTOCLOSE_DELAY);
+                        // If there's an error, display the error message for longer
+                        let message_autoclose_delay = file.hasError ? AUTOCLOSE_DELAY_LONG : AUTOCLOSE_DELAY;
+                        setTimeout(() => deleteFile(file.id), message_autoclose_delay);
                     } catch (error) {
                         file.hasError = true;
-                        setTimeout(() => deleteFile(file.id), AUTOCLOSE_DELAY);
+                        setTimeout(() => deleteFile(file.id), AUTOCLOSE_DELAY_LONG);
                         throw error;
                     }
                 }
@@ -160,4 +175,4 @@ export const uploadService = {
     },
 };
 
-registry.category('services').add('upload', uploadService);
+// registry.category('services').add('upload', uploadService);

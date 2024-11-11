@@ -1,9 +1,10 @@
-/** @odoo-module **/
-
-import {_t} from 'web.core';
-import publicWidget from 'web.public.widget';
+import { formatCurrency } from "@web/core/currency";
+import { _t } from "@web/core/l10n/translation";
+import publicWidget from '@web/legacy/js/public/public_widget';
+import { rpc } from "@web/core/network/rpc";
 
 const CUSTOM_BUTTON_EXTRA_WIDTH = 10;
+let cachedCurrency;
 
 publicWidget.registry.DonationSnippet = publicWidget.Widget.extend({
     selector: '.s_donation',
@@ -20,7 +21,7 @@ publicWidget.registry.DonationSnippet = publicWidget.Widget.extend({
     async start() {
         await this._super(...arguments);
         this.$rangeSlider = this.$('#s_donation_range_slider');
-        this.defaultAmount = this.$target[0].dataset.defaultAmount;
+        this.defaultAmount = this.el.dataset.defaultAmount;
         if (this.$rangeSlider.length) {
             this.$rangeSlider.val(this.defaultAmount);
             this._setBubble(this.$rangeSlider);
@@ -43,7 +44,7 @@ publicWidget.registry.DonationSnippet = publicWidget.Widget.extend({
         if (customButtonEl) {
             customButtonEl.style.maxWidth = "";
         }
-        this.$target.find('.s_donation_currency').remove();
+        this.$el.find('.s_donation_currency').remove();
         this._deselectPrefilledButtons();
         this.$('.alert-danger').remove();
         this._super(...arguments);
@@ -81,13 +82,15 @@ publicWidget.registry.DonationSnippet = publicWidget.Widget.extend({
      * @private
      */
     _displayCurrencies() {
-        return this._rpc({
-            route: '/website/get_current_currency',
-        }).then((result) => {
+        return this._getCachedCurrency().then((result) => {
+            // No need to recreate the elements if the currency is already set.
+            if (this.currency === result) {
+                return;
+            }
             this.currency = result;
             this.$('.s_donation_currency').remove();
             const $prefilledButtons = this.$('.s_donation_btn, .s_range_bubble');
-            _.each($prefilledButtons, button => {
+            $prefilledButtons.toArray().forEach((button) => {
                 const before = result.position === "before";
                 const $currencySymbol = document.createElement('span');
                 $currencySymbol.innerText = result.symbol;
@@ -99,6 +102,17 @@ publicWidget.registry.DonationSnippet = publicWidget.Widget.extend({
                 }
             });
         });
+    },
+    /**
+     * @private
+     */
+    _getCachedCurrency() {
+        return cachedCurrency
+            ? Promise.resolve(cachedCurrency)
+            : rpc("/website/get_current_currency").then((result) => {
+                cachedCurrency = result;
+                return result;
+            });
     },
 
     //--------------------------------------------------------------------------
@@ -128,19 +142,22 @@ publicWidget.registry.DonationSnippet = publicWidget.Widget.extend({
         const $buttons = this.$('.s_donation_btn');
         const $selectedButton = $buttons.filter('.active');
         let amount = $selectedButton.length ? $selectedButton[0].dataset.donationValue : 0;
-        if (this.$target[0].dataset.displayOptions && !amount) {
+        if (this.el.dataset.displayOptions && !amount) {
             if (this.$rangeSlider.length) {
                 amount = this.$rangeSlider.val();
             } else if ($buttons.length) {
                 amount = parseFloat(this.$('#s_donation_amount_input').val());
                 let errorMessage = '';
-                const minAmount = this.$target[0].dataset.minimumAmount;
+                const minAmount = parseFloat(this.el.dataset.minimumAmount);
                 if (!amount) {
                     errorMessage = _t("Please select or enter an amount");
-                } else if (amount < parseFloat(minAmount)) {
-                    const before = this.currency.position === "before" ? this.currency.symbol : "";
-                    const after = this.currency.position === "after" ? this.currency.symbol : "";
-                    errorMessage = _.str.sprintf(_t("The minimum donation amount is %s%s%s"), before, minAmount, after);
+                } else if (amount < minAmount) {
+                    errorMessage = _t(
+                        "The minimum donation amount is %(amount)s",
+                        {
+                            amount: formatCurrency(minAmount, this.currency.id),
+                        }
+                    );
                 }
                 if (errorMessage) {
                     $(ev.currentTarget).before($('<p>', {

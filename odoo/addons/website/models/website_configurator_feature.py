@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import re
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
-from odoo.modules.module import get_resource_path
 
 
 class WebsiteConfiguratorFeature(models.Model):
@@ -34,11 +32,11 @@ class WebsiteConfiguratorFeature(models.Model):
     @staticmethod
     def _process_svg(theme, colors, image_mapping):
         svg = None
-        preview_svg = get_resource_path(theme, 'static', 'description', theme + '.svg')
-        if not preview_svg:
+        try:
+            with tools.file_open(f'{theme}/static/description/{theme}.svg', 'r') as file:
+                svg = file.read()
+        except FileNotFoundError:
             return False
-        with tools.file_open(preview_svg, 'r') as file:
-            svg = file.read()
 
         default_colors = {
             'color1': '#3AADAA',
@@ -50,15 +48,12 @@ class WebsiteConfiguratorFeature(models.Model):
             'footer': '#FOOTER_COLOR',
         }
         color_mapping = {default_colors[color_key]: color_value for color_key, color_value in colors.items() if color_key in default_colors.keys()}
-        color_regex = '(?i)%s' % '|'.join('(%s)' % color for color in color_mapping.keys())
-        image_regex = '(?i)%s' % '|'.join('(%s)' % image for image in image_mapping.keys())
 
-        def subber_maker(mapping):
-            def subber(match):
-                key = match.group()
-                return mapping[key] if key in mapping else key
-            return subber
+        # Replace the default colors by the chosen ones
+        for default_color, chosen_color in color_mapping.items():
+            svg = svg.replace(default_color, chosen_color)
 
-        svg = re.sub(color_regex, subber_maker(color_mapping), svg)
-        svg = re.sub(image_regex, subber_maker(image_mapping), svg)
+        # Replace the default images by the one corresponding to the industry
+        for default_img, new_img in image_mapping.items():
+            svg = svg.replace(default_img, new_img)
         return svg

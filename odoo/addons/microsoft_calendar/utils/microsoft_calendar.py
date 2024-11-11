@@ -65,9 +65,11 @@ class MicrosoftCalendarService():
         }
         if not params:
             # By default, fetch events from at most one year in the past and two years in the future.
+            # Can be modified by microsoft_calendar.sync.range_days system parameter.
+            day_range = int(self.microsoft_service.env['ir.config_parameter'].sudo().get_param('microsoft_calendar.sync.range_days', default=365))
             params = {
-                'startDateTime': fields.Datetime.subtract(fields.Datetime.now(), years=1).strftime("%Y-%m-%dT00:00:00Z"),
-                'endDateTime': fields.Datetime.add(fields.Datetime.now(), years=2).strftime("%Y-%m-%dT00:00:00Z"),
+                'startDateTime': fields.Datetime.subtract(fields.Datetime.now(), days=day_range).strftime("%Y-%m-%dT00:00:00Z"),
+                'endDateTime': fields.Datetime.add(fields.Datetime.now(), days=day_range * 2).strftime("%Y-%m-%dT00:00:00Z"),
             }
 
         # get the first page of events
@@ -205,7 +207,13 @@ class MicrosoftCalendarService():
         return 'offline_access openid Calendars.ReadWrite'
 
     def _microsoft_authentication_url(self, from_url='http://www.odoo.com'):
-        return self.microsoft_service._get_authorize_uri(from_url, service='calendar', scope=self._get_calendar_scope())
+        redirect_uri = self.microsoft_service.get_base_url() + '/microsoft_account/authentication'
+        return self.microsoft_service._get_authorize_uri(
+            from_url,
+            service='calendar',
+            scope=self._get_calendar_scope(),
+            redirect_uri=redirect_uri
+        )
 
     def _can_authorize_microsoft(self, user):
         return user.has_group('base.group_erp_manager')

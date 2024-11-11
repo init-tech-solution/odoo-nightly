@@ -6,9 +6,11 @@
     'version': '1.0',
     'category': 'Accounting/Localizations',
     'description': "This is the base module that defines the DIN 5008 standard in Odoo.",
-    'author': 'Odoo SA',
     'depends': ['account'],
+    'auto_install': True,
+    'countries': ['de', 'ch'],
     'data': [
+        'report/din5008_base_document_layout.xml',
         'report/din5008_report.xml',
         'data/report_layout.xml',
     ],

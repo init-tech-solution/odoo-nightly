@@ -3,16 +3,16 @@
 # 	* event_booth_sale
 # 
 # Translators:
-# Thi Huong Nguyen, 2023
-# Martin Trigaux, 2023
+# Thi Huong Nguyen, 2024
+# Wil Odoo, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 05:52+0000\n"
-"PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Martin Trigaux, 2023\n"
+"POT-Creation-Date: 2024-09-26 08:55+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,16 +21,9 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: event_booth_sale
-#: model:ir.model.fields,help:event_booth_sale.field_product_product__detailed_type
-#: model:ir.model.fields,help:event_booth_sale.field_product_template__detailed_type
-msgid ""
-"A storable product is a product for which you manage stock. The Inventory app has to be installed.\n"
-"A consumable product is a product for which stock is not managed.\n"
-"A service is a non-material product you provide."
-msgstr ""
-"Sản phẩm lưu kho là sản phẩm bạn muốn quản lý lượng tồn kho của nó. Hệ thống sẽ cần cài thêm phân hệ Kho.\n"
-"Sản phẩm tiêu dùng là sản phẩm bạn không cần quản lý lượng tồn kho.\n"
-"Sản phẩm dịch vụ là sản phẩm bạn cung cấp."
+#: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_form_from_event
+msgid "<span class=\"o_stat_text\">Sale Order</span>"
+msgstr "<span class=\"o_stat_text\">Đơn bán hàng</span>"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__event_booth_ids
@@ -46,7 +39,8 @@ msgstr "Danh mục gian hàng"
 #. module: event_booth_sale
 #: model:ir.model.fields,help:event_booth_sale.field_event_booth_configurator__event_booth_category_available_ids
 msgid "Booth Category for which booths are still available. Used in frontend"
-msgstr "Danh mục gian hàng vẫn trống. Được sử dụng ở frontend"
+msgstr ""
+"Danh mục gian hàng có gian hàng vẫn còn trống. Được sử dụng ở front-end"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_sale_order__event_booth_count
@@ -98,12 +92,7 @@ msgstr "Liên hệ"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_email
 msgid "Contact Email"
-msgstr "Email Liên hệ"
-
-#. module: event_booth_sale
-#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_mobile
-msgid "Contact Mobile"
-msgstr "Số di động liên hệ"
+msgstr "Email liên hệ"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_name
@@ -113,7 +102,13 @@ msgstr "Tên liên hệ"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__contact_phone
 msgid "Contact Phone"
-msgstr "SĐT liên hệ"
+msgstr "Số điện thoại"
+
+#. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_product__service_tracking
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_template__service_tracking
+msgid "Create on Order"
+msgstr "Tạo từ đơn hàng"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__create_uid
@@ -157,7 +152,7 @@ msgstr "Sự kiện"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_event_booth
-#: model:ir.model.fields.selection,name:event_booth_sale.selection__product_template__detailed_type__event_booth
+#: model:ir.model.fields.selection,name:event_booth_sale.selection__product_template__service_tracking__event_booth
 msgid "Event Booth"
 msgstr "Gian hàng sự kiện"
 
@@ -211,24 +206,18 @@ msgstr "Là gian hàng sự kiện"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__is_paid
 msgid "Is Paid"
-msgstr "Được thanh toán"
+msgstr "Đã thanh toán"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_account_move
 msgid "Journal Entry"
-msgstr "Bút toán "
-
-#. module: event_booth_sale
-#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator____last_update
-#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration____last_update
-msgid "Last Modified on"
-msgstr "Sửa lần cuối vào"
+msgstr "Bút toán"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__write_uid
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__write_uid
 msgid "Last Updated by"
-msgstr "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__write_date
@@ -237,9 +226,15 @@ msgid "Last Updated on"
 msgstr "Cập nhật lần cuối vào"
 
 #. module: event_booth_sale
+#. odoo-python
+#: code:addons/event_booth_sale/models/product_template.py:0
+msgid "Mark the selected Booth as Unavailable."
+msgstr "Đánh dấu Gian hàng đã chọn là Không khả dụng."
+
+#. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_configurator_view_form
 msgid "Ok"
-msgstr "Đồng ý"
+msgstr "Ok"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__sale_order_id
@@ -257,6 +252,16 @@ msgid "Pending Booths"
 msgstr "Gian hàng đang chờ"
 
 #. module: event_booth_sale
+#. odoo-python
+#: code:addons/event_booth_sale/models/sale_order.py:0
+msgid ""
+"Please make sure all your event-booth related lines are configured before "
+"confirming this order:%s"
+msgstr ""
+"Hãy đảm bảo cấu hình tất cả các dòng liên quan đến gian hàng sự kiện của bạn"
+" trước khi xác nhận đơn hàng này:%s"
+
+#. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__price
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__price
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_type_booth__price
@@ -266,12 +271,17 @@ msgstr "Giá"
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__price_reduce
 msgid "Price Reduce"
-msgstr "Giảm Giá"
+msgstr "Giảm giá"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__price_reduce_taxinc
 msgid "Price Reduce Tax inc"
-msgstr "Giảm Giá gồm Thuế"
+msgstr "Giảm giá gồm thuế"
+
+#. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__price_incl
+msgid "Price incl"
+msgstr "Giá bao gồm"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_product_template
@@ -279,31 +289,13 @@ msgstr "Giảm Giá gồm Thuế"
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__product_id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__product_id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_type_booth__product_id
-#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_template_line__product_id
-#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_template_option__product_id
 msgid "Product"
 msgstr "Sản phẩm"
-
-#. module: event_booth_sale
-#: model:ir.model.fields,field_description:event_booth_sale.field_product_product__detailed_type
-#: model:ir.model.fields,field_description:event_booth_sale.field_product_template__detailed_type
-msgid "Product Type"
-msgstr "Loại sản phẩm"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_product_product
 msgid "Product Variant"
 msgstr "Biến thể sản phẩm"
-
-#. module: event_booth_sale
-#: model:ir.model,name:event_booth_sale.model_sale_order_template_line
-msgid "Quotation Template Line"
-msgstr "Chi tiết mẫu báo giá"
-
-#. module: event_booth_sale
-#: model:ir.model,name:event_booth_sale.model_sale_order_template_option
-msgid "Quotation Template Option"
-msgstr "Tùy chọn mẫu báo giá"
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_form_from_event
@@ -313,25 +305,19 @@ msgstr "Đăng ký"
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/sale_order_line.py:0
-#, python-format
 msgid "Registrations from the same Order Line must belong to a single event."
 msgstr "Đăng ký trong cùng một dòng đơn hàng phải thuộc về cùng một sự kiện."
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__sale_order_line_registration_ids
 msgid "SO Lines with reservations"
-msgstr "Dòng đơn bán hàng có đặt trước"
-
-#. module: event_booth_sale
-#: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_form_from_event
-msgid "Sale Order"
-msgstr "Đơn hàng"
+msgstr "Dòng đơn bán hàng có đặt chỗ"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__sale_order_line_id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__sale_order_line_id
 msgid "Sale Order Line"
-msgstr "Chi tiết đơn hàng"
+msgstr "Dòng đơn bán hàng"
 
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_sale_order
@@ -341,7 +327,7 @@ msgstr "Đơn bán hàng"
 #. module: event_booth_sale
 #: model:ir.model,name:event_booth_sale.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Chi tiết đơn hàng"
+msgstr "Dòng đơn bán hàng"
 
 #. module: event_booth_sale
 #: model:ir.actions.act_window,name:event_booth_sale.event_booth_configurator_action
@@ -351,16 +337,17 @@ msgstr "Chọn một gian hàng sự kiện"
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/sale_order_line.py:0
-#, python-format
 msgid ""
 "The following booths are unavailable, please remove them to continue : "
 "%(booth_names)s"
-msgstr "Các gian hàng sau không có chỗ, hay xóa và tiếp tục: %(booth_names)s"
+msgstr ""
+"Các gian hàng sau không còn trống, hãy xóa chúng và tiếp tục: "
+"%(booth_names)s"
 
 #. module: event_booth_sale
 #: model:ir.model.constraint,message:event_booth_sale.constraint_event_booth_registration_unique_registration
 msgid "There can be only one registration for a booth by sale order line"
-msgstr "Chỉ có thể có một đăng ký cho một gian hàng theo dòng đơn bán hàng"
+msgstr "Chỉ có thể có một đăng ký cho mỗi gian hàng theo dòng đơn bán hàng"
 
 #. module: event_booth_sale
 #: model_terms:ir.ui.view,arch_db:event_booth_sale.event_booth_view_tree_from_event
@@ -375,7 +362,6 @@ msgstr "Được dùng để tạo đăng ký khi cung cấp gian hàng sự ki�
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/event_booth.py:0
-#, python-format
 msgid ""
 "You can't delete the following booths as they are linked to sales orders: "
 "%(booths)s"
@@ -386,14 +372,12 @@ msgstr ""
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/wizard/event_booth_configurator.py:0
-#, python-format
 msgid "You have to select at least one booth."
 msgstr "Bạn phải chọn ít nhất một gian hàng."
 
 #. module: event_booth_sale
 #. odoo-python
 #: code:addons/event_booth_sale/models/event_booth_registration.py:0
-#, python-format
 msgid ""
 "Your order has been cancelled because the following booths have been "
 "reserved"

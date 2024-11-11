@@ -5,7 +5,7 @@ import random
 import re
 import werkzeug
 
-from odoo import tools
+from odoo.tools import mail
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from odoo.addons.sms.tests.common import SMSCase, SMSCommon
@@ -34,7 +34,8 @@ class MassSMSCase(SMSCase, MockLinkTracker):
           # TRACE
           'partner': res.partner record (may be empty),
           'number': number used for notification (may be empty, computed based on partner),
-          'trace_status': outgoing / sent / cancel / bounce / error / opened (sent by default),
+          'trace_status': outgoing / process / pending / sent / cancel / bounce / error / opened
+            (sent by default),
           'record: linked record,
           # SMS.SMS
           'content': optional: if set, check content of sent SMS;
@@ -61,15 +62,32 @@ class MassSMSCase(SMSCase, MockLinkTracker):
             'error': 'error',
             'cancel': 'canceled',
             'bounce': 'error',
+            'process': 'process',
+            'pending': 'pending',
         }
         traces = self.env['mailing.trace'].search([
             ('mass_mailing_id', 'in', mailing.ids),
             ('res_id', 'in', records.ids)
         ])
 
+        traces_info = []
+        for trace in traces:
+            record = records.filtered(lambda r: r.id == trace.res_id)
+            if record:
+                traces_info.append(
+                    f'Trace: doc {trace.res_id} on {trace.sms_number} - status {trace.trace_status} (rec {record.id})'
+                )
+            else:
+                traces_info.append(
+                    f'Trace: doc {trace.res_id} on {trace.sms_number} - status {trace.trace_status}'
+                )
+        debug_info = '\n'.join(traces_info)
         self.assertTrue(all(s.model == records._name for s in traces))
         # self.assertTrue(all(s.utm_campaign_id == mailing.campaign_id for s in traces))
-        self.assertEqual(set(s.res_id for s in traces), set(records.ids))
+        self.assertEqual(
+            {s.res_id for s in traces}, set(records.ids),
+            f'Should find one trace / record. Found\n{debug_info}'
+        )
 
         # check each trace
         if not sms_links_info:
@@ -86,15 +104,15 @@ class MassSMSCase(SMSCase, MockLinkTracker):
                 lambda t: t.sms_number == number and t.trace_status == status and (t.res_id == record.id if record else True)
             )
             self.assertTrue(len(trace) == 1,
-                            'SMS: found %s notification for number %s, (status: %s) (1 expected)' % (len(trace), number, status))
-            self.assertTrue(bool(trace.sms_sms_id_int))
+                            'SMS: found %s notification for number %s, (status: %s) (1 expected)\n%s' % (len(trace), number, status, debug_info))
+            self.assertTrue(bool(trace.sms_id_int))
 
             if check_sms:
-                if status == 'sent':
+                if status in {'process', 'pending', 'sent'}:
                     if sent_unlink:
                         self.assertSMSIapSent([number], content=content)
                     else:
-                        self.assertSMS(partner, number, 'sent', content=content)
+                        self.assertSMS(partner, number, status, content=content)
                 elif status in state_mapping:
                     sms_state = state_mapping[status]
                     failure_type = recipient_info['failure_type'] if status in ('error', 'cancel', 'bounce') else None
@@ -123,6 +141,7 @@ class MassSMSCase(SMSCase, MockLinkTracker):
                         (url, is_shortened),
                         link_params=link_params,
                     )
+        return traces
 
     # ------------------------------------------------------------
     # GATEWAY TOOLS
@@ -137,16 +156,23 @@ class MassSMSCase(SMSCase, MockLinkTracker):
         self.assertTrue(bool(sms_sent))
         return self.gateway_sms_sent_click(sms_sent)
 
+    def gateway_sms_delivered(self, mailing, record):
+        """ Simulate a delivery report received for a sent SMS."""
+        trace = mailing.mailing_trace_ids.filtered(lambda t: t.model == record._name and t.res_id == record.id)
+        sms_sent = self._find_sms_sent(self.env['res.partner'], trace.sms_number)
+        self.assertTrue(bool(sms_sent))
+        trace.trace_status = 'sent'
+
     def gateway_sms_sent_click(self, sms_sent):
         """ When clicking on a link in a SMS we actually don't have any
         easy information in body, only body. We currently click on all found
         shortened links. """
-        for url in re.findall(tools.TEXT_URL_REGEX, sms_sent['body']):
+        for url in re.findall(mail.TEXT_URL_REGEX, sms_sent['body']):
             if '/r/' in url:  # shortened link, like 'http://localhost:8069/r/LBG/s/53'
                 parsed_url = werkzeug.urls.url_parse(url)
                 path_items = parsed_url.path.split('/')
-                code, sms_sms_id = path_items[2], int(path_items[4])
-                trace_id = self.env['mailing.trace'].sudo().search([('sms_sms_id_int', '=', sms_sms_id)]).id
+                code, sms_id_int = path_items[2], int(path_items[4])
+                trace_id = self.env['mailing.trace'].sudo().search([('sms_id_int', '=', sms_id_int)]).id
 
                 self.env['link.tracker.click'].sudo().add_click(
                     code,

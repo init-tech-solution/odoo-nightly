@@ -1,66 +1,68 @@
 /** @odoo-module **/
 
-import { browser } from '@web/core/browser/browser';
-import { registry } from '@web/core/registry';
-import core from 'web.core';
+import { EventBus } from "@odoo/owl";
+import { browser } from "@web/core/browser/browser";
+import { registry } from "@web/core/registry";
 
 export const presenceService = {
     start(env) {
-        const LOCAL_STORAGE_PREFIX = 'presence';
-
-        // map window_focus event from the wowlBus to the legacy one.
-        env.bus.addEventListener('window_focus', isOdooFocused => {
-            core.bus.trigger('window_focus', isOdooFocused);
-        });
-
+        const LOCAL_STORAGE_PREFIX = "presence";
+        const bus = new EventBus();
         let isOdooFocused = true;
-        let lastPresenceTime = (
-            browser.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}.lastPresence`)
-            || new Date().getTime()
-        );
+        let lastPresenceTime =
+            browser.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}.lastPresence`) ||
+            luxon.DateTime.now().ts;
 
         function onPresence() {
-            lastPresenceTime = new Date().getTime();
+            lastPresenceTime = luxon.DateTime.now().ts;
             browser.localStorage.setItem(`${LOCAL_STORAGE_PREFIX}.lastPresence`, lastPresenceTime);
+            bus.trigger("presence");
         }
 
         function onFocusChange(isFocused) {
             try {
                 isFocused = parent.document.hasFocus();
-            } catch {}
+            } catch {
+                // noop
+            }
             isOdooFocused = isFocused;
             browser.localStorage.setItem(`${LOCAL_STORAGE_PREFIX}.focus`, isOdooFocused);
             if (isOdooFocused) {
-                lastPresenceTime = new Date().getTime();
-                env.bus.trigger('window_focus', isOdooFocused);
+                lastPresenceTime = luxon.DateTime.now().ts;
+                env.bus.trigger("window_focus", isOdooFocused);
             }
         }
 
         function onStorage({ key, newValue }) {
             if (key === `${LOCAL_STORAGE_PREFIX}.focus`) {
                 isOdooFocused = JSON.parse(newValue);
-                env.bus.trigger('window_focus', newValue);
+                env.bus.trigger("window_focus", newValue);
             }
             if (key === `${LOCAL_STORAGE_PREFIX}.lastPresence`) {
                 lastPresenceTime = JSON.parse(newValue);
+                bus.trigger("presence");
             }
         }
-        browser.addEventListener('storage', onStorage);
-        browser.addEventListener('focus', () => onFocusChange(true));
-        browser.addEventListener('blur', () => onFocusChange(false));
-        browser.addEventListener('pagehide', () => onFocusChange(false));
-        browser.addEventListener('click', onPresence);
-        browser.addEventListener('keydown', onPresence);
+        browser.addEventListener("storage", onStorage);
+        browser.addEventListener("focus", () => onFocusChange(true));
+        browser.addEventListener("blur", () => onFocusChange(false));
+        browser.addEventListener("pagehide", () => onFocusChange(false));
+        browser.addEventListener("click", onPresence);
+        browser.addEventListener("keydown", onPresence);
 
         return {
+            bus,
             getLastPresence() {
                 return lastPresenceTime;
             },
             isOdooFocused() {
                 return isOdooFocused;
-            }
+            },
+            getInactivityPeriod() {
+                return luxon.DateTime.now().ts - this.getLastPresence();
+            },
         };
     },
 };
 
-registry.category('services').add('presence', presenceService);
+registry.category("services").add("presence", presenceService);

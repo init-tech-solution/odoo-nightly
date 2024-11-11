@@ -4,7 +4,7 @@ import calendar
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.tools import get_barcode_check_digit
+from odoo.tools.barcode import get_barcode_check_digit
 
 FNC1_CHAR = '\x1D'
 
@@ -26,7 +26,7 @@ class BarcodeNomenclature(models.Model):
                 try:
                     re.compile("(?:%s)?" % nom.gs1_separator_fnc1)
                 except re.error as error:
-                    raise ValidationError(_("The FNC1 Separator Alternative is not a valid Regex: ") + str(error))
+                    raise ValidationError(_("The FNC1 Separator Alternative is not a valid Regex: %(error)s", error))
 
     @api.model
     def gs1_date_to_date(self, gs1_date):
@@ -57,6 +57,7 @@ class BarcodeNomenclature(models.Model):
     def parse_gs1_rule_pattern(self, match, rule):
         result = {
             'rule': rule,
+            'type': rule.type,
             'ai': match.group(1),
             'string_value': match.group(2),
         }
@@ -98,9 +99,9 @@ class BarcodeNomenclature(models.Model):
         if self.gs1_separator_fnc1:
             separator_group = "(?:%s)?" % self.gs1_separator_fnc1
         # zxing-library patch, removing GS1 identifiers
-        for identifier in [']C1', ']e0', ']d2', ']Q3', ']J1']:
+        for identifier in [']C1', ']e0', ']d2', ']Q3', ']J1', FNC1_CHAR]:
             if barcode.startswith(identifier):
-                barcode = barcode.replace(identifier, '')
+                barcode = barcode.replace(identifier, '', 1)
                 break
         results = []
         gs1_rules = self.rule_ids.filtered(lambda r: r.encoding == 'gs1-128')
@@ -126,10 +127,10 @@ class BarcodeNomenclature(models.Model):
 
         return results
 
-    def parse_barcode(self, barcode):
+    def parse_nomenclature_barcode(self, barcode):
         if self.is_gs1_nomenclature:
             return self.gs1_decompose_extanded(barcode)
-        return super().parse_barcode(barcode)
+        return super().parse_nomenclature_barcode(barcode)
 
     @api.model
     def _preprocess_gs1_search_args(self, args, barcode_types, field='barcode'):
@@ -155,9 +156,12 @@ class BarcodeNomenclature(models.Model):
 
                 replacing_operator = 'ilike' if operator in ['ilike', '='] else 'not ilike'
                 for data in parsed_data:
-                    data_type = data['rule'].type
+                    data_type = data['type']
                     value = data['value']
                     if data_type in barcode_types:
+                        if data_type == 'lot':
+                            args[i] = (field_name, operator, value)
+                            break
                         match = re.match('0*([0-9]+)$', str(value))
                         if match:
                             unpadded_barcode = match.groups()[0]

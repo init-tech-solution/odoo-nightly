@@ -133,11 +133,8 @@ class AccountMove(models.Model):
     l10n_ec_sri_payment_id = fields.Many2one(
         comodel_name="l10n_ec.sri.payment",
         string="Payment Method (SRI)",
+        help="Ecuador: Payment Methods Defined by the SRI.",
     )
-
-    # NOTE: For backward compatibility, removed in master
-    def _get_l10n_ec_identification_type(self):
-        return PartnerIdTypeEc.get_ats_code_for_partner(self.partner_id, self.move_type)
 
     @api.model
     def _get_l10n_ec_documents_allowed(self, identification_code):
@@ -193,18 +190,3 @@ class AccountMove(models.Model):
                 """
                 param["l10n_latam_document_type_id"] = tuple(document_types.ids)
         return where_string, param
-
-    def _skip_format_document_number(self):
-        """
-        If a Credit Note is created from a Vendor Bill and the partner_id != "EC",
-        we want to allow the user to allocate any number without following the EC format.
-        """
-        self.ensure_one()
-        if self.country_code == 'EC':
-            return (
-                    self.l10n_latam_document_type_id.internal_type in ('credit_note', 'debit_note')
-                    and self.partner_id.country_code != "EC"
-                    and self.move_type == 'in_refund'
-                    and self.journal_id.type == 'purchase'
-            )
-        super()._skip_format_document_number()

@@ -1,10 +1,10 @@
-odoo.define('portal.rating.composer', function (require) {
-'use strict';
+/** @odoo-module **/
 
-const publicWidget = require('web.public.widget');
-const session = require('web.session');
-const portalComposer = require('portal.composer');
-const {_t, qweb} = require('web.core');
+import publicWidget from "@web/legacy/js/public/public_widget";
+import portalComposer from "@portal/js/portal_composer";
+import { _t } from "@web/core/l10n/translation";
+import { renderToElement } from "@web/core/utils/render";
+import { user } from "@web/core/user";
 
 const PortalComposer = portalComposer.PortalComposer;
 
@@ -27,15 +27,16 @@ const RatingPopupComposer = publicWidget.Widget.extend({
         this.rating_avg = Math.round(options['rating_avg'] * 100) / 100 || 0.0;
         this.rating_count = options['rating_count'] || 0.0;
 
-        this.options = _.defaults({}, options, {
+        this.options = Object.assign({
             'token': false,
             'res_model': false,
             'res_id': false,
             'pid': 0,
             'display_rating': true,
             'csrf_token': odoo.csrf_token,
-            'user_id': session.user_id,
-        });
+            'user_id': user.userId,
+        }, options, {});
+        this.options.send_button_label = this.options.default_message_id ? _t("Update review") : _t("Post review");
 
         return def;
     },
@@ -60,7 +61,7 @@ const RatingPopupComposer = publicWidget.Widget.extend({
         if (this.options.hide_rating_avg) {
             this.$('.o_rating_popup_composer_stars').empty();
         } else {
-            const ratingAverage = qweb.render(
+            const ratingAverage = renderToElement(
                 'portal_rating.rating_stars_static', {
                 inline_mode: true,
                 widget: this,
@@ -70,12 +71,12 @@ const RatingPopupComposer = publicWidget.Widget.extend({
         }
 
         // Append the modal
-        const modal = qweb.render(
+        const modal = renderToElement(
             'portal_rating.PopupComposer', {
             inline_mode: true,
             widget: this,
             val: this.rating_avg,
-        });
+        }) || '';
         this.$('.o_rating_popup_composer_modal').html(modal);
 
         if (this._composer) {
@@ -106,23 +107,33 @@ const RatingPopupComposer = publicWidget.Widget.extend({
         const data = event.data;
 
         // Refresh the internal state of the widget
-        this.rating_avg = data.rating_avg;
-        this.rating_count = data.rating_count;
-        this.rating_value = data.rating_value;
+        this.rating_avg = data.rating_avg || data["mail.thread"][0].rating_avg;
+        this.rating_count = data.rating_count || data["mail.thread"][0].rating_count;
+        this.rating_value = data.rating_value || data["rating.rating"]?.[0].rating;
 
         // Clean the dictionary
         delete data.rating_avg;
         delete data.rating_count;
         delete data.rating_value;
 
-        this.options = _.extend(this.options, data);
-
+        this._update_options(data);
         this._reloadRatingPopupComposer();
-    }
+    },
+
+    _update_options: function (data) {
+        const defaultOptions = {
+            default_message:
+                data.default_message ||
+                (data["mail.message"] && data["mail.message"][0].body.replace(/<[^>]+>/g, "")),
+            default_message_id: data.default_message_id || data["mail.message"][0].id,
+            default_attachment_ids: data.default_attachment_ids || data["ir.attachment"],
+            default_rating_value: data.default_rating_value || this.rating_value,
+        };
+        Object.assign(data, defaultOptions);
+        this.options = Object.assign(this.options, data);
+    },
 });
 
 publicWidget.registry.RatingPopupComposer = RatingPopupComposer;
 
-return RatingPopupComposer;
-
-});
+export default RatingPopupComposer;

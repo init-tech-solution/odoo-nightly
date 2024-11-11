@@ -19,7 +19,7 @@ class TestFifoReturns(ValuationReconciliationTestCommon):
         product_fiforet_icecream = self.env['product.product'].create({
             'default_code': 'FIFORET',
             'name': 'FIFO Ice Cream',
-            'type': 'product',
+            'is_storable': True,
             'categ_id': self.stock_account_product_categ.id,
             'standard_price': 0.0,
             'uom_id': self.env.ref('uom.product_uom_kgm').id,
@@ -58,8 +58,7 @@ class TestFifoReturns(ValuationReconciliationTestCommon):
 
         # Process the reception of purchase order 1
         picking = purchase_order_1.picking_ids[0]
-        res = picking.button_validate()
-        Form(self.env[res['res_model']].with_context(res['context'])).save().process()
+        picking.button_validate()
 
         # Check the standard price of the product (fifo icecream)
         self.assertAlmostEqual(product_fiforet_icecream.standard_price, 50)
@@ -67,8 +66,7 @@ class TestFifoReturns(ValuationReconciliationTestCommon):
         # Confirm the second purchase order
         purchase_order_2.button_confirm()
         picking = purchase_order_2.picking_ids[0]
-        res = picking.button_validate()
-        Form(self.env[res['res_model']].with_context(res['context'])).save().process()
+        picking.button_validate()
 
         # Return the goods of purchase order 2
         picking = purchase_order_2.picking_ids[0]
@@ -76,12 +74,13 @@ class TestFifoReturns(ValuationReconciliationTestCommon):
             .with_context(active_ids=picking.ids, active_id=picking.ids[0],
             active_model='stock.picking'))
         return_pick_wiz = stock_return_picking_form.save()
-        return_picking_id, dummy = return_pick_wiz.with_context(active_id=picking.id)._create_returns()
+        return_pick_wiz.product_return_moves.quantity = 30.0
+        return_picking = return_pick_wiz.with_context(active_id=picking.id)._create_return()
 
         # Important to pass through confirmation and assignation
-        return_picking = self.env['stock.picking'].browse(return_picking_id)
         return_picking.action_confirm()
-        return_picking.move_ids[0].quantity_done = return_picking.move_ids[0].product_uom_qty
+        return_picking.move_ids[0].quantity = return_picking.move_ids[0].product_uom_qty
+        return_picking.move_ids[0].picked = True
         return_picking._action_done()
 
         #  After the return only 10 of the second purchase order should still be in stock as it applies fifo on the return too

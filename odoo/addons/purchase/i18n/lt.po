@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase
-# 
+#
 # Translators:
 # Denis Knotko <denis_knotko@yahoo.com>, 2022
 # Paulius Sladkevičius <paulius@versada.eu>, 2022
@@ -20,26 +20,26 @@
 # grupoda2 <dmitrijus.ivanovas@gmail.com>, 2022
 # Edgaras Kriukonis <edgaras@focusate.eu>, 2022
 # Anatolij, 2022
+# Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2022
 # Martin Trigaux, 2022
 # digitouch UAB <digitouchagencyeur@gmail.com>, 2022
 # Jonas Zinkevicius <jozi@odoo.com>, 2023
 # Arunas V. <arunas@devoro.com>, 2023
+# Raimondas Z., 2023
 # Linas Versada <linaskrisiukenas@gmail.com>, 2023
-# Ramunė ViaLaurea <ramune.vialaurea@gmail.com>, 2024
-# Gailius Kazlauskas <gailius@vialaurea.lt>, 2024
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
+"POT-Creation-Date: 2023-05-16 13:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Gailius Kazlauskas <gailius@vialaurea.lt>, 2024\n"
+"Last-Translator: Linas Versada <linaskrisiukenas@gmail.com>, 2023\n"
 "Language-Team: Lithuanian (https://app.transifex.com/odoo/teams/41243/lt/)\n"
+"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: lt\n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #. module: purchase
@@ -64,29 +64,24 @@ msgstr "# eilučių"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "%(amount)s due %(date)s"
-msgstr "%(amount)s Terminas iki %(date)s"
+msgstr "%(amount)s apmokėti iki %(date)s"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "%(product)s from %(original_receipt_date)s to %(new_receipt_date)s"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "%s confirmed the receipt will take place on %s."
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "%s modified receipt dates for the following products:"
 msgstr ""
 
@@ -133,7 +128,7 @@ msgid ""
 "        </t>\n"
 "        is expected for \n"
 "        <t t-if=\"object.date_planned\">\n"
-"            <span style=\"font-weight:bold;\" t-out=\"format_date(object.get_localized_date_planned()) or ''\">05/05/2021</span>.\n"
+"            <span style=\"font-weight:bold;\" t-out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
 "        </t>\n"
 "         <t t-else=\"\">\n"
 "            <span style=\"font-weight:bold;\">undefined</span>.\n"
@@ -166,7 +161,7 @@ msgid ""
 "        from <t t-out=\"object.company_id.name or ''\">YourCompany</t>. \n"
 "        <br><br>\n"
 "        <t t-if=\"object.date_planned\">\n"
-"            The receipt is expected for <span style=\"font-weight:bold;\" t-out=\"format_date(object.get_localized_date_planned()) or ''\">05/05/2021</span>.\n"
+"            The receipt is expected for <span style=\"font-weight:bold;\" t-out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
 "            <br><br>\n"
 "            Could you please acknowledge the receipt of this order?\n"
 "        </t>\n"
@@ -218,9 +213,7 @@ msgstr "<i class=\"fa fa-download\"/>Atsisiųsti"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
-msgid ""
-"<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"Done\" "
-"title=\"Done\"/><span class=\"d-none d-md-inline\"> Done</span>"
+msgid "<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"Done\" title=\"Done\"/><span class=\"d-none d-md-inline\"> Done</span>"
 msgstr ""
 
 #. module: purchase
@@ -230,39 +223,22 @@ msgstr "<i class=\"fa fa-fw fa-check\"/> <b>Apmokėta</b>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid "<i class=\"fa fa-fw fa-check\"/> <b>Reversed</b>"
-msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Waiting Payment</b>"
 msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>Laukia mokėjimo</b>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_partner_kanban_view
-msgid ""
-"<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" "
-"title=\"Purchases\"/>"
-msgstr ""
-"<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" "
-"title=\"Purchases\"/>"
+msgid "<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" title=\"Purchases\"/>"
+msgstr "<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" title=\"Purchases\"/>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
-msgid ""
-"<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for "
-"Bill\" title=\"Waiting for Bill\"/><span class=\"d-none d-md-inline\"> "
-"Waiting for Bill</span>"
-msgstr ""
-"<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for "
-"Bill\" title=\"Waiting for Bill\"/><span class=\"d-none d-md-inline\"> "
-"Laukiama sąskaitos</span>"
+msgid "<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for Bill\" title=\"Waiting for Bill\"/><span class=\"d-none d-md-inline\"> Waiting for Bill</span>"
+msgstr "<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for Bill\" title=\"Waiting for Bill\"/><span class=\"d-none d-md-inline\"> Laukiama sąskaitos</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
-msgid ""
-"<i class=\"fa fa-fw fa-remove\" role=\"img\" aria-label=\"Cancelled\" "
-"title=\"Cancelled\"/><span class=\"d-none d-md-inline\"> Cancelled</span>"
+msgid "<i class=\"fa fa-fw fa-remove\" role=\"img\" aria-label=\"Cancelled\" title=\"Cancelled\"/><span class=\"d-none d-md-inline\"> Cancelled</span>"
 msgstr ""
 
 #. module: purchase
@@ -298,17 +274,6 @@ msgstr ""
 "                        <span class=\"d-block d-md-none\">Ref.</span>"
 
 #. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" aria-label=\"Values set here are company-specific.\" "
-"groups=\"base.group_multi_company\" role=\"img\"/>"
-msgstr ""
-"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
-"specific.\" aria-label=\"Values set here are company-specific.\" "
-"groups=\"base.group_multi_company\" role=\"img\"/>"
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid ""
 "<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not in',('draft','sent'))]}\">Request for Quotation </span>\n"
@@ -325,26 +290,13 @@ msgstr "<span class=\"o_stat_text\">Nupirkta</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid ""
-"<span class=\"text-muted\" attrs=\"{'invisible': "
-"[('mail_reception_confirmed','=', False)]}\">(confirmed by vendor)</span>"
+msgid "<span class=\"text-muted\" attrs=\"{'invisible': [('mail_reception_confirmed','=', False)]}\">(confirmed by vendor)</span>"
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid ""
-"<span class=\"text-muted\" attrs=\"{'invisible': "
-"[('mail_reminder_confirmed', '=', False)]}\">(confirmed by vendor)</span>"
+msgid "<span class=\"text-muted\" attrs=\"{'invisible': [('mail_reminder_confirmed', '=', False)]}\">(confirmed by vendor)</span>"
 msgstr ""
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
-msgid ""
-"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Amount</span>\n"
-"                                <span groups=\"account.group_show_line_subtotals_tax_included\">Total Price</span>"
-msgstr ""
-"<span groups=\"account.group_show_line_subtotals_tax_excluded\">Suma</span>\n"
-"                                <span groups=\"account.group_show_line_subtotals_tax_included\">Visa kaina</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_partner_property_form
@@ -355,6 +307,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "<span>Ask confirmation</span>"
 msgstr "<span>Prašyti patvirtinimo</span>"
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
+msgid "<span>Tax excl.</span>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
+msgid "<span>Tax incl.</span>"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -381,11 +343,6 @@ msgstr "<strong class=\"mr16\">Tarpinė suma</strong>"
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
 msgid "<strong class=\"text-muted\">Purchase Representative</strong>"
 msgstr "<strong class=\"text-muted\">Pirkimo atstovas</strong>"
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
-msgid "<strong>Amount</strong>"
-msgstr "<strong>Suma</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -433,7 +390,7 @@ msgstr "<strong>Kiekis</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<strong>Receipt Date:</strong>"
-msgstr "<strong>Gavimo data:</strong>"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -445,6 +402,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
 msgid "<strong>Shipping address:</strong>"
 msgstr "<strong>Pristatymo adresas:</strong>"
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
+msgid "<strong>Tax excl.</strong>"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
+msgid "<strong>Tax incl.</strong>"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
@@ -484,7 +451,6 @@ msgstr "<strong>Jūsų užsakymo numeris:</strong>"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "A sample email has been sent to %s."
 msgstr ""
 
@@ -506,15 +472,12 @@ msgstr "Įspėjimas gali būti nustatomas produktui arba klientui (Pirkimai)"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"Ability to select a package type in purchase orders and to force a quantity "
-"that is a multiple of the number of units per package."
+msgid "Ability to select a package type in purchase orders and to force a quantity that is a multiple of the number of units per package."
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Accept"
 msgstr "Priimti"
 
@@ -526,7 +489,7 @@ msgstr "Prieigos įspėjimas"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__qty_received_method
 msgid ""
-"According to product configuration, the received quantity can be automatically computed by mechanism :\n"
+"According to product configuration, the received quantity can be automatically computed by mechanism:\n"
 "  - Manual: the quantity is set manually on the line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
@@ -584,7 +547,6 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Add some products or services to your quotation."
 msgstr ""
 
@@ -596,35 +558,30 @@ msgstr "Administratorius"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
-#, python-format
 msgid "All"
 msgstr "Visi"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "All Draft RFQs"
 msgstr "Visos juodraštinės užklausos"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "All Late RFQs"
 msgstr "Visos vėluojančios užklausos"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "All RFQs"
 msgstr "Visos užklausos"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "All Waiting RFQs"
 msgstr "Visos laukiančios užklausos"
 
@@ -645,21 +602,8 @@ msgstr "Suma"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_report__delay_pass
-msgid ""
-"Amount of time between date planned and order by date for each purchase "
-"order line."
-msgstr ""
-"Laikotarpis nuo suplanuotos datos iki užsakymo pagal datą kiekvienoje "
-"pirkimo užsakymo eilutėje."
-
-#. module: purchase
-#: model:ir.model.fields,help:purchase.field_purchase_report__avg_days_to_purchase
-msgid ""
-"Amount of time between purchase approval and document creation date. Due to "
-"a hack needed to calculate this,               every record will show the "
-"same average value, therefore only use this as an aggregated value with "
-"group_operator=avg"
-msgstr ""
+msgid "Amount of time between date planned and order by date for each purchase order line."
+msgstr "Laikotarpis nuo suplanuotos datos iki užsakymo pagal datą kiekvienoje pirkimo užsakymo eilutėje."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_report__delay
@@ -667,29 +611,29 @@ msgid "Amount of time between purchase approval and order by date."
 msgstr "Laikotarpis nuo pirkimo patvirtinimo iki užsakymo pagal datą."
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution
-msgid "Analytic"
-msgstr "Analitinis"
-
-#. module: purchase
 #: model:ir.model,name:purchase.model_account_analytic_account
 msgid "Analytic Account"
 msgstr "Analitinė sąskaita"
 
 #. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution
+msgid "Analytic Distribution"
+msgstr ""
+
+#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution_search
 msgid "Analytic Distribution Search"
-msgstr "Analitinis paskirstymo paieška"
+msgstr ""
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_account_analytic_applicability
 msgid "Analytic Plan's Applicabilities"
-msgstr "Analitinio plano taikymo sritys"
+msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_precision
 msgid "Analytic Precision"
-msgstr "Analitinis tikslumas"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -743,12 +687,11 @@ msgid "Automatically remind the receipt date to your vendors"
 msgstr ""
 
 #. module: purchase
+#: model:ir.model.fields,help:purchase.field_purchase_order__receipt_reminder_email
 #: model:ir.model.fields,help:purchase.field_res_partner__receipt_reminder_email
 #: model:ir.model.fields,help:purchase.field_res_users__receipt_reminder_email
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid ""
-"Automatically send a confirmation email to the vendor X days before the "
-"expected receipt date, asking him to confirm the exact date."
+msgid "Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date."
 msgstr ""
 
 #. module: purchase
@@ -757,14 +700,8 @@ msgid "Average Cost"
 msgstr ""
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_report__avg_days_to_purchase
-msgid "Average Days to Purchase"
-msgstr ""
-
-#. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "Avg Order Value"
 msgstr ""
 
@@ -826,6 +763,8 @@ msgstr "Blokuojanti žinutė"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__user_id
+#: model:ir.model.fields,field_description:purchase.field_res_partner__buyer_id
+#: model:ir.model.fields,field_description:purchase.field_res_users__buyer_id
 msgid "Buyer"
 msgstr ""
 
@@ -836,9 +775,7 @@ msgstr "Kalendoriaus peržiūra"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"Calls for tenders are when you want to generate requests for quotations with"
-" several vendors for a given set of products to compare offers."
+msgid "Calls for tenders are when you want to generate requests for quotations with several vendors for a given set of products to compare offers."
 msgstr ""
 
 #. module: purchase
@@ -851,7 +788,6 @@ msgstr "Atšaukti"
 #: code:addons/purchase/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__cancel
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__cancel
-#, python-format
 msgid "Cancelled"
 msgstr "Atšauktas"
 
@@ -863,7 +799,6 @@ msgstr "Atšauktų pirkimo užsakymų #"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Cannot delete a purchase order line which is in state '%s'."
 msgstr "Negalima ištrinti pirkimo užsakymo, kuris yra '%s' būsenos."
 
@@ -899,8 +834,6 @@ msgstr "Įmonės naudojama valiuta"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Compose Email"
 msgstr "Rašyti el. laišką"
 
@@ -917,7 +850,6 @@ msgstr "Konfigūracija"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Confirm"
 msgstr "Patvirtinti"
 
@@ -939,7 +871,6 @@ msgstr "Vienu žingsniu patvirtinkite pirkimo užsakymus "
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Confirm your purchase."
 msgstr ""
 
@@ -975,17 +906,13 @@ msgstr "Valdymo politika"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Konvertavimas galimas tik tarp tai pačiai grupei priklausančių matavimo "
-"vienetų. Konvertuojant kiekiai bus paskaičiuoti pagal santykį."
+msgid "Conversion between Units of Measure can only occur if they belong to the same category. The conversion will be made based on the ratios."
+msgstr "Konvertavimas galimas tik tarp tai pačiai grupei priklausančių matavimo vienetų. Konvertuojant kiekiai bus paskaičiuoti pagal santykį."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__country_code
 msgid "Country code"
-msgstr "Šalies kodas"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -1051,8 +978,6 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Date Updated"
 msgstr ""
 
@@ -1064,7 +989,6 @@ msgstr "Data:"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "Days"
 msgstr "Dienos"
 
@@ -1092,24 +1016,18 @@ msgstr "Apibrėžkite savo sąlygas..."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__date_planned
-msgid ""
-"Delivery date expected from vendor. This date respectively defaults to "
-"vendor pricelist lead time then today's date."
+msgid "Delivery date expected from vendor. This date respectively defaults to vendor pricelist lead time then today's date."
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__date_planned
-msgid ""
-"Delivery date promised by vendor. This date is used to determine expected "
-"arrival of products."
+msgid "Delivery date promised by vendor. This date is used to determine expected arrival of products."
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__date_order
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__date_order
-msgid ""
-"Depicts the date within which the Quotation should be confirmed and "
-"converted into a purchase order."
+msgid "Depicts the date within which the Quotation should be confirmed and converted into a purchase order."
 msgstr ""
 
 #. module: purchase
@@ -1129,11 +1047,6 @@ msgstr "Rodomas pavadinimas"
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__display_type
 msgid "Display Type"
 msgstr "Ekrano tipas"
-
-#. module: purchase
-#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid "Documentation"
-msgstr "Dokumentacija"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_account_analytic_applicability__business_domain
@@ -1163,7 +1076,7 @@ msgstr "Pirkimo užklausos juodraštis"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Draft RFQs"
-msgstr "Pirkimo užklausų juodraščiai"
+msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__dest_address_id
@@ -1189,7 +1102,6 @@ msgstr "Išplėstiniai filtrai"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Extra line with %s "
 msgstr "Papildoma eilutė su %s "
 
@@ -1222,14 +1134,19 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
-#, python-format
-msgid "From %s document"
+msgid "From %s"
+msgstr ""
+
+#. module: purchase
+#. odoo-python
+#: code:addons/purchase/models/account_invoice.py:0
+msgid "From Electronic Document"
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__invoice_status__invoiced
 msgid "Fully Billed"
-msgstr "Pilnai registruotos sąsk.faktūros"
+msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -1306,18 +1223,12 @@ msgstr "Jei pažymėta, yra žinučių, turinčių pristatymo klaidų."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"If enabled, activates 3-way matching on vendor bills : the items must be "
-"received in order to pay the invoice."
-msgstr ""
-"Jei įjungta, aktyvuoja 3 dalių sutapimą tiekėtjų sąskaitose: prekės turi "
-"būti gautos, kad būtų galima apmokėti sąskaitą."
+msgid "If enabled, activates 3-way matching on vendor bills : the items must be received in order to pay the invoice."
+msgstr "Jei įjungta, aktyvuoja 3 dalių sutapimą tiekėtjų sąskaitose: prekės turi būti gautos, kad būtų galima apmokėti sąskaitą."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"If installed, the product variants will be added to purchase orders through "
-"a grid entry."
+msgid "If installed, the product variants will be added to purchase orders through a grid entry."
 msgstr ""
 
 #. module: purchase
@@ -1328,17 +1239,14 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/product.py:0
-#, python-format
 msgid "Import Template for Products"
 msgstr "Importuoti produktų šabloną"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "In order to delete a purchase order, you must cancel it first."
-msgstr ""
-"Jei norite ištrinti savo pirkimo užsakymą, pirmiausia turite jį atšaukti."
+msgstr "Jei norite ištrinti savo pirkimo užsakymą, pirmiausia turite jį atšaukti."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__incoterm_id
@@ -1348,18 +1256,13 @@ msgstr "Incoterm sąlygos"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Indicate the product quantity you want to order."
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__incoterm_id
-msgid ""
-"International Commercial Terms are a series of predefined commercial terms "
-"used in international transactions."
-msgstr ""
-"Tarptautinės prekybos (sutarčių) sąlygos, numatančios specifines prekių "
-"pristatymo sąlygas užsienio prekyboje."
+msgid "International Commercial Terms are a series of predefined commercial terms used in international transactions."
+msgstr "Tarptautinės prekybos (sutarčių) sąlygos, numatančios specifines prekių pristatymo sąlygas užsienio prekyboje."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -1387,14 +1290,6 @@ msgid "Journal Item"
 msgstr "Žurnalo įrašas"
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_bill_union____last_update
-#: model:ir.model.fields,field_description:purchase.field_purchase_order____last_update
-#: model:ir.model.fields,field_description:purchase.field_purchase_order_line____last_update
-#: model:ir.model.fields,field_description:purchase.field_purchase_report____last_update
-msgid "Last Modified on"
-msgstr "Paskutinį kartą keista"
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__write_uid
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__write_uid
 msgid "Last Updated by"
@@ -1409,7 +1304,6 @@ msgstr "Paskutinį kartą atnaujinta"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "Late"
 msgstr "Vėluoja"
 
@@ -1427,25 +1321,19 @@ msgstr ""
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "Lead Time to Purchase"
 msgstr "Pristatymo laikas pirkimams"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Let's create your first request for quotation."
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
-msgid ""
-"Let's try the Purchase app to manage the flow from purchase to reception and"
-" invoice control."
+msgid "Let's try the Purchase app to manage the flow from purchase to reception and invoice control."
 msgstr ""
 
 #. module: purchase
@@ -1472,29 +1360,18 @@ msgstr "Užrakinti patvirtintus užsakymus"
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__done
-#, python-format
 msgid "Locked"
 msgstr "Užrakinta"
 
 #. module: purchase
-#: model:ir.model.fields,field_description:purchase.field_purchase_order__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Pagrindinis prisegtukas"
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"Make sure you only pay bills for which you received the goods you ordered"
-msgstr ""
-"Įsitikinkite, kad apmokate tik tas sąskaitas, už kurias gavote užsakytas "
-"prekes"
+msgid "Make sure you only pay bills for which you received the goods you ordered"
+msgstr "Įsitikinkite, kad apmokate tik tas sąskaitas, už kurias gavote užsakytas prekes"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Manage your purchase agreements (call for tenders, blanket orders)"
-msgstr ""
-"Valdykite savo pirkimo susitarimus (ilgalaikiai užsakymai, pasiūlymų "
-"kvietimas)"
+msgstr "Valdykite savo pirkimo susitarimus (ilgalaikiai užsakymai, pasiūlymų kvietimas)"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order_line__qty_received_method__manual
@@ -1514,25 +1391,13 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_company__po_lead
 #: model:ir.model.fields,help:purchase.field_res_config_settings__po_lead
-msgid ""
-"Margin of error for vendor lead times. When the system generates Purchase "
-"Orders for procuring products, they will be scheduled that many days earlier"
-" to cope with unexpected vendor delays."
-msgstr ""
-"Tiekėjų laiko paklaida. Kai sistema sugeneruoja pirkimo užsakymus "
-"įsigyjamiems produktams, jie bus suplanuoti tiek dienų anksčiau, kad būtų "
-"išvengta neplanuotų tiekėjų vėlavimų."
+msgid "Margin of error for vendor lead times. When the system generates Purchase Orders for procuring products, they will be scheduled that many days earlier to cope with unexpected vendor delays."
+msgstr "Tiekėjų laiko paklaida. Kai sistema sugeneruoja pirkimo užsakymus įsigyjamiems produktams, jie bus suplanuoti tiek dienų anksčiau, kad būtų išvengta neplanuotų tiekėjų vėlavimų."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_config_settings__use_po_lead
-msgid ""
-"Margin of error for vendor lead times. When the system generates Purchase "
-"Orders for reordering products,they will be scheduled that many days earlier"
-" to cope with unexpected vendor delays."
-msgstr ""
-"Tiekėjų laiko paklaida. Kai sistema sugeneruoja pirkimo užsakymus "
-"pakartotinai užsakomiems produktams, jie bus suplanuoti tiek dienų anksčiau,"
-" kad būtų išvengta neplanuotų tiekėjų vėlavimų."
+msgid "Margin of error for vendor lead times. When the system generates Purchase Orders for reordering products,they will be scheduled that many days earlier to cope with unexpected vendor delays."
+msgstr "Tiekėjų laiko paklaida. Kai sistema sugeneruoja pirkimo užsakymus pakartotinai užsakomiems produktams, jie bus suplanuoti tiek dienų anksčiau, kad būtų išvengta neplanuotų tiekėjų vėlavimų."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_has_error
@@ -1580,14 +1445,12 @@ msgstr "Veiklos paskutinis terminas"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "My Draft RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "My Late RFQs"
 msgstr ""
 
@@ -1604,21 +1467,18 @@ msgstr "Mano pirkimai"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "My RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "My Waiting RFQs"
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
-#, python-format
 msgid "Name"
 msgstr "Pavadinimas"
 
@@ -1630,7 +1490,6 @@ msgstr "Pavadinimas, mokėtojo kodas, el. paštas arba numeris"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
-#, python-format
 msgid "Newest"
 msgstr "Naujausia"
 
@@ -1717,12 +1576,11 @@ msgid "Number of Actions"
 msgstr "Veiksmų skaičius"
 
 #. module: purchase
+#: model:ir.model.fields,help:purchase.field_purchase_order__reminder_date_before_receipt
 #: model:ir.model.fields,help:purchase.field_res_partner__reminder_date_before_receipt
 #: model:ir.model.fields,help:purchase.field_res_users__reminder_date_before_receipt
 msgid "Number of days to send reminder email before the promised receipt date"
-msgstr ""
-"Dienų sk. prieš prieš susitartą pristatymo datą, kada tiekėjui bus išsiųstas"
-" priminimo laiškas "
+msgstr "Dienų sk. prieš prieš susitartą pristatymo datą, kada tiekėjui bus išsiųstas priminimo laiškas "
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_has_error_counter
@@ -1731,8 +1589,8 @@ msgstr "Klaidų kiekis"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Pranešimų, kuriems reikia imtis veiksmų, skaičius"
+msgid "Number of messages which requires an action"
+msgstr "Žinučių, kurioms reikia jūsų veiksmo, skaičius"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__message_has_error_counter
@@ -1762,17 +1620,12 @@ msgstr "Gautiems kiekiams"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
-msgid ""
-"Once you get the price from the vendor, you can complete the purchase order "
-"with the right price."
+msgid "Once you get the price from the vendor, you can complete the purchase order with the right price."
 msgstr ""
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.purchase_form_action
-msgid ""
-"Once you ordered your products to your supplier, confirm your request for "
-"quotation and it will turn into a purchase order."
+msgid "Once you ordered your products to your supplier, confirm your request for quotation and it will turn into a purchase order."
 msgstr ""
 
 #. module: purchase
@@ -1831,12 +1684,6 @@ msgid "Other Information"
 msgstr "Kita informacija"
 
 #. module: purchase
-#: model:mail.template,report_name:purchase.email_template_edi_purchase_done
-#: model:mail.template,report_name:purchase.email_template_edi_purchase_reminder
-msgid "PO_{{ (object.name or '').replace('/','_') }}"
-msgstr ""
-
-#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_packaging_id
 msgid "Packaging"
 msgstr "Pakavimas"
@@ -1844,7 +1691,7 @@ msgstr "Pakavimas"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_packaging_qty
 msgid "Packaging Quantity"
-msgstr "Pakuočių kiekis"
+msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__partner_id
@@ -2005,9 +1852,7 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/product.py:0
-#: code:addons/purchase/models/product.py:0
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Purchase History for %s"
 msgstr ""
 
@@ -2020,7 +1865,6 @@ msgstr "Pirkimo terminas"
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
-#: code:addons/purchase/models/purchase.py:0
 #: code:addons/purchase/models/purchase.py:0
 #: model:ir.actions.report,name:purchase.action_report_purchase_order
 #: model:ir.model,name:purchase.model_purchase_order
@@ -2042,7 +1886,6 @@ msgstr "Pirkimo terminas"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_activity
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
-#, python-format
 msgid "Purchase Order"
 msgstr "Pirkimo užsakymas"
 
@@ -2100,12 +1943,8 @@ msgstr "Pirkimo užsakymų modifikavimas *"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_company__po_lock
 #: model:ir.model.fields,help:purchase.field_res_config_settings__po_lock
-msgid ""
-"Purchase Order Modification used when you want to purchase order editable "
-"after confirm"
-msgstr ""
-"Pirkimo užsakymo modifikacija yra naudojama tada, kai norite, kad pirkimo "
-"užsakymai liktų redaguojami po patvirtinimo"
+msgid "Purchase Order Modification used when you want to purchase order editable after confirm"
+msgstr "Pirkimo užsakymo modifikacija yra naudojama tada, kai norite, kad pirkimo užsakymai liktų redaguojami po patvirtinimo"
 
 #. module: purchase
 #. odoo-python
@@ -2119,7 +1958,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_bill_union_filter
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
-#, python-format
 msgid "Purchase Orders"
 msgstr "Pirkimų užsakymai"
 
@@ -2149,8 +1987,7 @@ msgstr "Pirkimo užsakymai, kuriems buvo išrašytas važtaraštis."
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Purchase orders that include lines not invoiced."
-msgstr ""
-"Pirkimo užsakymai, kurie turi eilučių, už kurias nebuvo pateiktos sąskaitos."
+msgstr "Pirkimo užsakymai, kurie turi eilučių, už kurias nebuvo pateiktos sąskaitos."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -2159,7 +1996,6 @@ msgstr ""
 
 #. module: purchase
 #: model:ir.actions.server,name:purchase.purchase_send_reminder_mail_ir_actions_server
-#: model:ir.cron,cron_name:purchase.purchase_send_reminder_mail
 msgid "Purchase reminder"
 msgstr ""
 
@@ -2192,7 +2028,6 @@ msgstr "Nupirkta"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "Purchased Last 7 Days"
 msgstr ""
 
@@ -2215,12 +2050,8 @@ msgstr "Pirkimai ir sąskaitų junginiai"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__dest_address_id
-msgid ""
-"Put an address if you want to deliver directly from the vendor to the "
-"customer. Otherwise, keep empty to deliver to your own company."
-msgstr ""
-"Įveskite adresą, jei norite pristatyti tiesiogiai iš tiekėjo klientui. Jei "
-"norite, kad pristatytų į jūsų įmonę, palikite tuščia."
+msgid "Put an address if you want to deliver directly from the vendor to the customer. Otherwise, keep empty to deliver to your own company."
+msgstr "Įveskite adresą, jei norite pristatyti tiesiogiai iš tiekėjo klientui. Jei norite, kad pristatytų į jūsų įmonę, palikite tuščia."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__qty_billed
@@ -2286,11 +2117,6 @@ msgid "RFQ Sent"
 msgstr "Pirkimo užklausa išsiųsta"
 
 #. module: purchase
-#: model:mail.template,report_name:purchase.email_template_edi_purchase
-msgid "RFQ_{{ (object.name or '').replace('/','_') }}"
-msgstr ""
-
-#. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "RFQs"
 msgstr "Pirkimo užklausos"
@@ -2298,7 +2124,6 @@ msgstr "Pirkimo užklausos"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "RFQs Sent Last 7 Days"
 msgstr "Per pask. 7 dienas išsiųstos pirkimo užklausos"
 
@@ -2306,6 +2131,11 @@ msgstr "Per pask. 7 dienas išsiųstos pirkimo užklausos"
 #: model:ir.actions.act_window,name:purchase.act_res_partner_2_purchase_order
 msgid "RFQs and Purchases"
 msgstr "Pirkimo užklausos ir pirkimai"
+
+#. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order__rating_ids
+msgid "Ratings"
+msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__currency_rate
@@ -2391,23 +2221,13 @@ msgstr "Etaloninis matavimo vienetas"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__origin
-msgid ""
-"Reference of the document that generated this purchase order request (e.g. a"
-" sales order)"
-msgstr ""
-"Dokumento numeris, pagal kurį sugeneruotas šis pirkimo užsakymas (pvz. "
-"pardavimo užsakymas)."
+msgid "Reference of the document that generated this purchase order request (e.g. a sales order)"
+msgstr "Dokumento numeris, pagal kurį sugeneruotas šis pirkimo užsakymas (pvz. pardavimo užsakymas)."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__partner_ref
-msgid ""
-"Reference of the sales order or bid sent by the vendor. It's used to do the "
-"matching when you receive the products as this reference is usually written "
-"on the delivery order sent by your vendor."
-msgstr ""
-"Pardavimo užsakymo arba pasiūlymo numeris, atsiųstas tiekėjo. Jis naudojamas"
-" susiejimu, kai gaunate produktus. Šis numeris įprastai užrašomas ant "
-"tiekėjo atsiųsto pristatymo užsakymo."
+msgid "Reference of the sales order or bid sent by the vendor. It's used to do the matching when you receive the products as this reference is usually written on the delivery order sent by your vendor."
+msgstr "Pardavimo užsakymo arba pasiūlymo numeris, atsiųstas tiekėjo. Jis naudojamas susiejimu, kai gaunate produktus. Šis numeris įprastai užrašomas ant tiekėjo atsiųsto pristatymo užsakymo."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__mail_reminder_confirmed
@@ -2425,7 +2245,6 @@ msgstr "Ataskaitos"
 #: model:ir.actions.report,name:purchase.report_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
-#, python-format
 msgid "Request for Quotation"
 msgstr "Užklausos prašymas"
 
@@ -2493,7 +2312,6 @@ msgstr "Ieškoti nuorodos dokumento"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Search a vendor name, or create one on the fly."
 msgstr "Surasti tiekėjo pavadinimą arba iškart sukurti naują."
 
@@ -2520,7 +2338,6 @@ msgstr "Apsaugos prieigos raktas"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Select a product, or create a new one on the fly."
 msgstr "Pasirinkite produktą arba pridėkite naują eigoje."
 
@@ -2534,14 +2351,13 @@ msgstr "Pasirinkite pirkimo užsakymą arba seną sąskaitą"
 #: model:ir.model.fields,help:purchase.field_product_template__purchase_line_warn
 #: model:ir.model.fields,help:purchase.field_res_partner__purchase_warn
 #: model:ir.model.fields,help:purchase.field_res_users__purchase_warn
-msgid ""
-"Selecting the \"Warning\" option will notify user with the message, "
-"Selecting \"Blocking Message\" will throw an exception with the message and "
-"block the flow. The Message has to be written in the next field."
+msgid "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field."
+msgstr "Pasirinkus 'įspėjimo' opciją, vartotojas gaus perspėjimą su žinute, pasirinkus 'blokuojanti žinutė' bus parodoma klaida su žinute ir blokuojami tolimesni žingsniai. Žinutė turi būti įvesta kitame laukelyje. "
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
+msgid "Sell and purchase products in different units of measure"
 msgstr ""
-"Pasirinkus 'įspėjimo' opciją, vartotojas gaus perspėjimą su žinute, "
-"pasirinkus 'blokuojanti žinutė' bus parodoma klaida su žinute ir blokuojami "
-"tolimesni žingsniai. Žinutė turi būti įvesta kitame laukelyje. "
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -2566,8 +2382,6 @@ msgstr "Siųsti el. paštu"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
-#: code:addons/purchase/static/src/js/tours/purchase.js:0
-#, python-format
 msgid "Send the request for quotation to your vendor."
 msgstr ""
 
@@ -2583,8 +2397,7 @@ msgstr ""
 
 #. module: purchase
 #: model:mail.template,description:purchase.email_template_edi_purchase_reminder
-msgid ""
-"Sent to vendors before expected arrival, based on the purchase order setting"
+msgid "Sent to vendors before expected arrival, based on the purchase order setting"
 msgstr ""
 
 #. module: purchase
@@ -2612,8 +2425,7 @@ msgstr "Dalintis"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Show all records which has next action date is before today"
-msgstr ""
-"Rodyti visus įrašus, kurių sekančio veiksmo data yra ankstesnė nei šiandiena"
+msgstr "Rodyti visus įrašus, kurių sekančio veiksmo data yra ankstesnė nei šiandiena"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__reference
@@ -2710,6 +2522,32 @@ msgid "Tax Totals"
 msgstr ""
 
 #. module: purchase
+#: model:ir.model.fields,field_description:purchase.field_purchase_order__tax_calculation_rounding_method
+#: model:ir.model.fields,field_description:purchase.field_purchase_order_line__tax_calculation_rounding_method
+msgid "Tax calculation rounding method"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+msgid "Tax excl."
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+msgid "Tax excl.:"
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+msgid "Tax incl."
+msgstr ""
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
+msgid "Tax incl.:"
+msgstr ""
+
+#. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__amount_tax
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__taxes_id
 msgid "Taxes"
@@ -2722,9 +2560,7 @@ msgstr "Techninis laukas UX reikmėms."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__tax_country_id
-msgid ""
-"Technical field to filter the available taxes depending on the fiscal "
-"country and fiscal position."
+msgid "Technical field to filter the available taxes depending on the fiscal country and fiscal position."
 msgstr ""
 
 #. module: purchase
@@ -2749,7 +2585,6 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "The order receipt has been acknowledged by %s."
 msgstr ""
 
@@ -2777,10 +2612,7 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
-msgid ""
-"There is no invoiceable line. If a product has a control policy based on "
-"received quantity, please make sure that a quantity has been received."
+msgid "There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received."
 msgstr ""
 
 #. module: purchase
@@ -2793,21 +2625,14 @@ msgstr ""
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_partner__property_purchase_currency_id
 #: model:ir.model.fields,help:purchase.field_res_users__property_purchase_currency_id
-msgid ""
-"This currency will be used, instead of the default one, for purchases from "
-"the current partner"
-msgstr ""
-"Pirkimams iš esamo partnerio vietoje numatytosios valiutos bus naudojama ši"
+msgid "This currency will be used, instead of the default one, for purchases from the current partner"
+msgstr "Pirkimams iš esamo partnerio vietoje numatytosios valiutos bus naudojama ši"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_config_settings__default_purchase_method
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
-msgid ""
-"This default value is applied to any new product created. This can be "
-"changed in the product detail form."
-msgstr ""
-"Ši numatytoji vertė yra pritaikoma bet kuriam naujai sukurtam produktui. Tai"
-" galite pakeisti produkto informacijos formoje."
+msgid "This default value is applied to any new product created. This can be changed in the product detail form."
+msgstr "Ši numatytoji vertė yra pritaikoma bet kuriam naujai sukurtam produktui. Tai galite pakeisti produkto informacijos formoje."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_product_supplier_inherit
@@ -2817,31 +2642,25 @@ msgstr "Šis aprašas yra pridedamas į pirkimo užsakymus."
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
-msgid ""
-"This product is packaged by %(pack_size).2f %(pack_name)s. You should "
-"purchase %(quantity).2f %(unit)s."
+msgid "This product is packaged by %(pack_size).2f %(pack_name)s. You should purchase %(quantity).2f %(unit)s."
 msgstr ""
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
-#, python-format
 msgid "This vendor bill has been created from: %s"
 msgstr "Ši tiekėjo sąskaita buvo sukurta iš: %s"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
-#, python-format
 msgid "This vendor bill has been modified from: %s"
 msgstr "Ši tiekėjo sąskaita buvo modifikuota iš: %s"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.act_res_partner_2_purchase_order
 msgid "This vendor has no purchase order. Create a new RfQ"
-msgstr ""
-"Šis tiekėjas neturi pirkimo užsakymo. Sukurkite naują pirkimo užklausą"
+msgstr "Šis tiekėjas neturi pirkimo užsakymo. Sukurkite naują pirkimo užklausą"
 
 #. module: purchase
 #: model:digest.tip,name:purchase.digest_tip_purchase_0
@@ -2870,7 +2689,6 @@ msgstr "Pateikti sąskaita už kiekį"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "To Send"
 msgstr "Išsiųsti"
 
@@ -2888,7 +2706,6 @@ msgstr "Šiandienos veiklos"
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__price_total
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_rfqs
-#, python-format
 msgid "Total"
 msgstr "Suma"
 
@@ -2935,13 +2752,8 @@ msgstr "Įrašytos išimties veiklos tipas."
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
-msgid ""
-"Unable to cancel this purchase order. You must first cancel the related "
-"vendor bills."
-msgstr ""
-"Negalima atšaukti šio pirkimo užsakymo. Pirmiausia turite atšaukti "
-"susijusias tiekėjo sąskaitas."
+msgid "Unable to cancel this purchase order. You must first cancel the related vendor bills."
+msgstr "Negalima atšaukti šio pirkimo užsakymo. Pirmiausia turite atšaukti susijusias tiekėjo sąskaitas."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_unit
@@ -2958,6 +2770,11 @@ msgstr "Vieneto kaina:"
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom
 msgid "Unit of Measure"
 msgstr "Mato vienetas"
+
+#. module: purchase
+#: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
+msgid "Units Of Measure"
+msgstr ""
 
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_purchase_uom_form_action
@@ -3004,7 +2821,6 @@ msgstr "Mat. vnt."
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Update Dates"
 msgstr ""
 
@@ -3017,15 +2833,6 @@ msgstr "Skubu"
 #: model:res.groups,name:purchase.group_purchase_user
 msgid "User"
 msgstr "Vartotojas"
-
-#. module: purchase
-#. odoo-python
-#: code:addons/purchase/report/purchase_report.py:0
-#, python-format
-msgid ""
-"Value: 'avg_days_to_purchase' should only be used to show an average. If you"
-" are seeing this message then it is being accessed incorrectly."
-msgstr ""
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -3093,7 +2900,6 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "View"
 msgstr "Peržiūrėti"
 
@@ -3105,7 +2911,6 @@ msgstr "Tūris"
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
-#, python-format
 msgid "Waiting"
 msgstr "Laukia"
 
@@ -3125,15 +2930,12 @@ msgstr ""
 #: code:addons/purchase/models/purchase.py:0
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_line_warn__warning
 #: model:ir.model.fields.selection,name:purchase.selection__res_partner__purchase_warn__warning
-#, python-format
 msgid "Warning"
 msgstr "Įspėjimas"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid "Warning for %s"
 msgstr "Įspėjimas %s"
 
@@ -3166,45 +2968,24 @@ msgstr "Svetainės komunikacijos istorija"
 
 #. module: purchase
 #: model_terms:digest.tip,tip_description:purchase.digest_tip_purchase_0
-msgid ""
-"When creating a purchase order, have a look at the vendor's <i>On Time "
-"Delivery</i> rate: the percentage of products shipped on time. If it is too "
-"low, activate the <i>automated reminders</i>. A few days before the due "
-"shipment, Odoo will send the vendor an email to ask confirmation of shipment"
-" dates and keep you informed in case of any delays. To get the vendor's "
-"performance statistics, click on the OTD rate."
-msgstr ""
-"Kurdami pirkimo užsakymą, atkreipkite dėmesį į <i>Laiku Atliktų "
-"Pristatymų</i> santykį. Jei jis per mažas, aktyvuokite <i>automatinius "
-"priminimus</i>. Likus kelioms dienoms iki pristatymo datos, Odoo išsiųs "
-"tiekėjui el. laišką, prašydamas patvirtinti siuntimo datas ir informuos Jus,"
-" jei tiekėjas vėluos. Norėdami gauti pardavėjo našumo statistiką, "
-"spustelėkite ant Laiku Atliktų Pristatymų santykio."
+msgid "When creating a purchase order, have a look at the vendor's <i>On Time Delivery</i> rate: the percentage of products shipped on time. If it is too low, activate the <i>automated reminders</i>. A few days before the due shipment, Odoo will send the vendor an email to ask confirmation of shipment dates and keep you informed in case of any delays. To get the vendor's performance statistics, click on the OTD rate."
+msgstr "Kurdami pirkimo užsakymą, atkreipkite dėmesį į <i>Laiku Atliktų Pristatymų</i> santykį. Jei jis per mažas, aktyvuokite <i>automatinius priminimus</i>. Likus kelioms dienoms iki pristatymo datos, Odoo išsiųs tiekėjui el. laišką, prašydamas patvirtinti siuntimo datas ir informuos Jus, jei tiekėjas vėluos. Norėdami gauti pardavėjo našumo statistiką, spustelėkite ant Laiku Atliktų Pristatymų santykio."
 
 #. module: purchase
 #: model_terms:digest.tip,tip_description:purchase.digest_tip_purchase_1
-msgid ""
-"When sending a purchase order by email, Odoo asks the vendor to acknowledge "
-"the reception of the order. When the vendor acknowledges the order by "
-"clicking on a button in the email, the information is added on the purchase "
-"order. Use filters to track orders that have not been acknowledged."
+msgid "When sending a purchase order by email, Odoo asks the vendor to acknowledge the reception of the order. When the vendor acknowledges the order by clicking on a button in the email, the information is added on the purchase order. Use filters to track orders that have not been acknowledged."
 msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__partner_id
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__partner_id
 msgid "You can find a vendor by its Name, TIN, Email or Internal Reference."
-msgstr ""
-"Galite rasti tiekėją pagal jo pavadinimą, mokėtojo kodą, el. paštą ar vidinį"
-" numerį."
+msgstr "Galite rasti tiekėją pagal jo pavadinimą, mokėtojo kodą, el. paštą ar vidinį numerį."
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
-msgid ""
-"You cannot change the type of a purchase order line. Instead you should "
-"delete the current line and create a new line of the proper type."
+msgid "You cannot change the type of a purchase order line. Instead you should delete the current line and create a new line of the proper type."
 msgstr ""
 
 #. module: purchase
@@ -3224,7 +3005,6 @@ msgstr ""
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
-#, python-format
 msgid ""
 "Your quotation contains products from company %(product_company)s whereas your quotation belongs to company %(quote_company)s. \n"
 " Please change the company of your quotation or remove the products from other companies (%(bad_products)s)."

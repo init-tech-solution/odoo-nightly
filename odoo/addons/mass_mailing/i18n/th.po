@@ -3,24 +3,16 @@
 # 	* mass_mailing
 # 
 # Translators:
-# Pornvibool Tippayawat <pornvibool.t@gmail.com>, 2022
-# Amin Cheloh <amincheloh@gmail.com>, 2022
-# Chatcha Mee, 2022
-# gsong <gsong2014@foxmail.com>, 2022
-# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2023
-# Odoo Thaidev <odoothaidev@gmail.com>, 2023
-# Martin Trigaux, 2023
-# Wichanon Jamwutthipreecha, 2023
-# Rasareeyar Lappiam, 2024
 # Wil Odoo, 2024
+# Rasareeyar Lappiam, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
-"PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-09-25 08:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"Last-Translator: Rasareeyar Lappiam, 2024\n"
 "Language-Team: Thai (https://app.transifex.com/odoo/teams/41243/th/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,10 +22,9 @@ msgstr ""
 
 #. module: mass_mailing
 #. odoo-python
-#: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
-#, python-format
-msgid " %i duplicates have been ignored."
-msgstr " %i รายการที่ซ้ำกันจะถูกละเว้น"
+#: code:addons/mass_mailing/models/mailing.py:0
+msgid " %(subject)s (final)"
+msgstr " %(subject)s (ล่าสุด)"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_import_view_form
@@ -57,19 +48,36 @@ msgid "$18"
 msgstr "$18"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
+msgid "% Blacklist"
+msgstr "% แบล็คลิสต์"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
+msgid "% Bounce"
+msgstr "% การตีกลับ"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
+msgid "% Opt-out"
+msgstr "% การยกเลิก"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
 msgid "% of recipients"
 msgstr "% ของผู้รับ"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "% of recipients."
-msgstr ""
+#. odoo-python
+#: code:addons/mass_mailing/models/mailing_list.py:0
+msgid "%(contact_name)s subscribed to the following mailing list(s)"
+msgstr "%(contact_name)s สมัครรับรายชื่อผู้รับจดหมายต่อไปนี้"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "% receive one of the"
-msgstr ""
+#. odoo-python
+#: code:addons/mass_mailing/models/mailing_list.py:0
+msgid "%(contact_name)s unsubscribed from the following mailing list(s)"
+msgstr "%(contact_name)s ยกเลิกการสมัครจากรายชื่อผู้รับจดหมายต่อไปนี้"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mass_mailing_kpi_link_trackers
@@ -78,22 +86,13 @@ msgstr "% คลิก (ทั้งหมด)"
 
 #. module: mass_mailing
 #. odoo-python
-#: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
-#, python-format
-msgid "%i Contacts have been imported."
-msgstr "%i นำเข้ารายชื่อผู้ติดต่อแล้ว"
-
-#. module: mass_mailing
-#. odoo-python
 #: code:addons/mass_mailing/models/mailing_list.py:0
-#, python-format
 msgid "%s (copy)"
 msgstr "%s (สำเนา)"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_contact_to_list.py:0
-#, python-format
 msgid "%s Mailing Contacts have been added. "
 msgstr "เพิ่มที่อยู่ติดต่อทางไปรษณีย์ของ %s แล้ว"
 
@@ -105,14 +104,8 @@ msgstr "&amp;nbsp;&amp;nbsp;"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/ir_mail_server.py:0
-#, python-format
 msgid "(scheduled for %s)"
 msgstr "(กำหนดเวลาไว้สำหรับ %s)"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid ", and"
-msgstr ""
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_hr_options
@@ -128,8 +121,6 @@ msgstr "รายงานการส่งจดหมายสถิติ 24
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "24H Stats of %(mailing_type)s \"%(mailing_name)s\""
 msgstr "สถิติ 24H ของ %(mailing_type)s \"%(mailing_name)s\""
 
@@ -170,38 +161,50 @@ msgstr "<b>John DOE</b> • CEO of MyCompany"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                                    <span class=\"text-secondary\">\n"
+"                                    <span class=\"text-muted\">\n"
 "                                        <i class=\"fa fa-envelope-o\"/> Contacts\n"
 "                                    </span>"
 msgstr ""
+"<br/>\n"
+"                                    <span class=\"text-muted\">\n"
+"                                        <i class=\"fa fa-envelope-o\"/> รายชื่อผู้ติดต่อ\n"
+"                                    </span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                                    <span class=\"text-secondary\">Blacklist</span>"
+"                                    <span class=\"text-muted\">Blacklist</span>"
 msgstr ""
+"<br/>\n"
+"                                    <span class=\"text-muted\">แบล็คลิสต์</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                                    <span class=\"text-secondary\">Bounce</span>"
+"                                    <span class=\"text-muted\">Bounce</span>"
 msgstr ""
+"<br/>\n"
+"                                    <span class=\"text-muted\">การตีกลับ</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                                    <span class=\"text-secondary\">Mailings</span>"
+"                                    <span class=\"text-muted\">Mailings</span>"
 msgstr ""
+"<br/>\n"
+"                                    <span class=\"text-muted\">การส่งจดหมาย</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 msgid ""
 "<br/>\n"
-"                                    <span class=\"text-secondary\">Opt-Out</span>"
+"                                    <span class=\"text-muted\">Opt-Out</span>"
 msgstr ""
+"<br/>\n"
+"                                    <span class=\"text-muted\">การยกเลิก</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.theme_default_template
@@ -272,22 +275,28 @@ msgstr ""
 "<font style=\"font-size: 62px; font-weight: bold;\">หัวเรื่องที่จับใจ</font>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_subscription_view_form
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_form
 msgid ""
 "<i class=\"fa fa-ban text-danger\" role=\"img\" title=\"This email is "
-"blacklisted for mass mailings\" aria-label=\"Blacklisted\" "
-"attrs=\"{'invisible': [('is_blacklisted', '=', False)]}\" "
-"groups=\"base.group_user\"/>"
+"blacklisted for mass mailings\" aria-label=\"Blacklisted\" invisible=\"not "
+"is_blacklisted\" groups=\"base.group_user\"/>"
 msgstr ""
 "<i class=\"fa fa-ban text-danger\" role=\"รูปภาพ\" "
-"title=\"อีเมลนี้อยู่ในบัญชีแบล็คลิสต์สำหรับการส่งจดหมายจำนวนมาก\" aria-"
-"label=\"ขึ้นบัญชีแบล็คลิสต์\" attrs=\"{'invisible': [('is_blacklisted', '=',"
-" False)]}\" groups=\"base.group_user\"/>"
+"title=\"อีเมลนี้อยู่ในบัญชีแบล็คลิสต์สำหรับการส่งอีเมลกลุ่ม\" aria-"
+"label=\"แบล็คลิสต์\" invisible=\"not is_blacklisted\" "
+"groups=\"base.group_user\"/>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "<i class=\"fa fa-bar-chart\"/> Compare Version"
 msgstr "<i class=\"fa fa-bar-chart\"/> เปรียบเทียบเวอร์ชัน"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
+msgid "<i class=\"fa fa-bullseye me-2\" role=\"img\" aria-label=\"Lead/Opportunity\"/>"
+msgstr ""
+"<i class=\"fa fa-bullseye me-2\" role=\"img\" aria-"
+"label=\"ลูกค้าเป้าหมาย/ผู้ที่มีโอกาสจะซื้อ\"/>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
@@ -296,18 +305,28 @@ msgstr "<i class=\"fa fa-copy\"/> สร้างทางเลือก"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid ""
-"<i class=\"fa fa-envelope\"/> <span name=\"ab_test_manual\" attrs=\"{'invisible': [('ab_testing_winner_selection', '!=', 'manual')]}\">\n"
-"                                                    Send this version to remaining recipients\n"
-"                                                </span> <span name=\"ab_test_auto\" attrs=\"{'invisible': [('ab_testing_winner_selection', '=', 'manual')]}\">\n"
-"                                                    Send Winner Now\n"
-"                                                </span>"
-msgstr ""
+msgid "<i class=\"fa fa-envelope\"/> Send this as winner"
+msgstr "<i class=\"fa fa-envelope\"/> ส่งสิ่งนี้ในฐานะผู้ชนะ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid "<i class=\"fa fa-envelope\"/> Send this as winner"
-msgstr "<i class=\"fa fa-envelope\"/> ส่งสิ่งนี้ในฐานะผู้ชนะ"
+msgid ""
+"<i class=\"fa fa-envelope\"/><span name=\"ab_test_auto\">\n"
+"                                                    Send Winner Now\n"
+"                                                </span>"
+msgstr ""
+"<i class=\"fa fa-envelope\"/><span name=\"ab_test_auto\">\n"
+"                                                    ส่งผู้ชนะตอนนี้\n"
+"                                                </span>"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
+msgid ""
+"<i class=\"fa fa-exclamation-triangle text-danger\" aria-hidden=\"true\"/>\n"
+"                        The sum of all percentages for this A/B campaign totals"
+msgstr ""
+"<i class=\"fa fa-exclamation-triangle text-danger\" aria-hidden=\"true\"/>\n"
+"                        ผลรวมของเปอร์เซ็นต์ทั้งหมดสำหรับผลรวมของแคมเปญ A/B นี้"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_kanban
@@ -336,7 +355,7 @@ msgstr "<i class=\"fa fa-fw fa-refresh me-1\"/> เปลี่ยนไอค�
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
 msgid "<i class=\"fa fa-fw fa-square\"/> Squares"
-msgstr "<i class=\"fa fa-fw fa-square\"/>สี่เหลี่ยม"
+msgstr "<i class=\"fa fa-fw fa-square\"/> สี่เหลี่ยม"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
@@ -347,6 +366,11 @@ msgstr "<i class=\"fa fa-fw fa-star\"/> ดาว"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
 msgid "<i class=\"fa fa-fw fa-thumbs-up\"/> Thumbs"
 msgstr "<i class=\"fa fa-fw fa-thumbs-up\"/> ยกนิ้ว"
+
+#. module: mass_mailing
+#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_subscription_action_report_optout
+msgid "<i class=\"oi oi-arrow-right\"></i> Configure Opt-out Reasons"
+msgstr ""
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_blockquote
@@ -360,29 +384,13 @@ msgstr ""
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid ""
-"<small class=\"oe_edit_only text-muted mb-2\" style=\"font-size:74%\" attrs=\"{'invisible': ['|', ('reply_to_mode', '=', 'update'), ('mailing_model_name', 'in', ['mailing.contact', 'res.partner', 'mailing.list'])],}\">\n"
+"<small class=\"oe_edit_only text-muted mb-2\" style=\"font-size:74%\" invisible=\"reply_to_mode == 'update' or mailing_model_name in ['mailing.contact', 'res.partner', 'mailing.list']\">\n"
 "                                                    To track replies, this address must belong to this database.\n"
 "                                                </small>"
 msgstr ""
-"<small class=\"oe_edit_only text-muted mb-2\" style=\"font-size:74%\" attrs=\"{'invisible': ['|', ('reply_to_mode', '=', 'update'), ('mailing_model_name', 'in', ['mailing.contact', 'res.partner', 'mailing.list'])],}\">\n"
+"<small class=\"oe_edit_only text-muted mb-2\" style=\"font-size:74%\" invisible=\"reply_to_mode == 'update' or mailing_model_name in ['mailing.contact', 'res.partner', 'mailing.list']\">\n"
 "                                                    หากต้องการติดตามการตอบกลับ ที่อยู่นี้ต้องเป็นของฐานข้อมูลนี้\n"
 "                                                </small>"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
-msgid ""
-"<span attrs=\"{'invisible': "
-"[('mailing_model_name','!=','mailing.list')]}\">Mailing Contact</span>"
-msgstr ""
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
-msgid ""
-"<span class=\"fa fa-calendar-check-o me-2 small my-auto\" aria-label=\"Sent "
-"date\"/>"
-msgstr ""
-"<span class=\"fa fa-calendar-check-o me-2 small my-auto\" aria-"
-"label=\"วันที่ส่ง\"/>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
@@ -397,10 +405,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
 msgid ""
 "<span class=\"fa fa-hourglass-o me-2 small my-auto\" aria-label=\"Scheduled date\"/>\n"
-"                                            <span class=\"align-self-baseline\">Next Batch</span>"
+"                                        <span>Next Batch</span>"
 msgstr ""
-"<span class=\"fa fa-hourglass-o me-2 small my-auto\" aria-label=\"วันที่กำหนด\"/>\n"
-"                                            <span class=\"align-self-baseline\">Next Batch</span>"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
+msgid ""
+"<span class=\"fa fa-paper-plane me-2 small my-auto\" aria-label=\"Sent "
+"date\"/>"
+msgstr ""
+"<span class=\"fa fa-paper-plane me-2 small my-auto\" aria-"
+"label=\"วันที่ส่ง\"/>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
@@ -408,24 +423,14 @@ msgid "<span class=\"mx-2\">/</span>"
 msgstr "<span class=\"mx-2\">/</span>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
-msgid "<span class=\"o_stat_text\">Blacklist</span>"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_form
+msgid "<span class=\"o_stat_text\">Open Recipient</span>"
+msgstr "<span class=\"o_stat_text\">เปิดผู้รับ</span>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
-msgid "<span class=\"o_stat_text\">Bounce</span>"
-msgstr ""
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
-msgid "<span class=\"o_stat_text\">Opt-out</span>"
-msgstr ""
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
-msgid "<span class=\"o_stat_value\">%</span>"
-msgstr "<span class=\"o_stat_value\">%</span>"
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form_split_name
+msgid "<span class=\"oe_grey\" invisible=\"name\">e.g. \"John Smith\"</span>"
+msgstr "<span class=\"oe_grey\" invisible=\"name\">เช่น \"John Smith\"</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
@@ -448,16 +453,18 @@ msgid "<span class=\"text-muted\">Opt-out</span>"
 msgstr "<span class=\"text-muted\">การยกเลิก</span>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid ""
-"<span name=\"canceled_text\">emails have been canceled and will not be "
-"sent.</span>"
-msgstr "<span name=\"canceled_text\">อีเมลถูกยกเลิกและไม่สามารถส่งได้</span>"
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
+msgid "<span invisible=\"not mailing_on_mailing_list\">Mailing Contact</span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('mailing_on_mailing_list', '=', "
+"False)]}\">รายชื่อการติดต่อทางจดหมาย</span>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
-msgid "<span name=\"failed_text\">email(s) not sent.</span>"
-msgstr "<span name=\"failed_text\">อีเมล์ไม่ได้ถูกส่ง</span>"
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid ""
+"<span name=\"canceled_text\">emails have been cancelled and will not be "
+"sent.</span>"
+msgstr "<span name=\"canceled_text\">อีเมลถูกยกเลิกและจะไม่ถูกส่ง</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
@@ -466,13 +473,29 @@ msgstr "<span name=\"failed_text\">ไม่สามารถส่งอีเ
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid "<span name=\"next_departure_text\">This mailing is scheduled for </span>"
-msgstr "<span name=\"next_departure_text\">กำหนดส่งจดหมายนี้สำหรับ</span>"
+msgid ""
+"<span name=\"mailing_schedule_type_now_text\">This mailing will be sent as "
+"soon as possible.</span>"
+msgstr ""
+"<span "
+"name=\"mailing_schedule_type_now_text\">จดหมายนี้จะถูกส่งโดยเร็วที่สุด</span>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
-msgid "<span name=\"scheduled_text\">email(s) scheduled for </span>"
-msgstr "<span name=\"scheduled_text\">อีเมลที่กำหนดไว้สำหรับ </span>"
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid "<span name=\"next_departure_text\">This mailing is scheduled for </span>"
+msgstr "<span name=\"next_departure_text\">กำหนดส่งจดหมายนี้สำหรับ </span>"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid "<span name=\"process_text\">emails are being processed.</span>"
+msgstr "<span name=\"process_text\">กำลังประมวลผลอีเมล</span>"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid ""
+"<span name=\"refresh_text\">This mailing will be sent as soon as "
+"possible.</span>"
+msgstr "<span name=\"refresh_text\">จดหมายนี้จะถูกส่งโดยเร็วที่สุด</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
@@ -489,8 +512,8 @@ msgstr "<span name=\"sent\">ส่งอีเมลแล้ว</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.digest_mail_main
-msgid "<span style=\"color: #8f8f8f;\">Turn off Mailing Reports</span>"
-msgstr "<span style=\"color: #8f8f8f;\">ปิดรายงานการส่งจดหมาย</span>"
+msgid "<span style=\"color: #878d97;\">Turn off Mailing Reports</span>"
+msgstr "<span style=\"color: #878d97;\">ปิดรายงานการส่งจดหมาย</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_alert
@@ -570,13 +593,8 @@ msgid ""
 "<span style=\"font-weight:bolder\">Total</span>\n"
 "                                    management"
 msgstr ""
-"การจัดการ<span style=\"font-weight:bolder\">ดดยรวม</span>\n"
+"การจัดการ<span style=\"font-weight:bolder\">โดยรวม</span>\n"
 "                                    "
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_form
-msgid "<span widget=\"statinfo\">Open Recipient</span>"
-msgstr "<span widget=\"statinfo\">เปิดผู้รับ</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
@@ -584,9 +602,9 @@ msgid "<span>Contacts</span>"
 msgstr "<span>รายชื่อผู้ติดต่อ</span>"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
-msgid "<span>Design</span>"
-msgstr "<span>การออกแบบ</span>"
+#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
+msgid "<span>There wasn't enough recipients left for this mailing</span>"
+msgstr "<span>มีผู้รับเหลือไม่เพียงพอสำหรับการส่งจดหมายนี้</span>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
@@ -599,9 +617,24 @@ msgid "<span>​</span>"
 msgstr "<span>​</span>"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid ""
+"<strong class=\"d-block\" invisible=\"mailing_type == 'mail' or not ab_testing_enabled or state != 'done' or sent != 0 or failed != 0 or canceled != 0\">\n"
+"                                <span name=\"ab_test_text\">There wasn't enough recipients given to this mailing. </span>\n"
+"                            </strong>"
+msgstr ""
+"<strong class=\"d-block\" invisible=\"mailing_type == 'mail' or not ab_testing_enabled or state != 'done' or sent != 0 or failed != 0 or canceled != 0\">\n"
+"                                <span name=\"ab_test_text\">มีผู้รับที่ส่งอีเมลนี้ไม่เพียงพอ</span>\n"
+"                            </strong>"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid "<u>Refresh <i class=\"fa fa-refresh ms-1\"/></u>"
+msgstr "<u>รีเฟรช <i class=\"fa fa-refresh ms-1\"/></u>"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "A campaign should be set when A/B test is enabled"
 msgstr "ควรตั้งค่าแคมเปญเมื่อเปิดใช้งานการทดสอบ A/B"
 
@@ -624,11 +657,10 @@ msgid "A great title"
 msgstr "ชื่อเรื่องที่โดดเด่น"
 
 #. module: mass_mailing
-#: model:ir.model.constraint,message:mass_mailing.constraint_mailing_contact_list_rel_unique_contact_list
+#: model:ir.model.constraint,message:mass_mailing.constraint_mailing_subscription_unique_contact_list
 msgid ""
 "A mailing contact cannot subscribe to the same mailing list multiple times."
-msgstr ""
-"ผู้ติดต่อทางเมลไม่สามารถสมัครรับรายชื่อผู้รับจดหมายเดียวกันได้หลายครั้ง"
+msgstr "ผู้ติดต่อทางเมลไม่สามารถสมัครรับรายชื่ออีเมลเดียวกันได้หลายครั้ง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
@@ -651,6 +683,11 @@ msgid "A unique value"
 msgstr "คุณค่าอันเป็นเอกลักษณ์"
 
 #. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_utm_campaign__ab_testing_winner_mailing_id
+msgid "A/B Campaign Winner Mailing"
+msgstr "การส่งจดหมายผู้ชนะแคมเปญ A/B"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_tree
 msgid "A/B Test"
@@ -670,7 +707,6 @@ msgstr "ผู้ชนะการทดสอบ A/B"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "A/B Test: %s"
 msgstr "การทดสอบ A/B: %s"
 
@@ -695,7 +731,6 @@ msgstr "เปอร์เซ็นต์การทดสอบ A/B"
 #: code:addons/mass_mailing/models/mailing.py:0
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_search
-#, python-format
 msgid "A/B Tests"
 msgstr "การทดสอบ A/B"
 
@@ -707,7 +742,6 @@ msgstr "การทดสอบ A/B เพื่อตรวจสอบ"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "A/B test option has not been enabled"
 msgstr "ไม่ได้เปิดใช้งานตัวเลือกการทดสอบ A/B"
 
@@ -762,7 +796,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/xml/mailing_filter_widget.xml:0
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_to_list_view_form
-#, python-format
 msgid "Add"
 msgstr "เพิ่ม"
 
@@ -804,7 +837,6 @@ msgstr "เพิ่มลงในเทมเพลต"
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/xml/mailing_filter_widget.xml:0
-#, python-format
 msgid "Add to favorite filters"
 msgstr "เพิ่มลงในตัวกรองโปรด"
 
@@ -888,6 +920,11 @@ msgid "Allow A/B Testing"
 msgstr "อนุญาตให้ใช้การทดสอบ A/B"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_optout_view_tree
+msgid "Allow Feedback"
+msgstr "อนุญาตให้แสดงความคิดเห็น"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
 msgid "Allow recipients to blacklist themselves"
 msgstr "อนุญาตให้ผู้รับขึ้นบัญชีแบล็คลิสต์ด้วยตนเองได้"
@@ -904,11 +941,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
 msgid ""
 "Allow the recipient to manage themselves their state in the blacklist via "
-"the unsubscription page.                                 If the option is "
-"active, the 'Blacklist Me' button is hidden on the unsubscription page."
-"                                 The 'come Back' button will always be "
+"the unsubscription page. If the option is active, the 'Blacklist Me' button "
+"is hidden on the unsubscription page. The 'come Back' button will always be "
 "visible in any case to allow leads and partners to re-subscribe."
 msgstr ""
+"อนุญาตให้ผู้รับสามารถจัดการสถานะของตนเองในบัญชีแบล็คลิสต์ผ่านหน้ายกเลิกการสมัครสมาชิก"
+" หากตัวเลือกนี้ใช้งานได้ ปุ่ม 'บัญชีแบล็คลิสต์ของฉัน' "
+"จะถูกซ่อนอยู่ในหน้ายกเลิกการสมัครสมาชิก ปุ่ม 'กลับมา' "
+"จะมองเห็นได้เสมอไม่ว่าในกรณีใดก็ตาม "
+"เพื่อให้ลูกค้าเป้าหมายและพาร์ทเนอร์สามารถสมัครสมาชิกได้อีกครั้ง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_masonry_block_options
@@ -937,27 +978,16 @@ msgstr "เพจที่น่าตื่นตาตื่นใจ"
 
 #. module: mass_mailing
 #. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "An error occurred. Please try again later or contact us."
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_feedback.xml:0
+msgid "An error occurred. Please retry later or contact us."
 msgstr "เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลังหรือติดต่อเรา"
 
 #. module: mass_mailing
 #. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "An error occurred. Your changes have not been saved, try again later."
-msgstr ""
-"เกิดข้อผิดพลาด การเปลี่ยนแปลงของคุณไม่ได้รับการบันทึก "
-"โปรดลองอีกครั้งในภายหลัง"
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_blocklist.xml:0
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+msgid "An error occurred. Please retry later."
+msgstr "เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_masonry_block_alternation_image_text_template
@@ -983,6 +1013,11 @@ msgid "Another feature"
 msgstr "ฟีเจอร์อื่น"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Apply changes"
+msgstr "ใช้การเปลี่ยนแปลง"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
 msgid "Archive"
 msgstr "เก็บถาวร"
@@ -1001,9 +1036,13 @@ msgid "Archived"
 msgstr "เก็บถาวรแล้ว"
 
 #. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__is_feedback
+msgid "Ask For Feedback"
+msgstr "ขอคำติชม"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing_list.py:0
-#, python-format
 msgid ""
 "At least one of the mailing list you are trying to archive is used in an "
 "ongoing mailing campaign."
@@ -1044,7 +1083,7 @@ msgstr "ค่าเฉลี่ยของการตีกลับ"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
 msgid "Average of Clicked"
-msgstr "อ"
+msgstr "ค่าเฉลี่ยของการคลิก"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
@@ -1068,6 +1107,11 @@ msgid "Background Color"
 msgstr "สีพื้นหลัง"
 
 #. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mailing_on_mailing_list
+msgid "Based on Mailing Lists"
+msgstr "ขึ้นอยู่กับรายชื่อผู้รับจดหมาย"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_comparisons
 msgid "Basic features"
 msgstr "ฟีเจอร์พื้นฐาน"
@@ -1089,20 +1133,14 @@ msgstr "กล่องใหญ่"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__is_blacklisted
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__is_blacklisted
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__is_blacklisted
 msgid "Blacklist"
-msgstr "บัญชีดำ"
+msgstr "บัญชีแบล็คลิสต์"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_tree
 msgid "Blacklist (%s)"
 msgstr "แบล็คลิสต์ (%s)"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribed
-msgid "Blacklist Me"
-msgstr "แบล็คลิสต์ฉัน"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_res_config_settings__show_blacklist_buttons
@@ -1125,6 +1163,58 @@ msgid "Blacklisted Email Addresses"
 msgstr "ที่อยู่อีเมลบัญชีแบล็คลิสต์"
 
 #. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid "Blocklist removal request from portal"
+msgstr "คำขอลบบล็อกลิสต์จากพอร์ทัล"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid ""
+"Blocklist removal request from portal of mailing %(mailing_link)s (document "
+"%(record_link)s)"
+msgstr ""
+"คำขอลบบล็อกลิสต์ออกจากพอร์ทัลการส่งจดหมาย %(mailing_link)s (เอกสาร "
+"%(record_link)s)"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid "Blocklist request from portal"
+msgstr "คำขอบล็อกลิสต์จากพอร์ทัล"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid ""
+"Blocklist request from portal of mailing %(mailing_link)s (document "
+"%(record_link)s)"
+msgstr ""
+"คำขอบล็อกลิสต์จากพอร์ทัลการส่งจดหมาย %(mailing_link)s (เอกสาร "
+"%(record_link)s)"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid ""
+"Blocklist request from unsubscribe link of mailing %(mailing_link)s (direct "
+"link usage)"
+msgstr ""
+"คำขอรายการบล็อกจากลิงก์ยกเลิกการสมัครของการส่งจดหมาย %(mailing_link)s "
+"(การใช้ลิงก์โดยตรง)"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid ""
+"Blocklist request from unsubscribe link of mailing %(mailing_link)s "
+"(document %(record_link)s)"
+msgstr ""
+"คำขอบล็อกลิสต์จากลิงก์ยกเลิกการสมัครของการส่งจดหมาย %(mailing_link)s (เอกสาร"
+" %(record_link)s)"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
 msgid "Blockquote"
 msgstr "บล็อกคำพูด"
@@ -1143,7 +1233,7 @@ msgstr "ความกว้างของเนื้อความ"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__body_html
 msgid "Body converted to be sent by mail"
-msgstr "แปลงเนื้อความให้ส่งทางเมล"
+msgstr "แปลงเนื้อความให้เป็นการส่งทางเมล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
@@ -1164,7 +1254,8 @@ msgstr "กรอบ"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__message_bounce
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__message_bounce
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__message_bounce
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__failure_type__mail_bounce
 msgid "Bounce"
 msgstr "การตีกลับ"
 
@@ -1176,7 +1267,6 @@ msgstr "การตีกลับ (%)"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "Bounce happens when a mailing cannot be delivered (fake address, server "
 "issues, ...). Check each record to see what went wrong."
@@ -1192,7 +1282,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "Bounced"
-msgstr "Bounced"
+msgstr "การตีกลับ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
@@ -1209,7 +1299,6 @@ msgstr "อัตราการตีกลับ"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Business Benefits on %(expected)i %(mailing_type)s Sent"
 msgstr "สิทธิประโยชน์ทางธุรกิจเมื่อ %(expected)i %(mailing_type)s ส่งแล้ว"
 
@@ -1221,7 +1310,6 @@ msgstr "ป้ายชื่อปุ่ม"
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "By using the <b>Breadcrumb</b>, you can navigate back to the overview."
 msgstr "คุณสามารถนำทางกลับไปยังภาพรวมได้โดยใช้ <b>Breadcrumb</b>"
 
@@ -1279,10 +1367,14 @@ msgstr "ยกเลิก"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__canceled
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__canceled
-#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__cancel
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 msgid "Canceled"
 msgstr "ถูกยกเลิก"
+
+#. module: mass_mailing
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__cancel
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
+msgid "Cancelled"
+msgstr "ยกเลิก"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing_test__email_to
@@ -1317,15 +1409,10 @@ msgid "Change Icons"
 msgstr "เปลี่ยนไอคอน"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
-msgid "Chat"
-msgstr "แชท"
-
-#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
 msgid "Check how well your mailing is doing a day after it has been sent"
 msgstr ""
-"ตรวจดูว่าการส่งอีเมลของคุณผ่านไปได้ดีแค่ไหนภายในหนึ่งวันหลังจากส่งไปแล้ว"
+"ตรวจสอบว่าการส่งอีเมลของคุณผ่านไปได้ดีแค่ไหนภายในหนึ่งวันหลังจากส่งไปแล้ว"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_res_config_settings__mass_mailing_reports
@@ -1351,42 +1438,36 @@ msgstr "ตรวจสอบเฟอร์นิเจอร์ทั้งห
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Check the email address and click send."
 msgstr "ตรวจสอบที่อยู่อีเมลแล้วคลิกส่ง"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_schedule_date_view_form
+msgid "Choose a date"
+msgstr "เลือกวันที่"
+
+#. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Choose this <b>theme</b>."
 msgstr "เลือก<b>ธีม</b>นี้"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
 msgid "Choose your mailing subscriptions"
 msgstr "เลือกการสมัครรับอีเมลของคุณ"
 
 #. module: mass_mailing
 #. odoo-javascript
-#: code:addons/mass_mailing/static/src/xml/mass_mailing.xml:0
-#, python-format
-msgid "Click on the ⭐ next to the subject to save this mailing as a"
-msgstr "คลิกที่ ⭐ ถัดจากหัวเรื่อง เพื่อบันทึกการส่งอีเมลนี้เป็น"
-
-#. module: mass_mailing
-#. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Click on this button to add this mailing to your templates."
 msgstr "คลิกที่ปุ่มนี้เพื่อเพิ่มการส่งอีเมลนี้ไปยังเทมเพลตของคุณ"
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Click on this paragraph to edit it."
 msgstr "คลิกที่ย่อหน้านี้เพื่อแก้ไข"
 
@@ -1396,13 +1477,13 @@ msgstr "คลิกที่ย่อหน้านี้เพื่อแก
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "Clicked"
-msgstr "คลิกแล้ว"
+msgstr "การคลิก"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_tree
 msgid "Clicked (%)"
-msgstr "คลิกแล้ว (%)"
+msgstr "การคลิก (%)"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__links_click_datetime
@@ -1410,9 +1491,10 @@ msgid "Clicked On"
 msgstr "คลิกเปิด"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
-msgid "Clicks"
-msgstr "คลิก"
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mass_mailing_mobile_preview.xml:0
+msgid "Close"
+msgstr "ปิด"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_product_list
@@ -1444,15 +1526,27 @@ msgid "Columns"
 msgstr "คอลัมน์"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribed
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
 msgid "Come Back"
 msgstr "กลับมา"
 
 #. module: mass_mailing
+#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_subscription_action_report_optout
+msgid "Come back later to discover why contacts unsubscribe.<br>"
+msgstr ""
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
+msgid ""
+"Come back once your mailing has been sent to track who clicked on the "
+"embedded links."
+msgstr ""
+"กลับมาอีกครั้งเมื่อจดหมายของคุณถูกส่งไปเพื่อติดตามว่าใครคลิกลิงก์ที่ฝังไว้"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/models/mailing.py:0
 msgid ""
 "Come back once your mailing has been sent to track who opened your mailing."
 msgstr ""
@@ -1461,7 +1555,7 @@ msgstr ""
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_res_company
 msgid "Companies"
-msgstr "หลายบริษัท"
+msgstr "บริษัท"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__company_name
@@ -1489,9 +1583,7 @@ msgid "Configure Outgoing Mail Servers"
 msgstr "กำหนดค่าเซิร์ฟเวอร์อีเมลขาออก"
 
 #. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
+#: model_terms:web_tour.tour,rainbow_man_message:mass_mailing.mass_mailing_tour
 msgid "Congratulations, I love your first mailing. :)"
 msgstr "ยินดีด้วย ฉันชอบอีเมลฉบับแรกของคุณ :)"
 
@@ -1502,7 +1594,7 @@ msgstr "การเชื่อมต่อล้มเหลว (ปัญห�
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_res_partner
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__contact_id
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__contact_id
 msgid "Contact"
 msgstr "ติดต่อ"
 
@@ -1520,6 +1612,11 @@ msgid "Contact Name"
 msgstr "ชื่อผู้ติดต่อ"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
+msgid "Contact Naming"
+msgstr "การตั้งชื่อรายชื่อผู้ติดต่อ"
+
+#. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_contact_import__contact_list
 msgid "Contact list that will be imported, one contact per line"
 msgstr "รายชื่อผู้ติดต่อที่จะถูกนำเข้า ผู้ติดต่อหนึ่งรายการต่อบรรทัด"
@@ -1535,6 +1632,27 @@ msgid "Contacts"
 msgstr "การติดต่อ"
 
 #. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
+msgid ""
+"Contacts successfully imported. Number of contacts imported: "
+"%(imported_count)s"
+msgstr ""
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
+msgid ""
+"Contacts successfully imported. Number of contacts imported: "
+"%(imported_count)s. Number of duplicates ignored: %(duplicate_count)s"
+msgstr ""
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
+msgid "Content Background"
+msgstr "พื้นหลังเนื้อหา"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_media_list
 msgid "Continue reading <i class=\"fa fa-long-arrow-right align-middle ms-1\"/>"
 msgstr "อ่านต่อ <i class=\"fa fa-long-arrow-right align-middle ms-1\"/>"
@@ -1542,13 +1660,12 @@ msgstr "อ่านต่อ <i class=\"fa fa-long-arrow-right align-middle ms-
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Could not retrieve URL: %s"
 msgstr "ไม่สามารถเรียกข้อมูล URL: %s"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_contact__message_bounce
-#: model:ir.model.fields,help:mass_mailing.field_mailing_contact_subscription__message_bounce
+#: model:ir.model.fields,help:mass_mailing.field_mailing_subscription__message_bounce
 msgid "Counter of the number of bounced emails for this contact"
 msgstr "ตัวนับจำนวนอีเมลตีกลับสำหรับผู้ติดต่อรายนี้"
 
@@ -1596,13 +1713,14 @@ msgstr "สร้างเวอร์ชันทางเลือก"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import__create_uid
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list_merge__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__create_uid
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__create_uid
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__create_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
@@ -1610,7 +1728,6 @@ msgstr "สร้างโดย"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import__create_date
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__create_date
@@ -1618,6 +1735,8 @@ msgstr "สร้างโดย"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__create_date
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__create_date
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__create_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
@@ -1634,13 +1753,13 @@ msgstr "ระยะเวลาการสร้าง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
+#: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 msgid "Custom"
 msgstr "กำหนดเอง"
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/mass_mailing_html_field.js:0
-#, python-format
 msgid "DRAG BUILDING BLOCKS HERE"
 msgstr "ลากกล่องข้อความมาที่นี่"
 
@@ -1710,6 +1829,7 @@ msgstr ""
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__delivered
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__delivered
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__sent
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 msgid "Delivered"
 msgstr "จัดส่งแล้ว"
@@ -1718,17 +1838,17 @@ msgstr "จัดส่งแล้ว"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_tree
 msgid "Delivered (%)"
-msgstr "ส่ง (%)"
+msgstr "การส่ง (%)"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
-msgid "Delivered to"
-msgstr "จัดส่งไปที่"
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mass_mailing.editor.xml:0
+msgid "Design"
+msgstr "ออกแบบ"
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/snippets.editor.js:0
-#, python-format
 msgid "Design Options"
 msgstr "ตัวเลือกการออกแบบ"
 
@@ -1740,16 +1860,14 @@ msgstr "ออกแบบอีเมลที่โดดเด่น กำ�
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Design added to the %s Templates!"
 msgstr "เพิ่มการออกแบบให้กับเทมเพลต %s แล้ว!"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Design removed from the %s Templates!"
-msgstr "การออกแบบถูกลบออกจากเทมเพลต %s แล้ว!"
+msgstr "ลบการออกแบบออกจากเทมเพลต %s แล้ว!"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list_merge__dest_list_id
@@ -1778,14 +1896,8 @@ msgid "Discover all the features"
 msgstr "ค้นพบฟีเจอร์ทั้งหมด"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
-msgid "Display Inline"
-msgstr "แสดงแบบอินไลน์"
-
-#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import__display_name
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__display_name
@@ -1793,6 +1905,8 @@ msgstr "แสดงแบบอินไลน์"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__display_name
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__display_name
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__display_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__display_name
 msgid "Display Name"
@@ -1816,6 +1930,12 @@ msgid "Domain"
 msgstr "โดเมน"
 
 #. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/js/mailing_m2o_filter.js:0
+msgid "Domain field"
+msgstr "ฟิลด์โดเมน"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
 msgid "Don't forget to send your preferred version"
 msgstr "อย่าลืมส่งเวอร์ชั่นที่ต้องการมาด้วย"
@@ -1823,7 +1943,6 @@ msgstr "อย่าลืมส่งเวอร์ชั่นที่ต้
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Don't worry, the mailing contact we created is an internal user."
 msgstr "ไม่ต้องกังวล ผู้ติดต่อทางอีเมลที่เราสร้างนั้นเป็นผู้ใช้ภายใน"
 
@@ -1849,11 +1968,6 @@ msgstr "ดับเบิลคลิกที่ไอคอนเพื่อ
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace_report__state__draft
 msgid "Draft"
 msgstr "ร่าง"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
-msgid "Dropdown menu"
-msgstr "เมนูดรอปดาว์น"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features_grid
@@ -1889,7 +2003,6 @@ msgstr "แก้ไขสไตล์"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__email
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_mailing__mailing_type__mail
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_type__mail
-#, python-format
 msgid "Email"
 msgstr "อีเมล"
 
@@ -1908,17 +2021,15 @@ msgstr "เนื้อหาอีเมล"
 #: code:addons/mass_mailing/models/res_users.py:0
 #: model:ir.ui.menu,name:mass_mailing.mass_mailing_menu_root
 #: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
-#, python-format
 msgid "Email Marketing"
 msgstr "การตลาด"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/ir_mail_server.py:0
-#, python-format
 msgid ""
 "Email Marketing uses it as its default mail server to send mass mailings"
-msgstr "อีเมลมาร์เก็ตติ้งใช้เป็นเซิร์ฟเวอร์เมลเริ่มต้นในการส่งอีเมลจำนวนมาก"
+msgstr "อีเมลมาร์เก็ตติ้งใช้เป็นเซิร์ฟเวอร์เมลเริ่มต้นในอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mail_thread
@@ -1926,14 +2037,25 @@ msgid "Email Thread"
 msgstr "เธรดอีเมล"
 
 #. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_blocklist.xml:0
+msgid "Email added to our blocklist"
+msgstr "เพิ่มอีเมลในรายการบล็อกของเราแล้ว"
+
+#. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mail_compose_message
 msgid "Email composition wizard"
 msgstr "ตัวช่วยการเขียนอีเมล"
 
 #. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_blocklist.xml:0
+msgid "Email removed from our blocklist"
+msgstr "ลบอีเมลในรายการบล็อกของเราแล้ว"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Emails"
 msgstr "อีเมล"
 
@@ -1945,7 +2067,6 @@ msgstr "สถิติของอีเมล"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Engagement on %(expected)i %(mailing_type)s Sent"
 msgstr "การมีส่วนร่วมกับ %(expected)i %(mailing_type)s ส่งแล้ว"
 
@@ -1975,6 +2096,11 @@ msgid "Exclude Blacklisted Emails"
 msgstr "ไม่รวมอีเมลที่อยู่ในบัญชีแบล็คลิสต์"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Exclude Me"
+msgstr "ยกเว้นฉัน"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_search
 msgid "Exclude Opt Out"
 msgstr "ไม่รวมการยกเลิก"
@@ -1999,6 +2125,11 @@ msgstr "Facebook"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 msgid "Failed"
 msgstr "ล้มเหลว"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__failure_reason
+msgid "Failure reason"
+msgstr "สาเหตุของการล้มเหลว"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__failure_type
@@ -2029,7 +2160,7 @@ msgstr "ตัวกรองโปรด"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mailing_filter_domain
 msgid "Favorite filter domain"
-msgstr "โดเมนตัวกรองรายการโปรด"
+msgstr "โดเมนตัวกรองโปรด"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_three_columns
@@ -2059,22 +2190,14 @@ msgstr "กริดฟีเจอร์"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/controllers/main.py:0
-#, python-format
-msgid "Feedback from %(email)s: %(feedback)s"
-msgstr "ฟีดแบ็กจาก %(email)s: %(feedback)s"
+msgid "Feedback from %(author_name)s"
+msgstr "คำติชมจาก %(author_name)s"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "File size exceeds configured maximum (%s bytes)"
 msgstr "ขนาดไฟล์เกินค่าสูงสุดที่กำหนดไว้ (%s ไบต์)"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid "Filter"
-msgstr "ตัวกรอง"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__mailing_domain
@@ -2087,6 +2210,12 @@ msgid "Filter Name"
 msgstr "ชื่อตัวกรอง"
 
 #. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/js/mass_mailing_html_field.js:0
+msgid "Filter templates"
+msgstr "เทมเพลตตัวกรอง"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_filter_view_search
 msgid "Filters saved by me"
 msgstr "ตัวกรองที่ฉันบันทึกไว้"
@@ -2095,6 +2224,11 @@ msgstr "ตัวกรองที่ฉันบันทึกไว้"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features
 msgid "First Feature"
 msgstr "ฟีเจอร์แรก"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__first_name
+msgid "First Name"
+msgstr "ชื่อ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_showcase
@@ -2124,6 +2258,11 @@ msgid "Followers (Partners)"
 msgstr "ผู้ติดตาม (พาร์ทเนอร์)"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
+msgid "Font Family"
+msgstr "ตระกูลฟอนต์"
+
+#. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "ไอคอนแบบฟอนต์ที่ยอดเยี่ยมเช่น fa-tasks"
@@ -2131,7 +2270,7 @@ msgstr "ไอคอนแบบฟอนต์ที่ยอดเยี่ย
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
 msgid "Footer Center"
-msgstr "ศูนย์กลางส่วนท้าย"
+msgstr "ส่วนท้ายศูนย์กลาง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
@@ -2165,7 +2304,8 @@ msgid "Full"
 msgstr "เต็ม"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mass_mailing.editor.xml:0
 msgid "Fullscreen"
 msgstr "แบบเต็มหน้าจอ"
 
@@ -2178,10 +2318,8 @@ msgstr "เฟอร์นิเจอร์"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_image_text
 msgid ""
 "Get your inside sales (CRM) fully integrated with online sales (eCommerce), "
-"in-store sales (Point of Sale) and marketplaces like eBay and Amazon."
+"in-store sales (Point of Sale) and marketplaces like Amazon."
 msgstr ""
-"ผสานการขายภายใน (CRM) ของคุณเข้ากับการขายออนไลน์ (eCommerce) การขายในร้านค้า"
-" (POS) และตลาดกลางเช่น eBay และ Amazon"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features_grid
@@ -2189,9 +2327,11 @@ msgid "Great Value"
 msgstr "ทรงคุณค่า"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mail_blacklist_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_filter_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_search
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_search
 msgid "Group By"
@@ -2259,9 +2399,23 @@ msgid "Highest Reply Rate"
 msgstr "อัตราการตอบกลับสูงสุด"
 
 #. module: mass_mailing
+#: model:mailing.subscription.optout,name:mass_mailing.mailing_subscription_optout_data_1
+msgid "I changed my mind"
+msgstr "ฉันเปลี่ยนใจ"
+
+#. module: mass_mailing
+#: model:mailing.subscription.optout,name:mass_mailing.mailing_subscription_optout_data_0
+msgid "I never subscribed to this list"
+msgstr "ฉันไม่เคยสมัครรับรายการนี้"
+
+#. module: mass_mailing
+#: model:mailing.subscription.optout,name:mass_mailing.mailing_subscription_optout_data_2
+msgid "I receive too many emails from this list"
+msgstr "ฉันได้รับอีเมลจากรายการนี้มากเกินไป"
+
+#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import__id
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__id
@@ -2269,6 +2423,8 @@ msgstr "อัตราการตอบกลับสูงสุด"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__id
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__id
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__id
 msgid "ID"
@@ -2322,29 +2478,23 @@ msgid "If checked, some messages have a delivery error."
 msgstr "ถ้าเลือก ข้อความบางข้อความมีข้อผิดพลาดในการส่ง"
 
 #. module: mass_mailing
-#: model:ir.model.fields,help:mass_mailing.field_account_invoice_send__mass_mailing_name
 #: model:ir.model.fields,help:mass_mailing.field_mail_compose_message__mass_mailing_name
 msgid ""
 "If set, a mass mailing will be created so that you can track its results in "
 "the Email Marketing app."
 msgstr ""
-"หากตั้งค่าไว้ "
-"ระบบจะสร้างการส่งอีเมลจำนวนมากเพื่อให้คุณสามารถติดตามผลลัพธ์ได้ในแอปอีเมลมาร์เก็ตติ้งได้"
+"หากตั้งค่าไว้ ระบบจะสร้างอีเมลกลุ่ม "
+"เพื่อให้คุณสามารถติดตามผลลัพธ์ได้ในแอปอีเมลมาร์เก็ตติ้งได้"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_contact__is_blacklisted
-#: model:ir.model.fields,help:mass_mailing.field_mailing_contact_subscription__is_blacklisted
+#: model:ir.model.fields,help:mass_mailing.field_mailing_subscription__is_blacklisted
 msgid ""
 "If the email address is on the blacklist, the contact won't receive mass "
 "mailing anymore, from any list"
 msgstr ""
-"หากที่อยู่อีเมลมีอยู่ในบัญชีดำ ผู้ติดต่อจะไม่ได้รับเมลกลุ่มอีกต่อไป "
-"จากรายการใด ๆ"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
-msgid "Ignored"
-msgstr "ละเว้น"
+"หากที่อยู่อีเมลมีอยู่ในบัญชีแบล็คลิสต์ "
+"ผู้ติดต่อจะไม่ได้รับอีเมลกลุ่มอีกต่อไป หรือจากรายการใดก็ตาม"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
@@ -2359,7 +2509,6 @@ msgstr "รูปภาพ ข้อความ รูปภาพ"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "Image size excessive, imported images must be smaller than 42 million pixel"
 msgstr ""
@@ -2371,15 +2520,14 @@ msgid "Images"
 msgstr "รูปภาพ"
 
 #. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/views/mass_mailing_views.xml:0
-#: code:addons/mass_mailing/static/src/views/mass_mailing_views.xml:0
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_import_view_form
-#, python-format
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_kanban
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_tree
 msgid "Import"
 msgstr "นำเข้า"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 msgid "Import Contacts"
 msgstr "นำเข้ารายชื่อผู้ติดต่อ"
@@ -2389,14 +2537,12 @@ msgstr "นำเข้ารายชื่อผู้ติดต่อ"
 #: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
 #: model:ir.actions.act_window,name:mass_mailing.mailing_contact_import_action
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_import_view_form
-#, python-format
 msgid "Import Mailing Contacts"
 msgstr "นำเข้าที่อยู่ติดต่อทางเมล"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing_contact.py:0
-#, python-format
 msgid "Import Template for Mailing List Contacts"
 msgstr "นำเข้าเทมเพลตสำหรับรายชื่อผู้รับอีเมล"
 
@@ -2409,6 +2555,12 @@ msgstr "นำเข้ารายชื่อใน"
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_mailing__state__in_queue
 msgid "In Queue"
 msgstr "อยู่ในคิว"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/js/mass_mailing_html_field.js:0
+msgid "Inline field"
+msgstr "ฟิลด์แบบอินไลน์"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
@@ -2424,6 +2576,11 @@ msgstr "Instagram"
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__failure_type__mail_email_invalid
 msgid "Invalid email address"
 msgstr "ที่อยู่อีเมลที่ไม่ถูกต้อง"
+
+#. module: mass_mailing
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__failure_type__mail_from_invalid
+msgid "Invalid from address"
+msgstr "ไม่ถูกต้องจากที่อยู่"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_company_team
@@ -2442,6 +2599,11 @@ msgstr ""
 "เธอมุ่งมั่นที่จะขับเคลื่อนความสำเร็จและมอบความเฉียบแหลมในอาชีพของเธอเพื่อนำพาบริษัทให้ก้าวไปอีกขั้น"
 
 #. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__is_ab_test_sent
+msgid "Is Ab Test Sent"
+msgstr "มีการส่งการทดสอบ Ab หรือไม่"
+
+#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__is_body_empty
 msgid "Is Body Empty"
 msgstr "เนื้อความว่างเปล่า"
@@ -2456,6 +2618,11 @@ msgstr "เป็นผู้ติดตาม"
 #: model:ir.model.fields,field_description:mass_mailing.field_utm_campaign__is_mailing_campaign_activated
 msgid "Is Mailing Campaign Activated"
 msgstr "เปิดใช้งานแคมเปญการส่งจดหมายแล้ว"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__ab_testing_is_winner_mailing
+msgid "Is the Winner of its Campaign"
+msgstr "เป็นผู้ชนะของแคมเปญ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
@@ -2505,20 +2672,9 @@ msgid "Last Feature"
 msgstr "ฟีเจอร์ล่าสุด"
 
 #. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_list____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_list_merge____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace____last_update
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report____last_update
-msgid "Last Modified on"
-msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__last_name
+msgid "Last Name"
+msgstr "นามสกุล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
@@ -2528,7 +2684,6 @@ msgstr "อัปเดตสถานะล่าสุด"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import__write_uid
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__write_uid
@@ -2536,6 +2691,8 @@ msgstr "อัปเดตสถานะล่าสุด"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__write_uid
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__write_uid
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__write_uid
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__write_uid
 msgid "Last Updated by"
 msgstr "อัปเดตครั้งล่าสุดโดย"
@@ -2543,7 +2700,6 @@ msgstr "อัปเดตครั้งล่าสุดโดย"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_import__write_date
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__write_date
@@ -2551,12 +2707,15 @@ msgstr "อัปเดตครั้งล่าสุดโดย"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_schedule_date__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__write_date
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__write_date
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__write_date
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__write_date
 msgid "Last Updated on"
 msgstr "อัปเดตครั้งล่าสุดเมื่อ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_hr_options
+#: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 msgid "Left"
 msgstr "ซ้าย"
@@ -2574,10 +2733,8 @@ msgstr "ข้อความด้านซ้าย"
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Let's try the Email Marketing app."
-msgstr "มาลองใช้แอป อีเมลมาร์เก็ตติ้ง กัน"
+msgstr "มาลองใช้แอปอีเมลมาร์เก็ตติ้งกันเถอะ"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_link_tracker
@@ -2591,9 +2748,18 @@ msgid "Link Tracker Click"
 msgstr "ระบบติดตามคลิ๊ก"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid "Link Trackers"
+msgstr "ลิงก์ติดตาม"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__link_trackers_count
+msgid "Link Trackers Count"
+msgstr "จำนวนตัวติดตามลิงก์"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "Link Trackers will measure how many times each link is clicked as well as "
 "the proportion of %s who clicked at least once in your mailing."
@@ -2633,14 +2799,14 @@ msgid "Mail"
 msgstr "เมล"
 
 #. module: mass_mailing
+#: model:ir.model,name:mass_mailing.model_mail_blacklist
+msgid "Mail Blacklist"
+msgstr "การส่งเมลแบล็คลิสต์"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "Mail Body"
 msgstr "เนื้อความอีเมล"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
-msgid "Mail Debug"
-msgstr "ดีบักอีเมล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_form
@@ -2654,13 +2820,11 @@ msgstr "รหัสอีเมล (เทคโนโลยี)"
 
 #. module: mass_mailing
 #: model:ir.actions.server,name:mass_mailing.ir_cron_mass_mailing_ab_testing_ir_actions_server
-#: model:ir.cron,cron_name:mass_mailing.ir_cron_mass_mailing_ab_testing
 msgid "Mail Marketing: A/B Testing"
 msgstr "อีเมลมาร์เก็ตติ้ง: การทดสอบ A/B"
 
 #. module: mass_mailing
 #: model:ir.actions.server,name:mass_mailing.ir_cron_mass_mailing_queue_ir_actions_server
-#: model:ir.cron,cron_name:mass_mailing.ir_cron_mass_mailing_queue
 msgid "Mail Marketing: Process queue"
 msgstr "อีเมลมาร์เก็ตติ้ง: ดำเนินการของคิว"
 
@@ -2674,7 +2838,7 @@ msgstr "มิกซ์อินการแสดงผลอีเมล"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mail_server_id
 #: model:ir.model.fields,field_description:mass_mailing.field_res_config_settings__mass_mailing_mail_server_id
 msgid "Mail Server"
-msgstr "Outgoing Mail Server"
+msgstr "เซิร์ฟเวอร์เมล"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mail_server_available
@@ -2688,7 +2852,7 @@ msgstr "มีเมลเซิร์ฟเวอร์ให้บริกา
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mail_statistics_graph
 msgid "Mail Statistics"
-msgstr "สถิติอีเมล"
+msgstr "สถิติของอีเมล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_tree_mail
@@ -2701,10 +2865,14 @@ msgstr "ติดตามอีเมล"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_report_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_graph
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_search
 msgid "Mailing"
 msgstr "ส่งเมล"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
+msgid "Mailing Background"
+msgstr "พื้นหลังการส่งจดหมาย"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__campaign
@@ -2717,14 +2885,23 @@ msgid "Mailing Campaigns"
 msgstr "แคมเปญอีเมล"
 
 #. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/models/mailing_subscription.py:0
 #: model:ir.model,name:mass_mailing.model_mailing_contact
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_tree
 msgid "Mailing Contact"
 msgstr "รายชื่ออีเมล"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mailing_contact_import
 msgid "Mailing Contact Import"
-msgstr "นำเข้ารายชื่ออีเมบ"
+msgstr "นำเข้ารายชื่ออีเมล"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/models/mailing_subscription.py:0
+msgid "Mailing Contacts"
+msgstr ""
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_ir_model__is_mailing_enabled
@@ -2743,13 +2920,19 @@ msgstr "ตัวกรองการส่งอีเมล"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mailing_list
-#: model:ir.model.fields,field_description:mass_mailing.field_account_invoice_send__mailing_list_ids
 #: model:ir.model.fields,field_description:mass_mailing.field_mail_compose_message__mailing_list_ids
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__list_id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_to_list__mailing_list_id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__name
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__list_id
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_search
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_search
 msgid "Mailing List"
-msgstr "Mailing List"
+msgstr "รายชื่อผู้รับจดหมาย"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Mailing List #"
+msgstr "รายชื่อผู้รับจดหมาย #"
 
 #. module: mass_mailing
 #: model:ir.actions.act_window,name:mass_mailing.action_view_mass_mailing_contacts
@@ -2763,15 +2946,18 @@ msgid "Mailing List Contacts"
 msgstr "รายชื่อผู้รับอีเมล"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_subscription_view_form
+#: model:ir.model,name:mass_mailing.model_mailing_subscription
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_form
 msgid "Mailing List Subscription"
-msgstr "การสมัครสมาชิกรายชื่อผู้รับอีเมล"
+msgstr "รายชื่อผู้รับอีเมลการสมัครรับข้อมูล"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_subscription_view_search
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_subscription_view_tree
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_graph
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_pivot
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_search
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_tree
 msgid "Mailing List Subscriptions"
-msgstr "การสมัครรับข้อมูลรายชื่อผู้รับอีเมล"
+msgstr "รายชื่อผู้รับอีเมลการสมัครรับข้อมูล"
 
 #. module: mass_mailing
 #: model:ir.actions.act_window,name:mass_mailing.action_view_mass_mailing_lists
@@ -2787,9 +2973,14 @@ msgid "Mailing Lists"
 msgstr "รายชื่อผู้รับอีเมล"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid "Mailing Lists:"
+msgstr "รายชื่อผู้รับจดหมาย:"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_report_deactivated
 msgid "Mailing Reports Turned Off"
-msgstr "ปิดรายงานการส่งจดหมายแล้ว"
+msgstr "ปิดรายงานการส่งอีเมลแล้ว"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_report_deactivated
@@ -2806,8 +2997,12 @@ msgid "Mailing Statistics"
 msgstr "สถิติการส่งอีเมล"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribed
+#: model:ir.model,name:mass_mailing.model_mailing_subscription_optout
+msgid "Mailing Subscription Reason"
+msgstr "เหตุผลในการสมัครสมาชิกทางจดหมาย"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
 msgid "Mailing Subscriptions"
 msgstr "การสมัครรับข้อมูลอีเมล"
 
@@ -2836,7 +3031,6 @@ msgstr "คำอธิบายประเภทการส่งอีเม
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_mailing_test.py:0
-#, python-format
 msgid "Mailing addresses incorrect: %s"
 msgstr "ที่อยู่จัดส่งไม่ถูกต้อง: %s"
 
@@ -2875,20 +3069,14 @@ msgid "Mailings that are assigned to me"
 msgstr "อีเมลที่ได้รับมอบหมายให้ฉัน"
 
 #. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__message_main_attachment_id
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "เอกสารหลักที่แนบมา"
-
-#. module: mass_mailing
 #: model:res.groups,name:mass_mailing.group_mass_mailing_campaign
 msgid "Manage Mass Mailing Campaigns"
-msgstr "จัดการแคมเปญการส่งอีเมลจำนวนมาก"
+msgstr "จัดการแคมเปญการส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
 msgid "Manage mass mailing campaigns"
-msgstr "จัดการแคมเปญการส่งอีเมลจำนวนมาก"
+msgstr "จัดการแคมเปญการส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__utm_campaign__ab_testing_winner_selection__manual
@@ -2913,11 +3101,10 @@ msgstr "Masonry"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__name
 msgid "Mass Mail"
-msgstr "การส่งอีเมลจำนวนมาก"
+msgstr "การส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mailing_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_account_invoice_send__mass_mailing_id
 #: model:ir.model.fields,field_description:mass_mailing.field_link_tracker__mass_mailing_id
 #: model:ir.model.fields,field_description:mass_mailing.field_link_tracker_click__mass_mailing_id
 #: model:ir.model.fields,field_description:mass_mailing.field_mail_compose_message__mass_mailing_id
@@ -2928,32 +3115,30 @@ msgstr "การส่งอีเมลจำนวนมาก"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.link_tracker_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 msgid "Mass Mailing"
-msgstr "การส่งจดหมายจำนวนมาก"
+msgstr "การส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/ir_mail_server.py:0
-#, python-format
 msgid "Mass Mailing \"%s\""
-msgstr "การส่งอีเมลจำนวนมาก \"%s\""
+msgstr "การส่งอีเมลกลุ่ม \"%s\""
 
 #. module: mass_mailing
 #: model:ir.actions.act_window,name:mass_mailing.mailing_trace_report_action_mail
+#: model:ir.ui.menu,name:mass_mailing.mailing_menu_report_mailing
 msgid "Mass Mailing Analysis"
-msgstr "การวิเคราะห์การส่งอีเมลจำนวนมาก"
+msgstr "การวิเคราะห์การส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_account_invoice_send__campaign_id
 #: model:ir.model.fields,field_description:mass_mailing.field_mail_compose_message__campaign_id
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_report_view_search
 msgid "Mass Mailing Campaign"
-msgstr "Mass Mailing Campaign"
+msgstr "แคมเปญอีเมลกลุ่ม"
 
 #. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_account_invoice_send__mass_mailing_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mail_compose_message__mass_mailing_name
 msgid "Mass Mailing Name"
-msgstr "Mass Mailing Name"
+msgstr "ชื่ออีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mailing_trace_report
@@ -2962,29 +3147,13 @@ msgstr "Mass Mailing Name"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_report_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_report_view_tree
 msgid "Mass Mailing Statistics"
-msgstr "สถิติการส่งอีเมลจำนวนมาก"
-
-#. module: mass_mailing
-#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_trace_report_action_mail
-msgid ""
-"Mass Mailing Statistics allows you to check different mailing related information\n"
-"    like number of bounced mails, opened mails, replied mails. You can sort out\n"
-"    your analysis by different groups to get accurate grained analysis."
-msgstr ""
-"สถิติการส่งอีเมลจำนวนมากทำให้คุณสามารถตรวจสอบข้อมูลที่เกี่ยวข้องกับการส่งอีเมลต่างๆได้\n"
-"    เช่น จำนวนอีเมลที่ถูกตีกลับ, อีเมลที่เปิด, อีเมลตอบกลับ คุณสามารถจัดเรียงออก\n"
-"    การวิเคราะห์ของคุณตามกลุ่มต่างๆ เพื่อรับการวิเคราะห์แบบละเอียดที่แม่นยำ"
-
-#. module: mass_mailing
-#: model:ir.model,name:mass_mailing.model_mailing_contact_subscription
-msgid "Mass Mailing Subscription Information"
-msgstr "ข้อมูลการสมัครสมาชิกการส่งอีเมลจำนวนมาก"
+msgstr "สถิติการส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__mailing_ids
 #: model:ir.model.fields,field_description:mass_mailing.field_utm_campaign__mailing_mail_ids
 msgid "Mass Mailings"
-msgstr "การส่งอีเมลจำนวนมาก"
+msgstr "การส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
@@ -3004,7 +3173,13 @@ msgstr "หัวเรื่องสื่อ"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "Medium"
-msgstr "สื่อกลาง"
+msgstr "วิธีที่เข้ามา"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+msgid "Membership updated"
+msgstr "อัปเดตสถานะสมาชิกแล้ว"
 
 #. module: mass_mailing
 #: model:ir.actions.act_window,name:mass_mailing.mailing_list_merge_action
@@ -3016,7 +3191,7 @@ msgstr "ผสาน"
 #: model:ir.model,name:mass_mailing.model_mailing_list_merge
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_merge_view_form
 msgid "Merge Mass Mailing List"
-msgstr "รวมรายชื่อการส่งเมลจำนวนมาก"
+msgstr "รวมรายชื่อการส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list_merge__merge_options
@@ -3026,7 +3201,7 @@ msgstr "ผสานตัวเลือก"
 #. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_list_merge__merge_options__new
 msgid "Merge into a new mailing list"
-msgstr "รวมเข้าเป็นรายชื่ออีเมลใหม่"
+msgstr "รวมเข้าเป็นรายชื่อผู้รับอีเมลใหม่"
 
 #. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_list_merge__merge_options__existing
@@ -3082,11 +3257,21 @@ msgid "Missing email address"
 msgstr "ที่อยู่อีเมลหายไป"
 
 #. module: mass_mailing
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__failure_type__mail_from_missing
+msgid "Missing from address"
+msgstr "หายไปจากที่อยู่"
+
+#. module: mass_mailing
 #. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mass_mailing_html_field.js:0
-#, python-format
+#: code:addons/mass_mailing/static/src/js/snippets.editor.js:0
 msgid "Mobile Preview"
 msgstr "ดูตัวอย่างบนมือถือ"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/js/mailing_m2o_filter.js:0
+msgid "Model field"
+msgstr "โมเดลฟิลด์"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_ir_model
@@ -3106,7 +3291,6 @@ msgstr "รายละเอียดเพิ่มเติม"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "More Info"
 msgstr "ข้อมูลเพิ่มเติม"
 
@@ -3123,7 +3307,7 @@ msgstr "วันครบกำหนดกิจกรรมของฉัน
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_mail_block_header_text_social
 msgid "My Company"
-msgstr "My Company"
+msgstr "บริษัทของฉัน"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_filter_view_search
@@ -3155,7 +3339,6 @@ msgstr "ชื่อรายชื่อผู้รับอีเมลให
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
-#, python-format
 msgid "New contacts imported"
 msgstr "นำเข้าที่อยู่ติดต่อใหม่แล้ว"
 
@@ -3185,44 +3368,54 @@ msgid "Next Activity Type"
 msgstr "ประเภทกิจกรรมถัดไป"
 
 #. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__next_departure_is_past
+msgid "Next Departure Is Past"
+msgstr "การออกครั้งถัดไปผ่านไปแล้ว"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "No %s address bounced yet!"
 msgstr "ยังไม่มีที่อยู่ %s ที่ถูกตีกลับ!"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "No %s clicked your mailing yet!"
-msgstr "ยังไม่มี %s คลิกการส่งจดหมายของคุณ!"
+msgstr "ยังไม่มี %s คลิกการส่งอีเมลของคุณ!"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "No %s opened your mailing yet!"
-msgstr "ไม่มี %s เปิดการส่งอีเมลของคุณ!"
+msgstr "ยังไม่มี %s เปิดการส่งอีเมลของคุณ!"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "No %s received your mailing yet!"
 msgstr "ยังไม่มี %s ได้รับอีเมลของคุณ!"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "No %s replied to your mailing yet!"
 msgstr "ยังไม่มี %s ตอบกลับอีเมลของคุณ!"
 
 #. module: mass_mailing
 #. odoo-python
+#: code:addons/mass_mailing/models/mailing.py:0
+msgid "No Link Tracker for that mailing!"
+msgstr "ไม่มีตัวติดตามลิงก์สำหรับการส่งจดหมายนั้น!"
+
+#. module: mass_mailing
+#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_trace_report_action_mail
+msgid "No Mailing Data yet!"
+msgstr "ยังไม่มีข้อมูลการส่งจดหมาย!"
+
+#. module: mass_mailing
+#. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
-#, python-format
 msgid ""
 "No contacts were imported. All email addresses are already in the mailing "
 "list."
@@ -3240,16 +3433,20 @@ msgid "No data yet!"
 msgstr "ยังไม่มีข้อมูล!"
 
 #. module: mass_mailing
+#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_subscription_action_report_optout
+#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_subscription_optout_action
+msgid "No data yet."
+msgstr "ยังไม่มีข้อมูล"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "No mailing campaign has been found"
 msgstr "ไม่พบแคมเปญการส่งอีเมล"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "No mailing for this A/B testing campaign has been sent yet! Send one first "
 "and try again later."
@@ -3279,11 +3476,11 @@ msgstr "ไม่สนับสนุน"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
-#, python-format
 msgid "No valid email address found."
 msgstr "ไม่พบที่อยู่อีเมลที่ถูกต้อง"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 msgid "None"
 msgstr "ไม่มี"
@@ -3297,6 +3494,18 @@ msgstr "ทำให้อีเมลเป็นมาตรฐาน"
 #: model:ir.model.fields,help:mass_mailing.field_mailing_trace__email
 msgid "Normalized email address"
 msgstr "ที่อยู่อีเมลมาตรฐาน"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Not subscribed"
+msgstr "ไม่ได้สมัครสมาชิก"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_view_generic
+msgid "Nothing to see yet!"
+msgstr ""
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__message_needaction_counter
@@ -3332,7 +3541,7 @@ msgstr "จำนวนการส่งอีเมล"
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_utm_campaign__mailing_mail_count
 msgid "Number of Mass Mailing"
-msgstr "จำนวนการส่งอีเมลจำนวนมาก"
+msgstr "จำนวนการส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__contact_count_opt_out
@@ -3380,7 +3589,6 @@ msgstr "ในการสั่งซื้อครั้งต่อไปข
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "OPENED (%i)"
 msgstr "เปิด (%i)"
 
@@ -3399,6 +3607,16 @@ msgstr ""
 "เราจะส่งเวอร์ชันที่ดีที่สุดไปยังผู้รับที่เหลือ"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
+msgid ""
+"Once you send these emails, they'll be making a grand entrance in all the "
+"inboxes, creating quite the buzz!"
+msgstr ""
+"เมื่อคุณส่งอีเมลเหล่านี้ "
+"อีเมลเหล่านี้จะเข้ามามีบทบาทอย่างมากในกล่องจดหมายทั้งหมด "
+"ซึ่งจะทำให้เกิดกระแสฮือฮาอย่างมาก!"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 msgid "Open Date"
 msgstr "เปิดวันที่"
@@ -3415,7 +3633,6 @@ msgstr "เปิดผู้รับ"
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__open
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
 msgid "Opened"
 msgstr "เปิดแล้ว"
 
@@ -3438,7 +3655,7 @@ msgstr "อัตราการเปิด"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__opt_out
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__opt_out
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__opt_out
 msgid "Opt Out"
 msgstr "ยกเลิก"
 
@@ -3452,9 +3669,20 @@ msgstr ""
 "ไม่ควรใช้ฟิลด์นี้ในมุมมองโดยไม่มีบริบทรายชื่อผู้รับจดหมายที่ไม่ซ้ำใครและใช้งานอยู่"
 
 #. module: mass_mailing
+#: model:ir.actions.act_window,name:mass_mailing.mailing_subscription_action_report_optout
+#: model:ir.ui.menu,name:mass_mailing.mailing_menu_report_subscribe_reason
+msgid "Opt-Out Report"
+msgstr ""
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_tree
 msgid "Opt-out (%)"
 msgstr "ยกเลิก (%)"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mail_blacklist__opt_out_reason_id
+msgid "Opt-out Reason"
+msgstr "เหตุผลที่ยกเลิก"
 
 #. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__failure_type__mail_optout
@@ -3479,6 +3707,17 @@ msgstr ""
 " เช่น {{ object.partner_id.lang }}"
 
 #. module: mass_mailing
+#: model:ir.actions.act_window,name:mass_mailing.mailing_subscription_optout_action
+#: model:ir.ui.menu,name:mass_mailing.mailing_subscription_optout_menu
+msgid "Optout Reasons"
+msgstr "เหตุผลที่ยกเลิก"
+
+#. module: mass_mailing
+#: model:mailing.subscription.optout,name:mass_mailing.mailing_subscription_optout_data_4
+msgid "Other"
+msgstr "อื่น ๆ"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_references
 msgid "Our References"
 msgstr "การอ้างอิงของเรา"
@@ -3495,13 +3734,19 @@ msgstr "อีเมลขาออก"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
+msgid "Padding ↔"
+msgstr "การขยายความ ↔"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 msgid "Padding ↕"
 msgstr "การขยายความ ↕"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
-msgid "Padding ⭤"
-msgstr "การขยายความ ⭤"
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__pending
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__pending
+msgid "Pending"
+msgstr "รอดำเนินการ"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__contact_pct_blacklisted
@@ -3528,14 +3773,13 @@ msgstr "เปอร์เซ็นต์ของผู้ติดต่อท
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
 msgid "Pick a dedicated outgoing mail server for your mass mailings"
-msgstr "เลือกเซิร์ฟเวอร์เมลขาออกเฉพาะสำหรับการส่งอีเมลจำนวนมากของคุณ"
+msgstr "เลือกเซิร์ฟเวอร์เมลขาออกเฉพาะสำหรับการส่งอีเมลกลุ่มของคุณ"
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Pick the <b>email subject</b>."
-msgstr "เลือก <b>หัวข้ออีเมล</b>"
+msgstr "เลือก <b>หัวเรื่องของอีเมล</b>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
@@ -3543,14 +3787,26 @@ msgid "Picture"
 msgstr "รูปภาพ"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
+#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_themes
 msgid "Plain Text"
 msgstr "ข้อความตัวอักษร"
 
 #. module: mass_mailing
 #. odoo-javascript
+#: code:addons/mass_mailing/static/src/js/mailing_portal_subscription_feedback.js:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Please let us know why you updated your subscription."
+msgstr "โปรดแจ้งให้เราทราบว่าทำไมคุณถึงอัปเดตการสมัครของคุณ"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/js/mailing_portal_subscription_feedback.js:0
+msgid "Please let us know why you want to be in our block list."
+msgstr "โปรดแจ้งให้เราทราบว่าทำไมคุณถึงต้องการอยู่ในรายการบล็อกของเรา"
+
+#. module: mass_mailing
+#. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/mailing_m2o_filter.js:0
-#, python-format
 msgid "Please provide a name for the filter"
 msgstr "โปรดระบุชื่อสำหรับตัวกรอง"
 
@@ -3580,6 +3836,18 @@ msgid "Primary Buttons"
 msgstr "ปุ่มหลัก"
 
 #. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__process
+msgid "Process"
+msgstr "กระบวนการ"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__processing
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__process
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
+msgid "Processing"
+msgstr "กำลังดำเนินการ"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
 msgid "Promo Code"
 msgstr "รหัสโปรโมชั่น"
@@ -3597,20 +3865,24 @@ msgstr "คุณภาพ"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "RECEIVED (%i)"
 msgstr "ได้รับแล้ว (%i)"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "REPLIED (%i)"
 msgstr "ตอบกลับแล้ว (%i)"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
 msgid "Rating"
+msgstr "การให้คะแนน"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__rating_ids
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__rating_ids
+msgid "Ratings"
 msgstr "การให้คะแนน"
 
 #. module: mass_mailing
@@ -3622,9 +3894,16 @@ msgstr "อ่านเพิ่มเติม"
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Ready for take-off!"
 msgstr "พร้อมทะยานขึ้นแล้ว!"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__opt_out_reason_id
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__name
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mail_blacklist_view_search
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_search
+msgid "Reason"
+msgstr "เหตุผล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
@@ -3645,12 +3924,12 @@ msgstr "ผู้รับ"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_form
 msgid "Recipient Address"
-msgstr "ที่อยู่ผู้รับ"
+msgstr "ที่อยู่ของผู้รับ"
 
 #. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_mailing__reply_to_mode__update
 msgid "Recipient Followers"
-msgstr "ผู้ติดตามผู้รับ"
+msgstr "ผู้ติดตามของผู้รับ"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing_test__email_to
@@ -3668,13 +3947,13 @@ msgstr "ผู้รับ"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__mailing_model_id
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mailing_model_id
 msgid "Recipients Model"
-msgstr "โมเดลผู้รับ"
+msgstr "รุ่นของผู้รับ"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_filter__mailing_model_name
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mailing_model_name
 msgid "Recipients Model Name"
-msgstr "ชื่อรุ่นผู้รับ"
+msgstr "ชื่อรุ่นของผู้รับ"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__mailing_model_real
@@ -3709,7 +3988,6 @@ msgstr "โหลดตัวกรองที่ชื่นชอบอีก
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/xml/mailing_filter_widget.xml:0
-#, python-format
 msgid "Remove from Favorites"
 msgstr "ลบออกจากรายการโปรด"
 
@@ -3717,7 +3995,6 @@ msgstr "ลบออกจากรายการโปรด"
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/xml/mass_mailing.xml:0
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-#, python-format
 msgid "Remove from Templates"
 msgstr "ลบออกจากเทมเพลต"
 
@@ -3732,7 +4009,6 @@ msgstr "โมเดลการแสดงผล"
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__reply
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_kanban
 msgid "Replied"
 msgstr "ตอบแล้ว"
 
@@ -3740,7 +4016,7 @@ msgstr "ตอบแล้ว"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_tree
 msgid "Replied (%)"
-msgstr "ตอบแล้ว (%)"
+msgstr "ตอบกลับ (%)"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__reply_datetime
@@ -3772,27 +4048,6 @@ msgstr "โหมดตอบข้อความ"
 #: model:ir.ui.menu,name:mass_mailing.menu_mass_mailing_report
 msgid "Reporting"
 msgstr "การรายงาน"
-
-#. module: mass_mailing
-#. odoo-python
-#: code:addons/mass_mailing/controllers/main.py:0
-#, python-format
-msgid "Requested blacklisting via unsubscribe link."
-msgstr ""
-
-#. module: mass_mailing
-#. odoo-python
-#: code:addons/mass_mailing/controllers/main.py:0
-#, python-format
-msgid "Requested blacklisting via unsubscription page."
-msgstr ""
-
-#. module: mass_mailing
-#. odoo-python
-#: code:addons/mass_mailing/controllers/main.py:0
-#, python-format
-msgid "Requested de-blacklisting via unsubscription page."
-msgstr ""
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__user_id
@@ -3845,7 +4100,6 @@ msgstr "โปรแกรมสร้างจดหมายตัวอย่
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/xml/mailing_filter_widget.xml:0
-#, python-format
 msgid "Save as Favorite Filter"
 msgstr "บันทึกเป็นตัวกรองโปรด"
 
@@ -3877,7 +4131,7 @@ msgstr "วันที่ตามกำหนดการ"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_report_view_tree
 msgid "Scheduled On"
-msgstr "กำหนดเมื่อ"
+msgstr "กำหนดไว้เมื่อ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_report_view_search
@@ -3913,7 +4167,6 @@ msgstr "คะแนน"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/ir_model.py:0
-#, python-format
 msgid ""
 "Searching Mailing Enabled models supports only direct search using '='' or "
 "'!='."
@@ -3942,6 +4195,11 @@ msgid "Secondary Buttons"
 msgstr "ปุ่มรอง"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_filter_view_form
+msgid "Select a Target Model..."
+msgstr "เลือกรุ่นเป้าหมาย..."
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features_grid
 msgid "Select and delete blocks to remove features."
 msgstr "เลือกและลบบล็อกเพื่อลบฟีเจอร์"
@@ -3953,13 +4211,8 @@ msgstr "เลือกรายชื่อผู้รับอีเมล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid "Select mailing lists..."
-msgstr "เลือกรายชื่อผู้รับอีเมล..."
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid "Select mailing lists:"
-msgstr "เลือกรายชื่อผู้รับอีเมล:"
+msgid "Select recipients..."
+msgstr "เลือกผู้รับ..."
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing__ab_testing_winner_selection
@@ -3968,9 +4221,8 @@ msgid "Selection to determine the winner mailing that will be sent."
 msgstr "การคัดเลือกเพื่อกำหนดรายชื่อผู้ชนะที่จะจัดส่ง"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_test_form
 msgid "Send"
 msgstr "ส่ง"
 
@@ -3986,6 +4238,7 @@ msgid "Send From"
 msgstr "ส่งจาก"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_kanban
 #: model_terms:ir.ui.view,arch_db:mass_mailing.utm_campaign_view_form
 msgid "Send Mailing"
@@ -3994,7 +4247,7 @@ msgstr "ส่งเมล"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_compose_form_mass_mailing
 msgid "Send Mass Mailing"
-msgstr "ส่งเมลจำนวนมาก"
+msgstr "ส่งอีเมลกลุ่ม"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_to_list_view_form
@@ -4015,6 +4268,11 @@ msgid "Send a sample mailing for testing purpose to the address below."
 msgstr "ส่งตัวอย่างเมลเพื่อการทดสอบไปยังที่อยู่ด้านล่าง"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_view_generic
+msgid "Send a test version of your mailing to preview its design"
+msgstr ""
+
+#. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_mailing__schedule_type__now
 msgid "Send now"
 msgstr "ส่งตอนนี้"
@@ -4026,6 +4284,11 @@ msgid "Send on"
 msgstr "ส่งเมื่อวันที่"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_test_form
+msgid "Send test"
+msgstr "ส่งแบบทดสอบ"
+
+#. module: mass_mailing
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_mailing__state__sending
 msgid "Sending"
 msgstr "กำลังส่ง"
@@ -4034,9 +4297,8 @@ msgstr "กำลังส่ง"
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__sent
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace_report__sent
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_mailing__state__done
-#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__sent
+#: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace__trace_status__pending
 #: model:ir.model.fields.selection,name:mass_mailing.selection__mailing_trace_report__state__done
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_trace_view_search
 msgid "Sent"
 msgstr "ส่งแล้ว"
@@ -4055,7 +4317,6 @@ msgstr "วันที่ส่ง"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Sent Mailings"
 msgstr "ส่งเมลแล้ว"
 
@@ -4075,6 +4336,18 @@ msgid "Sent on #{record.sent_date.value}"
 msgstr "ส่งเมื่อวันที่ #{record.sent_date.value}"
 
 #. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_feedback.xml:0
+msgid "Sent. Thanks you for your feedback!"
+msgstr "ส่งเรียบร้อยแล้ว ขอบคุณสำหรับคำติชมของคุณ!"
+
+#. module: mass_mailing
+#: model:ir.model.fields,help:mass_mailing.field_res_config_settings__mass_mailing_split_contact_name
+#: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
+msgid "Separate Mailing Contact Names into two fields"
+msgstr "แยกชื่อผู้ติดต่อทางไปรษณีย์ออกเป็นสองช่อง"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
 msgid "Separator"
 msgstr "ตัวแบ่ง"
@@ -4083,6 +4356,11 @@ msgstr "ตัวแบ่ง"
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 msgid "Separators"
 msgstr "ตัวคั่น"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription_optout__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
 
 #. module: mass_mailing
 #: model:ir.actions.act_window,name:mass_mailing.action_mass_mailing_configuration
@@ -4163,14 +4441,18 @@ msgid "Specified Email Address"
 msgstr "ที่อยู่อีเมลที่ระบุ"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
+#: model:ir.model.fields,field_description:mass_mailing.field_res_config_settings__mass_mailing_split_contact_name
+msgid "Split First and Last Name"
+msgstr "แยกชื่อและนามสกุล"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_themes
 msgid "Start From Scratch"
 msgstr "เริ่มต้นจากศูนย์"
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Start by creating your first <b>Mailing</b>."
 msgstr "เริ่มต้นด้วยการสร้าง <b>อีเมล</b> แรกของคุณ"
 
@@ -4219,19 +4501,37 @@ msgstr "ยืดให้สูงเท่ากัน"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__subject
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "Subject"
 msgstr "หัวเรื่อง"
 
 #. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__subscription_list_ids
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Subscribed"
+msgstr "ติดตามแล้ว"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_form
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_search
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_tree
+msgid "Subscription Date"
+msgstr "วันที่สมัครสมาชิก"
+
+#. module: mass_mailing
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__subscription_ids
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_list__subscription_ids
 msgid "Subscription Information"
 msgstr "ข้อมูลการสมัครสมาชิก"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Successfully Unsubscribed"
+msgstr "ยกเลิกการสมัครสำเร็จแล้ว"
+
+#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__tag_ids
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form
 msgid "Tags"
 msgstr "แท็ก"
 
@@ -4272,28 +4572,24 @@ msgstr "ทดสอบ"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "Test Mailing"
 msgstr "ทดสอบการส่งอีเมล"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_mailing_test.py:0
-#, python-format
-msgid "Test mailing could not be sent to %s:<br>%s"
-msgstr ""
+msgid "Test mailing could not be sent to %s:"
+msgstr "ไม่สามารถส่งอีเมลทดสอบไปที่ %s:"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_mailing_test.py:0
-#, python-format
 msgid "Test mailing successfully sent to %s"
 msgstr "ทดสอบการส่งเมลไปที่ %s"
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/js/tours/mass_mailing_tour.js:0
-#, python-format
 msgid "Test this mailing by sending a copy to yourself."
 msgstr "ทดสอบการส่งอีเมลนี้โดยส่งสำเนาถึงตัวคุณเอง"
 
@@ -4327,14 +4623,7 @@ msgstr "ข้อความ รูปภาพ ข้อความ"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.theme_default_template
 msgid "Thank you for joining us!"
-msgstr "ขอบคุณสำหรับการเข้าร่วมกับเรา!"
-
-#. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "Thank you! Your feedback has been sent successfully!"
-msgstr "ขอบคุณ! ความคิดเห็นของคุณถูกส่งเรียบร้อยแล้ว!"
+msgstr "ขอบคุณที่เข้าร่วมกับเรา!"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_text_block
@@ -4347,19 +4636,18 @@ msgid "The A/B Testing Percentage needs to be between 0 and 100%"
 msgstr "เปอร์เซ็นต์การทดสอบ A/B ต้องอยู่ระหว่าง 0 ถึง 100%"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "The actual"
-msgstr ""
-
-#. module: mass_mailing
-#: model:ir.model.fields,help:mass_mailing.field_mailing_contact_subscription__opt_out
+#: model:ir.model.fields,help:mass_mailing.field_mailing_subscription__opt_out
 msgid "The contact has chosen not to receive mails anymore from this list"
 msgstr "ผู้ติดต่อเลือกที่จะไม่รับอีเมลจากรายการนี้อีกต่อไป"
 
 #. module: mass_mailing
+#: model:mailing.subscription.optout,name:mass_mailing.mailing_subscription_optout_data_3
+msgid "The content of these emails is not relevant to me"
+msgstr "เนื้อหาของอีเมลเหล่านี้ไม่เกี่ยวข้องกับฉัน"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing_filter.py:0
-#, python-format
 msgid "The filter domain is not valid for this recipients."
 msgstr "โดเมนตัวกรองไม่ถูกต้องสำหรับผู้รับรายนี้"
 
@@ -4367,9 +4655,9 @@ msgstr "โดเมนตัวกรองไม่ถูกต้องสำ
 #: model:ir.model.fields,help:mass_mailing.field_mailing_list__is_public
 msgid ""
 "The mailing list can be accessible by recipients in the subscription "
-"management page to allows them to update their preferences."
+"management page to allow them to update their preferences."
 msgstr ""
-"ผู้รับสามารถเข้าถึงรายชื่อผู้รับจดหมายได้ในหน้าการจัดการการสมัครรับข้อมูลเพื่อให้อัปเดตการตั้งค่าของตนได้"
+"ผู้รับสามารถเข้าถึงรายชื่อผู้รับจดหมายได้ในหน้าการจัดการการสมัครรับข้อมูลเพื่อให้อัปเดตการตั้งค่าของพวกเขาได้"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_text_block
@@ -4394,35 +4682,12 @@ msgstr ""
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
-msgid "The recipient <strong>subscribed to %s</strong> mailing list(s)"
-msgstr "ผู้รับ <strong>สมัครรับ %s</strong> รายชื่ออีเมล"
-
-#. module: mass_mailing
-#. odoo-python
-#: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
-msgid "The recipient <strong>unsubscribed from %s</strong> mailing list(s)"
-msgstr "ผู้รับ<strong>ยกเลิกการสมัครจาก%s</strong>รายชื่ออีเมล"
-
-#. module: mass_mailing
-#. odoo-python
-#: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "The saved filter targets different recipients and is incompatible with this "
 "mailing."
 msgstr ""
 "ตัวกรองที่บันทึกไว้กำหนดเป้าหมายผู้รับที่แตกต่างกัน "
 "และเข้ากันไม่ได้กับการส่งอีเมลนี้"
-
-#. module: mass_mailing
-#. odoo-python
-#: code:addons/mass_mailing/models/utm_campaign.py:0
-#, python-format
-msgid ""
-"The total percentage for an A/B testing campaign should be less than 100%"
-msgstr ""
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
@@ -4441,7 +4706,6 @@ msgstr "จากนั้น"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid "There are no recipients selected."
 msgstr "ไม่มีผู้รับที่เลือก"
 
@@ -4453,12 +4717,11 @@ msgstr "ฟีเจอร์ที่สาม"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
 msgid "This"
-msgstr "This"
+msgstr "นี้"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "This email from can not be used with this mail server.\n"
 "Your emails might be marked as spam on the mail clients."
@@ -4467,10 +4730,19 @@ msgstr ""
 "อีเมลของคุณอาจถูกทำเครื่องหมายว่าเป็นสแปมในโปรแกรมรับส่งเมล"
 
 #. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/models/mail_thread.py:0
+msgid ""
+"This email has been automatically added in blocklist because of too much "
+"bounced."
+msgstr "อีเมลนี้ถูกเพิ่มในบล็อกลิสต์โดยอัตโนมัติเนื่องจากมีการตีกลับมากเกินไป"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form
 msgid "This email is blacklisted for mass mailings. Click to unblacklist."
 msgstr ""
-"อีเมลนี้ถูกขึ้นบัญชีดำสำหรับการส่งจดหมายจำนวนมาก คลิกเพื่อยกเลิกบัญชีดำ"
+"อีเมลนี้ถูกขึ้นบัญชีแบล็คลิสต์สำหรับการส่งอีเมลกลุ่ม "
+"คลิกเพื่อยกเลิกบัญชีแบล็คลิสต์"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_contact__email_normalized
@@ -4488,13 +4760,6 @@ msgid ""
 msgstr "สิ่งนี้มีประโยชน์หากแคมเปญการตลาดของคุณประกอบด้วยอีเมลหลายฉบับ"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.res_config_settings_view_form
-msgid ""
-"This is useful if your marketing campaigns are composed of several emails."
-msgstr ""
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_mailing_view_form_full_width
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "This mailing has no selected design (yet!)."
 msgstr "การส่งอีเมลนี้ยังไม่ได้เลือกการออกแบบ"
@@ -4507,12 +4772,6 @@ msgid ""
 msgstr "แนะนำให้ใช้เครื่องมือนี้หากแคมเปญการตลาดของคุณประกอบด้วยอีเมลหลายฉบับ"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
-msgid ""
-"This will send the email to all recipients. Do you still want to proceed ?"
-msgstr ""
-
-#. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing__reply_to_mode
 msgid ""
 "Thread: replies go to target document. Email: replies are routed to a given "
@@ -4522,10 +4781,20 @@ msgstr ""
 "การตอบกลับจะถูกส่งไปยังอีเมลที่ระบุ"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.social_links
+msgid "TikTok"
+msgstr "TikTok"
+
+#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__title_id
 #: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
 msgid "Title"
-msgstr "ชื่อเรื่อง"
+msgstr "คำนำหน้าชื่อ"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
+msgid "Title Position"
+msgstr "ตำแหน่งชื่อเรื่อง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_three_columns
@@ -4541,15 +4810,13 @@ msgstr ""
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "To send the winner mailing the campaign should not have been completed."
-msgstr "ในการส่งผู้ชนะทางการส่งอีเมล แคมเปญไม่ควรเสร็จสิ้น"
+msgstr "ในการส่งผู้ชนะทางการส่งเมล แคมเปญไม่ควรเสร็จสิ้น"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "To send the winner mailing the same campaign should be used by the mailings"
 msgstr "หากต้องการส่งผู้ชนะทางเมล ควรใช้แคมเปญเดียวกันในการส่งอีเมล"
@@ -4557,7 +4824,6 @@ msgstr "หากต้องการส่งผู้ชนะทางเม
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "To track how many replies this mailing gets, make sure its reply-to address "
 "belongs to this database."
@@ -4571,7 +4837,13 @@ msgid "Tony Fred, CEO"
 msgstr "Tony Fred, CEO"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
+msgid "Top"
+msgstr "บน"
+
+#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__total
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_tree
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_tree
 msgid "Total"
 msgstr "รวม"
@@ -4582,11 +4854,6 @@ msgid "Total <br/>Contacts"
 msgstr "รายชื่อติดต่อ<br/>ทั้งหมด"
 
 #. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_utm_campaign__ab_testing_total_pc
-msgid "Total A/B test percentage"
-msgstr ""
-
-#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_tree
 msgid "Total Bounces"
 msgstr "การตีกลับทั้งหมด"
@@ -4594,7 +4861,7 @@ msgstr "การตีกลับทั้งหมด"
 #. module: mass_mailing
 #: model:ir.model.constraint,message:mass_mailing.constraint_mailing_trace_check_res_id_is_set
 msgid "Traces have to be linked to records with a not null res_id."
-msgstr "การติดตามจะต้องเชื่อมโยงกับบันทึกที่มี res_id ที่ไม่เป็นโมฆะ"
+msgstr "การติดตามจะต้องเชื่อมโยงกับบันทึกที่มี res_id ที่ไม่เป็นค่าว่าง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
@@ -4610,11 +4877,6 @@ msgstr "ลองใช้รูปแบบต่างๆ ในแคมเ�
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features_grid
 msgid "Turn every feature into a benefit for your reader."
 msgstr "เปลี่ยนทุกฟีเจอร์ให้เป็นประโยชน์สำหรับผู้อ่านของคุณ"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.social_links
-msgid "Twitter"
-msgstr "Twitter"
 
 #. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_trace__trace_type
@@ -4636,13 +4898,13 @@ msgstr "แคมเปญ UTM "
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_utm_medium
 msgid "UTM Medium"
-msgstr "สื่อกลาง UTM"
+msgstr "วิธีที่เข้ามา UTM"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing__medium_id
 #: model:ir.model.fields,help:mass_mailing.field_mailing_trace__medium_id
 msgid "UTM Medium: delivery method (email, sms, ...)"
-msgstr "UTM Medium: วิธีการจัดส่ง (อีเมล, SMS, ...)"
+msgstr "วิธีที่เข้ามา UTM: วิธีการจัดส่ง (อีเมล, SMS, ...)"
 
 #. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_utm_source
@@ -4667,19 +4929,10 @@ msgid "Unsubscribe"
 msgstr "ยกเลิกการเป็นสมาชิก"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
-msgid "Unsubscribed"
-msgstr "ยกเลิกการเป็นสมาชิกแล้ว"
-
-#. module: mass_mailing
-#: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact_subscription__unsubscription_date
+#: model:ir.model.fields,field_description:mass_mailing.field_mailing_subscription__opt_out_datetime
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_subscription_view_search
 msgid "Unsubscription Date"
 msgstr "วันที่ยกเลิกการสมัครสมาชิก"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
-msgid "Update my subscriptions"
-msgstr "อัปเดตการสมัครของฉัน"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_import_view_form
@@ -4708,6 +4961,11 @@ msgstr ""
 "จะใช้เมลเซิร์ฟเวอร์ขาออกแรกที่มีอยู่ (ตามลำดับ) เช่นเดียวกับที่ใช้กับเมลปกติ"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
+msgid "Use alternative versions to be able to select the winner."
+msgstr "ใช้เวอร์ชันอื่นเพื่อให้สามารถคัดเลือกผู้ชนะได้"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_coupon_code
 msgid "Use now"
 msgstr "กำลังใช้อยู่"
@@ -4719,6 +4977,15 @@ msgid ""
 "want to bring attention."
 msgstr ""
 "ใช้องค์ประกอบนี้เพื่อสร้างรายการองค์ประกอบของฟีเจอร์ที่คุณต้องการทำให้โดดเด่นขึ้น"
+
+#. module: mass_mailing
+#: model_terms:ir.actions.act_window,help:mass_mailing.mailing_trace_report_action_mail
+msgid ""
+"Use this menu to keep track of the results of your mailings.<br>\n"
+"                    From here, you'll be able to overview the rate of replies, clicks, bounces..."
+msgstr ""
+"ใช้เมนูนี้เพื่อติดตามผลการส่งจดหมายของคุณ<br>\n"
+"                    จากที่นี่ คุณจะสามารถเห็นภาพรวมของอัตราการตอบกลับ การคลิก การตีกลับ..."
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_media_list
@@ -4750,7 +5017,7 @@ msgstr "ผู้รับอีเมลที่ถูกต้อง"
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
 msgid "Vert. Alignment"
-msgstr "Vert. Alignment"
+msgstr "การจัดตำแหน่งแนวตั้ง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.snippet_options
@@ -4766,7 +5033,6 @@ msgstr "ดูออนไลน์"
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing.py:0
-#, python-format
 msgid ""
 "Wait until your mailing has been sent to check how many recipients you "
 "managed to reach."
@@ -4806,14 +5072,6 @@ msgid "We are in good company."
 msgstr "เราอยู่ในบริษัทที่ดี"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
-msgid ""
-"We would appreciate if you provide feedback about why you updated<br/>your "
-"subscriptions"
-msgstr ""
-"เราจะยินดีอย่างยิ่งหากคุณให้ข้อเสนอแนะว่าทำไมคุณถึงอัปเดต<br/>การสมัครรับข้อมูลของคุณ"
-
-#. module: mass_mailing
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_contact__website_message_ids
 #: model:ir.model.fields,field_description:mass_mailing.field_mailing_mailing__website_message_ids
 msgid "Website Messages"
@@ -4826,14 +5084,14 @@ msgid "Website communication history"
 msgstr "ประวัติการสื่อสารของเว็บไซต์"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_snippets
+#: model_terms:ir.ui.view,arch_db:mass_mailing.email_designer_themes
 msgid "Welcome Message"
 msgstr "ข้อความต้อนรับ"
 
 #. module: mass_mailing
 #: model:ir.actions.act_window,name:mass_mailing.mailing_mailing_schedule_date_action
 msgid "When do you want to send your mailing?"
-msgstr "คุณต้องการส่งเมลเมื่อใด"
+msgstr "คุณต้องการส่งเมลเมื่อไหร่"
 
 #. module: mass_mailing
 #: model:ir.model.fields,help:mass_mailing.field_mailing_mailing__favorite_date
@@ -4854,8 +5112,11 @@ msgstr ""
 msgid ""
 "While designing the mailing, you can define the rules to filter recipients.\n"
 "                To save the same criteria for future use, you can add it to the favorite list\n"
-"                by clicking on <i class=\"fa fa-star-o text-warning\"></i> icon next to \"Recipients\"."
+"                by clicking on <i class=\"fa fa-floppy-o text-warning\"></i> icon next to \"Recipients\"."
 msgstr ""
+"ในขณะที่ออกแบบการส่งอีเมล คุณสามารถกำหนดกฎเกณฑ์ในการกรองผู้รับได้\n"
+"                หากต้องการบันทึกเกณฑ์เดิมไว้ใช้ในอนาคต คุณสามารถเพิ่มลงในรายการโปรดได้\n"
+"                โดยคลิกที่ไอคอน <i class=\"fa fa-floppy-o text-warning\"></i> ถัดจาก \"ผู้รับ\""
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_hr_options
@@ -4906,7 +5167,7 @@ msgid ""
 "                    Each line will be imported as a mailing list contact."
 msgstr ""
 "เขียนหรือวางที่อยู่อีเมลในช่องด้านล่าง\n"
-"                   แต่ละบรรทัดจะถูกนำเข้าเป็นผู้ติดต่อในรายชื่อผู้รับจดหมาย"
+"                   แต่ละบรรทัดจะถูกนำเข้าเป็นผู้ติดต่อในรายชื่อผู้รับอีเมล"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features
@@ -4914,52 +5175,66 @@ msgid "Write what the customer would like to know, not what you want to show."
 msgstr "เขียนสิ่งที่ลูกค้าอยากรู้ ไม่ใช่สิ่งที่คุณต้องการแสดง"
 
 #. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "You are not authorized to do this!"
-msgstr "คุณไม่ได้รับอนุญาตให้ดำเนินการนี้!"
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid "You are no longer part of our mailing list(s)."
+msgstr "คุณไม่ได้เป็นส่วนหนึ่งของรายชื่อผู้รับจดหมายของเราอีกต่อไป"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid ""
+"You are no longer part of our services and will not be contacted again."
+msgstr "คุณไม่ได้เป็นส่วนหนึ่งของบริการของเราและจะไม่ได้รับการติดต่ออีกต่อไป"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid "You are no longer part of the %(mailing_name)s mailing list."
+msgstr ""
+"คุณไม่ได้เป็นส่วนหนึ่งของรายชื่อผู้รับจดหมาย %(mailing_name)s อีกต่อไป"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/controllers/main.py:0
+msgid "You are no longer part of the %(mailing_names)s mailing list."
+msgstr ""
+"คุณไม่ได้เป็นส่วนหนึ่งของรายชื่อผู้รับจดหมาย %(mailing_names)s อีกต่อไป"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
 msgid "You are not subscribed to any of our mailing list."
 msgstr "คุณไม่ได้สมัครรับรายชื่ออีเมลของเรา"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_features_grid
 msgid "You can edit colors and backgrounds to highlight features."
-msgstr "คุณสามารถแก้ไขสีและพื้นหลังเพื่อเน้นฟีเจอร์ต่าง ๆ "
+msgstr "คุณสามารถแก้ไขสีและพื้นหลังเพื่อเน้นฟีเจอร์ต่างๆ "
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_list_merge.py:0
-#, python-format
 msgid "You can only apply this action from Mailing Lists."
 msgstr "คุณสามารถใช้การกระทำนี้ได้จากรายชื่อผู้รับอีเมลเท่านั้น"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/utm_medium.py:0
-#, python-format
 msgid ""
 "You cannot delete these UTM Mediums as they are linked to the following mailings in Mass Mailing:\n"
 "%(mailing_names)s"
 msgstr ""
-"คุณไม่สามารถลบสื่อ UTM เหล่านี้ได้ เนื่องจากสื่อเหล่านี้เชื่อมโยงกับการส่งอีเมลต่อไปนี้ในการส่งอีเมลจำนวนมาก:\n"
+"คุณไม่สามารถลบวิธีที่เข้ามา UTM เหล่านี้ได้ เนื่องจากสื่อเหล่านี้เชื่อมโยงกับการส่งอีเมลต่อไปนี้ในอีเมลกลุ่ม:\n"
 "%(mailing_names)s"
 
 #. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/utm_source.py:0
-#, python-format
 msgid ""
 "You cannot delete these UTM Sources as they are linked to the following mailings in Mass Mailing:\n"
 "%(mailing_names)s"
 msgstr ""
-"คุณไม่สามารถลบแหล่งที่มา UTM เหล่านี้ได้เนื่องจากเชื่อมโยงกับการส่งจดหมายต่อไปนี้ใน Mass Mailing:\n"
+"คุณไม่สามารถลบแหล่งที่มา UTM เหล่านี้ได้เนื่องจากเชื่อมโยงกับการส่งจดหมายต่อไปนี้ในอีเมลกลุ่ม:\n"
 "%(mailing_names)s"
 
 #. module: mass_mailing
@@ -4973,72 +5248,42 @@ msgstr ""
 "                ส่งอีเมล<br> ไปยังผู้ติดต่อที่บันทึกไว้ในแอป Odoo อื่นๆ ได้อย่างง่ายดาย"
 
 #. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "You have been <strong>successfully unsubscribed from %s</strong>."
-msgstr "คุณได้ <strong>ยกเลิกการสมัครรับข้อมูลจาก %s</strong>"
-
-#. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "You have been <strong>successfully unsubscribed</strong>."
-msgstr "คุณได้ <strong>ยกเลิกการสมัครรับข้อมูลแล้ว</strong>"
-
-#. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid ""
-"You have been successfully <strong>added to our blacklist</strong>. You will"
-" not be contacted anymore by our services."
-msgstr ""
-"คุณถูก <strong>เพิ่มเข้าบัญชีแบล็คลิสต์ของเรา</strong> เรียบร้อยแล้ว "
-"คุณจะไม่ได้รับการติดต่อจากบริการของเราอีกต่อไป"
-
-#. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid ""
-"You have been successfully <strong>removed from our blacklist</strong>. You "
-"are now able to be contacted by our services."
-msgstr ""
-"คุณถูก <strong>ลบออกจากบัญชีแบล็คลิสต์ของเรา</strong> เรียบร้อยแล้ว "
-"ขณะนี้คุณสามารถติดต่อเราได้จากบริการของเรา"
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribed
-msgid "You have been successfully <strong>unsubscribed</strong>!"
-msgstr "คุณได้<strong>ยกเลิกการสมัคร</strong>เรียบร้อยแล้ว!"
-
-#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/wizard/mailing_contact_import.py:0
-#, python-format
 msgid "You have to much emails, please upload a file."
 msgstr "คุณมีอีเมลมากเกินไป โปรดอัปโหลดไฟล์"
 
 #. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "You may also be interested in"
+msgstr "คุณอาจจะสนใจ"
+
+#. module: mass_mailing
 #. odoo-python
 #: code:addons/mass_mailing/models/mailing_contact.py:0
-#, python-format
 msgid ""
-"You should give either list_ids, either subscription_list_ids to create new "
+"You should give either list_ids, either subscription_ids to create new "
 "contacts."
 msgstr ""
-"คุณควรระบุ list_ids หรือ Subscription_list_ids "
+"คุณควรระบุ list_ids หรือ Subscription_ids "
 "อย่างใดอย่างหนึ่งเพื่อสร้างผู้ติดต่อใหม่"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribed
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "You will not hear from us anymore."
+msgstr "คุณจะไม่ได้รับข้อมูลจากเราอีกต่อไป"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
 msgid ""
-"You were still subscribed to those newsletters. You will not receive any "
-"news from them anymore:"
-msgstr ""
-"คุณยังสมัครรับจดหมายข่าวเหล่านั้นอยู่ "
-"คุณจะไม่ได้รับข่าวสารจากพวกเขาอีกต่อไป:"
+"You will not receive any news from those mailing lists you are a member of:"
+msgstr "คุณจะไม่ได้รับข่าวสารจากรายชื่อผู้รับจดหมายที่คุณเป็นสมาชิกของ: "
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_title
@@ -5047,28 +5292,62 @@ msgstr "หัวเรื่องของคุณ"
 
 #. module: mass_mailing
 #. odoo-javascript
-#: code:addons/mass_mailing/static/src/js/mailing_portal.js:0
-#, python-format
-msgid "Your changes have been saved."
-msgstr "การเปลี่ยนแปลงของคุณได้รับการบันทึกแล้ว"
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+msgid "Your email is currently"
+msgstr "ขณะนี้อีเมลของคุณอยู่"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.unsubscribe_form
+msgid "Your email is currently <strong>in our block list</strong>."
+msgstr "ขณะนี้อีเมลของคุณอยู่ใน<strong>รายการบล็อกของเรา</strong>"
+
+#. module: mass_mailing
+#. odoo-python
+#: code:addons/mass_mailing/wizard/mailing_mailing_test.py:0
+msgid "[TEST] %(mailing_subject)s"
+msgstr "[ทดสอบ] %(mailing_subject)s"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_filter_view_form
+msgid "e.g. \"B2B Canadian Customers\""
+msgstr "เช่น \"ลูกค้า B2B จากประเทศแคนาดา\""
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form_split_name
+msgid "e.g. \"John\""
+msgstr "เช่น \"John\""
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form_split_name
+msgid "e.g. \"Smith\""
+msgstr "เช่น \"Smith\""
 
 #. module: mass_mailing
 #. odoo-javascript
 #: code:addons/mass_mailing/static/src/xml/mailing_filter_widget.xml:0
-#, python-format
 msgid "e.g. \"VIP Customers\""
 msgstr "เช่น “ลูกค้า VIP”"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form
+msgid "e.g. \"VIP\", \"Roadshow\", ..."
+msgstr "เช่น \"วีไอพี\", \"โรดโชว์\", ..."
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "e.g. Check it out before it's too late!"
-msgstr "เช่น ตรวจสอบก่อนที่จะสายเกินไป!"
+msgstr "เช่น รีบดูก่อนจะสายเกินไป!"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_list_view_form_simplified
 msgid "e.g. Consumer Newsletter"
 msgstr "เช่น จดหมายข่าวสำหรับลูกค้า"
+
+#. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.mail_blacklist_view_form
+msgid "e.g. I received too many emails"
+msgstr "เช่น ฉันได้รับอีเมลมากเกินไป"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.mailing_contact_view_form
@@ -5091,13 +5370,14 @@ msgstr ""
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "from the same campaign."
-msgstr ""
-
-#. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
 msgid "having the"
 msgstr "มี"
+
+#. module: mass_mailing
+#. odoo-javascript
+#: code:addons/mass_mailing/static/src/xml/mailing_portal_subscription_form.xml:0
+msgid "in our block list"
+msgstr "ในรายการบล็อกของเรา"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
@@ -5108,26 +5388,23 @@ msgstr ""
 "เป็นผู้ชนะของแคมเปญการทดสอบ A/B และได้ถูกส่งไปยังผู้รับที่เหลือทั้งหมดแล้ว"
 
 #. module: mass_mailing
+#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
+msgid ""
+"of all potential recipients.<br/>\n"
+"                        <b class=\"text-danger\">Some of the mailings will not be sent</b>, as only 1 email will be sent for each unique recipient in this campaign."
+msgstr ""
+"ของผู้มีโอกาสเป็นผู้รับทั้งหมด<br/>\n"
+"                        <b class=\"text-danger\">อีเมลบางรายการจะไม่ถูกส่ง</b> เนื่องจากจะมีการส่งอีเมลเพียง 1 ฉบับสำหรับผู้รับที่ไม่ซ้ำกันแต่ละรายในแคมเปญนี้"
+
+#. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.view_mail_mass_mailing_form
 msgid "on"
 msgstr "เมื่อ"
 
 #. module: mass_mailing
-#: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "other versions"
-msgstr ""
-
-#. module: mass_mailing
 #: model:ir.model,name:mass_mailing.model_mailing_mailing_schedule_date
 msgid "schedule a mailing"
 msgstr "กำหนดเวลาส่งอีเมล"
-
-#. module: mass_mailing
-#. odoo-javascript
-#: code:addons/mass_mailing/static/src/xml/mass_mailing.xml:0
-#, python-format
-msgid "template"
-msgstr "เทมเพลต"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
@@ -5136,8 +5413,8 @@ msgstr " "
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "to the remaining"
-msgstr ""
+msgid "to the remaining recipients."
+msgstr "ให้กับผู้รับที่เหลือ"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
@@ -5146,20 +5423,20 @@ msgstr "จะถูกส่ง"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "will be sent to the remaining recipients."
-msgstr ""
+msgid "will receive this version."
+msgstr "จะได้รับเวอร์ชั่นนี้"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.ab_testing_description
-msgid "will receive this"
-msgstr ""
+msgid "will receive this version.<br/>"
+msgstr "จะได้รับเวอร์ชั่นนี้ <br/>"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
 msgid "⌙ Active"
-msgstr "⌙ ทำงาน"
+msgstr "⌙ ใช้งานอยู่"
 
 #. module: mass_mailing
 #: model_terms:ir.ui.view,arch_db:mass_mailing.s_rating_options
 msgid "⌙ Inactive"
-msgstr "⌙ ไม่ทำงาน"
+msgstr "⌙ ไม่ได้ใช้งาน"

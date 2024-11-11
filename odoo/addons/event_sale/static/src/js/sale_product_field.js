@@ -4,24 +4,24 @@ import { patch } from "@web/core/utils/patch";
 import { SaleOrderLineProductField } from '@sale/js/sale_product_field';
 
 
-patch(SaleOrderLineProductField.prototype, 'event_sale', {
+patch(SaleOrderLineProductField.prototype, {
 
     async _onProductUpdate() {
-        this._super(...arguments);
-        if (this.props.record.data.product_type === 'event') {
+        super._onProductUpdate(...arguments);
+        if (this.props.record.data.service_tracking === 'event') {
             this._openEventConfigurator();
         }
     },
 
     _editLineConfiguration() {
-        this._super(...arguments);
-        if (this.props.record.data.product_type === 'event') {
+        super._editLineConfiguration(...arguments);
+        if (this.props.record.data.service_tracking === 'event') {
             this._openEventConfigurator();
         }
     },
 
     get isConfigurableLine() {
-        return this._super(...arguments) || Boolean(this.props.record.data.event_ticket_id);
+        return super.isConfigurableLine || this.props.record.data.service_tracking === 'event';
     },
 
     async _openEventConfigurator() {

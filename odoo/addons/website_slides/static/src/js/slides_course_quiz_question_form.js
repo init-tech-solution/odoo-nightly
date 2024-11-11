@@ -1,10 +1,9 @@
 /** @odoo-module **/
 
-import publicWidget from 'web.public.widget';
-import core from 'web.core';
-
-var QWeb = core.qweb;
-var _t = core._t;
+import publicWidget from '@web/legacy/js/public/public_widget';
+import { _t } from "@web/core/l10n/translation";
+import { renderToElement } from "@web/core/utils/render";
+import { rpc } from "@web/core/network/rpc";
 
 /**
  * This Widget is responsible of displaying the question inputs when adding a new question or when updating an
@@ -89,7 +88,7 @@ var QuestionFormWidget = publicWidget.Widget.extend({
      * @private
      */
     _addAnswerLine: function (ev) {
-        $(ev.currentTarget).closest('.o_wslides_js_quiz_answer').after(QWeb.render('slide.quiz.answer.line'));
+        $(ev.currentTarget).closest('.o_wslides_js_quiz_answer').after(renderToElement('slide.quiz.answer.line'));
     },
 
     /**
@@ -152,10 +151,7 @@ var QuestionFormWidget = publicWidget.Widget.extend({
 
         if (this._isValidForm($form)) {
             var values = this._serializeForm($form);
-            var renderedQuestion = await this._rpc({
-                route: '/slides/slide/quiz/question_add_or_update',
-                params: values
-            });
+            var renderedQuestion = await rpc('/slides/slide/quiz/question_add_or_update', values);
 
             if (typeof renderedQuestion === 'object' && renderedQuestion.error) {
                 this.$('.o_wslides_js_quiz_validation_error')
@@ -212,7 +208,7 @@ var QuestionFormWidget = publicWidget.Widget.extend({
                     'sequence': sequence++,
                     'text_value': value,
                     'is_correct': $(this).find('input[type=radio]').prop('checked') === true,
-                    'comment': $(this).find('.o_wslides_js_quiz_answer_comment > input[type=text]').val().trim()
+                    'comment': $(this).find('.o_wslides_js_quiz_answer_comment input[type=text]').val().trim()
                 };
                 answers.push(answer);
             }

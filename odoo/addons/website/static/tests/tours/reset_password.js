@@ -1,30 +1,26 @@
-odoo.define('website.tour_reset_password', function (require) {
-'use strict';
+/** @odoo-module **/
 
-var tour = require('web_tour.tour');
-require('web.dom_ready');
+import { registry } from "@web/core/registry";
 
-tour.register('website_reset_password', {
-    test: true,
-}, [
+registry.category("web_tour.tours").add('website_reset_password', {
+    steps: () => [
     {
         content: "fill new password",
         trigger: '.oe_reset_password_form input[name="password"]',
-        run: "text adminadmin"
+        run: "edit adminadmin",
     },
     {
         content: "fill confirm password",
         trigger: '.oe_reset_password_form input[name="confirm_password"]',
-        run: "text adminadmin"
+        run: "edit adminadmin",
     },
     {
         content: "submit reset password form",
         trigger: '.oe_reset_password_form button[type="submit"]',
+        run: "click",
     },
     {
         content: "check that we're logged in",
-        trigger: '.oe_topbar_name:contains("The King")',
-        run: function () {}
+        trigger: '.o_user_menu .dropdown-toggle',
     },
-]);
-});
+]});

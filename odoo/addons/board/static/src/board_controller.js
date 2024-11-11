@@ -1,21 +1,28 @@
 /** @odoo-module **/
 
+import { _t } from "@web/core/l10n/translation";
 import { browser } from "@web/core/browser/browser";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
+import { rpc } from "@web/core/network/rpc";
 import { useService } from "@web/core/utils/hooks";
 import { renderToString } from "@web/core/utils/render";
-import { useSortable } from "@web/core/utils/sortable";
+import { useSortable } from "@web/core/utils/sortable_owl";
 import { standardViewProps } from "@web/views/standard_view_props";
 import { BoardAction } from "./board_action";
-
-const { blockDom, Component, useState, useRef } = owl;
+import { blockDom, Component, useState, useRef } from "@odoo/owl";
 
 export class BoardController extends Component {
+    static template = "board.BoardView";
+    static components = { BoardAction, Dropdown, DropdownItem };
+    static props = {
+        ...standardViewProps,
+        board: Object,
+    };
+
     setup() {
         this.board = useState(this.props.board);
-        this.rpc = useService("rpc");
         this.dialogService = useService("dialog");
         if (this.env.isSmall) {
             this.selectLayout("1", false);
@@ -92,7 +99,7 @@ export class BoardController extends Component {
 
     closeAction(column, action) {
         this.dialogService.add(ConfirmationDialog, {
-            body: this.env._t("Are you sure that you want to remove this item?"),
+            body: _t("Are you sure that you want to remove this item?"),
             confirm: () => {
                 const index = column.actions.indexOf(action);
                 column.actions.splice(index, 1);
@@ -117,19 +124,12 @@ export class BoardController extends Component {
         const result = xmlSerializer.serializeToString(root);
         const arch = result.slice(result.indexOf("<", 1), result.indexOf("</rendertostring>"));
 
-        this.rpc("/web/view/edit_custom", {
+        rpc("/web/view/edit_custom", {
             custom_id: this.board.customViewId,
             arch,
         });
         this.env.bus.trigger("CLEAR-CACHES");
     }
 }
-
-BoardController.template = "board.BoardView";
-BoardController.components = { BoardAction, Dropdown, DropdownItem };
-BoardController.props = {
-    ...standardViewProps,
-    board: Object,
-};
 
 const xmlSerializer = new XMLSerializer();

@@ -1,53 +1,41 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* membership
-# 
+#
 # Translators:
-# ILMIR <karamov@it-projects.info>, 2022
-# Irina Fedulova <istartlin@gmail.com>, 2022
-# Martin Trigaux, 2022
-# Ivan Kropotkin <yelizariev@itpp.dev>, 2022
-# Wil Odoo, 2024
-# Сергей Шебанин <sergey@shebanin.ru>, 2024
-# Смородин Даниил, 2024
-# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
-"PO-Revision-Date: 2022-09-22 05:53+0000\n"
-"Last-Translator: Смородин Даниил, 2024\n"
+"POT-Creation-Date: 2023-10-26 21:55+0000\n"
+"PO-Revision-Date: 2024-01-30 15:14+0400\n"
+"Last-Translator: \n"
 "Language-Team: Russian (https://app.transifex.com/odoo/teams/41243/ru/)\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: ru\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__num_invoiced
 msgid "# Invoiced"
-msgstr "# выставлен счет"
+msgstr "# Счет-фактура"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__num_paid
 msgid "# Paid"
-msgstr "# Оплаченных"
+msgstr "# Оплачено"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__num_waiting
 msgid "# Waiting"
-msgstr "# Ожидающих"
+msgstr "# Ожидание"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_kanban
-msgid ""
-"<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Period\" "
-"title=\"Period\"/><strong> From: </strong>"
-msgstr ""
-"<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Period\" "
-"title=\"Period\"/><strong> С: </strong></i>"
+msgid "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Period\" title=\"Period\"/><strong> From: </strong>"
+msgstr "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Period\" title=\"Period\"/><strong> От: </strong>"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_kanban
@@ -57,17 +45,13 @@ msgstr "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Price\" title=\"Price
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_kanban
 msgid "<strong> To:</strong>"
-msgstr "<strong>до</strong>"
+msgstr "<strong> Кому:</strong>"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_res_partner__associate_member
 #: model:ir.model.fields,help:membership.field_res_users__associate_member
-msgid ""
-"A member with whom you want to associate your membership.It will consider "
-"the membership state of the associated member."
-msgstr ""
-"Член, с которым вы хотите связывать ваше членство. Он будет рассматривать "
-"состояние членства ассоциированного члена."
+msgid "A member with whom you want to associate your membership.It will consider the membership state of the associated member."
+msgstr "Член, с которым вы хотите связать свое членство. При этом будет учитываться состояние членства связанного члена."
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__account_invoice_line
@@ -77,17 +61,17 @@ msgstr "Линия счета"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_form
 msgid "Add a description..."
-msgstr "Добавить описание…"
+msgstr "Добавить описание..."
 
 #. module: membership
 #: model_terms:ir.actions.act_window,help:membership.action_membership_members
 msgid "Add a new member"
-msgstr "Добавить нового члена"
+msgstr "Добавить нового участника"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_membership_membership_line__member_price
 msgid "Amount for the membership"
-msgstr "Сумма для членства"
+msgstr "Сумма за членство"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__associate_member_id
@@ -100,17 +84,17 @@ msgstr "Ассоциированный участник"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
 msgid "Associated Partner"
-msgstr "Связанный контрагент"
+msgstr "Ассоциированный партнер"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_partner_form
 msgid "Buy Membership"
-msgstr "Купить Членство"
+msgstr "Купить подписку"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_membership_invoice_view
 msgid "Cancel"
-msgstr "Отмена"
+msgstr "Отменить"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_res_partner__membership_cancel
@@ -139,7 +123,7 @@ msgstr "Категория"
 #: model:ir.model.fields,help:membership.field_product_product__membership
 #: model:ir.model.fields,help:membership.field_product_template__membership
 msgid "Check if the product is eligible for membership."
-msgstr "Проверьте, имеет ли продукт право на членство."
+msgstr "Проверьте, имеет ли продукт право на участие в программе."
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__company_id
@@ -156,19 +140,19 @@ msgstr "Конфигурация"
 #. module: membership
 #: model:ir.model,name:membership.model_res_partner
 msgid "Contact"
-msgstr "Контакт"
+msgstr "Контакты"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__create_uid
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__create_uid
 msgid "Created by"
-msgstr "Создал"
+msgstr "Создано"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__create_date
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__create_date
 msgid "Created on"
-msgstr "Дата создания"
+msgstr "Создано"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__membership_state
@@ -180,12 +164,12 @@ msgstr "Текущее состояние членства"
 #: model:ir.model.fields,field_description:membership.field_res_partner__membership_state
 #: model:ir.model.fields,field_description:membership.field_res_users__membership_state
 msgid "Current Membership Status"
-msgstr "Текущий статус членства"
+msgstr "Текущий статус участника"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
 msgid "Customers"
-msgstr "Покупатели"
+msgstr "Клиенты"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_product_product__membership_date_from
@@ -198,13 +182,13 @@ msgstr "Дата, с которой участие становится акти
 #. module: membership
 #: model:ir.model.fields,help:membership.field_membership_membership_line__date
 msgid "Date on which member has joined the membership"
-msgstr "Дата присоединения участника к членству"
+msgstr "Дата на котором член присоединился к членству"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_res_partner__membership_cancel
 #: model:ir.model.fields,help:membership.field_res_users__membership_cancel
 msgid "Date on which membership has been cancelled"
-msgstr "Дата, на которую было отменено участие"
+msgstr "Дата, на котором было отменено участие"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_product_product__membership_date_to
@@ -240,12 +224,12 @@ msgstr "Дата окончания членства"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
 msgid "Ending Date Of Membership"
-msgstr "Конечная дата членства"
+msgstr "Дата окончания членства"
 
 #. module: membership
 #: model:ir.model.constraint,message:membership.constraint_product_template_membership_date_greater
-msgid "Error ! Ending Date cannot be set before Beginning Date."
-msgstr "Ошибка! Дата окончания не может быть задана до даты начала."
+msgid "Error! Ending Date cannot be set before Beginning Date."
+msgstr "Ошибка! Дата окончания не может быть установлена раньше даты начала."
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
@@ -264,52 +248,52 @@ msgstr "Свободный член"
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__date_from
 msgid "From"
-msgstr "Из"
+msgstr "От"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
 msgid "Group By"
-msgstr "Группировка"
+msgstr "Группировать по"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_product_search_form_view
 msgid "Group by..."
-msgstr "Группировать по…"
+msgstr "Группа по..."
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__id
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__id
 #: model:ir.model.fields,field_description:membership.field_report_membership__id
 msgid "ID"
-msgstr "Идентификатор"
+msgstr "ID"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_product_search_form_view
 msgid "Inactive"
-msgstr "Неактивно"
+msgstr "Неактивный"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__account_invoice_id
 msgid "Invoice"
-msgstr "Акт"
+msgstr "Счет"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_membership_invoice_view
 msgid "Invoice Membership"
-msgstr "Счет за членство"
+msgstr "Счет-фактура Членство"
 
 #. module: membership
 #: model:ir.model.fields.selection,name:membership.selection__membership_membership_line__state__invoiced
 #: model:ir.model.fields.selection,name:membership.selection__report_membership__membership_state__invoiced
 #: model:ir.model.fields.selection,name:membership.selection__res_partner__membership_state__invoiced
 msgid "Invoiced Member"
-msgstr "Участник со счетом"
+msgstr "Член в счете"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
 msgid "Invoiced/Paid/Free"
-msgstr "Есть счет/Оплачено/Бесплатно"
+msgstr "В счете/Оплаченные/Свободные"
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_res_partner__membership_state
@@ -324,12 +308,12 @@ msgid ""
 "-Paying member: A member who has paid the membership fee."
 msgstr ""
 "Это показывает состояние участия.\n"
-"-Не участник: Партнер, который не имеющий какого-либо членства.\n"
+"-Не участник: Партнер, который не применяется для какого либо участия.\n"
 "-Отмененный участник: Участник, который отменил его участие.\n"
 "-Старый участник: Участник, дата участия которого истекла.\n"
-"-Ожидание участия Участник, который подал заявку на участие, и чей счет будет создан.\n"
+"-Ожидание участия Участник, кто подал заявку на участие и чей счет будет создан.\n"
 "-Счет участника: Участник, чей счет был создан.\n"
-"-Платный участник: Участник, который заплатил членский взнос."
+"-Платный участник: участник который заплатила членский взнос."
 
 #. module: membership
 #: model:ir.model.fields,help:membership.field_membership_membership_line__state
@@ -347,13 +331,13 @@ msgstr ""
 "-Отмененный участник: Участник, который отменил свое членство.\n"
 "-Старый участник: Участник, срок действия которого истек.\n"
 "-Ожидающий участник: Участник, который подал заявку на членство и чей счет будет создан.\n"
-"-Участник в счете: Участник, чья счет-фактура была создана.\n"
+"-Участник в счете: Участник, чей счет-фактура был создан.\n"
 "-Оплаченный участник: Участник, оплативший членский взнос."
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__date
 msgid "Join Date"
-msgstr "Дата вступления"
+msgstr "Дата регистрации"
 
 #. module: membership
 #: model:ir.actions.act_window,name:membership.action_membership_invoice_view
@@ -363,25 +347,18 @@ msgstr "Присоединиться к членству"
 #. module: membership
 #: model:ir.model,name:membership.model_account_move
 msgid "Journal Entry"
-msgstr "Запись журнала"
+msgstr "Запись в журнале"
 
 #. module: membership
 #: model:ir.model,name:membership.model_account_move_line
 msgid "Journal Item"
-msgstr "Элемент журнала"
-
-#. module: membership
-#: model:ir.model.fields,field_description:membership.field_membership_invoice____last_update
-#: model:ir.model.fields,field_description:membership.field_membership_membership_line____last_update
-#: model:ir.model.fields,field_description:membership.field_report_membership____last_update
-msgid "Last Modified on"
-msgstr "Последнее изменение"
+msgstr "Наименование в журнале"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__write_uid
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__write_uid
 msgid "Last Updated by"
-msgstr "Последний раз обновил"
+msgstr "Последнее обновление"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__write_date
@@ -397,7 +374,7 @@ msgstr "Участник"
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__member_price
 msgid "Member Price"
-msgstr "Цена члена"
+msgstr "Цена участника"
 
 #. module: membership
 #: model:ir.actions.act_window,name:membership.action_membership_members
@@ -411,7 +388,7 @@ msgstr "Участники"
 #. module: membership
 #: model:ir.actions.act_window,name:membership.action_report_membership_tree
 msgid "Members Analysis"
-msgstr "Анализ членства"
+msgstr "Анализ членов"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_invoice__product_id
@@ -463,12 +440,12 @@ msgstr "Членский взнос"
 #: model:ir.model,name:membership.model_membership_invoice
 #: model_terms:ir.ui.view,arch_db:membership.view_membership_invoice_view
 msgid "Membership Invoice"
-msgstr "Счета членства"
+msgstr "Счет на оплату за членство"
 
 #. module: membership
 #: model:ir.model,name:membership.model_membership_membership_line
 msgid "Membership Line"
-msgstr "строка членства"
+msgstr "Строка членства"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
@@ -480,7 +457,7 @@ msgstr "Партнеры членства"
 #: model_terms:ir.ui.view,arch_db:membership.membership_product_search_form_view
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
 msgid "Membership Product"
-msgstr "Продукт членства"
+msgstr "Продукт подписки"
 
 #. module: membership
 #: model:ir.actions.act_window,name:membership.action_membership_products
@@ -505,7 +482,7 @@ msgstr "Состояние членства"
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__state
 msgid "Membership Status"
-msgstr "Статус членства"
+msgstr "Статус участия"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_form
@@ -515,14 +492,13 @@ msgstr "Продукты членства"
 
 #. module: membership
 #: model:ir.actions.server,name:membership.ir_cron_update_membership_ir_actions_server
-#: model:ir.cron,cron_name:membership.ir_cron_update_membership
 msgid "Membership: update memberships"
-msgstr "Членство: обновление членства"
+msgstr "Состав: изменение членства"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_partner_form
 msgid "Memberships"
-msgstr "Членство"
+msgstr "Подписки"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
@@ -532,7 +508,7 @@ msgstr "Месяц"
 #. module: membership
 #: model_terms:ir.actions.act_window,help:membership.action_report_membership_tree
 msgid "No data yet!"
-msgstr "Данных пока нет!"
+msgstr "Пока нет данных!"
 
 #. module: membership
 #: model:ir.model.fields.selection,name:membership.selection__membership_membership_line__state__none
@@ -547,8 +523,8 @@ msgid ""
 "Odoo helps you easily track all activities related to a member: \n"
 "                  Current Membership Status, Discussions and History of Membership, etc."
 msgstr ""
-"Odoo помогает вам легко отслеживать все действия, связанные с членом Текущий"
-" статус членства, дискуссии и история членства и тому подобное."
+"Odoo поможет вам легко отслеживать все действия, связанные с участником:\n"
+"                  Текущий статус участника, обсуждения и история участников и т.д."
 
 #. module: membership
 #: model:ir.model.fields.selection,name:membership.selection__membership_membership_line__state__old
@@ -562,24 +538,22 @@ msgstr "Старый член"
 #: model:ir.model.fields.selection,name:membership.selection__report_membership__membership_state__paid
 #: model:ir.model.fields.selection,name:membership.selection__res_partner__membership_state__paid
 msgid "Paid Member"
-msgstr "Уплативший член"
+msgstr "Оплачиваемый член"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__partner
 msgid "Partner"
-msgstr "Партнёр"
+msgstr "Партнер"
 
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
-#, python-format
 msgid "Partner doesn't have an address to make the invoice."
-msgstr "Партнер не имеет адреса, чтобы выставить счет"
+msgstr "У партнера нет адреса для выставления счета."
 
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
-#, python-format
 msgid "Partner is a free Member."
 msgstr "Партнер является свободным участником."
 
@@ -591,12 +565,12 @@ msgstr "Ожидающая сумма"
 #. module: membership
 #: model:ir.model,name:membership.model_product_template
 msgid "Product"
-msgstr "Продукт"
+msgstr "Товар"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_form
 msgid "Product Name"
-msgstr "Название продукта"
+msgstr "Название товара"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__quantity
@@ -606,12 +580,12 @@ msgstr "Количество"
 #. module: membership
 #: model:ir.ui.menu,name:membership.menu_report_membership
 msgid "Reporting"
-msgstr "Отчетность"
+msgstr "Отчет"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
 msgid "Revenue Done"
-msgstr "Доходы сделали"
+msgstr "Доход выполнен"
 
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_report_membership__user_id
@@ -641,7 +615,7 @@ msgstr "Дата начала членства"
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.report_membership_view_tree
 msgid "Sum of # Invoiced"
-msgstr "Сумма # выставлен счет"
+msgstr "Сумма # выставленного счета"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.report_membership_view_tree
@@ -667,12 +641,12 @@ msgstr "Налоги"
 #: model:ir.model.fields,help:membership.field_res_partner__membership_amount
 #: model:ir.model.fields,help:membership.field_res_users__membership_amount
 msgid "The price negotiated by the partner"
-msgstr "Цена, о которой договаривается партнер"
+msgstr "Цена, о которой договорился партнер"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.membership_products_form
 msgid "This note will be displayed on quotations..."
-msgstr "Это примечание будет отображаться на коммерческих предложениях..."
+msgstr "Это примечание будет отображаться на коммерческих предложениях ..."
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_report_membership_search
@@ -687,23 +661,22 @@ msgstr "Это покажет ожидающие, выставленные сч�
 #. module: membership
 #: model:ir.model.fields,field_description:membership.field_membership_membership_line__date_to
 msgid "To"
-msgstr "По"
+msgstr "Кому"
 
 #. module: membership
 #: model_terms:ir.ui.view,arch_db:membership.view_res_partner_member_filter
 msgid "Vendors"
-msgstr "Поставщики"
+msgstr "Продавцы"
 
 #. module: membership
 #: model:ir.model.fields.selection,name:membership.selection__membership_membership_line__state__waiting
 #: model:ir.model.fields.selection,name:membership.selection__report_membership__membership_state__waiting
 #: model:ir.model.fields.selection,name:membership.selection__res_partner__membership_state__waiting
 msgid "Waiting Member"
-msgstr "Члены в ожидании"
+msgstr "Ждущий член"
 
 #. module: membership
 #. odoo-python
 #: code:addons/membership/models/partner.py:0
-#, python-format
 msgid "You cannot create recursive associated members."
-msgstr "Вы не можете создавать рекурсивных ассоциированных участников."
+msgstr "Вы не можете создавать рекурсивные ассоциированные члены."

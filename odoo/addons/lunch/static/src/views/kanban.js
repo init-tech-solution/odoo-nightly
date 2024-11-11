@@ -1,6 +1,5 @@
 /** @odoo-module */
 
-import { patch } from '@web/core/utils/patch';
 import { registry } from '@web/core/registry';
 
 import { kanbanView } from '@web/views/kanban/kanban_view';
@@ -19,14 +18,22 @@ export class LunchKanbanRecord extends KanbanRecord {
     }
 }
 
-export class LunchKanbanRenderer extends KanbanRenderer {}
-patch(LunchKanbanRenderer.prototype, 'lunch_kanban_renderer_mixin', LunchRendererMixin);
+export class LunchKanbanRenderer extends LunchRendererMixin(KanbanRenderer) {
+    static template = "lunch.KanbanRenderer";
+    static components = {
+        ...LunchKanbanRenderer.components,
+        LunchDashboard,
+        KanbanRecord: LunchKanbanRecord,
+    };
 
-LunchKanbanRenderer.template = 'lunch.KanbanRenderer';
-LunchKanbanRenderer.components = {
-    ...LunchKanbanRenderer.components,
-    LunchDashboard,
-    KanbanRecord: LunchKanbanRecord,
+    getGroupsOrRecords() {
+        const { locationId } = this.env.searchModel.lunchState;
+        if (!locationId) {
+            return [];
+        } else {
+            return super.getGroupsOrRecords(...arguments);
+        }
+    }
 }
 
 registry.category('views').add('lunch_kanban', {

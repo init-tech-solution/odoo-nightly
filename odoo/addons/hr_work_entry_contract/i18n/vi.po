@@ -3,17 +3,15 @@
 # 	* hr_work_entry_contract
 # 
 # Translators:
-# Vo Thanh Thuy, 2022
-# Nancy Momoland <thanh.np2502@gmail.com>, 2023
-# Martin Trigaux, 2023
+# Wil Odoo, 2024
 # Thi Huong Nguyen, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 05:51+0000\n"
-"PO-Revision-Date: 2022-09-22 05:52+0000\n"
+"POT-Creation-Date: 2024-09-25 08:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Thi Huong Nguyen, 2024\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
@@ -44,20 +42,20 @@ msgstr ""
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_work_entry.py:0
-#, python-format
-msgid "%s does not have a contract from %s to %s."
-msgstr "%s không có hợp đồng từ %s đến %s."
+msgid ""
+"%(employee)s does not have a contract from %(date_start)s to %(date_end)s."
+msgstr ""
+"%(employee)s không có hợp đồng nào kể từ %(date_start)s đến %(date_end)s."
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_work_entry.py:0
-#, python-format
 msgid ""
-"%s has multiple contracts from %s to %s. A work entry cannot overlap "
-"multiple contracts."
+"%(employee)s has multiple contracts from %(date_start)s to %(date_end)s. A "
+"work entry cannot overlap multiple contracts."
 msgstr ""
-"%s có nhiều hợp đồng từ %s đến %s. Một mục công việc không thể trùng lặp với"
-" nhiều hợp đồng."
+"%(employee)s có nhiều hợp đồng từ %(date_start)s đến %(date_end)s. Một mục "
+"công việc không thể trùng lặp với nhiều hợp đồng."
 
 #. module: hr_work_entry_contract
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
@@ -146,7 +144,6 @@ msgstr "Nhân viên"
 #. module: hr_work_entry_contract
 #. odoo-javascript
 #: code:addons/hr_work_entry_contract/static/src/views/work_entry_calendar/work_entry_calendar_model.js:0
-#, python-format
 msgid "Everybody's work entries"
 msgstr "Mục công việc của mọi người"
 
@@ -161,8 +158,12 @@ msgid "From"
 msgstr "Từ"
 
 #. module: hr_work_entry_contract
+#: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_contract_view_form_inherit_work_entry
+msgid "Fully Flexible"
+msgstr "Hoàn toàn linh hoạt"
+
+#. module: hr_work_entry_contract
 #: model:ir.actions.server,name:hr_work_entry_contract.ir_cron_generate_missing_work_entries_ir_actions_server
-#: model:ir.cron,cron_name:hr_work_entry_contract.ir_cron_generate_missing_work_entries
 msgid "Generate Missing Work Entries"
 msgstr "Tạo công bị thiếu"
 
@@ -204,7 +205,6 @@ msgstr "ID"
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/wizard/hr_work_entry_regeneration_wizard.py:0
-#, python-format
 msgid ""
 "In order to regenerate the work entries, you need to provide the wizard with"
 " an employee_id, a date_from and a date_to. In addition to that, the time "
@@ -216,19 +216,24 @@ msgstr ""
 "date_from và date_to phải không chứa mục công việc đã được xác nhận."
 
 #. module: hr_work_entry_contract
+#. odoo-javascript
+#: code:addons/hr_work_entry_contract/static/src/components/work_entry_source_field/work_entry_source_field.js:0
+msgid ""
+"Invalid option: For fully flexible calendars, the work entry source cannot "
+"be 'Working Hours'."
+msgstr ""
+"Tùy chọn không hợp lệ: Đối với lịch hoàn toàn linh hoạt, nguồn công không "
+"thể là 'Giờ làm việc'."
+
+#. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__last_generation_date
 msgid "Last Generation Date"
 msgstr "Ngày tạo cuối cùng"
 
 #. module: hr_work_entry_contract
-#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard____last_update
-msgid "Last Modified on"
-msgstr "Sửa lần cuối vào"
-
-#. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__write_uid
 msgid "Last Updated by"
-msgstr "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__write_date
@@ -263,12 +268,15 @@ msgstr "Tạo lại mục công việc nhân viên"
 
 #. module: hr_work_entry_contract
 #. odoo-javascript
-#: code:addons/hr_work_entry_contract/static/src/js/work_entries_controller_mixin.js:0
 #: code:addons/hr_work_entry_contract/static/src/views/work_entry_calendar/work_entry_calendar.xml:0
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
-#, python-format
 msgid "Regenerate Work Entries"
 msgstr "Tạo lại mục công việc"
+
+#. module: hr_work_entry_contract
+#: model:ir.model,name:hr_work_entry_contract.model_resource_calendar
+msgid "Resource Working Time"
+msgstr "Nguồn lực thời gian làm việc"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__search_criteria_completed
@@ -283,7 +291,6 @@ msgstr "Nghỉ bệnh"
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_contract.py:0
-#, python-format
 msgid ""
 "Sorry, generating work entries from cancelled contracts is not allowed."
 msgstr "Rất tiếc, bạn không được phép tạo công từ các hợp đồng đã bị hủy."
@@ -291,7 +298,6 @@ msgstr "Rất tiếc, bạn không được phép tạo công từ các hợp đ
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/wizard/hr_work_entry_regeneration_wizard.py:0
-#, python-format
 msgid ""
 "The from date must be >= '%(earliest_available_date)s' and the to date must "
 "be <= '%(latest_available_date)s', which correspond to the generated work "
@@ -347,7 +353,12 @@ msgstr "Tạo lại mục công việc"
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__work_entry_source
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry__work_entry_source
 msgid "Work Entry Source"
-msgstr "Nguồn nhập công việc"
+msgstr "Nguồn công"
+
+#. module: hr_work_entry_contract
+#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__work_entry_source_calendar_invalid
+msgid "Work Entry Source Calendar Invalid"
+msgstr "Lịch nguồn công không hợp lệ"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields.selection,name:hr_work_entry_contract.selection__hr_contract__work_entry_source__calendar

@@ -14,6 +14,7 @@ from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
 from odoo.tools.mimetypes import guess_mimetype
+from odoo.addons.hw_drivers.websocket_client import send_to_controller
 
 _logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class PrinterDriver(Driver):
     def __init__(self, identifier, device):
         super().__init__(identifier, device)
         self.device_type = 'printer'
-        self.device_connection = 'network'
+        self.device_connection = self._compute_device_connection(device)
         self.device_name = device.get('identifier')
         self.printer_handle = device.get('printer_handle')
         self.state = {
@@ -55,15 +56,26 @@ class PrinterDriver(Driver):
         })
 
         self.receipt_protocol = 'escpos'
+        if any(cmd in device['identifier'] for cmd in ['STAR', 'Receipt']):
+            self.device_subtype = "receipt_printer"
+        elif "ZPL" in device['identifier']:
+            self.device_subtype = "label_printer"
+        else:
+            self.device_subtype = "office_printer"
 
     @classmethod
     def supported(cls, device):
-        return True
+        # discard virtual printers (like "Microsoft Print to PDF") as they will trigger dialog boxes prompt
+        return device['port'] != 'PORTPROMPT:'
 
     @classmethod
     def get_status(cls):
         status = 'connected' if any(iot_devices[d].device_type == "printer" and iot_devices[d].device_connection == 'direct' for d in iot_devices) else 'disconnected'
         return {'status': status, 'messages': ''}
+
+    @staticmethod
+    def _compute_device_connection(device):
+        return 'direct' if device['port'].startswith(('USB', 'COM', 'LPT')) else 'network'
 
     def disconnect(self):
         self.update_status('disconnected', 'Printer was disconnected')
@@ -157,5 +169,6 @@ class PrinterDriver(Driver):
             self.print_report(document)
         else:
             self.print_raw(document)
+        send_to_controller(self.connection_type, {'print_id': data['print_id'], 'device_identifier': self.device_identifier})
 
 proxy_drivers['printer'] = PrinterDriver

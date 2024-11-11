@@ -1,73 +1,74 @@
-/** @odoo-module **/
-
 import { useService } from "@web/core/utils/hooks";
 import { evaluateExpr } from "@web/core/py_js/py";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
-import { status, useEnv, useSubEnv } from "@odoo/owl";
+import { status, useComponent, useEnv, useSubEnv } from "@odoo/owl";
 
-function disableButtons(el) {
-    // WOWL: can we do this non-imperatively?
-    const btns = [...el.querySelectorAll("button:not([disabled])")];
-    for (const btn of btns) {
-        btn.setAttribute("disabled", "1");
+export async function executeButtonCallback(el, fct) {
+    let btns = [];
+    function disableButtons() {
+        btns = [
+            ...btns,
+            ...el.querySelectorAll("button:not([disabled])"),
+            ...document.querySelectorAll(".o-overlay-container button:not([disabled])"),
+        ];
+        for (const btn of btns) {
+            btn.setAttribute("disabled", "1");
+        }
     }
-    return btns;
-}
 
-function enableButtons(el, manuallyDisabledButtons, enableAction) {
-    if (el) {
-        for (const btn of manuallyDisabledButtons) {
+    function enableButtons() {
+        for (const btn of btns) {
             btn.removeAttribute("disabled");
         }
     }
-    if (enableAction) {
-        enableAction();
+
+    disableButtons();
+    let res;
+    try {
+        res = await fct();
+    } finally {
+        enableButtons();
     }
+    return res;
 }
 
 function undefinedAsTrue(val) {
     return typeof val === "undefined" || val;
 }
-export function useViewButtons(model, ref, options = {}) {
+
+/**
+ * @typedef {Object} Options
+ * @property {Function} [afterExecuteAction]
+ * @property {Function} [beforeExecuteAction]
+ * @property {Function} [reload]
+ */
+
+/**
+ * @param {{ readonly el: HTMLElement | null; }} ref
+ * @param {Options} [options={}]
+ */
+export function useViewButtons(ref, options = {}) {
     const action = useService("action");
     const dialog = useService("dialog");
-    const comp = owl.useComponent();
+    const comp = useComponent();
     const env = useEnv();
-    const beforeExecuteAction =
-        options.beforeExecuteAction ||
-        (() => {
-            return true;
-        });
-    const afterExecuteAction = options.afterExecuteAction || (() => {});
     useSubEnv({
-        async onClickViewButton({
-            clickParams,
-            getResParams,
-            beforeExecute,
-            disableAction,
-            enableAction,
-        }) {
-            const manuallyDisabledButtons = disableButtons(getEl());
-            if (disableAction) {
-                disableAction();
-            }
-
+        async onClickViewButton({ clickParams, getResParams, beforeExecute }) {
             async function execute() {
                 let _continue = true;
                 if (beforeExecute) {
                     _continue = undefinedAsTrue(await beforeExecute());
                 }
 
-                _continue = _continue && undefinedAsTrue(await beforeExecuteAction(clickParams));
+                _continue =
+                    _continue && undefinedAsTrue(await options.beforeExecuteAction?.(clickParams));
                 if (!_continue) {
-                    enableButtons(getEl(), manuallyDisabledButtons, enableAction);
                     return;
                 }
-                const closeDialog = (clickParams.close || clickParams.special) && env.closeDialog;
+                const closeDialog =
+                    (clickParams.close || clickParams.special) && env.dialogData?.close;
                 const params = getResParams();
-                const resId = params.resId;
-                const resIds = params.resIds || model.resIds;
                 let buttonContext = {};
                 if (clickParams.context) {
                     if (typeof clickParams.context === "string") {
@@ -80,16 +81,14 @@ export function useViewButtons(model, ref, options = {}) {
                     Object.assign(buttonContext, clickParams.buttonContext);
                 }
                 const doActionParams = Object.assign({}, clickParams, {
-                    resModel: params.resModel || model.resModel,
-                    resId,
-                    resIds,
-                    context: params.context || {}, //LPE FIXME new Context(payload.env.context).eval();
+                    resModel: params.resModel,
+                    resId: params.resId,
+                    resIds: params.resIds,
+                    context: params.context || {},
                     buttonContext,
                     onClose: async () => {
                         if (!closeDialog && status(comp) !== "destroyed") {
-                            const reload = options.reload || (() => model.root.load());
-                            await reload();
-                            comp.render(true); // FIXME WOWL reactivity
+                            await options.reload?.();
                         }
                     },
                 });
@@ -99,28 +98,37 @@ export function useViewButtons(model, ref, options = {}) {
                 } catch (_e) {
                     error = _e;
                 }
-                await afterExecuteAction(clickParams);
+                await options.afterExecuteAction?.(clickParams);
                 if (closeDialog) {
                     closeDialog();
                 }
-                enableButtons(getEl(), manuallyDisabledButtons, enableAction);
                 if (error) {
                     return Promise.reject(error);
                 }
             }
 
             if (clickParams.confirm) {
-                await new Promise((resolve) => {
-                    const dialogProps = {
-                        body: clickParams.confirm,
-                        confirm: execute,
-                        cancel: () => {},
-                    };
-                    dialog.add(ConfirmationDialog, dialogProps, { onClose: resolve });
+                executeButtonCallback(getEl(), async () => {
+                    await new Promise((resolve) => {
+                        const dialogProps = {
+                            ...(clickParams["confirm-title"] && {
+                                title: clickParams["confirm-title"],
+                            }),
+                            ...(clickParams["confirm-label"] && {
+                                confirmLabel: clickParams["confirm-label"],
+                            }),
+                            ...(clickParams["cancel-label"] && {
+                                cancelLabel: clickParams["cancel-label"],
+                            }),
+                            body: clickParams.confirm,
+                            confirm: () => execute(),
+                            cancel: () => {},
+                        };
+                        dialog.add(ConfirmationDialog, dialogProps, { onClose: resolve });
+                    });
                 });
-                enableButtons(getEl(), manuallyDisabledButtons, enableAction);
             } else {
-                return execute();
+                return executeButtonCallback(getEl(), execute);
             }
         },
     });

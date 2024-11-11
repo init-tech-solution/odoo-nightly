@@ -23,11 +23,14 @@ setup(
     package_dir={'%s' % lib_name: 'odoo'},
     include_package_data=True,
     install_requires=[
+        'asn1crypto',
         'babel >= 1.0',
+        'cbor2',
         'chardet',
         'cryptography',
         'decorator',
         'docutils',
+        'geoip2',
         'gevent',
         'greenlet',
         'idna',
@@ -37,12 +40,12 @@ setup(
         'MarkupSafe',
         'num2words',
         'ofxparse',
+        'openpyxl',
         'passlib',
         'pillow',  # windows binary http://www.lfd.uci.edu/~gohlke/pythonlibs/
         'polib',
         'psutil',  # windows binary code.google.com/p/psutil/downloads/list
         'psycopg2 >= 2.2',
-        'pydot',
         'pyopenssl',
         'PyPDF2',
         'pyserial',
@@ -52,6 +55,7 @@ setup(
         'pyusb >= 1.0.0b1',
         'qrcode',
         'reportlab',  # windows binary pypi.python.org/pypi/reportlab
+        'rjsmin',
         'requests',
         'urllib3',
         'vobject',
@@ -61,7 +65,7 @@ setup(
         'xlwt',
         'zeep',
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.10',
     extras_require={
         'ldap': ['python-ldap'],
     },

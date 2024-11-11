@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import defaultdict
-from urllib3.util.ssl_ import create_urllib3_context, DEFAULT_CIPHERS
+from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.contrib.pyopenssl import inject_into_urllib3
 from OpenSSL.crypto import load_certificate, load_privatekey, FILETYPE_PEM
 
 from odoo import fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import html_escape, zeep
+from odoo.tools.float_utils import float_round
 
+import base64
 import math
 import json
 import requests
 
 
 # Custom patches to perform the WSDL requests.
-EUSKADI_CIPHERS = f"{DEFAULT_CIPHERS}:!DH"
+# Avoid failure on servers where the DH key is too small
+EUSKADI_CIPHERS = "DEFAULT:!DH"
 
 
 class PatchedHTTPAdapter(requests.adapters.HTTPAdapter):
@@ -30,7 +33,7 @@ class PatchedHTTPAdapter(requests.adapters.HTTPAdapter):
     def cert_verify(self, conn, url, verify, cert):
         # OVERRIDE
         # The last parameter is only used by the super method to check if the file exists.
-        # In our case, cert is an odoo record 'l10n_es_edi.certificate' so not a path to a file.
+        # In our case, cert is an odoo record 'certificate.certificate' so not a path to a file.
         # By putting 'None' as last parameter, we ensure the check about TLS configuration is
         # still made without checking temporary files exist.
         super().cert_verify(conn, url, verify, None)
@@ -44,9 +47,9 @@ class PatchedHTTPAdapter(requests.adapters.HTTPAdapter):
         context = conn.conn_kw['ssl_context']
 
         def patched_load_cert_chain(l10n_es_odoo_certificate, keyfile=None, password=None):
-            cert_file, key_file, _certificate = l10n_es_odoo_certificate.sudo()._decode_certificate()
-            cert_obj = load_certificate(FILETYPE_PEM, cert_file)
-            pkey_obj = load_privatekey(FILETYPE_PEM, key_file)
+            certificate = l10n_es_odoo_certificate
+            cert_obj = load_certificate(FILETYPE_PEM, base64.b64decode(certificate.sudo().pem_certificate))
+            pkey_obj = load_privatekey(FILETYPE_PEM, base64.b64decode(certificate.sudo().private_key_id.pem_key))
 
             context._ctx.use_certificate(cert_obj)
             context._ctx.use_privatekey(pkey_obj)
@@ -65,8 +68,8 @@ class AccountEdiFormat(models.Model):
 
     def _l10n_es_edi_get_invoices_tax_details_info(self, invoice, filter_invl_to_apply=None):
 
-        def grouping_key_generator(base_line, tax_values):
-            tax = tax_values['tax_repartition_line'].tax_id
+        def grouping_key_generator(base_line, tax_data):
+            tax = tax_data['tax']
             return {
                 'applied_tax_amount': tax.amount,
                 'l10n_es_type': tax.l10n_es_type,
@@ -74,12 +77,16 @@ class AccountEdiFormat(models.Model):
                 'l10n_es_bien_inversion': tax.l10n_es_bien_inversion,
             }
 
-        def filter_to_apply(base_line, tax_values):
+        def filter_to_apply(base_line, tax_data):
             # For intra-community, we do not take into account the negative repartition line
-            return tax_values['tax_repartition_line'].factor_percent > 0.0
+            return (
+                not tax_data['is_reverse_charge']
+                and tax_data['tax'].amount != -100.0
+                and tax_data['tax'].l10n_es_type != 'ignore'
+            )
 
         def full_filter_invl_to_apply(invoice_line):
-            if 'ignore' in invoice_line.tax_ids.flatten_taxes_hierarchy().mapped('l10n_es_type'):
+            if all(t == 'ignore' for t in invoice_line.tax_ids.flatten_taxes_hierarchy().mapped('l10n_es_type')):
                 return False
             return filter_invl_to_apply(invoice_line) if filter_invl_to_apply else True
 
@@ -95,20 +102,24 @@ class AccountEdiFormat(models.Model):
         # Detect for which is the main tax for 'recargo'. Since only a single combination tax + recargo is allowed
         # on the same invoice, this can be deduced globally.
 
-        recargo_tax_details = {} # Mapping between main tax and recargo tax details
-        invoice_lines = invoice.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section'))
-        if filter_invl_to_apply:
-            invoice_lines = invoice_lines.filtered(filter_invl_to_apply)
-        for line in invoice_lines:
+        recargo_tax_details = defaultdict(list)  # Mapping between main tax and recargo tax details
+        for base_line in tax_details['base_lines']:
+            line = base_line['record']
             taxes = line.tax_ids.flatten_taxes_hierarchy()
-            recargo_tax = [t for t in taxes if t.l10n_es_type == 'recargo']
+            recargo_tax = taxes.filtered(lambda t: t.l10n_es_type == 'recargo')[:1]
             if recargo_tax and taxes:
                 recargo_main_tax = taxes.filtered(lambda x: x.l10n_es_type in ('sujeto', 'sujeto_isp'))[:1]
+                aggregated_values = tax_details['tax_details_per_record'][line]
                 if not recargo_tax_details.get(recargo_main_tax):
-                    recargo_tax_details[recargo_main_tax] = [
-                        x for x in tax_details['tax_details'].values()
-                        if x['group_tax_details'][0]['tax_repartition_line'].tax_id == recargo_tax[0]
-                    ][0]
+                    recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount] = next(iter(
+                        values
+                        for values in aggregated_values['tax_details'].values()
+                        if (
+                            values['grouping_key']
+                            and values['grouping_key']['l10n_es_type'] == recargo_tax.l10n_es_type
+                            and values['grouping_key']['applied_tax_amount'] == recargo_tax.amount
+                        )
+                    ))
 
         tax_amount_deductible = 0.0
         tax_amount_retention = 0.0
@@ -117,7 +128,7 @@ class AccountEdiFormat(models.Model):
         tax_subject_info_list = []
         tax_subject_isp_info_list = []
         for tax_values in tax_details['tax_details'].values():
-
+            recargo = recargo_tax_details.get((tax_values['l10n_es_type'], tax_values['applied_tax_amount']))
             if invoice.is_sale_document():
                 # Customer invoices
 
@@ -127,13 +138,12 @@ class AccountEdiFormat(models.Model):
                     base_amount = sign * tax_values['base_amount']
                     tax_info = {
                         'TipoImpositivo': tax_values['applied_tax_amount'],
-                        'BaseImponible': round(base_amount, 2),
-                        'CuotaRepercutida': round(math.copysign(tax_values['tax_amount'], base_amount), 2),
+                        'BaseImponible': float_round(base_amount, 2),
+                        'CuotaRepercutida': float_round(math.copysign(tax_values['tax_amount'], base_amount), 2),
                     }
 
-                    recargo = recargo_tax_details.get(tax_values['group_tax_details'][0]['tax_repartition_line'].tax_id)
                     if recargo:
-                        tax_info['CuotaRecargoEquivalencia'] = round(sign * recargo['tax_amount'], 2)
+                        tax_info['CuotaRecargoEquivalencia'] = float_round(sign * recargo['tax_amount'], 2)
                         tax_info['TipoRecargoEquivalencia'] = recargo['applied_tax_amount']
 
                     if tax_values['l10n_es_type'] == 'sujeto':
@@ -144,7 +154,7 @@ class AccountEdiFormat(models.Model):
                 elif tax_values['l10n_es_type'] == 'exento':
                     tax_details_info['Sujeta'].setdefault('Exenta', {'DetalleExenta': []})
                     tax_details_info['Sujeta']['Exenta']['DetalleExenta'].append({
-                        'BaseImponible': round(sign * tax_values['base_amount'], 2),
+                        'BaseImponible': float_round(sign * tax_values['base_amount'], 2),
                         'CausaExencion': tax_values['l10n_es_exempt_reason'],
                     })
                 elif tax_values['l10n_es_type'] == 'retencion':
@@ -158,7 +168,7 @@ class AccountEdiFormat(models.Model):
 
             else:
                 # Vendor bills
-                if tax_values['l10n_es_type'] in ('sujeto', 'sujeto_isp', 'no_sujeto', 'no_sujeto_loc'):
+                if tax_values['l10n_es_type'] in ('sujeto', 'sujeto_isp', 'no_sujeto', 'no_sujeto_loc', 'dua'):
                     tax_amount_deductible += tax_values['tax_amount']
                 elif tax_values['l10n_es_type'] == 'retencion':
                     tax_amount_retention += tax_values['tax_amount']
@@ -173,18 +183,17 @@ class AccountEdiFormat(models.Model):
                     base_amount = sign * tax_values['base_amount']
                     tax_details_info.setdefault('DetalleIVA', [])
                     tax_info = {
-                        'BaseImponible': round(base_amount, 2),
+                        'BaseImponible': float_round(base_amount, 2),
                     }
                     if tax_values['applied_tax_amount'] > 0.0:
                         tax_info.update({
                             'TipoImpositivo': tax_values['applied_tax_amount'],
-                            'CuotaSoportada': round(math.copysign(tax_values['tax_amount'], base_amount), 2),
+                            'CuotaSoportada': float_round(math.copysign(tax_values['tax_amount'], base_amount), 2),
                         })
                     if tax_values['l10n_es_bien_inversion']:
                         tax_info['BienInversion'] = 'S'
-                    recargo = recargo_tax_details.get(tax_values['group_tax_details'][0]['tax_repartition_line'].tax_id)
                     if recargo:
-                        tax_info['CuotaRecargoEquivalencia'] = round(sign * recargo['tax_amount'], 2)
+                        tax_info['CuotaRecargoEquivalencia'] = float_round(sign * recargo['tax_amount'], 2)
                         tax_info['TipoRecargoEquivalencia'] = recargo['applied_tax_amount']
                     tax_details_info['DetalleIVA'].append(tax_info)
 
@@ -205,9 +214,14 @@ class AccountEdiFormat(models.Model):
             tax_details_info['Sujeta']['NoExenta']['DesgloseIVA']['DetalleIVA'] += tax_subject_isp_info_list
 
         if not invoice.company_id.currency_id.is_zero(base_amount_not_subject) and invoice.is_sale_document():
-            tax_details_info['NoSujeta']['ImportePorArticulos7_14_Otros'] = round(sign * base_amount_not_subject, 2)
+            tax_details_info['NoSujeta']['ImportePorArticulos7_14_Otros'] = float_round(sign * base_amount_not_subject, 2)
         if not invoice.company_id.currency_id.is_zero(base_amount_not_subject_loc) and invoice.is_sale_document():
-            tax_details_info['NoSujeta']['ImporteTAIReglasLocalizacion'] = round(sign * base_amount_not_subject_loc, 2)
+            tax_details_info['NoSujeta']['ImporteTAIReglasLocalizacion'] = float_round(sign * base_amount_not_subject_loc, 2)
+        if not tax_details_info and invoice.is_sale_document():
+            if any(t['l10n_es_type'] == 'no_sujeto' for t in tax_details['tax_details'].values()):
+                tax_details_info['NoSujeta']['ImportePorArticulos7_14_Otros'] = 0
+            if any(t['l10n_es_type'] == 'no_sujeto_loc' for t in tax_details['tax_details'].values()):
+                tax_details_info['NoSujeta']['ImporteTAIReglasLocalizacion'] = 0
 
         return {
             'tax_details_info': tax_details_info,
@@ -247,12 +261,10 @@ class AccountEdiFormat(models.Model):
     def _l10n_es_edi_get_invoices_info(self, invoices):
         eu_country_codes = set(self.env.ref('base.europe').country_ids.mapped('code'))
 
-        simplified_partner = self.env.ref("l10n_es_edi_sii.partner_simplified")
-
         info_list = []
         for invoice in invoices:
             com_partner = invoice.commercial_partner_id
-            is_simplified = invoice.partner_id == simplified_partner
+            is_simplified = invoice.l10n_es_is_simplified
 
             info = {
                 'PeriodoLiquidacion': {
@@ -285,19 +297,12 @@ class AccountEdiFormat(models.Model):
                         **partner_info,
                         'NombreRazon': com_partner.name[:120],
                     }
-                export_exempts = invoice.invoice_line_ids.tax_ids.filtered(lambda t: t.l10n_es_exempt_reason == 'E2')
-                # If an invoice line contains an OSS tax, the invoice is considered as an OSS operation
-                is_oss = self._has_oss_taxes(invoice)
-
-                if is_oss:
-                    invoice_node['ClaveRegimenEspecialOTrascendencia'] = '17'
-                elif export_exempts:
-                    invoice_node['ClaveRegimenEspecialOTrascendencia'] = '02'
-                else:
-                    invoice_node['ClaveRegimenEspecialOTrascendencia'] = '01'
+                invoice_node['ClaveRegimenEspecialOTrascendencia'] = invoice.invoice_line_ids.tax_ids._l10n_es_get_regime_code()
             else:
+                if invoice._l10n_es_is_dua():
+                    partner_info = self._l10n_es_edi_get_partner_info(invoice.company_id.partner_id)
                 info['IDFactura']['IDEmisorFactura'] = partner_info
-                info['IDFactura']['NumSerieFacturaEmisor'] = invoice.ref[:60]
+                info["IDFactura"]["NumSerieFacturaEmisor"] = (invoice.ref or "")[:60]
                 if not is_simplified:
                     invoice_node['Contraparte'] = {
                         **partner_info,
@@ -309,9 +314,9 @@ class AccountEdiFormat(models.Model):
                 else:
                     invoice_node['FechaRegContable'] = fields.Date.context_today(self).strftime('%d-%m-%Y')
 
-                mod_303_10 = self.env.ref('l10n_es.mod_303_10')
-                mod_303_11 = self.env.ref('l10n_es.mod_303_11')
-                tax_tags = invoice.invoice_line_ids.tax_ids.invoice_repartition_line_ids.tag_ids
+                mod_303_10 = self.env.ref('l10n_es.mod_303_casilla_10_balance')._get_matching_tags()
+                mod_303_11 = self.env.ref('l10n_es.mod_303_casilla_11_balance')._get_matching_tags()
+                tax_tags = invoice.invoice_line_ids.tax_ids.repartition_line_ids.tag_ids
                 intracom = bool(tax_tags & (mod_303_10 + mod_303_11))
                 invoice_node['ClaveRegimenEspecialOTrascendencia'] = '09' if intracom else '01'
 
@@ -322,6 +327,8 @@ class AccountEdiFormat(models.Model):
                 invoice_node['TipoRectificativa'] = 'I'
             elif invoice.move_type == 'in_invoice':
                 invoice_node['TipoFactura'] = 'F1'
+                if invoice._l10n_es_is_dua():
+                    invoice_node['TipoFactura'] = 'F5'
             elif invoice.move_type == 'in_refund':
                 invoice_node['TipoFactura'] = 'R4'
                 invoice_node['TipoRectificativa'] = 'I'
@@ -333,11 +340,11 @@ class AccountEdiFormat(models.Model):
             if invoice.is_sale_document():
                 # Customer invoices
 
-                if com_partner.country_id.code in ('ES', False) and not (com_partner.vat or '').startswith("ESN"):
+                if not com_partner._l10n_es_is_foreign():
                     tax_details_info_vals = self._l10n_es_edi_get_invoices_tax_details_info(invoice)
                     invoice_node['TipoDesglose'] = {'DesgloseFactura': tax_details_info_vals['tax_details_info']}
 
-                    invoice_node['ImporteTotal'] = round(sign * (
+                    invoice_node['ImporteTotal'] = float_round(sign * (
                         tax_details_info_vals['tax_details']['base_amount']
                         + tax_details_info_vals['tax_details']['tax_amount']
                         - tax_details_info_vals['tax_amount_retention']
@@ -366,7 +373,7 @@ class AccountEdiFormat(models.Model):
                             "\n".join(invoice.line_ids.tax_ids.mapped('name'))
                         ))
 
-                    invoice_node['ImporteTotal'] = round(sign * (
+                    invoice_node['ImporteTotal'] = float_round(sign * (
                         tax_details_info_service_vals['tax_details']['base_amount']
                         + tax_details_info_service_vals['tax_details']['tax_amount']
                         - tax_details_info_service_vals['tax_amount_retention']
@@ -393,19 +400,19 @@ class AccountEdiFormat(models.Model):
                 if tax_details_info_other_vals['tax_details_info']:
                     invoice_node['DesgloseFactura']['DesgloseIVA'] = tax_details_info_other_vals['tax_details_info']
 
-                if any(t.l10n_es_type == 'ignore' for t in invoice.invoice_line_ids.tax_ids):
-                    invoice_node['ImporteTotal'] = round(sign * (
+                if invoice._l10n_es_is_dua() or any(t.l10n_es_type == 'ignore' for t in invoice.invoice_line_ids.tax_ids):
+                    invoice_node['ImporteTotal'] = float_round(sign * (
                             tax_details_info_isp_vals['tax_details']['base_amount']
                             + tax_details_info_isp_vals['tax_details']['tax_amount']
                             + tax_details_info_other_vals['tax_details']['base_amount']
                             + tax_details_info_other_vals['tax_details']['tax_amount']
                     ), 2)
                 else: # Intra-community -100 repartition line needs to be taken into account
-                    invoice_node['ImporteTotal'] = round(-invoice.amount_total_signed
+                    invoice_node['ImporteTotal'] = float_round(-invoice.amount_total_signed
                                                          - sign * tax_details_info_isp_vals['tax_amount_retention']
                                                          - sign * tax_details_info_other_vals['tax_amount_retention'], 2)
 
-                invoice_node['CuotaDeducible'] = round(sign * (
+                invoice_node['CuotaDeducible'] = float_round(sign * (
                     tax_details_info_isp_vals['tax_amount_deductible']
                     + tax_details_info_other_vals['tax_amount_deductible']
                 ), 2)
@@ -463,8 +470,8 @@ class AccountEdiFormat(models.Model):
         # === Call the web service ===
 
         # Get connection data.
-        l10n_es_edi_tax_agency = company.mapped('l10n_es_edi_tax_agency')[0]
-        connection_vals = getattr(self, f'_l10n_es_edi_web_service_{l10n_es_edi_tax_agency}_vals')(invoices)
+        l10n_es_sii_tax_agency = company.mapped('l10n_es_sii_tax_agency')[0]
+        connection_vals = getattr(self, f'_l10n_es_edi_web_service_{l10n_es_sii_tax_agency}_vals')(invoices)
 
         header = {
             'IDVersionSii': '1.1',
@@ -476,7 +483,7 @@ class AccountEdiFormat(models.Model):
         }
 
         session = requests.Session()
-        session.cert = company.l10n_es_edi_certificate_id
+        session.cert = company.l10n_es_sii_certificate_id
         session.mount('https://', PatchedHTTPAdapter())
 
         client = zeep.Client(connection_vals['url'], operation_timeout=60, timeout=60, session=session)
@@ -485,12 +492,12 @@ class AccountEdiFormat(models.Model):
             service_name = 'SuministroFactEmitidas'
         else:
             service_name = 'SuministroFactRecibidas'
-        if company.l10n_es_edi_test_env and not connection_vals.get('test_url'):
+        if company.l10n_es_sii_test_env and not connection_vals.get('test_url'):
             service_name += 'Pruebas'
 
         # Establish the connection.
         serv = client.bind('siiService', service_name)
-        if company.l10n_es_edi_test_env and connection_vals.get('test_url'):
+        if company.l10n_es_sii_test_env and connection_vals.get('test_url'):
             serv._binding_options['address'] = connection_vals['test_url']
 
         error_msg = None
@@ -541,11 +548,14 @@ class AccountEdiFormat(models.Model):
             else:
                 # 'ref' can be the same for different partners.
                 candidates = invoices.filtered(lambda x: x.ref[:60] == invoice_number)
-                if len(candidates) >= 1:
+                if len(candidates) > 1:
                     respl_partner_info = respl.IDFactura.IDEmisorFactura
                     inv = None
                     for candidate in candidates:
-                        partner_info = self._l10n_es_edi_get_partner_info(candidate.commercial_partner_id)
+                        partner = candidate.commercial_partner_id
+                        if candidate._l10n_es_is_dua():
+                            partner = candidate.company_id.partner_id
+                        partner_info = self._l10n_es_edi_get_partner_info(partner)
                         if partner_info.get('NIF') and partner_info['NIF'] == respl_partner_info.NIF:
                             inv = candidate
                             break
@@ -582,19 +592,11 @@ class AccountEdiFormat(models.Model):
 
             else:
                 results[inv] = {
-                    'error': _("[%s] %s", respl.CodigoErrorRegistro, respl.DescripcionErrorRegistro),
+                    'error': _("[%(error_code)s] %(error_message)s", error_code=respl.CodigoErrorRegistro, error_message=respl.DescripcionErrorRegistro),
                     'blocking_level': 'error',
                 }
 
         return results
-
-    def _has_oss_taxes(self, invoice):
-        oss_tax_groups = self.env['ir.model.data'].search([
-            ('module', '=', 'l10n_eu_oss'),
-            ('model', '=', 'account.tax.group')])
-        lines = invoice.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_section', 'line_note'))
-        tax_groups = lines.mapped('tax_ids.tax_group_id')
-        return bool(set(tax_groups.ids) & set(oss_tax_groups.mapped('res_id')))
 
     # -------------------------------------------------------------------------
     # EDI OVERRIDDEN METHODS
@@ -661,7 +663,7 @@ class AccountEdiFormat(models.Model):
 
     def _l10n_es_edi_sii_post_invoices(self, invoices):
         # Ensure a certificate is available.
-        certificate = invoices.company_id.l10n_es_edi_certificate_id
+        certificate = invoices.company_id.l10n_es_sii_certificate_id
         if not certificate:
             return {inv: {
                 'error': _("Please configure the certificate for SII."),
@@ -669,8 +671,8 @@ class AccountEdiFormat(models.Model):
             } for inv in invoices}
 
         # Ensure a tax agency is available.
-        l10n_es_edi_tax_agency = invoices.company_id.mapped('l10n_es_edi_tax_agency')[0]
-        if not l10n_es_edi_tax_agency:
+        l10n_es_sii_tax_agency = invoices.company_id.mapped('l10n_es_sii_tax_agency')[0]
+        if not l10n_es_sii_tax_agency:
             return {inv: {
                 'error': _("Please specify a tax agency on your company for SII."),
                 'blocking_level': 'error',

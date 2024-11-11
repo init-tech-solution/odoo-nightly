@@ -4,15 +4,14 @@
 from . import controllers
 from . import models
 from . import report
+from . import wizard
 
-from odoo import api, fields, SUPERUSER_ID, _
+from odoo import fields
 
 from odoo.addons.project import _check_exists_collaborators_for_project_sharing
 
 
-def create_internal_project(cr, registry):
-    env = api.Environment(cr, SUPERUSER_ID, {})
-
+def create_internal_project(env):
     # allow_timesheets is set by default, but erased for existing projects at
     # installation, as there is no analytic account for them.
     env['project.project'].search([]).write({'allow_timesheets': True})
@@ -22,7 +21,7 @@ def create_internal_project(cr, registry):
         return
     project_ids = env['res.company'].search([])._create_internal_project_task()
     env['account.analytic.line'].create([{
-        'name': _("Analysis"),
+        'name': env._("Analysis"),
         'user_id': admin.id,
         'date': fields.datetime.today(),
         'unit_amount': 0,
@@ -32,8 +31,7 @@ def create_internal_project(cr, registry):
 
     _check_exists_collaborators_for_project_sharing(env)
 
-def _uninstall_hook(cr, registry):
-    env = api.Environment(cr, SUPERUSER_ID, {})
+def _uninstall_hook(env):
 
     def update_action_window(xmlid):
         act_window = env.ref(xmlid, raise_if_not_found=False)

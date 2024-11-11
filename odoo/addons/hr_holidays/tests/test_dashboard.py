@@ -7,9 +7,11 @@ class TestDashboard(TestHrHolidaysCommon):
     def test_dashboard_special_days(self):
         self.env.user = self.user_hrmanager
         employee = self.env.user.employee_id
-        other_calendar = employee.company_id.resource_calendar_ids[1]
+        other_calendar = self.env['resource.calendar'].create({
+            'name': 'Other calendar',
+        })
 
-        stress_day_vals = [
+        mandatory_day_vals = [
             {
                 'name': 'Super Event (employee schedule)',
                 'company_id': employee.company_id.id,
@@ -31,7 +33,7 @@ class TestDashboard(TestHrHolidaysCommon):
                 'resource_calendar_id': other_calendar.id,
             }
         ]
-        self.env['hr.leave.stress.day'].create(stress_day_vals)
+        self.env['hr.leave.mandatory.day'].create(mandatory_day_vals)
 
         public_holiday_vals = [
             {
@@ -56,5 +58,5 @@ class TestDashboard(TestHrHolidaysCommon):
 
         dashboard_data = self.env['hr.employee'].get_special_days_data("2021/06/01", "2021/07/01")
 
-        self.assertEqual({d["title"] for d in dashboard_data["stressDays"]}, {'Super Event (employee schedule)', 'Super Event (no schedule)'})
+        self.assertEqual({d["title"] for d in dashboard_data["mandatoryDays"]}, {'Super Event (employee schedule)', 'Super Event (no schedule)'})
         self.assertEqual({d["title"] for d in dashboard_data["bankHolidays"]}, {'Public holiday (employee schedule)', 'Public holiday (no schedule)'})

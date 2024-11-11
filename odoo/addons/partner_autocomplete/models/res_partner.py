@@ -9,7 +9,8 @@ import requests
 
 from stdnum.eu.vat import check_vies
 
-from odoo import api, fields, models, tools, _
+from odoo import api, fields, models, _
+from odoo.tools.image import base64_to_image
 
 _logger = logging.getLogger(__name__)
 
@@ -72,7 +73,7 @@ class ResPartner(models.Model):
             # avoid keeping falsy images (may happen that a blank page is returned that leads to an incorrect image)
             if iap_data['image_1920']:
                 try:
-                    tools.base64_to_image(iap_data['image_1920'])
+                    base64_to_image(iap_data['image_1920'])
                 except Exception:
                     iap_data.pop('image_1920')
         return iap_data
@@ -143,7 +144,7 @@ class ResPartner(models.Model):
                 _logger.info('Calling VIES service to check VAT for autocomplete: %s', vat)
                 vies_result = check_vies(vat, timeout=timeout)
             except Exception:
-                _logger.exception("Failed VIES VAT check.")
+                _logger.warning("Failed VIES VAT check.", exc_info=True)
             if vies_result:
                 name = vies_result['name']
                 if vies_result['valid'] and name != '---':
@@ -215,10 +216,10 @@ class ResPartner(models.Model):
             if partners.additional_info:
                 template_values = json.loads(partners.additional_info)
                 template_values['flavor_text'] = _("Partner created by Odoo Partner Autocomplete Service")
-                partners.message_post_with_view(
+                partners.message_post_with_source(
                     'iap_mail.enrich_company',
-                    values=template_values,
-                    subtype_id=self.env.ref('mail.mt_note').id,
+                    render_values=template_values,
+                    subtype_xmlid='mail.mt_note',
                 )
                 partners.write({'additional_info': False})
 
@@ -230,3 +231,13 @@ class ResPartner(models.Model):
             self._update_autocomplete_data(values.get('vat', False))
 
         return res
+
+    @api.model
+    def _get_view(self, view_id=None, view_type='form', **options):
+        arch, view = super()._get_view(view_id, view_type, **options)
+
+        if view_type == 'form':
+            for node in arch.xpath("//field[@name='name' or @name='vat']"):
+                node.set('widget', 'field_partner_autocomplete')
+
+        return arch, view

@@ -9,12 +9,17 @@ from datetime import datetime, timedelta
 @tagged('post_install', '-at_install')
 class TestPurchaseOrderReport(AccountTestInvoicingCommon):
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.other_currency = cls.setup_other_currency('EUR')
+
     def test_00_purchase_order_report(self):
         uom_dozen = self.env.ref('uom.product_uom_dozen')
 
         po = self.env['purchase.order'].create({
             'partner_id': self.partner_a.id,
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
             'order_line': [
                 (0, 0, {
                     'name': self.product_a.name,
@@ -44,11 +49,11 @@ class TestPurchaseOrderReport(AccountTestInvoicingCommon):
         # <field name="invoice_vendor_bill_id" position="after">
         #     <field name="purchase_id" invisible="1"/>
         #     <label for="purchase_vendor_bill_id" string="Auto-Complete" class="oe_edit_only"
-        #             attrs="{'invisible': ['|', ('state','!=','draft'), ('move_type', '!=', 'in_invoice')]}" />
+        #             invisible="state != 'draft' or move_type != 'in_invoice'" />
         #     <field name="purchase_vendor_bill_id" nolabel="1"
-        #             attrs="{'invisible': ['|', ('state','!=','draft'), ('move_type', '!=', 'in_invoice')]}"
+        #             invisible="state != 'draft' or move_type != 'in_invoice'"
         #             class="oe_edit_only"
-        #             domain="partner_id and [('company_id', '=', company_id), ('partner_id.commercial_partner_id', '=', commercial_partner_id)] or [('company_id', '=', company_id)]"
+        #             domain="('company_id', '=', company_id), ('partner_id.commercial_partner_id', '=', commercial_partner_id)] if partner_id else [('company_id', '=', company_id)]"
         #             placeholder="Select a purchase order or an old bill"
         #             context="{'show_total_amount': True}"
         #             options="{'no_create': True, 'no_open': True}"/>
@@ -124,7 +129,7 @@ class TestPurchaseOrderReport(AccountTestInvoicingCommon):
     def test_02_po_report_note_section_filter(self):
         po = self.env['purchase.order'].create({
             'partner_id': self.partner_a.id,
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
             'order_line': [
                 (0, 0, {
                     'name': 'This is a note',
@@ -157,7 +162,7 @@ class TestPurchaseOrderReport(AccountTestInvoicingCommon):
         """
         po = self.env['purchase.order'].create({
             'partner_id': self.partner_a.id,
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
             'order_line': [
                 (0, 0, {
                     'product_id': self.product_a.id,
@@ -166,9 +171,11 @@ class TestPurchaseOrderReport(AccountTestInvoicingCommon):
                 }),
             ],
         })
+        currency_eur_id = self.env.ref("base.EUR")
+        currency_eur_id.active = True
         po_2 = self.env['purchase.order'].create({
             'partner_id': self.partner_a.id,
-            'currency_id': self.env['res.currency'].search([('name', '=', 'EUR')], limit=1).id,
+            'currency_id': currency_eur_id.id,
             'order_line': [
                 (0, 0, {
                     'product_id': self.product_a.id,
