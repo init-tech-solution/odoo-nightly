@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
@@ -7,7 +6,6 @@ import re
 from werkzeug.urls import url_join
 
 from odoo import api, fields, models, _
-from odoo.addons.http_routing.models.ir_http import url_for
 from odoo.addons.website.tools import text_from_html
 from odoo.http import request
 from odoo.osv import expression
@@ -45,8 +43,7 @@ class SeoMetadata(models.AbstractModel):
         """
         self.ensure_one()
         company = request.website.company_id.sudo()
-        title = (request.website or company).name
-        site_name = title
+        title = request.website.name
         if 'name' in self:
             title = '%s | %s' % (self.name, title)
 
@@ -56,8 +53,8 @@ class SeoMetadata(models.AbstractModel):
         default_opengraph = {
             'og:type': 'website',
             'og:title': title,
-            'og:site_name': site_name,
-            'og:url': url_join(request.httprequest.url_root, url_for(request.httprequest.path)),
+            'og:site_name': request.website.name,
+            'og:url': url_join(request.website.domain or request.httprequest.url_root, self.env['ir.http']._url_for(request.httprequest.path)),
             'og:image': request.website.image_url(request.website, img_field),
         }
         # Default meta for Twitter
@@ -83,7 +80,7 @@ class SeoMetadata(models.AbstractModel):
             override `_default_website_meta` method instead of this method. This
             method only replaces user custom values in defaults.
         """
-        root_url = request.httprequest.url_root.strip('/')
+        root_url = request.website.domain or request.httprequest.url_root.strip('/')
         default_meta = self._default_website_meta()
         opengraph_meta, twitter_meta = default_meta['default_opengraph'], default_meta['default_twitter']
         if self.website_meta_title:
@@ -92,8 +89,8 @@ class SeoMetadata(models.AbstractModel):
         if self.website_meta_description:
             opengraph_meta['og:description'] = self.website_meta_description
             twitter_meta['twitter:description'] = self.website_meta_description
-        opengraph_meta['og:image'] = url_join(root_url, url_for(self.website_meta_og_img or opengraph_meta['og:image']))
-        twitter_meta['twitter:image'] = url_join(root_url, url_for(self.website_meta_og_img or twitter_meta['twitter:image']))
+        opengraph_meta['og:image'] = url_join(root_url, self.env['ir.http']._url_for(self.website_meta_og_img or opengraph_meta['og:image']))
+        twitter_meta['twitter:image'] = url_join(root_url, self.env['ir.http']._url_for(self.website_meta_og_img or twitter_meta['twitter:image']))
         return {
             'opengraph_meta': opengraph_meta,
             'twitter_meta': twitter_meta,
@@ -165,7 +162,7 @@ class WebsiteMultiMixin(models.AbstractModel):
         "website",
         string="Website",
         ondelete="restrict",
-        help="Restrict publishing to this website.",
+        help="Restrict to a specific website.",
         index=True,
     )
 
@@ -198,7 +195,9 @@ class WebsitePublishedMixin(models.AbstractModel):
 
     def website_publish_button(self):
         self.ensure_one()
-        return self.write({'website_published': not self.website_published})
+        value = not self.website_published
+        self.write({'website_published': value})
+        return value
 
     def open_website_url(self):
         return self.env['website'].get_client_action(self.website_url)
@@ -206,10 +205,7 @@ class WebsitePublishedMixin(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         records = super(WebsitePublishedMixin, self).create(vals_list)
-        is_publish_modified = any(
-            [set(v.keys()) & {'is_published', 'website_published'} for v in vals_list]
-        )
-        if is_publish_modified and any(not record.can_publish for record in records):
+        if any(record.is_published and not record.can_publish for record in records):
             raise AccessError(self._get_can_publish_error_message())
 
         return records

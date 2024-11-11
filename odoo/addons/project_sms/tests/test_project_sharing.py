@@ -6,6 +6,7 @@ from odoo.addons.project.tests.test_project_sharing import TestProjectSharingCom
 from odoo.addons.sms.tests.common import SMSCommon
 from odoo.tests import tagged
 
+
 class TestProjectSharingWithSms(TestProjectSharingCommon, SMSCommon):
     @classmethod
     def setUpClass(cls):
@@ -64,6 +65,7 @@ class TestProjectSharingWithSms(TestProjectSharingCommon, SMSCommon):
         self.assertEqual(self.project_portal.stage_id, self.project_stage_with_sms)
         self.assertSMSIapSent([self.project_portal.partner_id.mobile])
 
+
 @tagged('post_install', '-at_install')
 class TestPostInstallProjectSharingWithSms(TestProjectSharingWithSms):
 
@@ -83,7 +85,7 @@ class TestPostInstallProjectSharingWithSms(TestProjectSharingWithSms):
                 Command.link(sale_manager_group.id),
             ]
         })
-        self.assertTrue(self.task_cow.with_user(self.user_projectuser).check_access_rights('write'))
+        self.assertTrue(self.task_cow.with_user(self.user_projectuser).has_access('write'))
         with self.mockSMSGateway():
             self.task_cow.with_user(self.user_projectuser).write({
                 'stage_id': self.task_stage_with_sms.id,

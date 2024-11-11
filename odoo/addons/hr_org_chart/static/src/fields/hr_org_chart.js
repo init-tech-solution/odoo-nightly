@@ -1,35 +1,23 @@
 /** @odoo-module */
 
-import {Field} from '@web/views/fields/field';
+import { rpc } from "@web/core/network/rpc";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { usePopover } from "@web/core/popover/popover_hook";
+import { user } from "@web/core/user";
 import { onEmployeeSubRedirect } from './hooks';
-
-const { Component, onWillStart, onWillRender, useState } = owl;
-
-function useUniquePopover() {
-    const popover = usePopover();
-    let remove = null;
-    return Object.assign(Object.create(popover), {
-        add(target, component, props, options) {
-            if (remove) {
-                remove();
-            }
-            remove = popover.add(target, component, props, options);
-            return () => {
-                remove();
-                remove = null;
-            };
-        },
-    });
-}
+import { Component, onWillStart, onWillRender, useState } from "@odoo/owl";
+import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 class HrOrgChartPopover extends Component {
+    static template = "hr_org_chart.hr_orgchart_emp_popover";
+    static props = {
+        employee: Object,
+        close: Function,
+    };
     async setup() {
         super.setup();
 
-        this.rpc = useService('rpc');
         this.orm = useService('orm');
         this.actionService = useService("action");
         this._onEmployeeSubRedirect = onEmployeeSubRedirect();
@@ -47,18 +35,16 @@ class HrOrgChartPopover extends Component {
         this.actionService.doAction(action); 
     }
 }
-HrOrgChartPopover.template = 'hr_org_chart.hr_orgchart_emp_popover';
 
-export class HrOrgChart extends Field {
+export class HrOrgChart extends Component {
+    static template = "hr_org_chart.hr_org_chart";
+    static props = {...standardFieldProps};
     async setup() {
         super.setup();
 
-        this.rpc = useService('rpc');
         this.orm = useService('orm');
         this.actionService = useService("action");
-        this.popover = useUniquePopover();
-
-        this.jsonStringify = JSON.stringify;
+        this.popover = usePopover(HrOrgChartPopover);
 
         this.state = useState({'employee_id': null});
         this.lastParent = null;
@@ -74,7 +60,7 @@ export class HrOrgChart extends Field {
     async handleComponentUpdate() {
         this.employee = this.props.record.data;
         // the widget is either dispayed in the context of a hr.employee form or a res.users form
-        this.state.employee_id = this.employee.employee_ids !== undefined ? this.employee.employee_ids.resIds[0] : this.employee.id;
+        this.state.employee_id = this.employee.employee_ids !== undefined ? this.employee.employee_ids.resIds[0] : this.props.record.resId;
         const manager = this.employee.parent_id || this.employee.employee_parent_id;
         const forceReload = this.lastRecord !== this.props.record || this.lastParent != manager;
         this.lastParent = manager;
@@ -92,11 +78,11 @@ export class HrOrgChart extends Field {
             this.view_employee_id = null;
         } else if (employeeId !== this.view_employee_id || force) {
             this.view_employee_id = employeeId;
-            var orgData = await this.rpc(
+            let orgData = await rpc(
                 '/hr/get_org_chart',
                 {
                     employee_id: employeeId,
-                    context: Component.env.session.user_context,
+                    context: user.context,
                 }
             );
             if (Object.keys(orgData).length === 0) {
@@ -114,12 +100,7 @@ export class HrOrgChart extends Field {
     }
 
     _onOpenPopover(event, employee) {
-        this.popover.add(
-            event.currentTarget,
-            this.constructor.components.Popover,
-            {employee},
-            {closeOnClickAway: true}
-        );
+        this.popover.open(event.currentTarget, { employee });
     }
 
     /**
@@ -140,10 +121,8 @@ export class HrOrgChart extends Field {
     }
 }
 
-HrOrgChart.components = {
-    Popover: HrOrgChartPopover,
+export const hrOrgChart = {
+    component: HrOrgChart,
 };
 
-HrOrgChart.template = 'hr_org_chart.hr_org_chart';
-
-registry.category("fields").add("hr_org_chart", HrOrgChart);
+registry.category("fields").add("hr_org_chart", hrOrgChart);

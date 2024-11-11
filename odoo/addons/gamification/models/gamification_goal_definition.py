@@ -33,7 +33,7 @@ class GoalDefinition(models.Model):
         ('progress', "Progressive (using numerical values)"),
         ('boolean', "Exclusive (done or not-done)"),
     ], default='progress', string="Displayed as", required=True)
-    model_id = fields.Many2one('ir.model', string='Model')
+    model_id = fields.Many2one('ir.model', string='Model', ondelete='cascade')
     model_inherited_ids = fields.Many2many('ir.model', related='model_id.inherited_model_ids')
     field_id = fields.Many2one(
         'ir.model.fields', string='Field to Sum',
@@ -91,7 +91,11 @@ class GoalDefinition(models.Model):
                 msg = e
                 if isinstance(e, SyntaxError):
                     msg = (e.msg + '\n' + e.text)
-                raise exceptions.UserError(_("The domain for the definition %s seems incorrect, please check it.\n\n%s") % (definition.name, msg))
+                raise exceptions.UserError(_(
+                    "The domain for the definition %(definition)s seems incorrect, please check it.\n\n%(error_message)s",
+                    definition=definition.name,
+                    error_message=msg,
+                ))
         return True
 
     def _check_model_validity(self):

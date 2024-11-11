@@ -2,10 +2,16 @@
 import { Dialog } from "@web/core/dialog/dialog";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-
-const { Component, onWillStart } = owl;
+import { _t } from "@web/core/l10n/translation";
+import { Component, onWillStart } from "@odoo/owl";
 
 class InsufficientCreditDialog extends Component {
+    static components = { Dialog };
+    static template = "iap.InsufficientCreditDialog";
+    static props = {
+        errorData: Object,
+        close: Function,
+    };
     setup() {
         this.orm = useService("orm");
         onWillStart(this.onWillStart);
@@ -20,7 +26,6 @@ class InsufficientCreditDialog extends Component {
             trial: errorData.trial,
         });
         this.style = errorData.body ? "padding:0;" : "";
-        const { _t } = this.env;
         const { isEnterprise } = odoo.info;
         if (errorData.trial && isEnterprise) {
             this.buttonMessage = _t("Start a Trial at Odoo");
@@ -34,8 +39,6 @@ class InsufficientCreditDialog extends Component {
         this.props.close();
     }
 }
-InsufficientCreditDialog.components = { Dialog };
-InsufficientCreditDialog.template = "iap.InsufficientCreditDialog";
 
 function insufficientCreditHandler(env, error, originalError) {
     if (!originalError) {

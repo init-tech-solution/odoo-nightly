@@ -7,8 +7,10 @@ from functools import wraps
 from requests import HTTPError
 import pytz
 from dateutil.parser import parse
+from markupsafe import Markup
 
-from odoo import api, fields, models, registry, _
+from odoo import api, fields, models, _
+from odoo.modules.registry import Registry
 from odoo.tools import ormcache_context, email_normalize
 from odoo.osv import expression
 
@@ -35,7 +37,7 @@ def after_commit(func):
 
         @self.env.cr.postcommit.add
         def called_after():
-            db_registry = registry(dbname)
+            db_registry = Registry(dbname)
             with db_registry.cursor() as cr:
                 env = api.Environment(cr, uid, context)
                 try:
@@ -62,22 +64,23 @@ class GoogleSync(models.AbstractModel):
     def write(self, vals):
         google_service = GoogleCalendarService(self.env['google.service'])
         if 'google_id' in vals:
-            self._event_ids_from_google_ids.clear_cache(self)
+            self.env.registry.clear_cache()  # _event_ids_from_google_ids
         synced_fields = self._get_google_synced_fields()
         if 'need_sync' not in vals and vals.keys() & synced_fields and not self.env.user.google_synchronization_stopped:
             vals['need_sync'] = True
 
         result = super().write(vals)
-        for record in self.filtered('need_sync'):
-            if record.google_id:
-                record.with_user(record._get_event_user())._google_patch(google_service, record.google_id, record._google_values(), timeout=3)
+        if self.env.user._get_google_sync_status() != "sync_paused":
+            for record in self:
+                if record.need_sync and record.google_id:
+                    record.with_user(record._get_event_user())._google_patch(google_service, record.google_id, record._google_values(), timeout=3)
 
         return result
 
     @api.model_create_multi
     def create(self, vals_list):
         if any(vals.get('google_id') for vals in vals_list):
-            self._event_ids_from_google_ids.clear_cache(self)
+            self.env.registry.clear_cache()  # _event_ids_from_google_ids
         if self.env.user.google_synchronization_stopped:
             for vals in vals_list:
                 vals.update({'need_sync': False})
@@ -85,9 +88,10 @@ class GoogleSync(models.AbstractModel):
         self._handle_allday_recurrences_edge_case(records, vals_list)
 
         google_service = GoogleCalendarService(self.env['google.service'])
-        records_to_sync = records.filtered(lambda r: r.need_sync and r.active)
-        for record in records_to_sync:
-            record.with_user(record._get_event_user())._google_insert(google_service, record._google_values(), timeout=3)
+        if self.env.user._get_google_sync_status() != "sync_paused":
+            for record in records:
+                if record.need_sync and record.active:
+                    record.with_user(record._get_event_user())._google_insert(google_service, record._google_values(), timeout=3)
         return records
 
     def _handle_allday_recurrences_edge_case(self, records, vals_list):
@@ -140,28 +144,31 @@ class GoogleSync(models.AbstractModel):
 
         updated_records = records_to_sync.filtered('google_id')
         new_records = records_to_sync - updated_records
-        for record in cancelled_records.filtered(lambda e: e.google_id and e.need_sync):
-            record.with_user(record._get_event_user())._google_delete(google_service, record.google_id)
-        for record in new_records:
-            record.with_user(record._get_event_user())._google_insert(google_service, record._google_values())
-        for record in updated_records:
-            record.with_user(record._get_event_user())._google_patch(google_service, record.google_id, record._google_values())
+        if self.env.user._get_google_sync_status() != "sync_paused":
+            for record in cancelled_records:
+                if record.google_id and record.need_sync:
+                    record.with_user(record._get_event_user())._google_delete(google_service, record.google_id)
+            for record in new_records:
+                record.with_user(record._get_event_user())._google_insert(google_service, record._google_values())
+            for record in updated_records:
+                record.with_user(record._get_event_user())._google_patch(google_service, record.google_id, record._google_values())
 
     def _cancel(self):
         self.with_context(dont_notify=True).write({'google_id': False})
         self.unlink()
 
     @api.model
-    def _sync_google2odoo(self, google_events: GoogleEvent, default_reminders=()):
+    def _sync_google2odoo(self, google_events: GoogleEvent, write_dates=None, default_reminders=()):
         """Synchronize Google recurrences in Odoo. Creates new recurrences, updates
         existing ones.
 
         :param google_recurrences: Google recurrences to synchronize in Odoo
+        :param write_dates: A dictionary mapping Odoo record IDs to their write dates.
         :return: synchronized odoo recurrences
         """
+        write_dates = dict(write_dates or {})
         existing = google_events.exists(self.env)
         new = google_events - existing - google_events.cancelled()
-        write_dates = self._context.get('write_dates', {})
 
         odoo_values = [
             dict(self._odoo_values(e, default_reminders), need_sync=False)
@@ -169,7 +176,7 @@ class GoogleSync(models.AbstractModel):
         ]
         new_odoo = self.with_context(dont_notify=True)._create_from_google(new, odoo_values)
         cancelled = existing.cancelled()
-        cancelled_odoo = self.browse(cancelled.odoo_ids(self.env)).exists()
+        cancelled_odoo = self.browse(cancelled.odoo_ids(self.env))
 
         # Check if it is a recurring event that has been rescheduled.
         # We have to check if an event already exists in Odoo.
@@ -182,7 +189,7 @@ class GoogleSync(models.AbstractModel):
             google_ids_to_remove = [event.full_recurring_event_id() for event in rescheduled_events]
             cancelled_odoo += self.env['calendar.event'].search([('google_id', 'in', google_ids_to_remove)])
 
-        cancelled_odoo._cancel()
+        cancelled_odoo.exists()._cancel()
         synced_records = new_odoo + cancelled_odoo
         pending = existing - cancelled
         pending_odoo = self.browse(pending.odoo_ids(self.env)).exists()
@@ -242,10 +249,9 @@ class GoogleSync(models.AbstractModel):
                                                                     'reason': reason}
             _logger.warning(error_log)
 
-            body = _(
-                "The following event could not be synced with Google Calendar. </br>"
-                "It will not be synced as long at it is not updated.</br>"
-                "%(reason)s", reason=reason)
+            body = _("The following event could not be synced with Google Calendar.") + Markup("<br/>") + \
+                   _("It will not be synced as long at it is not updated.") + Markup("<br/>") + \
+                   reason
 
             if event:
                 event.message_post(
@@ -277,6 +283,21 @@ class GoogleSync(models.AbstractModel):
                 if values:
                     self.exists().with_context(dont_notify=True).need_sync = False
 
+    def _get_post_sync_values(self, request_values, google_values):
+        """ Return the values to be written in the event right after its insertion in Google side. """
+        writeable_values = {
+            'google_id': request_values['id'],
+            'need_sync': False,
+        }
+        return writeable_values
+
+    def _need_video_call(self):
+        """ Implement this method to return True if the event needs a video call
+        :return: bool
+        """
+        self.ensure_one()
+        return True
+
     @after_commit
     def _google_insert(self, google_service: GoogleCalendarService, values, timeout=TIMEOUT):
         if not values:
@@ -286,12 +307,8 @@ class GoogleSync(models.AbstractModel):
                 try:
                     send_updates = self._context.get('send_updates', True)
                     google_service.google_service = google_service.google_service.with_context(send_updates=send_updates)
-                    google_id = google_service.insert(values, token=token, timeout=timeout)
-                    # Everything went smoothly
-                    self.with_context(dont_notify=True).write({
-                        'google_id': google_id,
-                        'need_sync': False,
-                    })
+                    google_values = google_service.insert(values, token=token, timeout=timeout, need_video_call=self._need_video_call())
+                    self.with_context(dont_notify=True).write(self._get_post_sync_values(values, google_values))
                 except HTTPError as e:
                     if e.response.status_code in (400, 403):
                         self._google_error_handling(e)
@@ -317,6 +334,16 @@ class GoogleSync(models.AbstractModel):
         # they will be synchronized eventually with the cron running few times a day
         return self.with_context(active_test=False).search(domain, limit=200)
 
+    def _check_any_records_to_sync(self):
+        """ Returns True if there are pending records to be synchronized from Odoo to Google, False otherwise. """
+        is_active_clause = (self._active_name, '=', True) if self._active_name else expression.TRUE_LEAF
+        domain = expression.AND([self._get_sync_domain(), [
+            '|',
+                '&', ('google_id', '=', False), is_active_clause,
+                ('need_sync', '=', True),
+        ]])
+        return self.search_count(domain, limit=1) > 0
+
     def _write_from_google(self, gevent, vals):
         self.write(vals)
 
@@ -328,11 +355,11 @@ class GoogleSync(models.AbstractModel):
     def _get_sync_partner(self, emails):
         normalized_emails = [email_normalize(contact) for contact in emails if email_normalize(contact)]
         user_partners = self.env['mail.thread']._mail_search_on_user(normalized_emails, extra_domain=[('share', '=', False)])
-        partners = [user_partner for user_partner in user_partners if user_partner.type != 'private']
+        partners = list(user_partners)
         remaining = [email for email in normalized_emails if
                      email not in [partner.email_normalized for partner in partners]]
         if remaining:
-            partners += self.env['mail.thread']._mail_find_partner_from_emails(remaining, records=self, force_create=True, extra_domain=[('type', '!=', 'private')])
+            partners += self.env['mail.thread']._mail_find_partner_from_emails(remaining, records=self, force_create=True)
         unsorted_partners = self.env['res.partner'].browse([p.id for p in partners if p.id])
         # partners needs to be sorted according to the emails order provided by google
         k = {value: idx for idx, value in enumerate(emails)}

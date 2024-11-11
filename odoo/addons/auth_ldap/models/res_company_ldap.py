@@ -5,10 +5,9 @@ import ldap
 import logging
 from ldap.filter import filter_format
 
-from odoo import _, api, fields, models, tools
+from odoo import _, fields, models
 from odoo.exceptions import AccessDenied
 from odoo.tools.misc import str2bool
-from odoo.tools.pycompat import to_text
 
 _logger = logging.getLogger(__name__)
 
@@ -63,8 +62,7 @@ class CompanyLDAP(models.Model):
         :rtype: list of dictionaries
         """
 
-        ldaps = self.sudo().search([('ldap_server', '!=', False)], order='sequence')
-        res = ldaps.read([
+        res = self.sudo().search_read([('ldap_server', '!=', False)], [
             'id',
             'company',
             'ldap_server',
@@ -76,7 +74,7 @@ class CompanyLDAP(models.Model):
             'user',
             'create_user',
             'ldap_tls'
-        ])
+        ], order='sequence')
         return res
 
     def _connect(self, conf):
@@ -137,7 +135,7 @@ class CompanyLDAP(models.Model):
             return False
         try:
             conn = self._connect(conf)
-            conn.simple_bind_s(dn, to_text(password))
+            conn.simple_bind_s(dn, password)
             conn.unbind()
         except ldap.INVALID_CREDENTIALS:
             return False
@@ -174,8 +172,8 @@ class CompanyLDAP(models.Model):
             conn = self._connect(conf)
             ldap_password = conf['ldap_password'] or ''
             ldap_binddn = conf['ldap_binddn'] or ''
-            conn.simple_bind_s(to_text(ldap_binddn), to_text(ldap_password))
-            results = conn.search_st(to_text(conf['ldap_base']), ldap.SCOPE_SUBTREE, filter, retrieve_attributes, timeout=60)
+            conn.simple_bind_s(ldap_binddn, ldap_password)
+            results = conn.search_st(conf['ldap_base'], ldap.SCOPE_SUBTREE, filter, retrieve_attributes, timeout=60)
             conn.unbind()
         except ldap.INVALID_CREDENTIALS:
             _logger.error('LDAP bind failed.')
@@ -195,7 +193,7 @@ class CompanyLDAP(models.Model):
         """
 
         return {
-            'name': tools.ustr(ldap_entry[1]['cn'][0]),
+            'name': ldap_entry[1]['cn'][0],
             'login': login,
             'company_id': conf['company'][0]
         }
@@ -211,7 +209,7 @@ class CompanyLDAP(models.Model):
         :return: res_users id
         :rtype: int
         """
-        login = tools.ustr(login.lower().strip())
+        login = login.lower().strip()
         self.env.cr.execute("SELECT id, active FROM res_users WHERE lower(login)=%s", (login,))
         res = self.env.cr.fetchone()
         if res:
@@ -236,7 +234,7 @@ class CompanyLDAP(models.Model):
             return False
         try:
             conn = self._connect(conf)
-            conn.simple_bind_s(dn, to_text(old_passwd))
+            conn.simple_bind_s(dn, old_passwd)
             conn.passwd_s(dn, old_passwd, new_passwd)
             changed = True
             conn.unbind()

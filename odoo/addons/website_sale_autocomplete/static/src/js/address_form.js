@@ -1,12 +1,14 @@
 /** @odoo-module */
 
-import publicWidget from 'web.public.widget';
-import { DropPrevious } from 'web.concurrency';
+import publicWidget from '@web/legacy/js/public/public_widget';
+import { KeepLast } from "@web/core/utils/concurrency";
 import { debounce } from "@web/core/utils/timing";
-import { qweb as QWeb } from 'web.core';
+import { renderToElement } from "@web/core/utils/render";
+import { rpc } from "@web/core/network/rpc";
 
 publicWidget.registry.AddressForm = publicWidget.Widget.extend({
-    selector: '.oe_cart .checkout_autoformat:has(input[name="street"][data-autocomplete-enabled="1"])',
+    selector: '.oe_cart .checkout_autoformat',
+    selectorHas: 'input[name="street"][data-autocomplete-enabled="1"]',
     events: {
         'input input[name="street"]': '_onChangeStreet',
         'click .js_autocomplete_result': '_onClickAutocompleteResult'
@@ -17,7 +19,7 @@ publicWidget.registry.AddressForm = publicWidget.Widget.extend({
         this.zipInput = document.querySelector('input[name="zip"]');
         this.countrySelect = document.querySelector('select[name="country_id"]');
         this.stateSelect = document.querySelector('select[name="state_id"]');
-        this.dp = new DropPrevious();
+        this.keepLast = new KeepLast();
         this.sessionId = this._generateUUID();
 
         this._onChangeStreet = debounce(this._onChangeStreet, 200);
@@ -46,18 +48,15 @@ publicWidget.registry.AddressForm = publicWidget.Widget.extend({
     _onChangeStreet: async function (ev) {
         const inputContainer = ev.currentTarget.parentNode;
         if (ev.currentTarget.value.length >= 5) {
-            this.dp.add(
-                this._rpc({
-                    route: '/autocomplete/address',
-                    params: {
-                        partial_address: ev.currentTarget.value,
-                        session_id: this.sessionId || null
-                    }
+            this.keepLast.add(
+                rpc('/autocomplete/address', {
+                    partial_address: ev.currentTarget.value,
+                    session_id: this.sessionId || null
                 })).then((response) => {
                     this._hideAutocomplete(inputContainer);
-                    inputContainer.appendChild($(QWeb.render("website_sale_autocomplete.AutocompleteDropDown", {
+                    inputContainer.appendChild(renderToElement("website_sale_autocomplete.AutocompleteDropDown", {
                         results: response.results
-                    }))[0]);
+                    }));
                     if (response.session_id) {
                         this.sessionId = response.session_id;
                     }
@@ -77,13 +76,10 @@ publicWidget.registry.AddressForm = publicWidget.Widget.extend({
         spinner.classList.add('spinner-border', 'text-warning', 'text-center', 'm-auto');
         dropDown.appendChild(spinner);
 
-        const address = await this._rpc({
-            route: '/autocomplete/address_full',
-            params: {
-                address: ev.currentTarget.innerText,
-                google_place_id: ev.currentTarget.dataset.googlePlaceId,
-                session_id: this.sessionId || null
-            }
+        const address = await rpc('/autocomplete/address_full', {
+            address: ev.currentTarget.innerText,
+            google_place_id: ev.currentTarget.dataset.googlePlaceId,
+            session_id: this.sessionId || null
         });
         if (address.formatted_street_number) {
             this.streetAndNumberInput.value = address.formatted_street_number;

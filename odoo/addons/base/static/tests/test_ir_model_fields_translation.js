@@ -1,12 +1,10 @@
 /** @odoo-module **/
 
-"use strict";
-
-import tour from "web_tour.tour";
-
+import { registry } from "@web/core/registry";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 function checkLoginColumn(translation) {
     return [
-        tour.stepUtils.showAppsMenuItem(), {
+        stepUtils.showAppsMenuItem(), {
             content: "Settings",
             trigger: 'a[data-menu-xmlid="base.menu_administration"]',
             run: 'click',
@@ -25,22 +23,22 @@ function checkLoginColumn(translation) {
     ]
 }
 
-tour.register('ir_model_fields_translation_en_tour', {
-    test: true,
-    url: '/web',
-}, checkLoginColumn('Login'));
+registry.category("web_tour.tours").add('ir_model_fields_translation_en_tour', {
+    url: '/odoo',
+    steps: () => checkLoginColumn('Login')
+});
 
-tour.register('ir_model_fields_translation_en_tour2', {
-    test: true,
-    url: '/web',
-}, checkLoginColumn('Login2'));
+registry.category("web_tour.tours").add('ir_model_fields_translation_en_tour2', {
+    url: '/odoo',
+    steps: () => checkLoginColumn('Login2')
+});
 
-tour.register('ir_model_fields_translation_fr_tour', {
-    test: true,
-    url: '/web',
-}, checkLoginColumn('Identifiant'));
+registry.category("web_tour.tours").add('ir_model_fields_translation_fr_tour', {
+    url: '/odoo',
+    steps: () => checkLoginColumn('Identifiant')
+});
 
-tour.register('ir_model_fields_translation_fr_tour2', {
-    test: true,
-    url: '/web',
-}, checkLoginColumn('Identifiant2'));
+registry.category("web_tour.tours").add('ir_model_fields_translation_fr_tour2', {
+    url: '/odoo',
+    steps: () => checkLoginColumn('Identifiant2')
+});

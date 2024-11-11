@@ -2,8 +2,7 @@
 
 import { KanbanController } from "@web/views/kanban/kanban_controller";
 import { useBus, useService } from "@web/core/utils/hooks";
-
-const { useRef } = owl;
+import { useRef } from "@odoo/owl";
 
 export class HrFleetKanbanController extends KanbanController {
     setup() {
@@ -17,6 +16,10 @@ export class HrFleetKanbanController extends KanbanController {
                 this.model.load();
             },
         );
+    }
+
+    get canCreate() {
+        return false;
     }
 
     async onInputChange(ev) {

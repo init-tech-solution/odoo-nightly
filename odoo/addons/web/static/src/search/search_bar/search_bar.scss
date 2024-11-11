@@ -2,11 +2,18 @@
 // ============================================================================
 
 .o_searchview_facet {
-    .o_facet_values {
-        border: $border-width solid var(--SearchBar-facet-background, #{$o-brand-odoo});
+    @keyframes animate {
+        from {
+            opacity: .5;
+            transform: translateY(20%);
+        }
     }
-    .o_searchview_facet_label {
-        background: var(--SearchBar-facet-background, #{$o-brand-odoo});
-        color: var(--SearchBar-facet-color, #{$o-white});
+
+    animation: animate .25s ease-out;
+
+    .btn, .btn:focus {
+        // Boostrap plays around with the z-index of buttons, but this is not needed here
+        // It was causing issues with the hotkey overlay
+        z-index: 0;
     }
 }

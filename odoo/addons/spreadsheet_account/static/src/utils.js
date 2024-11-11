@@ -1,26 +1,29 @@
 /** @odoo-module **/
-import { getOdooFunctions } from "@spreadsheet/helpers/odoo_functions_helpers";
+// @ts-check
 
-/** @typedef  {import("@spreadsheet/helpers/odoo_functions_helpers").OdooFunctionDescription} OdooFunctionDescription*/
+import { helpers } from "@odoo/o-spreadsheet";
+
+const { getFunctionsFromTokens } = helpers;
 
 /**
- * @param {string} formula
+ * @typedef {import("@odoo/o-spreadsheet").Token} Token
+ * @typedef  {import("@spreadsheet/helpers/odoo_functions_helpers").OdooFunctionDescription} OdooFunctionDescription
+ */
+
+/**
+ * @param {Token[]} tokens
  * @returns {number}
  */
-export function getNumberOfAccountFormulas(formula) {
-    return getOdooFunctions(formula, ["ODOO.BALANCE", "ODOO.CREDIT", "ODOO.DEBIT"]).filter(
-        (fn) => fn.isMatched
-    ).length;
+export function getNumberOfAccountFormulas(tokens) {
+    return getFunctionsFromTokens(tokens, ["ODOO.BALANCE", "ODOO.CREDIT", "ODOO.DEBIT"]).length;
 }
 
 /**
  * Get the first Account function description of the given formula.
  *
- * @param {string} formula
+ * @param {Token[]} tokens
  * @returns {OdooFunctionDescription | undefined}
  */
-export function getFirstAccountFunction(formula) {
-    return getOdooFunctions(formula, ["ODOO.BALANCE", "ODOO.CREDIT", "ODOO.DEBIT"]).find(
-        (fn) => fn.isMatched
-    );
+export function getFirstAccountFunction(tokens) {
+    return getFunctionsFromTokens(tokens, ["ODOO.BALANCE", "ODOO.CREDIT", "ODOO.DEBIT"])[0];
 }

@@ -1,10 +1,17 @@
 /** @odoo-module **/
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/views/fields/formatters";
-
-const { Component } = owl;
+import { Component } from "@odoo/owl";
 
 export class ReceptionReportLine extends Component {
+    static template = "stock.ReceptionReportLine";
+    static props = {
+        data: Object,
+        parentIndex: String,
+        showUom: Boolean,
+        precision: Number,
+    };
+
     setup() {
         this.ormService = useService("orm");
         this.actionService = useService("action");
@@ -65,11 +72,3 @@ export class ReceptionReportLine extends Component {
         return this.props.data;
     }
 }
-
-ReceptionReportLine.template = "stock.ReceptionReportLine";
-ReceptionReportLine.props = {
-    data: Object,
-    parentIndex: String,
-    showUom: Boolean,
-    precision: Number,
-};

@@ -21,7 +21,11 @@ class PurchaseOrder(models.Model):
             purchase.mrp_production_count = len(purchase._get_mrp_productions())
 
     def _get_mrp_productions(self, **kwargs):
-        return self.order_line.move_dest_ids.group_id.mrp_production_ids | self.order_line.move_ids.move_dest_ids.group_id.mrp_production_ids
+        linked_mo = self.order_line.move_dest_ids.group_id.mrp_production_ids \
+                  | self.env['stock.move'].browse(self.order_line.move_ids._rollup_move_dests()).group_id.mrp_production_ids
+        group_mo = self.order_line.group_id.mrp_production_ids
+
+        return linked_mo | group_mo
 
     def action_view_mrp_productions(self):
         self.ensure_one()
@@ -39,7 +43,7 @@ class PurchaseOrder(models.Model):
             action.update({
                 'name': _("Manufacturing Source of %s", self.name),
                 'domain': [('id', 'in', mrp_production_ids)],
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
             })
         return action
 
@@ -83,3 +87,10 @@ class PurchaseOrderLine(models.Model):
         if bom and 'previous_product_qty' in self.env.context:
             return self.env.context['previous_product_qty'].get(self.id, 0.0)
         return super()._get_qty_procurement()
+
+    def _get_move_dests_initial_demand(self, move_dests):
+        kit_bom = self.env['mrp.bom']._bom_find(self.product_id, bom_type='phantom')[self.product_id]
+        if kit_bom:
+            filters = {'incoming_moves': lambda m: True, 'outgoing_moves': lambda m: False}
+            return move_dests._compute_kit_quantities(self.product_id, self.product_qty, kit_bom, filters)
+        return super()._get_move_dests_initial_demand(move_dests)

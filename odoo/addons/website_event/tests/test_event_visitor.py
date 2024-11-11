@@ -4,13 +4,13 @@
 from datetime import datetime, timedelta
 
 from odoo import fields
-from odoo.addons.website.tests.test_website_visitor import WebsiteVisitorTests
+from odoo.addons.website.tests.test_website_visitor import WebsiteVisitorTestsCommon
 from odoo.addons.website_event.tests.common import TestEventOnlineCommon
 from odoo.tests import tagged
 
 
 @tagged('website_visitor')
-class TestEventVisitor(TestEventOnlineCommon, WebsiteVisitorTests):
+class TestEventVisitor(TestEventOnlineCommon, WebsiteVisitorTestsCommon):
 
     def test_clean_inactive_visitors_event(self):
         """ Visitors registered to events should not be deleted even if not connected recently. """
@@ -37,7 +37,6 @@ class TestEventVisitor(TestEventOnlineCommon, WebsiteVisitorTests):
 
         event_1 = self.env['event.event'].create({
             'name': 'OtherEvent',
-            'auto_confirm': True,
             'date_begin': fields.Datetime.to_string(datetime.today() + timedelta(days=1)),
             'date_end': fields.Datetime.to_string(datetime.today() + timedelta(days=15)),
         })

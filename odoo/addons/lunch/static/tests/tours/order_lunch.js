@@ -1,42 +1,53 @@
 /** @odoo-module **/
 
-import { _t } from 'web.core';
-import tour from 'web_tour.tour';
+import { _t } from "@web/core/l10n/translation";
+import { registry } from "@web/core/registry";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
-tour.register('order_lunch_tour', {
-    url: "/web",
-    test: true,
-}, [{
-    trigger: 'a[data-menu-xmlid="lunch.menu_lunch"]',
+registry.category("web_tour.tours").add('order_lunch_tour', {
+    url: "/odoo",
+    steps: () => [
+    stepUtils.showAppsMenuItem(),
+{
+    trigger: '.o_app[data-menu-xmlid="lunch.menu_lunch"]',
     content: _t("Start by accessing the lunch app."),
-    position: 'bottom',
+    tooltipPosition: 'bottom',
+    run: "click",
 },
 {
-    trigger: ".o_search_panel_filter_value .form-check-input",
-    content: _t("Restrict your search using filters"),
-    position: 'bottom',
+    content:"click on location",
+    trigger: ".lunch_location .o_input_dropdown input",
+    run: 'click'
 },
 {
-    trigger: "div[role=article]",
-    extra_trigger: '.o_search_panel_filter_value .form-check-input:checked',
+    content: "Pick 'Farm 1' option",
+    trigger: '.dropdown-item:contains("Farm 1")',
+    run: "click",
+},
+{
+    trigger: '.lunch_location input:value("Farm 1")',
+    run: () => {},  // wait for article to be correctly loaded
+},
+{
+    trigger: ".o_kanban_record",
     content: _t("Click on a product you want to order and is available."),
-    position: 'bottom',
+    run: 'click'
 },
 {
-    trigger: 'textarea[name="note"]',
-    extra_trigger: 'button[name="add_to_cart"]',
+    trigger: 'textarea[id="note_0"]',
     content: _t("Add additionnal information about your order."),
-    position: 'bottom',
-    run: 'text allergy to peanuts',
+    tooltipPosition: 'bottom',
+    run: "edit allergy to peanuts",
 },
 {
     trigger: 'button[name="add_to_cart"]',
     content: _t("Add your order to the cart."),
-    position: 'bottom',
+    tooltipPosition: 'bottom',
+    run: "click",
 },
 {
-    trigger: '.o_lunch_widget_order_button',
+    trigger: 'button:contains("Order Now")',
     content: _t("Validate your order"),
-    position: 'left',
+    tooltipPosition: 'left',
     run: 'click',
-}]);
+}]});

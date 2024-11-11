@@ -19,6 +19,44 @@ class ResPartner(models.Model):
             ('uin_holders', 'UIN Holders'),
         ], string="GST Treatment")
 
+    l10n_in_pan = fields.Char(
+        string="PAN",
+        help="PAN enables the department to link all transactions of the person with the department.\n"
+             "These transactions include taxpayments, TDS/TCS credits, returns of income/wealth/gift/FBT,"
+             " specified transactions, correspondence, and so on.\n"
+             "Thus, PAN acts as an identifier for the person with the tax department."
+    )
+
+    display_pan_warning = fields.Boolean(string="Display pan warning", compute="_compute_display_pan_warning")
+    l10n_in_gst_state_warning = fields.Char(compute="_compute_l10n_in_gst_state_warning")
+
+    @api.depends('vat', 'state_id', 'country_id', 'fiscal_country_codes')
+    def _compute_l10n_in_gst_state_warning(self):
+        for partner in self:
+            if (
+                "IN" in partner.fiscal_country_codes
+                and partner.check_vat_in(partner.vat)
+            ):
+                if partner.vat[:2] == "99":
+                    partner.l10n_in_gst_state_warning = _(
+                        "As per GSTN the country should be other than India, so it's recommended to update it."
+                    )
+                else:
+                    state_id = self.env['res.country.state'].search([('l10n_in_tin', '=', partner.vat[:2])])
+                    if state_id and state_id != partner.state_id:
+                        partner.l10n_in_gst_state_warning = _(
+                            "As per GSTN the state should be %s, so it's recommended to update it.", state_id.name
+                        )
+                    else:
+                        partner.l10n_in_gst_state_warning = False
+            else:
+                partner.l10n_in_gst_state_warning = False
+
+    @api.depends('l10n_in_pan')
+    def _compute_display_pan_warning(self):
+        for partner in self:
+            partner.display_pan_warning = partner.vat and partner.l10n_in_pan and partner.l10n_in_pan != partner.vat[2:12]
+
     @api.onchange('company_type')
     def onchange_company_type(self):
         res = super().onchange_company_type()
@@ -41,11 +79,13 @@ class ResPartner(models.Model):
             state_id = self.env['res.country.state'].search([('l10n_in_tin', '=', self.vat[:2])], limit=1)
             if state_id:
                 self.state_id = state_id
+            if self.vat[2].isalpha():
+                self.l10n_in_pan = self.vat[2:12]
 
     @api.model
     def _commercial_fields(self):
         res = super()._commercial_fields()
-        return res + ['l10n_in_gst_treatment']
+        return res + ['l10n_in_gst_treatment', 'l10n_in_pan']
 
     def check_vat_in(self, vat):
         """
@@ -56,3 +96,33 @@ class ResPartner(models.Model):
         if vat == TEST_GST_NUMBER:
             return True
         return super().check_vat_in(vat)
+
+    @api.model
+    def _l10n_in_get_partner_vals_by_vat(self, vat):
+        partner_details = self.read_by_vat(vat)
+        partner_data = partner_details[0] if partner_details else {}
+        if partner_data:
+            partner_gid = partner_data.get('partner_gid')
+            if partner_gid:
+                partner_data = self.enrich_company(company_domain=None, partner_gid=partner_gid, vat=partner_data.get('vat'))
+                partner_data = self._iap_replace_logo(partner_data)
+            return {
+                'name': partner_data.get('name'),
+                'company_type': 'company',
+                'partner_gid': partner_gid,
+                'vat': partner_data.get('vat'),
+                'l10n_in_gst_treatment': 'regular',
+                'image_1920': partner_data.get('image_1920'),
+                'street': partner_data.get('street'),
+                'street2': partner_data.get('street2'),
+                'city': partner_data.get('city'),
+                'state_id': partner_data.get('state_id', {}).get('id', False),
+                'country_id': partner_data.get('country_id', {}).get('id', False),
+                'zip': partner_data.get('zip'),
+            }
+        return {}
+
+    def action_update_state_as_per_gstin(self):
+        self.ensure_one()
+        state_id = self.env['res.country.state'].search([('l10n_in_tin', '=', self.vat[:2])], limit=1)
+        self.state_id = state_id

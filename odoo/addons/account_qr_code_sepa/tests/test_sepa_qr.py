@@ -11,8 +11,8 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
     """
 
     @classmethod
-    def setUpClass(cls, chart_template_ref=None):
-        super().setUpClass(chart_template_ref=chart_template_ref)
+    def setUpClass(cls):
+        super().setUpClass()
 
         cls.company_data['company'].qr_code = True
         cls.acc_sepa_iban = cls.env['res.partner.bank'].create({
@@ -24,6 +24,8 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
             'acc_number': 'SA4420000001234567891234',
             'partner_id': cls.company_data['company'].partner_id.id,
         })
+
+        cls.env.ref('base.EUR').active = True
 
         cls.sepa_qr_invoice = cls.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -69,10 +71,9 @@ class TestSEPAQRCode(AccountTestInvoicingCommon):
         move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=self.sepa_qr_invoice.ids).create({
             'date': fields.Date.from_string('2019-02-01'),
             'reason': 'no reason',
-            'refund_method': 'refund',
             'journal_id': self.sepa_qr_invoice.journal_id.id,
         })
-        reversal = move_reversal.reverse_moves()
+        reversal = move_reversal.refund_moves()
         reverse_move = self.env['account.move'].browse(reversal['res_id'])
 
         self.assertFalse(reverse_move.qr_code_method, "qr_code_method for credit note should be None")

@@ -2,11 +2,8 @@
 
 import { click, getFixture, patchDate, makeDeferred, nextTick} from "@web/../tests/helpers/utils";
 import { setupViewRegistries } from "@web/../tests/views/helpers";
-import { registry } from "@web/core/registry";
-import { userService } from "@web/core/user_service";
+import { patchUserWithCleanup } from "@web/../tests/helpers/mock_services";
 import { createWebClient, doAction } from "@web/../tests/webclient/helpers";
-
-const serviceRegistry = registry.category("services");
 
 let target;
 let serverData;
@@ -70,20 +67,11 @@ QUnit.module('Microsoft Calendar', {
         };
         target = getFixture();
         setupViewRegistries();
-        serviceRegistry.add(
-            "user",
-            {
-                ...userService,
-                start() {
-                    const fakeUserService = userService.start(...arguments);
-                    Object.defineProperty(fakeUserService, "userId", {
-                        get: () => uid,
-                    });
-                    return fakeUserService;
-                },
+        patchUserWithCleanup({
+            get userId() {
+                return uid;
             },
-            { force: true }
-        );
+        });
     }
 }, function () {
 
@@ -109,7 +97,7 @@ QUnit.module('Microsoft Calendar', {
                     <field name="name"/>
                     <field name="partner_ids" write_model="filter_partner" write_field="partner_id"/>
                 </calendar>`,
-            "calendar.event,false,list": `<tree sample="1" />`,
+            "calendar.event,false,list": `<list sample="1" />`,
             "calendar.event,false,search": `<search />`,
         };
 
@@ -125,6 +113,16 @@ QUnit.module('Microsoft Calendar', {
                     return Promise.resolve([]);
                 } else if (route === '/web/dataset/call_kw/res.users/has_group') {
                     return Promise.resolve(true);
+                } else if (route === '/calendar/check_credentials') {
+                    return Promise.resolve({
+                        microsoft_calendar: true,
+                    });
+                } else if (route === "/web/dataset/call_kw/res.users/check_synchronization_status") {
+                    return Promise.resolve({
+                        microsoft_calendar: 'sync_active',
+                    });
+                } else if (route === "/web/dataset/call_kw/calendar.event/get_default_duration") {
+                    return 3.25;
                 }
             },
         });

@@ -1,12 +1,12 @@
 /** @odoo-module **/
 
+import { _t } from "@web/core/l10n/translation";
+import { Domain } from '@web/core/domain';
 import { registry } from '@web/core/registry';
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { useService } from "@web/core/utils/hooks";
-import { Many2OneField } from '@web/views/fields/many2one/many2one_field';
-import Domain from 'web.Domain';
-
-const { useState, useEffect } = owl;
+import { Many2OneField, many2OneField } from '@web/views/fields/many2one/many2one_field';
+import { useState, useEffect } from "@odoo/owl";
 
 export class MailingFilterDropdown extends Dropdown {
     setup() {
@@ -29,6 +29,22 @@ export class MailingFilterDropdown extends Dropdown {
  *
  */
 export class FieldMany2OneMailingFilter extends Many2OneField {
+    static template = "mass_mailing.MailingFilter";
+    static components = {
+        ...Many2OneField.components,
+        MailingFilterDropdown,
+    };
+    static props = {
+        ...Many2OneField.props,
+        domain_field: { type: String, optional: true },
+        model_field: { type: String, optional: true },
+    };
+    static defaultProps = {
+        ...Many2OneField.defaultProps,
+        domain_field: "mailing_domain",
+        model_field: "mailing_model_id",
+    };
+
     setup() {
         super.setup();
         this.notification = useService("notification");
@@ -124,7 +140,7 @@ export class FieldMany2OneMailingFilter extends Many2OneField {
         ev.target.disabled = true;
 
         await this.orm.unlink('mailing.filter', [filterId]);
-        this.update([{ id: false, name: false }]);
+        this.update(false);
         this.props.record.update({[this.props.domain_field]: mailingDomain});
     }
 
@@ -143,14 +159,14 @@ export class FieldMany2OneMailingFilter extends Many2OneField {
         const filterName = filterInput.value.trim();
         if (filterName.length === 0) {
             this.notification.add(
-                this.env._t("Please provide a name for the filter"),
+                _t("Please provide a name for the filter"),
                 {type: 'danger'}
             );
             // Keep the drop-down open, and re-focus the input
             ev.stopPropagation();
             filterInput.focus();
         } else {
-            const newFilterId = await this.env.model.orm.create("mailing.filter", [{
+            const [newFilterId] = await this.env.model.orm.create("mailing.filter", [{
                 name: filterName,
                 mailing_domain: this.props.record.data[this.props.domain_field],
                 mailing_model_id: this.props.record.data[this.props.model_field][0],
@@ -159,27 +175,31 @@ export class FieldMany2OneMailingFilter extends Many2OneField {
         }
     }
 }
-FieldMany2OneMailingFilter.template = 'mass_mailing.MailingFilter';
-FieldMany2OneMailingFilter.components = { 
-    ...Many2OneField.components,
-    MailingFilterDropdown,
-};
-FieldMany2OneMailingFilter.props = {
-    ...Many2OneField.props,
-    domain_field: { type: String, optional: true },
-    model_field: { type: String, optional: true },
-};
-FieldMany2OneMailingFilter.defaultProps = {
-    ...Many2OneField.defaultProps,
-    domain_field: "mailing_domain",
-    model_field: "mailing_model_id",
-};
-FieldMany2OneMailingFilter.extractProps = ({ field, attrs }) => {
-    return {
-        ...Many2OneField.extractProps({ field, attrs }),
-        domain_field: attrs.options.domain_field,
-        model_field: attrs.options.model_field,
-    }
+
+export const fieldMany2OneMailingFilter = {
+    ...many2OneField,
+    component: FieldMany2OneMailingFilter,
+    supportedOptions: [
+        ...many2OneField.supportedOptions,
+        {
+            label: _t("Domain field"),
+            name: "domain_field",
+            type: "field",
+            availableTypes: ["char"]
+        },
+        {
+            label: _t("Model field"),
+            name: "model_field",
+            type: "field",
+            availableTypes: ["char"]
+        }
+    ],
+    extractProps({ options }) {
+        const props = many2OneField.extractProps(...arguments);
+        props.domain_field = options.domain_field;
+        props.model_field = options.model_field;
+        return props;
+    },
 };
 
-registry.category('fields').add('mailing_filter', FieldMany2OneMailingFilter);
+registry.category("fields").add("mailing_filter", fieldMany2OneMailingFilter);

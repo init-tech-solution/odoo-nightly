@@ -1,4 +1,3 @@
-# coding: utf-8
 from odoo.tests import common, tagged
 
 
@@ -30,7 +29,7 @@ class TestTheme(common.TransactionCase):
         self.assertEqual(_get_header_template_key(), 'website.template_header_default',
                          "Only the default template should be active.")
 
-        key = 'website.template_header_magazine'
+        key = 'website.template_header_vertical'
         ThemeUtils.enable_view(key)
         self.assertEqual(_get_header_template_key(), key,
                          "Only one template can be active at a time.")

@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo.tests.common import TransactionCase, tagged
-from odoo.tools._monkeypatches import new_get_soap_client
+from odoo._monkeypatches.stdnum import new_get_soap_client
 from odoo.exceptions import ValidationError
 from unittest.mock import patch
 
@@ -110,13 +110,27 @@ class TestStructure(TransactionCase):
         # Test of stdnum get_soap_client monkeypatch. This test is mostly to
         # see that no unexpected import errors are thrown and not caught.
         with patch.object(Document, '_get_xml_document', return_value=etree.Element("root")), \
-             patch.object(Client, 'service', return_value=None):
+                patch.object(Client, 'service', return_value=None):
             doc = Document(location=None, transport=Transport())
             new_get_soap_client(doc, 30)
+
+    def test_rut_uy(self):
+        test_partner = self.env["res.partner"].create({"name": "UY Company", "country_id": self.env.ref("base.uy").id})
+        # Set a valid Number
+        test_partner.write({"vat": "215521750017"})
+        test_partner.write({"vat": "21-55217500-17"})
+        test_partner.write({"vat": "21 55217500 17"})
+        test_partner.write({"vat": "UY215521750017"})
+
+        # Test invalid VAT (should raise a ValidationError)
+        with self.assertRaisesRegex(ValidationError, "The VAT number.*does not seem to be valid."):
+            test_partner.write({"vat": "215521750018"})
 
 
 @tagged('-standard', 'external')
 class TestStructureVIES(TestStructure):
+    allow_inherited_tests_method = True
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

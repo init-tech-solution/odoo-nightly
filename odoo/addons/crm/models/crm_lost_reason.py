@@ -16,16 +16,16 @@ class LostReason(models.Model):
         lead_data = self.env['crm.lead'].with_context(active_test=False)._read_group(
             [('lost_reason_id', 'in', self.ids)],
             ['lost_reason_id'],
-            ['lost_reason_id']
+            ['__count'],
         )
-        mapped_data = dict((data['lost_reason_id'][0], data['lost_reason_id_count']) for data in lead_data)
+        mapped_data = {lost_reason.id: count for lost_reason, count in lead_data}
         for reason in self:
             reason.leads_count = mapped_data.get(reason.id, 0)
 
     def action_lost_leads(self):
         return {
             'name': _('Leads'),
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('lost_reason_id', 'in', self.ids)],
             'res_model': 'crm.lead',
             'type': 'ir.actions.act_window',

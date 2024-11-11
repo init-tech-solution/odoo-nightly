@@ -3,13 +3,14 @@
 
 import base64
 import collections
+import itertools
 import logging
 import random
 import re
 import socket
-import threading
 import time
-from email.utils import getaddresses
+import email.utils
+from email.utils import getaddresses as orig_getaddresses
 from urllib.parse import urlparse
 import html as htmllib
 
@@ -19,11 +20,37 @@ from lxml import etree, html
 from lxml.html import clean, defs
 from werkzeug import urls
 
-import odoo
-from odoo.loglevels import ustr
 from odoo.tools import misc
 
+__all__ = [
+    "email_domain_extract",
+    "email_domain_normalize",
+    "email_normalize",
+    "email_normalize_all",
+    "email_split",
+    "encapsulate_email",
+    "formataddr",
+    "html2plaintext",
+    "html_normalize",
+    "html_sanitize",
+    "is_html_empty",
+    "parse_contact_from_email",
+    "plaintext2html",
+    "single_email_re",
+]
+
 _logger = logging.getLogger(__name__)
+
+
+# disable strict mode when present: we rely on original non-strict
+# parsing, and we know that it isn't reliable, that ok.
+# cfr python/cpython@4a153a1d3b18803a684cd1bcc2cdf3ede3dbae19
+if hasattr(email.utils, 'supports_strict_parsing'):
+    def getaddresses(fieldvalues):
+        return orig_getaddresses(fieldvalues, strict=False)
+else:
+    getaddresses = orig_getaddresses
+
 
 #----------------------------------------------------------
 # HTML Sanitizer
@@ -32,13 +59,13 @@ _logger = logging.getLogger(__name__)
 safe_attrs = defs.safe_attrs | frozenset(
     ['style',
      'data-o-mail-quote', 'data-o-mail-quote-node',  # quote detection
-     'data-oe-model', 'data-oe-id', 'data-oe-field', 'data-oe-type', 'data-oe-expression', 'data-oe-translation-initial-sha', 'data-oe-nodeid',
-     'data-last-history-steps',
+     'data-oe-model', 'data-oe-id', 'data-oe-field', 'data-oe-type', 'data-oe-expression', 'data-oe-translation-source-sha', 'data-oe-nodeid',
+     'data-last-history-steps', 'data-oe-protected', 'data-embedded', 'data-embedded-editable', 'data-embedded-props', 'data-oe-version',
+     'data-oe-transient-content', 'data-behavior-props', 'data-prop-name',  # legacy editor
      'data-publish', 'data-id', 'data-res_id', 'data-interval', 'data-member_id', 'data-scroll-background-ratio', 'data-view-id',
      'data-class', 'data-mimetype', 'data-original-src', 'data-original-id', 'data-gl-filter', 'data-quality', 'data-resize-width',
      'data-shape', 'data-shape-colors', 'data-file-name', 'data-original-mimetype',
-     'data-oe-protected',  # editor
-     'data-behavior-props', 'data-prop-name',  # knowledge commands
+     'data-mimetype-before-conversion',
      ])
 SANITIZE_TAGS = {
     # allow new semantic HTML5 tags
@@ -74,6 +101,7 @@ class _Cleaner(clean.Cleaner):
 
     strip_classes = False
     sanitize_style = False
+    conditional_comments = True
 
     def __call__(self, doc):
         super(_Cleaner, self).__call__(doc)
@@ -105,6 +133,24 @@ class _Cleaner(clean.Cleaner):
                 el.attrib['style'] = '; '.join('%s:%s' % (key, val) for (key, val) in valid_styles.items())
             else:
                 del el.attrib['style']
+
+    def kill_conditional_comments(self, doc):
+        """Override the default behavior of lxml.
+
+        https://github.com/lxml/lxml/blob/e82c9153c4a7d505480b94c60b9a84d79d948efb/src/lxml/html/clean.py#L501-L510
+
+        In some use cases, e.g. templates used for mass mailing,
+        we send emails containing conditional comments targeting Microsoft Outlook,
+        to give special styling instructions.
+        https://github.com/odoo/odoo/pull/119325/files#r1301064789
+
+        Within these conditional comments, unsanitized HTML can lie.
+        However, in modern browser, these comments are considered as simple comments,
+        their content is not executed.
+        https://caniuse.com/sr_ie-features
+        """
+        if self.conditional_comments:
+            super().kill_conditional_comments(doc)
 
 
 def tag_quote(el):
@@ -176,7 +222,7 @@ def tag_quote(el):
         el.set('data-o-mail-quote', '1')
 
 
-def html_normalize(src, filter_callback=None):
+def html_normalize(src, filter_callback=None, output_method="html"):
     """ Normalize `src` for storage as an html field value.
 
     The string is parsed as an html tag soup, made valid, then decorated for
@@ -189,27 +235,27 @@ def html_normalize(src, filter_callback=None):
     :param filter_callback: optional callable taking a single `etree._Element`
         document parameter, to be called during normalization in order to
         filter the output document
+    :param output_method: defines the output method to pass to `html.tostring`.
+        It defaults to 'html', but can also be 'xml' for xhtml output.
     """
-
     if not src:
         return src
 
-    src = ustr(src, errors='replace')
     # html: remove encoding attribute inside tags
-    doctype = re.compile(r'(<[^>]*\s)(encoding=(["\'][^"\']*?["\']|[^\s\n\r>]+)(\s[^>]*|/)?>)', re.IGNORECASE | re.DOTALL)
-    src = doctype.sub(u"", src)
+    src = re.sub(r'(<[^>]*\s)(encoding=(["\'][^"\']*?["\']|[^\s\n\r>]+)(\s[^>]*|/)?>)', "", src, re.IGNORECASE | re.DOTALL)
+
+    src = src.replace('--!>', '-->')
+    src = re.sub(r'(<!-->|<!--->)', '<!-- -->', src)
+    # On the specific case of Outlook desktop it adds unnecessary '<o:.*></o:.*>' tags which are parsed
+    # in '<p></p>' which may alter the appearance (eg. spacing) of the mail body
+    src = re.sub(r'</?o:.*?>', '', src)
 
     try:
-        src = src.replace('--!>', '-->')
-        src = re.sub(r'(<!-->|<!--->)', '<!-- -->', src)
-        # On the specific case of Outlook desktop it adds unnecessary '<o:.*></o:.*>' tags which are parsed
-        # in '<p></p>' which may alter the appearance (eg. spacing) of the mail body
-        src = re.sub(r'</?o:.*?>', '', src)
         doc = html.fromstring(src)
     except etree.ParserError as e:
         # HTML comment only string, whitespace only..
         if 'empty' in str(e):
-            return u""
+            return ""
         raise
 
     # perform quote detection before cleaning and class removal
@@ -220,7 +266,7 @@ def html_normalize(src, filter_callback=None):
     if filter_callback:
         doc = filter_callback(doc)
 
-    src = html.tostring(doc, encoding='unicode')
+    src = html.tostring(doc, encoding='unicode', method=output_method)
 
     # this is ugly, but lxml/etree tostring want to put everything in a
     # 'div' that breaks the editor -> remove that
@@ -233,7 +279,7 @@ def html_normalize(src, filter_callback=None):
     return src
 
 
-def html_sanitize(src, silent=True, sanitize_tags=True, sanitize_attributes=False, sanitize_style=False, sanitize_form=True, strip_style=False, strip_classes=False):
+def html_sanitize(src, silent=True, sanitize_tags=True, sanitize_attributes=False, sanitize_style=False, sanitize_form=True, sanitize_conditional_comments=True, strip_style=False, strip_classes=False, output_method="html"):
     if not src:
         return src
 
@@ -247,6 +293,7 @@ def html_sanitize(src, silent=True, sanitize_tags=True, sanitize_attributes=Fals
             'forms': sanitize_form,            # True = remove form tags
             'remove_unknown_tags': False,
             'comments': False,
+            'conditional_comments': sanitize_conditional_comments,   # True = remove conditional comments
             'processing_instructions': False
         }
         if sanitize_tags:
@@ -272,7 +319,7 @@ def html_sanitize(src, silent=True, sanitize_tags=True, sanitize_attributes=Fals
         return doc
 
     try:
-        sanitized = html_normalize(src, filter_callback=sanitize_handler)
+        sanitized = html_normalize(src, filter_callback=sanitize_handler, output_method=output_method)
     except etree.ParserError:
         if not silent:
             raise
@@ -290,7 +337,8 @@ def html_sanitize(src, silent=True, sanitize_tags=True, sanitize_attributes=Fals
 # HTML/Text management
 # ----------------------------------------------------------
 
-URL_REGEX = r'(\bhref=[\'"](?!mailto:|tel:|sms:)([^\'"]+)[\'"])'
+URL_SKIP_PROTOCOL_REGEX = r'mailto:|tel:|sms:'
+URL_REGEX = rf'''(\bhref=['"](?!{URL_SKIP_PROTOCOL_REGEX})([^'"]+)['"])'''
 TEXT_URL_REGEX = r'https?://[\w@:%.+&~#=/-]+(?:\?\S+)?'
 # retrieve inner content of the link
 HTML_TAG_URL_REGEX = URL_REGEX + r'([^<>]*>([^<>]+)<\/)?'
@@ -315,8 +363,10 @@ def is_html_empty(html_content):
     """
     if not html_content:
         return True
-    tag_re = re.compile(r'\<\s*\/?(?:p|div|section|span|br|b|i|font)(?:(?=\s+\w*)[^/>]*|\s*)/?\s*\>')
-    return not bool(re.sub(tag_re, '', html_content).strip())
+    icon_re = r'<\s*(i|span)\b(\s+[A-Za-z_-][A-Za-z0-9-_]*(\s*=\s*[\'"][^"\']*[\'"])?)*\s*\bclass\s*=\s*["\'][^"\']*\b(fa|fab|fad|far|oi)\b'
+    tag_re = r'<\s*\/?(?:p|div|section|span|br|b|i|font)\b(?:(\s+[A-Za-z_-][A-Za-z0-9-_]*(\s*=\s*[\'"][^"\']*[\'"]))*)(?:\s*>|\s*\/\s*>)'
+    return not bool(re.sub(tag_re, '', html_content).strip()) and not re.search(icon_re, html_content)
+
 
 def html_keep_url(text):
     """ Transform the url into clickable link with <a/> tag """
@@ -325,7 +375,7 @@ def html_keep_url(text):
     link_tags = re.compile(r"""(?<!["'])((ftp|http|https):\/\/(\w+:{0,1}\w*@)?([^\s<"']+)(:[0-9]+)?(\/|\/([^\s<"']))?)(?![^\s<"']*["']|[^\s<"']*</a>)""")
     for item in re.finditer(link_tags, text):
         final += text[idx:item.start()]
-        final += '<a href="%s" target="_blank" rel="noreferrer noopener">%s</a>' % (item.group(0), item.group(0))
+        final += create_link(item.group(0), item.group(0))
         idx = item.end()
     final += text[idx:]
     return final
@@ -347,6 +397,10 @@ def html_to_inner_content(html):
     return processed
 
 
+def create_link(url, label):
+    return f'<a href="{url}" target="_blank" rel="noreferrer noopener">{label}</a>'
+
+
 def html2plaintext(html, body_id=None, encoding='utf-8'):
     """ From an HTML text, convert the HTML to plain text.
     If @param body_id is provided then this is the tag where the
@@ -355,11 +409,13 @@ def html2plaintext(html, body_id=None, encoding='utf-8'):
     ## (c) Fry-IT, www.fry-it.com, 2007
     ## <peter@fry-it.com>
     ## download here: http://www.peterbe.com/plog/html2plaintext
-
-    html = ustr(html)
-
-    if not html.strip():
+    if not (html and html.strip()):
         return ''
+
+    if isinstance(html, bytes):
+        html = html.decode(encoding)
+    else:
+        assert isinstance(html, str), f"expected str got {html.__class__.__name__}"
 
     tree = etree.fromstring(html, parser=etree.HTMLParser())
 
@@ -371,25 +427,21 @@ def html2plaintext(html, body_id=None, encoding='utf-8'):
         tree = source[0]
 
     url_index = []
-    i = 0
+    linkrefs = itertools.count(1)
     for link in tree.findall('.//a'):
-        url = link.get('href')
-        if url:
-            i += 1
+        if url := link.get('href'):
             link.tag = 'span'
-            link.text = '%s [%s]' % (link.text, i)
+            link.text = f'{link.text} [{next(linkrefs)}]'
             url_index.append(url)
 
     for img in tree.findall('.//img'):
-        src = img.get('src')
-        if src:
-            i += 1
+        if src := img.get('src'):
             img.tag = 'span'
             img_name = re.search(r'[^/]+(?=\.[a-zA-Z]+(?:\?|$))', src)
-            img.text = '%s [%s]' % (img_name.group(0) if img_name else 'Image', i)
+            img.text = '%s [%s]' % (img_name[0] if img_name else 'Image', next(linkrefs))
             url_index.append(src)
 
-    html = ustr(etree.tostring(tree, encoding=encoding))
+    html = etree.tostring(tree, encoding="unicode")
     # \r char is converted into &#13;, must remove it
     html = html.replace('&#13;', '')
 
@@ -407,16 +459,16 @@ def html2plaintext(html, body_id=None, encoding='utf-8'):
     html = html.replace('&gt;', '>')
     html = html.replace('&lt;', '<')
     html = html.replace('&amp;', '&')
-    html = html.replace('&nbsp;', u'\N{NO-BREAK SPACE}')
+    html = html.replace('&nbsp;', '\N{NO-BREAK SPACE}')
 
     # strip all lines
     html = '\n'.join([x.strip() for x in html.splitlines()])
     html = html.replace('\n' * 2, '\n')
 
-    for i, url in enumerate(url_index):
-        if i == 0:
-            html += '\n\n'
-        html += ustr('[%s] %s\n') % (i + 1, url)
+    if url_index:
+        html += '\n\n'
+        for i, url in enumerate(url_index, start=1):
+            html += f'[{i}] {url}\n'
 
     return html.strip()
 
@@ -434,7 +486,8 @@ def plaintext2html(text, container_tag=None):
         embedded into a ``<div>``
     :rtype: markupsafe.Markup
     """
-    text = misc.html_escape(ustr(text))
+    assert isinstance(text, str)
+    text = misc.html_escape(text)
 
     # 1. replace \n and \r
     text = re.sub(r'(\r\n|\r|\n)', '<br/>', text)
@@ -460,7 +513,7 @@ def append_content_to_html(html, content, plaintext=True, preserve=False, contai
     """ Append extra content at the end of an HTML snippet, trying
         to locate the end of the HTML document (</body>, </html>, or
         EOF), and converting the provided content in html unless ``plaintext``
-        is False.
+        is ``False``.
 
         Content conversion can be done in two ways:
 
@@ -481,17 +534,16 @@ def append_content_to_html(html, content, plaintext=True, preserve=False, contai
         :param str container_tag: tag to wrap the content into, defaults to `div`.
         :rtype: markupsafe.Markup
     """
-    html = ustr(html)
     if plaintext and preserve:
-        content = u'\n<pre>%s</pre>\n' % misc.html_escape(ustr(content))
+        content = '\n<pre>%s</pre>\n' % misc.html_escape(content)
     elif plaintext:
         content = '\n%s\n' % plaintext2html(content, container_tag)
     else:
         content = re.sub(r'(?i)(</?(?:html|body|head|!\s*DOCTYPE)[^>]*>)', '', content)
-        content = u'\n%s\n' % ustr(content)
+        content = '\n%s\n' % content
     # Force all tags to lowercase
     html = re.sub(r'(</?)(\w+)([ >])',
-        lambda m: '%s%s%s' % (m.group(1), m.group(2).lower(), m.group(3)), html)
+        lambda m: '%s%s%s' % (m[1], m[2].lower(), m[3]), html)
     insert_location = html.find('</body>')
     if insert_location == -1:
         insert_location = html.find('</html>')
@@ -764,3 +816,30 @@ def encapsulate_email(old_email, new_email):
         name_part,
         new_email_split[0][1],
     ))
+
+def parse_contact_from_email(text):
+    """ Parse contact name and email (given by text) in order to find contact
+    information, able to populate records like partners, leads, ...
+    Supported syntax:
+
+      * Raoul <raoul@grosbedon.fr>
+      * "Raoul le Grand" <raoul@grosbedon.fr>
+      * Raoul raoul@grosbedon.fr (strange fault tolerant support from
+        df40926d2a57c101a3e2d221ecfd08fbb4fea30e now supported directly
+        in 'email_split_tuples';
+
+    Otherwise: default, text is set as name.
+
+    :return: name, email (normalized if possible)
+    """
+    if not text or not text.strip():
+        return '', ''
+    split_results = email_split_tuples(text)
+    name, email = split_results[0] if split_results else ('', '')
+
+    if email:
+        email_normalized = email_normalize(email, strict=False) or email
+    else:
+        name, email_normalized = text, ''
+
+    return name, email_normalized

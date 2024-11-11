@@ -17,22 +17,24 @@ class LoadMenusTests(HttpCase):
 
     def test_load_menus(self):
         menu_loaded = self.url_open("/web/webclient/load_menus/1234")
-
         expected = {
             str(self.menu.id): {
                 "actionID": False,
                 "actionModel": False,
+                "actionPath": False,
                 "appID": self.menu.id,
                 "children": [],
                 "id": self.menu.id,
                 "name": "test_menu",
                 "webIcon": False,
-                "webIconData": False,
+                "webIconData": "/web/static/img/default_icon_app.png",
+                "webIconDataMimetype": False,
                 "xmlid": ""
             },
             "root": {
                 "actionID": False,
                 "actionModel": False,
+                "actionPath": False,
                 "appID": False,
                 "children": [
                     self.menu.id,
@@ -41,6 +43,7 @@ class LoadMenusTests(HttpCase):
                 "name": "root",
                 "webIcon": None,
                 "webIconData": None,
+                "webIconDataMimetype": None,
                 "xmlid": "",
                 "backgroundImage": None,
             }

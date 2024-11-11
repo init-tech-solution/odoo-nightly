@@ -1,14 +1,15 @@
 /** @odoo-module */
-import spreadsheet from "@spreadsheet/o_spreadsheet/o_spreadsheet_extended";
-import { omit } from "@web/core/utils/objects";
 
-const { coreTypes, helpers } = spreadsheet;
+import { OdooCorePlugin } from "@spreadsheet/plugins";
+import { coreTypes, helpers } from "@odoo/o-spreadsheet";
+import { omit } from "@web/core/utils/objects";
 const { deepEquals } = helpers;
 
 /** Plugin that link charts with Odoo menus. It can contain either the Id of the odoo menu, or its xml id. */
-export default class ChartOdooMenuPlugin extends spreadsheet.CorePlugin {
-    constructor() {
-        super(...arguments);
+export class ChartOdooMenuPlugin extends OdooCorePlugin {
+    static getters = /** @type {const} */ (["getChartOdooMenu"]);
+    constructor(config) {
+        super(config);
         this.odooMenuReference = {};
     }
 
@@ -77,7 +78,5 @@ export default class ChartOdooMenuPlugin extends spreadsheet.CorePlugin {
         data.chartOdooMenusReferences = this.odooMenuReference;
     }
 }
-ChartOdooMenuPlugin.modes = ["normal", "headless"];
-ChartOdooMenuPlugin.getters = ["getChartOdooMenu"];
 
 coreTypes.add("LINK_ODOO_MENU_TO_CHART");

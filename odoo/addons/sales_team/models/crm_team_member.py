@@ -13,7 +13,8 @@ class CrmTeamMember(models.Model):
     _check_company_auto = True
 
     crm_team_id = fields.Many2one(
-        'crm.team', string='Sales Team', group_expand='_read_group_crm_team_id',
+        'crm.team', string='Sales Team',
+        group_expand='_read_group_expand_full',  # Always display all the teams
         default=False,  # TDE: temporary fix to activate depending computed fields
         check_company=True, index=True, ondelete="cascade", required=True)
     user_id = fields.Many2one(
@@ -130,7 +131,8 @@ class CrmTeamMember(models.Model):
                 teams = user_mapping.get(member.user_id, self.env['crm.team'])
                 remaining = teams - (member.crm_team_id | member._origin.crm_team_id)
                 if remaining:
-                    member.member_warning = _("Adding %(user_name)s in this team would remove him/her from its current teams %(team_names)s.",
+                    member.member_warning = _("Adding %(user_name)s in this team will remove them from %(team_names)s. "
+                                              "Working in multiple teams? Activate the option under Configuration>Settings.",
                                               user_name=member.user_id.name,
                                               team_names=", ".join(remaining.mapped('name'))
                                              )
@@ -178,13 +180,6 @@ class CrmTeamMember(models.Model):
                 for membership in self
             ])
         return super(CrmTeamMember, self).write(values)
-
-    @api.model
-    def _read_group_crm_team_id(self, teams, domain, order):
-        """Read group customization in order to display all the teams in
-        Kanban view, even if they are empty.
-        """
-        return self.env['crm.team'].search([], order=order)
 
     def _synchronize_memberships(self, user_team_ids):
         """ Synchronize memberships: archive other memberships.

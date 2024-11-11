@@ -4,8 +4,6 @@
 import time
 
 from odoo.tests.common import TransactionCase
-from dateutil import relativedelta
-import datetime
 
 class TestEquipment(TransactionCase):
     """ Test used to check that when doing equipment/maintenance_request/equipment_category creation."""
@@ -80,55 +78,44 @@ class TestEquipment(TransactionCase):
         # I check that maintenance request is in the "In Progress" stage
         self.assertEqual(maintenance_request_01.stage_id.id, self.ref('maintenance.stage_1'))
 
-    def test_20_cron(self):
-        """ Check the cron creates the necessary preventive maintenance requests"""
-        equipment_cron = self.equipment.create({
-            'name': 'High Maintenance Monitor because of Color Calibration',
-            'category_id': self.equipment_monitor.id,
-            'technician_user_id': self.ref('base.user_root'),
-            'owner_user_id': self.user.id,
-            'assign_date': time.strftime('%Y-%m-%d'),
-            'period': 7,
-            'color': 3,
-        })
-
-        maintenance_request_cron = self.maintenance_request.create({
-            'name': 'Need a special calibration',
-            'user_id': self.user.id,
-            'request_date': (datetime.datetime.now() + relativedelta.relativedelta(days=7)).strftime('%Y-%m-%d'),
+    def test_forever_maintenance_repeat_type(self):
+        """
+        Test that a maintenance request with repeat_type = forever will be duplicated when it
+        is moved to a 'done' stage, and the new request will be placed in the first stage.
+        """
+        maintenance_request = self.env['maintenance.request'].create({
+            'name': 'Test forever maintenance',
+            'repeat_type': 'forever',
             'maintenance_type': 'preventive',
-            'owner_user_id': self.user.id,
-            'equipment_id': equipment_cron.id,
-            'color': 7,
-            'stage_id': self.ref('maintenance.stage_0'),
-            'maintenance_team_id': self.ref('maintenance.equipment_team_maintenance')
+            'recurring_maintenance': True,
         })
-
-        self.env['maintenance.equipment']._cron_generate_requests()
-        # As it is generating the requests for one month in advance, we should have 4 requests in total
-        tot_requests = self.maintenance_request.search([('equipment_id', '=', equipment_cron.id)])
-        self.assertEqual(len(tot_requests), 1, 'The cron should have generated just 1 request for the High Maintenance Monitor.')
-
-    def test_21_cron(self):
-        """ Check the creation of maintenance requests by the cron"""
-
-        team_test = self.maintenance_team.create({
-            'name': 'team_test',
+        done_maintenance_stage = self.env['maintenance.stage'].create({
+            'name': 'Test Done',
+            'done': True,
         })
-        equipment = self.equipment.create({
-            'name': 'High Maintenance Monitor because of Color Calibration',
-            'category_id': self.equipment_monitor.id,
-            'technician_user_id': self.ref('base.user_root'),
-            'owner_user_id': self.user.id,
-            'assign_date': time.strftime('%Y-%m-%d'),
-            'period': 7,
-            'color': 3,
-            'maintenance_team_id': team_test.id,
-            'maintenance_duration': 3.0,
-        })
+        maintenance_stages = self.env['maintenance.stage'].search([])
+        maintenance_request.with_context(default_stage_id=maintenance_stages[1].id).stage_id = done_maintenance_stage
+        new_maintenance = self.env['maintenance.request'].search([('name', '=', 'Test forever maintenance'), ('stage_id', '=', maintenance_stages[0].id)])
+        self.assertTrue(new_maintenance)
 
-        self.env['maintenance.equipment']._cron_generate_requests()
-        tot_requests = self.maintenance_request.search([('equipment_id', '=', equipment.id)])
-        self.assertEqual(len(tot_requests), 1, 'The cron should have generated just 1 request for the High Maintenance Monitor.')
-        self.assertEqual(tot_requests.maintenance_team_id.id, team_test.id, 'The maintenance team should be the same as equipment one')
-        self.assertEqual(tot_requests.duration, 3.0, 'Equipement maintenance duration is not the same as the request one')
+    def test_update_multiple_maintenance_request_record(self):
+        """
+        Test that multiple records of the model 'maintenance.request' can be written simultaneously.
+        """
+        maintenance_requests = self.env['maintenance.request'].create([
+            {
+                'name': 'm_1',
+                'maintenance_type': 'preventive',
+                'kanban_state': 'normal',
+            },
+            {
+                'name': 'm_2',
+                'maintenance_type': 'preventive',
+                'kanban_state': 'normal',
+            },
+        ])
+        maintenance_requests.write({'kanban_state': 'blocked', 'stage_id': self.ref('maintenance.stage_0')})
+        self.assertRecordValues(maintenance_requests, [
+            {'kanban_state': 'blocked', 'stage_id': self.ref('maintenance.stage_0')},
+            {'kanban_state': 'blocked', 'stage_id': self.ref('maintenance.stage_0')},
+        ])

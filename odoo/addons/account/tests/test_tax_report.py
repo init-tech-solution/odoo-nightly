@@ -8,8 +8,8 @@ from odoo.tests import tagged
 class TaxReportTest(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls, chart_template_ref=None):
-        super().setUpClass(chart_template_ref=chart_template_ref)
+    def setUpClass(cls):
+        super().setUpClass()
         cls.test_country_1 = cls.env['res.country'].create({
             'name': "The Old World",
             'code': 'YY',
@@ -71,7 +71,7 @@ class TaxReportTest(AccountTestInvoicingCommon):
     def _get_tax_tags(self, country, tag_name=None, active_test=True):
         domain = [('country_id', '=', country.id), ('applicability', '=', 'taxes')]
         if tag_name:
-            domain.append(('name', 'like', '_' + tag_name))
+            domain.append(('name', '=like', '_' + tag_name))
         return self.env['account.account.tag'].with_context(active_test=active_test).search(domain)
 
     def test_create_shared_tags(self):
@@ -186,6 +186,10 @@ class TaxReportTest(AccountTestInvoicingCommon):
         tag_name = "55b"
         tax_report_line = self._create_basic_tax_report_line(self.tax_report_1, "Line 55 bis", tag_name)
         test_tag = tax_report_line.expression_ids._get_matching_tags("+")
+        self.env['account.tax.group'].create({
+            'name': 'Tax group',
+            'country_id': self.tax_report_1.country_id.id,
+        })
         test_tax = self.env['account.tax'].create({
             'name': "Test tax",
             'amount_type': 'percent',

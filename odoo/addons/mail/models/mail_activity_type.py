@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from dateutil.relativedelta import relativedelta
 
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 class MailActivityType(models.Model):
     """ Activity Types are used to categorize activities. Each type is a different
@@ -71,11 +73,17 @@ class MailActivityType(models.Model):
     mail_template_ids = fields.Many2many('mail.template', string='Email templates')
     default_user_id = fields.Many2one("res.users", string="Default User")
     default_note = fields.Html(string="Default Note", translate=True)
+    keep_done = fields.Boolean(string="Keep Done", help='Keep activities marked as done in the activity view')
 
     #Fields for display purpose only
     initial_res_model = fields.Selection(selection=_get_model_selection, string='Initial model', compute="_compute_initial_res_model", store=False,
             help='Technical field to keep track of the model at the start of editing to support UX related behaviour')
     res_model_change = fields.Boolean(string="Model has change", default=False, store=False)
+
+    @api.constrains('res_model')
+    def _check_activity_type_res_model(self):
+        self.env['mail.activity.plan.template'].search(
+            [('activity_type_id', 'in', self.ids)])._check_activity_type_res_model()
 
     @api.onchange('res_model')
     def _onchange_res_model(self):
@@ -119,3 +127,22 @@ class MailActivityType(models.Model):
                 activity_type.chaining_type = 'trigger'
             else:
                 activity_type.chaining_type = 'suggest'
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_todo(self):
+        if self.env.ref('mail.mail_activity_data_todo') in self:
+            raise UserError(_("The 'To-Do' activity type is used to create reminders from the top bar menu and the command palette. Consequently, it cannot be archived or deleted."))
+
+    def action_archive(self):
+        if self.env.ref('mail.mail_activity_data_todo') in self:
+            raise UserError(_("The 'To-Do' activity type is used to create reminders from the top bar menu and the command palette. Consequently, it cannot be archived or deleted."))
+        return super().action_archive()
+
+    def _get_date_deadline(self):
+        """ Return the activity deadline computed from today or from activity_previous_deadline context variable. """
+        self.ensure_one()
+        if self.delay_from == 'previous_activity' and 'activity_previous_deadline' in self.env.context:
+            base = fields.Date.from_string(self.env.context.get('activity_previous_deadline'))
+        else:
+            base = fields.Date.context_today(self)
+        return base + relativedelta(**{self.delay_unit: self.delay_count})

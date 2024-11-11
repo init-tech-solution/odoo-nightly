@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
@@ -225,7 +224,7 @@ class TestAutoComplete(TransactionCase):
 
     def test_07_no_fuzzy_for_mostly_number(self):
         """ Ensures exact match is used when search contains mostly numbers. """
-        self._create_page('Product P7935432254U7 page', 'Product P7935432254U7', '/numberpage')
+        self._create_page('Product P7935432254U7 page', 'Product P7935432254U7 kangaroo shoes', '/numberpage')
         suggestions = self._autocomplete("54321")
         self.assertEqual(0, suggestions['results_count'], "Test data contains no exact match")
         suggestions = self._autocomplete("54322")
@@ -235,7 +234,7 @@ class TestAutoComplete(TransactionCase):
         suggestions = self._autocomplete("P79354")
         self.assertEqual(1, suggestions['results_count'], "Test data contains one exact match")
         self.assertFalse(suggestions['fuzzy_search'], "Expects an exact match")
-        suggestions = self._autocomplete("produkt")
+        suggestions = self._autocomplete("kangroo") # must contain a typo
         self.assertEqual(1, suggestions['results_count'], "Test data contains one fuzzy match")
         self.assertTrue(suggestions['fuzzy_search'], "Expects a fuzzy match")
 

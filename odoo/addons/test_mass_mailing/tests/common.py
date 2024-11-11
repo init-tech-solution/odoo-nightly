@@ -4,10 +4,9 @@
 from odoo.addons.phone_validation.tools import phone_validation
 
 from odoo.addons.mass_mailing_sms.tests.common import MassSMSCommon
-from odoo.addons.test_mail_sms.tests.common import TestSMSCommon
 
 
-class TestMassMailCommon(MassSMSCommon, TestSMSCommon):
+class TestMassMailCommon(MassSMSCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -15,7 +14,6 @@ class TestMassMailCommon(MassSMSCommon, TestSMSCommon):
 
         cls.test_alias = cls.env['mail.alias'].create({
             'alias_name': 'test.alias',
-            'alias_user_id': False,
             'alias_model_id': cls.env['ir.model']._get('mailing.test.simple').id,
             'alias_contact': 'everyone'
         })
@@ -140,3 +138,21 @@ class TestMassSMSCommon(TestMassMailCommon):
             phone_validation.phone_format(partner.mobile, partner.country_id.code, partner.country_id.phone_code, force_format='E164')
             for partner in partners
         ]
+
+    @classmethod
+    def _get_sms_test_records(cls, mobile_numbers):
+        """ Helper to create data. Currently simple, to be improved. """
+        country_be_id = cls.env.ref('base.be').id
+        partners = cls.env['res.partner'].with_context(**cls._test_context).create([{
+            'name': f'Partner_{x}',
+            'email': f'_test_partner_{x}@example.com',
+            'country_id': country_be_id,
+            'mobile': mobile_numbers[x]
+        } for x, mobile_number in enumerate(mobile_numbers)])
+        records = cls.env['mail.test.sms'].with_context(**cls._test_context).create([{
+            'name': f'MassSMSTest_{x}',
+            'customer_id': partner.id,
+            'phone_nbr': mobile_number
+        } for x, (mobile_number, partner) in enumerate(zip(mobile_numbers, partners))])
+
+        return records

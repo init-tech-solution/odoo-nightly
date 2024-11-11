@@ -48,7 +48,7 @@ class AccountMoveReversal(models.TransientModel):
             if len(record.move_ids) > 1:
                 move_ids_use_document = record.move_ids._origin.filtered(lambda move: move.l10n_latam_use_documents)
                 if move_ids_use_document:
-                    raise UserError(_('You can only reverse documents with legal invoicing documents from Latin America one at a time.\nProblematic documents: %s') % ", ".join(move_ids_use_document.mapped('name')))
+                    raise UserError(_('You can only reverse documents with legal invoicing documents from Latin America one at a time.\nProblematic documents: %s', ", ".join(move_ids_use_document.mapped('name'))))
             else:
                 record.l10n_latam_use_documents = record.move_ids.journal_id.l10n_latam_use_documents
 
@@ -58,6 +58,7 @@ class AccountMoveReversal(models.TransientModel):
                     'journal_id': record.journal_id.id,
                     'partner_id': record.move_ids.partner_id.id,
                     'company_id': record.move_ids.company_id.id,
+                    'reversed_entry_id': record.move_ids.id,
                 })
                 record.l10n_latam_available_document_type_ids = refund.l10n_latam_available_document_type_ids
 

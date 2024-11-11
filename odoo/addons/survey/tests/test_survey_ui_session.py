@@ -68,6 +68,12 @@ class TestUiSession(HttpCase):
             'sequence': 4,
             'question_type': 'datetime',
         })
+        scale_question = self.env['survey.question'].create({
+            'survey_id': survey_session.id,
+            'title': 'Scale Question',
+            'sequence': 50,
+            'question_type': 'scale',
+        })
         simple_choice_answer_1 = self.env['survey.question.answer'].create({
             'value': 'First'
         })
@@ -80,7 +86,7 @@ class TestUiSession(HttpCase):
         simple_choice_question = self.env['survey.question'].create({
             'survey_id': survey_session.id,
             'title': 'Regular Simple Choice',
-            'sequence': 5,
+            'sequence': 60,
             'question_type': 'simple_choice',
             'suggested_answer_ids': [
                 (4, simple_choice_answer_1.id),
@@ -104,7 +110,7 @@ class TestUiSession(HttpCase):
         scored_choice_question = self.env['survey.question'].create({
             'survey_id': survey_session.id,
             'title': 'Scored Simple Choice',
-            'sequence': 6,
+            'sequence': 70,
             'question_type': 'simple_choice',
             'suggested_answer_ids': [
                 (4, scored_choice_answer_1.id),
@@ -129,7 +135,7 @@ class TestUiSession(HttpCase):
         timed_scored_choice_question = self.env['survey.question'].create({
             'survey_id': survey_session.id,
             'title': 'Timed Scored Multiple Choice',
-            'sequence': 6,
+            'sequence': 80,
             'question_type': 'multiple_choice',
             'is_time_limited': True,
             'time_limit': 1,
@@ -139,9 +145,6 @@ class TestUiSession(HttpCase):
                 (4, timed_scored_choice_answer_3.id)],
         })
 
-        # =======================
-        # PART 1 : CREATE SESSION
-        # =======================
         def action_open_session_manager_mock(self):
             """ Mock original method to ensure we are not using another tab
             as it creates issues with automated tours. """
@@ -152,9 +155,11 @@ class TestUiSession(HttpCase):
                 'url': '/survey/session/manage/%s' % self.access_token
             }
 
-        with patch('odoo.addons.survey.models.survey_survey.Survey.action_open_session_manager', action_open_session_manager_mock):
-            self.start_tour('/web', 'test_survey_session_create_tour', login='admin')
+        # =======================
+        # PART 1 : CREATE SESSION
+        # =======================
 
+        survey_session.action_start_session()
         # tricky part: we only take into account answers created after the session_start_time
         # the create_date of the answers we just saved is set to the beginning of the test.
         # but the session_start_time is set after that.
@@ -177,7 +182,7 @@ class TestUiSession(HttpCase):
         # =========================================
 
         with patch('odoo.addons.survey.models.survey_survey.Survey.action_open_session_manager', action_open_session_manager_mock):
-            self.start_tour('/web', 'test_survey_session_start_tour', login='admin')
+            self.start_tour('/odoo', 'test_survey_session_start_tour', login='admin')
 
         self.assertEqual('in_progress', survey_session.session_state)
         self.assertTrue(bool(survey_session.session_start_time))
@@ -189,35 +194,38 @@ class TestUiSession(HttpCase):
         # create a few answers beforehand to avoid having to back and forth too
         # many times between the tours and the python test
 
-        attendee_1.save_lines(nickname_question, 'xxxTheBestxxx')
-        attendee_2.save_lines(nickname_question, 'azerty')
-        attendee_3.save_lines(nickname_question, 'nicktalope')
+        attendee_1._save_lines(nickname_question, 'xxxTheBestxxx')
+        attendee_2._save_lines(nickname_question, 'azerty')
+        attendee_3._save_lines(nickname_question, 'nicktalope')
         self.assertEqual('xxxTheBestxxx', attendee_1.nickname)
         self.assertEqual('azerty', attendee_2.nickname)
         self.assertEqual('nicktalope', attendee_3.nickname)
 
-        attendee_1.save_lines(text_question, 'Attendee 1 is the best')
-        attendee_2.save_lines(text_question, 'Attendee 2 rulez')
-        attendee_3.save_lines(text_question, 'Attendee 3 will crush you')
-        attendee_1.save_lines(date_question, '2010-10-10')
-        attendee_2.save_lines(date_question, '2011-11-11')
-        attendee_2.save_lines(datetime_question, '2010-10-10 10:00:00')
-        attendee_3.save_lines(datetime_question, '2011-11-11 15:55:55')
-        attendee_1.save_lines(simple_choice_question, simple_choice_answer_1.id)
-        attendee_2.save_lines(simple_choice_question, simple_choice_answer_1.id)
-        attendee_3.save_lines(simple_choice_question, simple_choice_answer_2.id)
-        attendee_1.save_lines(scored_choice_question, scored_choice_answer_1.id)
-        attendee_2.save_lines(scored_choice_question, scored_choice_answer_2.id)
-        attendee_3.save_lines(scored_choice_question, scored_choice_answer_3.id)
-        attendee_1.save_lines(timed_scored_choice_question,
+        attendee_1._save_lines(text_question, 'Attendee 1 is the best')
+        attendee_2._save_lines(text_question, 'Attendee 2 rulez')
+        attendee_3._save_lines(text_question, 'Attendee 3 will crush you')
+        attendee_1._save_lines(date_question, '2010-10-10')
+        attendee_2._save_lines(date_question, '2011-11-11')
+        attendee_2._save_lines(datetime_question, '2010-10-10 10:00:00')
+        attendee_3._save_lines(datetime_question, '2011-11-11 15:55:55')
+        attendee_1._save_lines(simple_choice_question, simple_choice_answer_1.id)
+        attendee_2._save_lines(simple_choice_question, simple_choice_answer_1.id)
+        attendee_3._save_lines(simple_choice_question, simple_choice_answer_2.id)
+        attendee_1._save_lines(scored_choice_question, scored_choice_answer_1.id)
+        attendee_2._save_lines(scored_choice_question, scored_choice_answer_2.id)
+        attendee_3._save_lines(scored_choice_question, scored_choice_answer_3.id)
+        attendee_1._save_lines(timed_scored_choice_question,
             [timed_scored_choice_answer_1.id, timed_scored_choice_answer_3.id])
-        attendee_2.save_lines(timed_scored_choice_question,
+        attendee_2._save_lines(timed_scored_choice_question,
             [timed_scored_choice_answer_1.id, timed_scored_choice_answer_2.id])
-        attendee_3.save_lines(timed_scored_choice_question,
+        attendee_3._save_lines(timed_scored_choice_question,
             [timed_scored_choice_answer_2.id])
+        attendee_1._save_lines(scale_question, '5')
+        attendee_2._save_lines(scale_question, '5')
+        attendee_3._save_lines(scale_question, '6')
 
         with patch('odoo.addons.survey.models.survey_survey.Survey.action_open_session_manager', action_open_session_manager_mock):
-            self.start_tour('/web', 'test_survey_session_manage_tour', login='admin')
+            self.start_tour('/odoo', 'test_survey_session_manage_tour', login='admin')
 
         self.assertFalse(bool(survey_session.session_state))
         self.assertTrue(all(answer.state == 'done' for answer in all_attendees))

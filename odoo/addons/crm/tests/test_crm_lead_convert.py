@@ -4,8 +4,7 @@
 from odoo import SUPERUSER_ID
 from odoo.addons.crm.tests import common as crm_common
 from odoo.fields import Datetime
-from odoo.tests.common import tagged, users
-from odoo.tests.common import Form
+from odoo.tests import Form, tagged, users
 
 @tagged('lead_manage')
 class TestLeadConvertForm(crm_common.TestLeadConvertCommon):
@@ -396,19 +395,11 @@ class TestLeadConvert(crm_common.TestLeadConvertCommon):
         }]
         self.lead_1.convert_opportunity(False)
         self.assertEqual(self.lead_1.team_id, initial_team)
-        self.assertEqual(self.lead_1.lead_properties, [{
-            'name': 'test',
-            'type': 'char',
-            'value': 'test value',
-        }])
+        self.assertEqual(self.lead_1.lead_properties, {'test': 'test value'})
 
         # re-writing the team, but keeping the same value should not reset the properties
         self.lead_1.write({'team_id': self.lead_1.team_id.id})
-        self.assertEqual(self.lead_1.lead_properties, [{
-            'name': 'test',
-            'type': 'char',
-            'value': 'test value',
-        }])
+        self.assertEqual(self.lead_1.lead_properties, {'test': 'test value'})
 
     @users('user_sales_manager')
     def test_lead_convert_properties_reset(self):

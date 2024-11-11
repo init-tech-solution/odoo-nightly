@@ -16,7 +16,6 @@ have real delivered quantities in sales orders.
     'depends': ['sale_project', 'hr_timesheet'],
     'data': [
         'data/sale_service_data.xml',
-        'report/timesheets_analysis_views.xml',
         'security/ir.model.access.csv',
         'security/sale_timesheet_security.xml',
         'views/account_invoice_views.xml',
@@ -28,8 +27,10 @@ have real delivered quantities in sales orders.
         'views/res_config_settings_views.xml',
         'views/sale_timesheet_portal_templates.xml',
         'views/project_sharing_views.xml',
+        'views/project_portal_templates.xml',
+        'report/timesheets_analysis_views.xml',
         'report/report_timesheet_templates.xml',
-        'wizard/project_create_sale_order_views.xml',
+        'report/project_report_view.xml',
         'wizard/project_create_invoice_views.xml',
         'wizard/sale_make_invoice_advance_views.xml',
     ],
@@ -44,11 +45,14 @@ have real delivered quantities in sales orders.
         ],
         'web.assets_backend': [
             'sale_timesheet/static/src/components/**/*',
-            'sale_timesheet/static/src/js/so_line_one2many.js',
-            'sale_timesheet/static/src/xml/**/*',
         ],
         'web.assets_tests': [
+            'sale_timesheet/static/tests/tours/**/*',
+            'web/static/lib/hoot-dom/**/*',
+        ],
+        'web.assets_unit_tests': [
             'sale_timesheet/static/tests/**/*',
+            ('remove', 'sale_timesheet/static/tests/tours/**/*'),
         ],
     },
     'license': 'LGPL-3',

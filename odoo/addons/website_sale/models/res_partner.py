@@ -1,14 +1,18 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
+
 from odoo.addons.website.models import ir_http
 
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    last_website_so_id = fields.Many2one('sale.order', compute='_compute_last_website_so_id', string='Last Online Sales Order')
+    last_website_so_id = fields.Many2one(
+        string="Last Online Sales Order",
+        comodel_name='sale.order',
+        compute='_compute_last_website_so_id',
+    )
 
     def _compute_last_website_so_id(self):
         SaleOrder = self.env['sale.order']
@@ -44,3 +48,11 @@ class ResPartner(models.Model):
                     "Also, the cart might not be visible for the customer until you update the pricelist of that cart."
                 ),
             }}
+
+    def _can_be_edited_by_current_customer(self, sale_order, address_type):
+        self.ensure_one()
+        children_partner_ids = self.env['res.partner']._search([
+            ('id', 'child_of', sale_order.partner_id.commercial_partner_id.id),
+            ('type', 'in', ('invoice', 'delivery', 'other')),
+        ])
+        return self == sale_order.partner_id or self.id in children_partner_ids

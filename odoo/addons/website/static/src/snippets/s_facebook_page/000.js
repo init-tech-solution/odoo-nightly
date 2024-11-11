@@ -1,11 +1,13 @@
-odoo.define('website.s_facebook_page', function (require) {
-'use strict';
+/** @odoo-module **/
 
-var publicWidget = require('web.public.widget');
-var utils = require('web.utils');
-const { debounce } = require("@web/core/utils/timing");
+import { _t } from "@web/core/l10n/translation";
+import { pick } from "@web/core/utils/objects";
+import { clamp } from "@web/core/utils/numbers";
+import publicWidget from "@web/legacy/js/public/public_widget";
+import { debounce } from "@web/core/utils/timing";
+import { ObservingCookieWidgetMixin } from "@website/snippets/observing_cookie_mixin";
 
-const FacebookPageWidget = publicWidget.Widget.extend({
+const FacebookPageWidget = publicWidget.Widget.extend(ObservingCookieWidgetMixin, {
     selector: '.o_facebook_page',
     disabledInEditableMode: false,
 
@@ -16,7 +18,7 @@ const FacebookPageWidget = publicWidget.Widget.extend({
         var def = this._super.apply(this, arguments);
         this.previousWidth = 0;
 
-        const params = _.pick(this.$el[0].dataset, 'href', 'id', 'height', 'tabs', 'small_header', 'hide_cover');
+        const params = pick(this.$el[0].dataset, 'href', 'id', 'height', 'tabs', 'small_header', 'hide_cover');
         if (!params.href) {
             return def;
         }
@@ -37,9 +39,11 @@ const FacebookPageWidget = publicWidget.Widget.extend({
     destroy: function () {
         this._super.apply(this, arguments);
         if (this.iframeEl) {
+            this._deactivateEditorObserver();
             this.iframeEl.remove();
+            this._activateEditorObserver();
+            this.resizeObserver.disconnect();
         }
-        this.resizeObserver.disconnect();
     },
 
     //--------------------------------------------------------------------------
@@ -53,32 +57,45 @@ const FacebookPageWidget = publicWidget.Widget.extend({
      * @param {Object} params
     */
     _renderIframe(params) {
-        this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerUnactive();
+        this._deactivateEditorObserver();
 
-        params.width = utils.confine(Math.floor(this.$el.width()), 180, 500);
+        params.width = clamp(Math.floor(this.$el.width()), 180, 500);
         if (this.previousWidth !== params.width) {
             this.previousWidth = params.width;
-            const src = $.param.querystring("https://www.facebook.com/plugins/page.php", params);
+            const searchParams = new URLSearchParams(params);
+            const src = "https://www.facebook.com/plugins/page.php?" + searchParams;
             this.iframeEl = Object.assign(document.createElement("iframe"), {
-                src: src,
-                width: params.width,
-                height: params.height,
-                css: {
-                    border: "none",
-                    overflow: "hidden",
-                },
                 scrolling: "no",
-                frameborder: "0",
-                allowTransparency: "true",
             });
+            // TODO: remove, the "scrolling", "frameborder" and
+            // "allowTransparency" attributes in master as they are deprecated.
+            // Also put the width and height as iframe attribute.
+            this.iframeEl.setAttribute("frameborder", "0");
+            this.iframeEl.setAttribute("allowTransparency", "true");
+            this.iframeEl.setAttribute("style", `width: ${params.width}px; height: ${params.height}px; border: none; overflow: hidden;`);
+            this.iframeEl.setAttribute("aria-label", _t("Facebook"));
             this.el.replaceChildren(this.iframeEl);
+            this._manageIframeSrc(this.el, src);
         }
 
+        this._activateEditorObserver();
+    },
+
+    /**
+     * Activates the editor observer if it exists.
+     */
+    _activateEditorObserver() {
         this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerActive();
+    },
+
+    /**
+     * Deactivates the editor observer if it exists.
+     */
+    _deactivateEditorObserver() {
+        this.options.wysiwyg && this.options.wysiwyg.odooEditor.observerUnactive();
     },
 });
 
 publicWidget.registry.facebookPage = FacebookPageWidget;
 
-return FacebookPageWidget;
-});
+export default FacebookPageWidget;

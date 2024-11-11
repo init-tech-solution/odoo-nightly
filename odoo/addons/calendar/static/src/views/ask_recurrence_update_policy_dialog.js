@@ -1,29 +1,38 @@
 /** @odoo-module **/
 
+import { _t } from "@web/core/l10n/translation";
 import { Dialog } from "@web/core/dialog/dialog";
-
-const { Component } = owl;
+import { Component } from "@odoo/owl";
 
 export class AskRecurrenceUpdatePolicyDialog extends Component {
+    static template = "calendar.AskRecurrenceUpdatePolicyDialog";
+    static components = {
+        Dialog,
+    };
+    static props = {
+        confirm: Function,
+        close: Function,
+    };
+
     setup() {
         this.possibleValues = {
             self_only: {
                 checked: true,
-                label: this.env._t("This event"),
+                label: _t("This event"),
             },
             future_events: {
                 checked: false,
-                label: this.env._t("This and following events"),
+                label: _t("This and following events"),
             },
             all_events: {
                 checked: false,
-                label: this.env._t("All events"),
+                label: _t("All events"),
             },
         };
     }
 
     get selected() {
-        return Object.entries(this.possibleValues).find(state => state[1].checked)[0];
+        return Object.entries(this.possibleValues).find((state) => state[1].checked)[0];
     }
 
     set selected(val) {
@@ -36,7 +45,3 @@ export class AskRecurrenceUpdatePolicyDialog extends Component {
         this.props.close();
     }
 }
-AskRecurrenceUpdatePolicyDialog.template = "calendar.AskRecurrenceUpdatePolicyDialog";
-AskRecurrenceUpdatePolicyDialog.components = {
-    Dialog,
-};

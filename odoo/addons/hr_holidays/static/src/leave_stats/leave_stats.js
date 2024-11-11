@@ -1,52 +1,71 @@
 /* @odoo-module */
 
-import { useService } from '@web/core/utils/hooks';
-import { registry } from '@web/core/registry'
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
+import { useRecordObserver } from "@web/model/relational_model/utils";
 
-import { formatDate } from "@web/core/l10n/dates";
+import { Component, useState, onWillStart } from "@odoo/owl";
+import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 
-const { Component, useState, onWillStart, onWillUpdateProps } = owl;
 const { DateTime } = luxon;
 
 export class LeaveStatsComponent extends Component {
+    static template = "hr_holidays.LeaveStatsComponent";
+    static props = { ...standardWidgetProps };
+
     setup() {
-        this.orm = useService('orm');
+        this.orm = useService("orm");
 
         this.state = useState({
             leaves: [],
             departmentLeaves: [],
+            date: DateTime,
+            department: null,
+            employee: null,
+            type: null,
         });
 
-        this.date = this.props.record.data.date_from || DateTime.now();
-        this.department = this.props.record.data.department_id;
-        this.employee = this.props.record.data.employee_id;
+        this.state.date = this.props.record.data.date_from || DateTime.now();
+        this.state.department = this.props.record.data.department_id;
+        this.state.employee = this.props.record.data.employee_id;
 
         onWillStart(async () => {
-            await this.loadLeaves(this.date, this.employee);
-            await this.loadDepartmentLeaves(this.date, this.department, this.employee);
+            await this.loadLeaves(this.state.date, this.state.employee);
+            await this.loadDepartmentLeaves(
+                this.state.date,
+                this.state.department,
+                this.state.employee
+            );
         });
-        onWillUpdateProps(async (nextProps) => {
-            const dateFrom = nextProps.record.data.date_from || DateTime.now();
-            const dateChanged = this.date !== dateFrom;
-            const employee = nextProps.record.data.employee_id;
-            const department = nextProps.record.data.department_id;
 
-            if (dateChanged || employee && (this.employee && this.employee[0]) !== employee[0]) {
-                await this.loadLeaves(dateFrom, employee);
+        useRecordObserver(async (record) => {
+            const dateFrom = record.data.date_from || DateTime.now();
+            const dateChanged = !this.state.date.equals(dateFrom);
+            const employee = record.data.employee_id;
+            const department = record.data.department_id;
+            const proms = [];
+            if (
+                dateChanged ||
+                (employee && (this.state.employee && this.state.employee[0]) !== employee[0])
+            ) {
+                proms.push(this.loadLeaves(dateFrom, employee));
             }
-
-            if (dateChanged || department && (this.department && this.department[0]) !== department[0]) {
-                await this.loadDepartmentLeaves(dateFrom, department, employee);
+            if (
+                dateChanged ||
+                (department &&
+                    (this.state.department && this.state.department[0]) !== department[0])
+            ) {
+                proms.push(this.loadDepartmentLeaves(dateFrom, department, employee));
             }
-
-            this.date = dateFrom;
-            this.employee = employee;
-            this.department = department;
-        })
+            await Promise.all(proms);
+            this.state.date = dateFrom;
+            this.state.employee = employee;
+            this.state.department = department;
+        });
     }
 
     get thisYear() {
-        return this.date.toFormat('yyyy');
+        return this.state.date.toFormat("yyyy");
     }
 
     async loadDepartmentLeaves(date, department, employee) {
@@ -55,25 +74,48 @@ export class LeaveStatsComponent extends Component {
             return;
         }
 
-        const dateFrom = date.startOf('month');
-        const dateTo = date.endOf('month');
+        const dateFrom = date.startOf("month");
+        const dateTo = date.endOf("month");
 
         const departmentLeaves = await this.orm.searchRead(
-            'hr.leave',
+            "hr.leave",
             [
-                ['department_id', '=', department[0]],
-                ['state', '=', 'validate'],
-                ['holiday_type', '=', 'employee'],
-                ['date_from', '<=', dateTo],
-                ['date_to', '>=', dateFrom],
+                ["department_id", "=", department[0]],
+                ["state", "=", "validate"],
+                ["date_from", "<=", dateTo],
+                ["date_to", ">=", dateFrom],
             ],
-            ['employee_id', 'date_from', 'date_to', 'number_of_days'],
+            [
+                "employee_id",
+                "date_from",
+                "date_to",
+                "number_of_days",
+                "number_of_hours",
+                "leave_type_request_unit",
+            ]
         );
 
         this.state.departmentLeaves = departmentLeaves.map((leave) => {
+            const dateFormat =
+                leave.leave_type_request_unit === "hour"
+                    ? {
+                          ...DateTime.TIME_24_SIMPLE,
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                      }
+                    : {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                      };
             return Object.assign({}, leave, {
-                dateFrom: formatDate(DateTime.fromSQL(leave.date_from, { zone: 'utc' }).toLocal()),
-                dateTo: formatDate(DateTime.fromSQL(leave.date_to, { zone: 'utc' }).toLocal()),
+                dateFrom: DateTime.fromSQL(leave.date_from, { zone: "utc" })
+                    .toLocal()
+                    .toLocaleString(dateFormat),
+                dateTo: DateTime.fromSQL(leave.date_to, { zone: "utc" })
+                    .toLocal()
+                    .toLocaleString(dateFormat),
                 sameEmployee: leave.employee_id[0] === employee[0],
             });
         });
@@ -85,21 +127,29 @@ export class LeaveStatsComponent extends Component {
             return;
         }
 
-        const dateFrom = date.startOf('year');
-        const dateTo = date.endOf('year');
+        const dateFrom = date.startOf("year");
+        const dateTo = date.endOf("year");
+
         this.state.leaves = await this.orm.readGroup(
-            'hr.leave',
+            "hr.leave",
             [
-                ['employee_id', '=', employee[0]],
-                ['state', '=', 'validate'],
-                ['date_from', '<=', dateTo],
-                ['date_to', '>=', dateFrom]
+                ["employee_id", "=", employee[0]],
+                ["state", "=", "validate"],
+                ["date_from", "<=", dateTo],
+                ["date_to", ">=", dateFrom],
             ],
-            ['holiday_status_id', 'number_of_days:sum'],
-            ['holiday_status_id'],
+            [
+                "holiday_status_id",
+                "number_of_days",
+                "number_of_hours",
+                "leave_type_request_unit:array_agg",
+            ],
+            ["holiday_status_id"]
         );
     }
 }
 
-LeaveStatsComponent.template = 'hr_holidays.LeaveStatsComponent';
-registry.category('view_widgets').add('hr_leave_stats', LeaveStatsComponent);
+export const leaveStatsComponent = {
+    component: LeaveStatsComponent,
+};
+registry.category("view_widgets").add("hr_leave_stats", leaveStatsComponent);

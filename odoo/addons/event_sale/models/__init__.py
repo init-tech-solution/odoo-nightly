@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
-
-from . import account_move
 from . import event_event
 from . import event_registration
 from . import event_ticket
+from . import product_template
 from . import sale_order
-from . import product
-from . import sale_order_template_line
-from . import sale_order_template_option
+from . import sale_order_line

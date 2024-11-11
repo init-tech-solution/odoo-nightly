@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
@@ -16,7 +16,8 @@ class AccountAnalyticLine(models.Model):
         'account.account',
         string='Financial Account',
         ondelete='restrict',
-        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
+        domain="[('deprecated', '=', False)]",
+        check_company=True,
         compute='_compute_general_account_id', store=True, readonly=False
     )
     journal_id = fields.Many2one(
@@ -38,6 +39,7 @@ class AccountAnalyticLine(models.Model):
         ondelete='cascade',
         index=True,
         check_company=True,
+        readonly=True,
     )
     code = fields.Char(size=8)
     ref = fields.Char(string='Ref.')
@@ -71,12 +73,23 @@ class AccountAnalyticLine(models.Model):
             unit = self.product_id.uom_po_id
 
         # Compute based on pricetype
-        amount_unit = self.product_id.price_compute('standard_price', uom=unit)[self.product_id.id]
+        amount_unit = self.product_id._price_compute('standard_price', uom=unit)[self.product_id.id]
         amount = amount_unit * self.unit_amount or 0.0
         result = (self.currency_id.round(amount) if self.currency_id else round(amount, 2)) * -1
         self.amount = result
         self.general_account_id = account
         self.product_uom_id = unit
+
+    def write(self, vals):
+        if self.move_line_id and any(field != 'ref' for field in vals):
+            raise UserError(self.env._("This analytic item was created by a journal item. Please edit the analytic distribution on the journal item instead."))
+
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_move_line_related(self):
+        if not self._context.get('force_analytic_line_delete') and self.move_line_id:
+            raise UserError(self.env._("This analytic item was created by a journal item. Please edit the analytic distribution on the journal item instead."))
 
     @api.model
     def view_header_get(self, view_id, view_type):

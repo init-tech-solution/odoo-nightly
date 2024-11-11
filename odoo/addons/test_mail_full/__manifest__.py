@@ -30,11 +30,8 @@ real applications. """,
         'security/ir_rule_data.xml',
     ],
     'assets': {
-        'web.qunit_suite_tests': [
-            'test_mail_full/static/tests/qunit_suite_tests/*.js',
-        ],
-        'web.tests_assets': [
-            'test_mail_full/static/tests/helpers/*.js',
+        'web.assets_unit_tests': [
+            'test_mail_full/static/tests/**/*',
         ],
     },
     'installable': True,

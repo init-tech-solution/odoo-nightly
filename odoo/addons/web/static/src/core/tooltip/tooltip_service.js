@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { browser } from "@web/core/browser/browser";
 import { registry } from "@web/core/registry";
 import { Tooltip } from "./tooltip";
@@ -51,6 +49,7 @@ export const tooltipService = {
         let closeTooltip;
         let target = null;
         let touchPressed;
+        let mouseEntered;
         const elementsWithTooltips = new Map();
 
         /**
@@ -74,7 +73,7 @@ export const tooltipService = {
             if (!document.body.contains(target)) {
                 return true; // target is no longer in the DOM
             }
-            if (hasTouch()) {
+            if (hasTouch() && !mouseEntered) {
                 return !touchPressed;
             }
             return false;
@@ -126,6 +125,11 @@ export const tooltipService = {
          * @param {HTMLElement} el
          */
         function openElementsTooltip(el) {
+            // Fix weird behavior in Firefox where MouseEvent can be dispatched
+            // from TEXT_NODE, even if they shouldn't...
+            if (el.nodeType === Node.TEXT_NODE) {
+                return;
+            }
             if (elementsWithTooltips.has(el)) {
                 openTooltip(el, elementsWithTooltips.get(el));
             } else if (el.matches("[data-tooltip], [data-tooltip-template]")) {
@@ -153,11 +157,13 @@ export const tooltipService = {
          * @param {MouseEvent} ev a "mouseenter" event
          */
         function onMouseenter(ev) {
+            mouseEntered = true;
             openElementsTooltip(ev.target);
         }
 
         function onMouseleave(ev) {
             if (target === ev.target) {
+                mouseEntered = false;
                 cleanup();
             }
         }
@@ -199,8 +205,6 @@ export const tooltipService = {
                         }
                     }
                 });
-
-                return;
             }
 
             // Listen (using event delegation) to "mouseenter" events to open the tooltip if any

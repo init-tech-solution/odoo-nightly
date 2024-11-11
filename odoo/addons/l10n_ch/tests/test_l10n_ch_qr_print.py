@@ -12,8 +12,9 @@ _logger = logging.getLogger(__name__)
 class QRPrintTest(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls, chart_template_ref='l10n_ch.l10nch_chart_template'):
-        super().setUpClass(chart_template_ref=chart_template_ref)
+    @AccountTestInvoicingCommon.setup_country('ch')
+    def setUpClass(cls):
+        super().setUpClass()
         # the partner must be located in Switzerland.
         cls.partner = cls.env['res.partner'].create({
             'name': 'Bobby',
@@ -23,7 +24,6 @@ class QRPrintTest(AccountTestInvoicingCommon):
         cls.qr_bank_account = cls.env['res.partner.bank'].create({
             'acc_number': "CH4431999123000889012",
             'partner_id': cls.env.company.partner_id.id,
-            'l10n_ch_isr_subscription_chf': '01-39139-1',
         })
         cls.correct_invoice_chf = cls.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -57,7 +57,7 @@ class QRPrintTest(AccountTestInvoicingCommon):
             invoice.action_invoice_sent()
             return True
         except UserError as e:
-            _logger.warning(e.name)
+            _logger.warning(str(e))
             return False
 
     def test_print_qr(self):

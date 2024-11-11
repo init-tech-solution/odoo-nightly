@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { browser } from "../../core/browser/browser";
 import { registry } from "../../core/registry";
 import { session } from "@web/session";
@@ -25,6 +23,17 @@ function makeFetchLoadMenus() {
 
 function makeMenus(env, menusData, fetchLoadMenus) {
     let currentAppId;
+    function _getMenu(menuId) {
+        return menusData[menuId];
+    }
+    function setCurrentMenu(menu) {
+        menu = typeof menu === "number" ? _getMenu(menu) : menu;
+        if (menu && menu.appID !== currentAppId) {
+            currentAppId = menu.appID;
+            env.bus.trigger("MENUS:APP-CHANGED");
+        }
+    }
+
     return {
         getAll() {
             return Object.values(menusData);
@@ -32,9 +41,7 @@ function makeMenus(env, menusData, fetchLoadMenus) {
         getApps() {
             return this.getMenu("root").children.map((mid) => this.getMenu(mid));
         },
-        getMenu(menuID) {
-            return menusData[menuID];
-        },
+        getMenu: _getMenu,
         getCurrentApp() {
             if (!currentAppId) {
                 return;
@@ -53,19 +60,14 @@ function makeMenus(env, menusData, fetchLoadMenus) {
             if (!menu.actionID) {
                 return;
             }
-            await env.services.action.doAction(menu.actionID, { clearBreadcrumbs: true });
-            this.setCurrentMenu(menu);
+            await env.services.action.doAction(menu.actionID, {
+                clearBreadcrumbs: true,
+                onActionReady: () => {
+                    setCurrentMenu(menu);
+                },
+            });
         },
-        setCurrentMenu(menu) {
-            menu = typeof menu === "number" ? this.getMenu(menu) : menu;
-            if (menu && menu.appID !== currentAppId) {
-                currentAppId = menu.appID;
-                env.bus.trigger("MENUS:APP-CHANGED");
-                // FIXME: lock API: maybe do something like
-                // pushState({menu_id: ...}, { lock: true}); ?
-                env.services.router.pushState({ menu_id: menu.id }, { lock: true });
-            }
-        },
+        setCurrentMenu,
         async reload() {
             if (fetchLoadMenus) {
                 menusData = await fetchLoadMenus(true);
@@ -76,7 +78,7 @@ function makeMenus(env, menusData, fetchLoadMenus) {
 }
 
 export const menuService = {
-    dependencies: ["action", "router"],
+    dependencies: ["action"],
     async start(env) {
         const fetchLoadMenus = makeFetchLoadMenus();
         const menusData = await fetchLoadMenus();

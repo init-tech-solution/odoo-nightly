@@ -1,71 +1,44 @@
 /** @odoo-module */
 
-import tour from 'web_tour.tour';
-import tourUtils from 'website_sale.tour_utils';
+import { registry } from "@web/core/registry";
+import * as tourUtils from '@website_sale/js/tours/tour_utils';
 
 
-function fail (errorMessage) {
-    tour._consume_tour(tour.running_tour, errorMessage);
-}
-
-tour.register('autocomplete_tour', {
-    test: true,
+registry.category("web_tour.tours").add('autocomplete_tour', {
+    checkDelay: 100,
     url: '/shop', // /shop/address is redirected if no sales order
-}, [{
-    content: "search test product",
-    trigger: 'form input[name="search"]',
-    run: "text A test product",
-},{
-    content: 'Go to the product page',
-    trigger: '.dropdown-item:contains("A test product")'
-}, {
-    content: 'Add to cart',
-    trigger: '#add_to_cart'
-},
+    steps: () => [
+    ...tourUtils.addToCart({productName: "A test product"}),
     tourUtils.goToCart(),
-{
-    content: 'Go to process checkout',
-    trigger: 'a:contains("Process Checkout")'
-}, { // Actual test
+    tourUtils.goToCheckout(),
+{ // Actual test
     content: 'Input in Street & Number field',
     trigger: 'input[name="street"]',
-    run: 'text This is a test'
+    run: "edit This is a test",
 }, {
     content: 'Check if results have appeared',
     trigger: '.js_autocomplete_result',
-    run: function () {}
 }, {
     content: 'Input again in street field',
     trigger: 'input[name="street"]',
-    run: 'text add more'
+    run: "fill add more",
 }, {
     content: 'Click on the first result',
-    trigger: '.js_autocomplete_result'
-}, {
-    content: 'Verify the autocomplete box disappeared',
-    trigger: 'body:not(:has(.js_autocomplete_result))'
-}, { // Verify test data has been input
+    trigger: ".dropdown-menu .js_autocomplete_result:first:contains(result 0)",
+    run: "click",
+},
+// TODO: Make this step work in headless mode
+// {
+//     content: "Verify the autocomplete box disappeared",
+//     trigger: `body:not(:has(.dropdown-menu .js_autocomplete_result))`,
+// },
+{ // Verify test data has been input
     content: 'Check Street & number have been set',
-    trigger: 'input[name="street"]',
-    run: function () {
-        if (this.$anchor.val() !== '42 A fictional Street') {
-            fail('Street value is not correct : ' + this.$anchor.val())
-        }
-    }
+    trigger: "input[name=street]:value(/^42 A fictional Street$/)",
 }, {
     content: 'Check City is not empty anymore',
-    trigger: 'input[name="city"]',
-    run: function () {
-        if (this.$anchor.val() !== 'A Fictional City') {
-            fail('Street value is not correct : ' + this.$anchor.val())
-        }
-    }
+    trigger: 'input[name="city"]:value(/^A Fictional City$/)',
 }, {
     content: 'Check Zip code is not empty anymore',
-    trigger: 'input[name="zip"]',
-    run: function () {
-        if (this.$anchor.val() !== '12345') {
-            fail('Street value is not correct : ' + this.$anchor.val())
-        }
-    }
-}]);
+    trigger: 'input[name="zip"]:value(/^12345$/)',
+}]});

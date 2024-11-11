@@ -1,10 +1,8 @@
 /** @odoo-module */
 
-import { DataSources } from "@spreadsheet/data_sources/data_sources";
-import { migrate } from "@spreadsheet/o_spreadsheet/migration";
-import spreadsheet from "@spreadsheet/o_spreadsheet/o_spreadsheet_extended";
-
-const { Model } = spreadsheet;
+import { Model } from "@odoo/o-spreadsheet";
+import { OdooDataProvider } from "@spreadsheet/data_sources/odoo_data_provider";
+import { createDefaultCurrency } from "@spreadsheet/currency/helpers";
 
 /**
  * @type {{
@@ -32,14 +30,12 @@ export const Status = {
  * @typedef DashboardGroupData
  * @property {number} id
  * @property {string} name
- * @property {Array<number>} dashboardIds
+ * @property {Array<{id: number, name: string}>} dashboards
  *
  * @typedef DashboardGroup
  * @property {number} id
  * @property {string} name
  * @property {Array<Dashboard>} dashboards
- *
- * @typedef {(dashboardId: number) => Promise<{ data: string, revisions: object[] }>} FetchDashboardData
  *
  * @typedef {import("@web/env").OdooEnv} OdooEnv
  *
@@ -50,9 +46,8 @@ export class DashboardLoader {
     /**
      * @param {OdooEnv} env
      * @param {ORM} orm
-     * @param {FetchDashboardData} fetchDashboardData
      */
-    constructor(env, orm, fetchDashboardData) {
+    constructor(env, orm) {
         /** @private */
         this.env = env;
         /** @private */
@@ -61,8 +56,6 @@ export class DashboardLoader {
         this.groups = [];
         /** @private @type {Object<number, Dashboard>} */
         this.dashboards = {};
-        /** @private */
-        this.fetchDashboardData = fetchDashboardData;
     }
 
     /**
@@ -87,13 +80,13 @@ export class DashboardLoader {
     async load() {
         const groups = await this._fetchGroups();
         this.groups = groups
-            .filter((group) => group.dashboard_ids.length)
+            .filter((group) => group.published_dashboard_ids.length)
             .map((group) => ({
                 id: group.id,
                 name: group.name,
-                dashboardIds: group.dashboard_ids,
+                dashboards: group.published_dashboard_ids,
             }));
-        const dashboards = await this._fetchDashboardNames(this.groups);
+        const dashboards = this.groups.map((group) => group.dashboards).flat();
         for (const dashboard of dashboards) {
             this.dashboards[dashboard.id] = {
                 id: dashboard.id,
@@ -122,37 +115,30 @@ export class DashboardLoader {
         return this.groups.map((section) => ({
             id: section.id,
             name: section.name,
-            dashboards: section.dashboardIds.map((dashboardId) => ({
-                id: dashboardId,
-                displayName: this._getDashboard(dashboardId).displayName,
-                status: this._getDashboard(dashboardId).status,
+            dashboards: section.dashboards.map((dashboard) => ({
+                id: dashboard.id,
+                displayName: dashboard.name,
+                status: this._getDashboard(dashboard.id).status,
             })),
         }));
     }
 
     /**
      * @private
-     * @returns {Promise<{id: number, name: string, dashboard_ids: number[]}[]>}
+     * @returns {Promise<{id: number, name: string, published_dashboard_ids: number[]}[]>}
      */
-    _fetchGroups() {
-        return this.orm.searchRead(
+    async _fetchGroups() {
+        const groups = await this.orm.webSearchRead(
             "spreadsheet.dashboard.group",
-            [["dashboard_ids", "!=", false]],
-            ["id", "name", "dashboard_ids"]
+            [["published_dashboard_ids", "!=", false]],
+            {
+                specification: {
+                    name: {},
+                    published_dashboard_ids: { fields: { name: {} } },
+                },
+            }
         );
-    }
-
-    /**
-     * @private
-     * @param {Array<DashboardGroupData>} groups
-     * @returns {Promise}
-     */
-    _fetchDashboardNames(groups) {
-        return this.orm.read(
-            "spreadsheet.dashboard",
-            groups.map((group) => group.dashboardIds).flat(),
-            ["name"]
-        );
+        return groups.records;
     }
 
     /**
@@ -175,9 +161,14 @@ export class DashboardLoader {
         const dashboard = this._getDashboard(dashboardId);
         dashboard.status = Status.Loading;
         try {
-            const { data, revisions } = await this.fetchDashboardData(dashboardId);
-            dashboard.model = this._createSpreadsheetModel(data, revisions);
+            const { snapshot, revisions, default_currency, is_sample } = await this.orm.call(
+                "spreadsheet.dashboard",
+                "get_readonly_dashboard",
+                [dashboardId]
+            );
+            dashboard.model = this._createSpreadsheetModel(snapshot, revisions, default_currency);
             dashboard.status = Status.Loaded;
+            dashboard.isSample = is_sample;
         } catch (error) {
             dashboard.error = error;
             dashboard.status = Status.Error;
@@ -203,23 +194,26 @@ export class DashboardLoader {
 
     /**
      * @private
-     * @param {string} data
+     * @param {object} snapshot
      * @param {object[]} revisions
+     * @param {object} [defaultCurrency]
      * @returns {Model}
      */
-    _createSpreadsheetModel(data, revisions = []) {
-        const dataSources = new DataSources(this.orm);
+    _createSpreadsheetModel(snapshot, revisions = [], currency) {
+        const odooDataProvider = new OdooDataProvider(this.env);
         const model = new Model(
-            migrate(JSON.parse(data)),
+            snapshot,
             {
-                evalContext: { env: this.env, orm: this.orm },
+                custom: { env: this.env, orm: this.orm, odooDataProvider },
                 mode: "dashboard",
-                dataSources,
+                defaultCurrency: createDefaultCurrency(currency),
             },
             revisions
         );
         this._activateFirstSheet(model);
-        dataSources.addEventListener("data-source-updated", () => model.dispatch("EVALUATE_CELLS"));
+        odooDataProvider.addEventListener("data-source-updated", () =>
+            model.dispatch("EVALUATE_CELLS")
+        );
         return model;
     }
 }

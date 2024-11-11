@@ -1,27 +1,48 @@
 /** @odoo-module */
 
-import { KanbanModel } from "@web/views/kanban/kanban_model";
+import { RelationalModel } from "@web/model/relational_model/relational_model";
+import { Record } from "@web/model/relational_model/record";
+import { makeActiveField } from "@web/model/relational_model/utils";
 
-import { ProjectTaskKanbanDynamicGroupList } from "./project_task_kanban_dynamic_group_list";
-import { ProjectTaskRecord } from './project_task_kanban_record';
-
-export class ProjectTaskKanbanGroup extends KanbanModel.Group {
-    get isPersonalStageGroup() {
-        return !!this.groupByField && this.groupByField.name === 'personal_stage_type_ids';
-    }
-
-    async delete() {
-        if (this.isPersonalStageGroup) {
-            this.deleted = true;
-            return await this.model.orm.call(this.resModel, 'remove_personal_stage', [this.resId]);
-        } else {
-            return await super.delete();
-        }
+export class ProjectTaskKanbanDynamicGroupList extends RelationalModel.DynamicGroupList {
+    get isGroupedByStage() {
+        return !!this.groupByField && this.groupByField.name === "stage_id";
     }
 }
 
-export class ProjectTaskKanbanModel extends KanbanModel { }
+export class ProjectTaskRecord extends Record {
+    setup() {
+        super.setup(...arguments);
+        this.displaySubtasks = false;
+        this.canSaveOnUpdate = true;
+    }
+
+    async toggleSubtasksList() {
+        const { display_name, project_id, state, user_ids } = this.config.fields;
+        const activeField = makeActiveField({ onChange: true });
+        activeField.related = {
+            activeFields: {
+                display_name: makeActiveField(),
+                state: makeActiveField(),
+                user_ids: makeActiveField(),
+                project_id: makeActiveField(),
+            },
+            fields: {
+                display_name,
+                project_id,
+                state,
+                user_ids,
+            },
+        };
+        await this._load({
+            activeFields: { ...this.config.activeFields, child_ids: activeField },
+        });
+        this.displaySubtasks = !this.displaySubtasks;
+    }
+
+}
+
+export class ProjectTaskKanbanModel extends RelationalModel {}
 
 ProjectTaskKanbanModel.DynamicGroupList = ProjectTaskKanbanDynamicGroupList;
-ProjectTaskKanbanModel.Group = ProjectTaskKanbanGroup;
 ProjectTaskKanbanModel.Record = ProjectTaskRecord;

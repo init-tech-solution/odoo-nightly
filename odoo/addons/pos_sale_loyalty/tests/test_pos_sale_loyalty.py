@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.pos_loyalty.tests.test_frontend import TestUi
+from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 from odoo.tests import tagged
 
 
 @tagged("post_install", "-at_install")
-class TestPoSSaleLoyalty(TestUi):
+class TestPoSSaleLoyalty(TestPointOfSaleHttpCommon):
     def test_pos_sale_loyalty_1(self):
         """Test that only one loyalty card is created when settling an unconfirmed order."""
         self.env['loyalty.program'].search([]).write({'active': False})
@@ -41,5 +41,5 @@ class TestPoSSaleLoyalty(TestUi):
         })
 
         self.main_pos_config.open_ui()
-        self.start_tour("/pos/web?config_id=%d" % self.main_pos_config.id, "PosSaleLoyaltyTour1", login="accountman")
+        self.start_pos_tour("PosSaleLoyaltyTour1", login="accountman")
         self.assertEqual(self.env['loyalty.card'].search_count([('partner_id', '=', self.partner_a.id)]), 1)

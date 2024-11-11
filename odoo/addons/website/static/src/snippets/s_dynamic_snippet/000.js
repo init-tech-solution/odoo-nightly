@@ -1,10 +1,13 @@
-odoo.define('website.s_dynamic_snippet', function (require) {
-'use strict';
+/** @odoo-module **/
 
-const core = require('web.core');
-const config = require('web.config');
-const publicWidget = require('web.public.widget');
-const {Markup} = require('web.utils');
+import publicWidget from "@web/legacy/js/public/public_widget";
+import { rpc } from "@web/core/network/rpc";
+import { uniqueId } from "@web/core/utils/functions";
+import { renderToString } from "@web/core/utils/render";
+import { listenSizeChange, utils as uiUtils } from "@web/core/ui/ui_service";
+
+import { markup } from "@odoo/owl";
+
 const DEFAULT_NUMBER_OF_ELEMENTS = 4;
 const DEFAULT_NUMBER_OF_ELEMENTS_SM = 1;
 
@@ -30,8 +33,8 @@ const DynamicSnippet = publicWidget.Widget.extend({
          */
         this.data = [];
         this.renderedContent = '';
-        this.isDesplayedAsMobile = config.device.isMobile;
-        this.uniqueId = _.uniqueId('s_dynamic_snippet_');
+        this.isDesplayedAsMobile = uiUtils.isSmall();
+        this.unique_id = uniqueId("s_dynamic_snippet_");
         this.template_key = 'website.s_dynamic_snippet.grid';
     },
     /**
@@ -115,24 +118,20 @@ const DynamicSnippet = publicWidget.Widget.extend({
     async _fetchData() {
         if (this._isConfigComplete()) {
             const nodeData = this.el.dataset;
-            const filterFragments = await this._rpc({
-                'route': '/website/snippet/filters',
-                'params': Object.assign({
-                    'filter_id': parseInt(nodeData.filterId),
-                    'template_key': nodeData.templateKey,
-                    'limit': parseInt(nodeData.numberOfRecords),
-                    'search_domain': this._getSearchDomain(),
-                    'with_sample': this.editableMode,
-                    'context': {
-                        // TODO adapt in master (see _bugfix_force_minimum_max_limit_to_16)
-                        // in python. The `forceMinimumMaxLimitTo16` value in the
-                        // dataset is there only in dynamic snippets whose options
-                        // have been configured after this fix was merged.
-                        '_bugfix_force_minimum_max_limit_to_16': !!nodeData.forceMinimumMaxLimitTo16,
+            const filterFragments = await rpc(
+                '/website/snippet/filters',
+                Object.assign({
+                        'filter_id': parseInt(nodeData.filterId),
+                        'template_key': nodeData.templateKey,
+                        'limit': parseInt(nodeData.numberOfRecords),
+                        'search_domain': this._getSearchDomain(),
+                        'with_sample': this.editableMode,
                     },
-                }, this._getRpcParameters()),
-            });
-            this.data = filterFragments.map(Markup);
+                    this._getRpcParameters(),
+                    JSON.parse(this.el.dataset?.customTemplateData || "{}")
+                )
+            );
+            this.data = filterFragments.map(markup);
         } else {
             this.data = [];
         }
@@ -143,7 +142,7 @@ const DynamicSnippet = publicWidget.Widget.extend({
      * @private
      */
     _prepareContent: function () {
-        this.renderedContent = core.qweb.render(
+        this.renderedContent = renderToString(
             this.template_key,
             this._getQWebRenderOptions()
         );
@@ -154,10 +153,10 @@ const DynamicSnippet = publicWidget.Widget.extend({
      * @private
      */
      _getQWebRenderOptions: function () {
-        const dataset = this.$target[0].dataset;
+        const dataset = this.el.dataset;
         const numberOfRecords = parseInt(dataset.numberOfRecords);
         let numberOfElements;
-        if (config.device.isMobile) {
+        if (uiUtils.isSmall()) {
             numberOfElements = parseInt(dataset.numberOfElementsSmallDevices) || DEFAULT_NUMBER_OF_ELEMENTS_SM;
         } else {
             numberOfElements = parseInt(dataset.numberOfElements) || DEFAULT_NUMBER_OF_ELEMENTS;
@@ -166,8 +165,9 @@ const DynamicSnippet = publicWidget.Widget.extend({
         return {
             chunkSize: chunkSize,
             data: this.data,
-            uniqueId: this.uniqueId,
+            unique_id: this.unique_id,
             extraClasses: dataset.extraClasses || '',
+            columnClasses: dataset.columnClasses || '',
         };
     },
     /**
@@ -176,18 +176,11 @@ const DynamicSnippet = publicWidget.Widget.extend({
      */
     _render: function () {
         if (this.data.length > 0 || this.editableMode) {
-            this.$el.removeClass('o_dynamic_empty');
+            this.$el.removeClass('o_dynamic_snippet_empty');
             this._prepareContent();
         } else {
-            this.$el.addClass('o_dynamic_empty');
+            this.$el.addClass('o_dynamic_snippet_empty');
             this.renderedContent = '';
-        }
-        // TODO Remove in master: adapt already existing snippet from former version.
-        const classList = [...this.$el[0].classList];
-        if (classList.includes('d-none') && !classList.some(className => className.match(/^d-(md|lg)-(?!none)/))) {
-            // Remove the 'd-none' of the old template if it is not related to
-            // the visible on mobile option.
-            this.$el[0].classList.remove('d-none');
         }
         this._renderContent();
         this.trigger_up('widgets_start_request', {
@@ -204,6 +197,12 @@ const DynamicSnippet = publicWidget.Widget.extend({
         this.trigger_up('widgets_stop_request', {
             $target: $templateArea,
         });
+        const mainPageUrl = this._getMainPageUrl();
+        const allContentLink = this.el.querySelector(".s_dynamic_snippet_main_page_url");
+        if (allContentLink && mainPageUrl) {
+            allContentLink.href = mainPageUrl;
+            allContentLink.classList.remove("d-none");
+        }
         $templateArea.html(this.renderedContent);
         // TODO this is probably not the only public widget which creates DOM
         // which should be attached to another public widget. Maybe a generic
@@ -212,6 +211,24 @@ const DynamicSnippet = publicWidget.Widget.extend({
             $target: $templateArea,
             editableMode: this.editableMode,
         });
+        // Same as above and probably should be done automatically for any
+        // bootstrap behavior (apparently needed since BS 5.3): start potential
+        // carousel in new content (according to their data-bs-ride and other
+        // dataset attributes). Note: done here and not in dynamic carousel
+        // extension, because: why not?
+        // (TODO review + See interaction with "slider" public widget).
+        setTimeout(() => {
+            $templateArea[0].querySelectorAll('.carousel').forEach(carouselEl => {
+                if (carouselEl.dataset.bsInterval === "0") {
+                    delete carouselEl.dataset.bsRide;
+                    delete carouselEl.dataset.bsInterval;
+                }
+                window.Carousel.getInstance(carouselEl)?.dispose();
+                if (!this.editableMode) {
+                    window.Carousel.getOrCreateInstance(carouselEl);
+                }
+            });
+        }, 0);
     },
     /**
      *
@@ -220,9 +237,10 @@ const DynamicSnippet = publicWidget.Widget.extend({
      */
     _setupSizeChangedManagement: function (enable) {
         if (enable === true) {
-            config.device.bus.on('size_changed', this, this._onSizeChanged);
-        } else {
-            config.device.bus.off('size_changed', this, this._onSizeChanged);
+            this.removeSizeListener = listenSizeChange(this._onSizeChanged.bind(this));
+        } else if (this.removeSizeListener) {
+            this.removeSizeListener();
+            delete this.removeSizeListener;
         }
     },
     /**
@@ -231,7 +249,15 @@ const DynamicSnippet = publicWidget.Widget.extend({
      * @private
      */
     _toggleVisibility: function (visible) {
-        this.$el.toggleClass('o_dynamic_empty', !visible);
+        this.$el.toggleClass('o_dynamic_snippet_empty', !visible);
+    },
+    /**
+     * Returns the main URL of the module related to the active filter.
+     *
+     * @private
+     */
+    _getMainPageUrl() {
+        return '';
     },
 
     //------------------------------------- -------------------------------------
@@ -249,11 +275,10 @@ const DynamicSnippet = publicWidget.Widget.extend({
      * Called when the size has reached a new bootstrap breakpoint.
      *
      * @private
-     * @param {number} size as Integer @see web.config.device.SIZES
      */
-    _onSizeChanged: function (size) {
-        if (this.isDesplayedAsMobile !== config.device.isMobile) {
-            this.isDesplayedAsMobile = config.device.isMobile;
+    _onSizeChanged: function () {
+        if (this.isDesplayedAsMobile !== uiUtils.isSmall()) {
+            this.isDesplayedAsMobile = uiUtils.isSmall();
             this._render();
         }
     },
@@ -261,6 +286,4 @@ const DynamicSnippet = publicWidget.Widget.extend({
 
 publicWidget.registry.dynamic_snippet = DynamicSnippet;
 
-return DynamicSnippet;
-
-});
+export default DynamicSnippet;

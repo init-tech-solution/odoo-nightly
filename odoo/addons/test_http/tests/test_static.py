@@ -1,17 +1,19 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from http import HTTPStatus
 from os.path import basename, join as opj
 from unittest.mock import patch
 from freezegun import freeze_time
 from urllib3.util import parse_url
 
 import odoo
-from odoo.tests import new_test_user, tagged
+from odoo.tests import new_test_user, tagged, RecordCapturer
 from odoo.tools import config, file_open, image_process
+from odoo.tools.misc import submap
 
-from .test_common import TestHttpBase
+from .test_common import TestHttpBase, HTTP_DATETIME_FORMAT
 
 
 class TestHttpStaticCommon(TestHttpBase):
@@ -32,8 +34,7 @@ class TestHttpStaticCommon(TestHttpBase):
         res = self.db_url_open(url, headers=headers)
         res.raise_for_status()
         self.assertEqual(res.status_code, assert_status_code)
-        for header_name, header_value in assert_headers.items():
-            self.assertEqual(res.headers.get(header_name), header_value)
+        self.assertEqual(submap(res.headers, assert_headers), assert_headers)
         if assert_content:
             self.assertEqual(res.content, assert_content)
         return res
@@ -64,25 +65,31 @@ class TestHttpStaticCommon(TestHttpBase):
 
 @tagged('post_install', '-at_install')
 class TestHttpStatic(TestHttpStaticCommon):
+    def setUp(self):
+        super().setUp()
+        self.authenticate('demo', 'demo')
+
     def test_static00_static(self):
         with self.subTest(x_sendfile=False):
             res = self.assertDownloadGizeh('/test_http/static/src/img/gizeh.png')
-            self.assertEqual(res.headers.get('Cache-Control', ''), 'public, max-age=604800')
+            self.assertCacheControl(res, 'public, max-age=604800')
 
         with self.subTest(x_sendfile=True), \
              patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
             # The file is outside of the filestore, X-Sendfile disabled
             res = self.assertDownloadGizeh('/test_http/static/src/img/gizeh.png', x_sendfile=False)
-            self.assertEqual(res.headers.get('Cache-Control', ''), 'public, max-age=604800')
+            self.assertCacheControl(res, 'public, max-age=604800')
 
     def test_static01_debug_assets(self):
         session = self.authenticate(None, None)
         session.debug = 'assets'
 
         res = self.assertDownloadGizeh('/test_http/static/src/img/gizeh.png')
-        self.assertEqual(res.headers.get('Cache-Control', ''), 'no-cache, max-age=0')
+        self.assertCacheControl(res, 'no-cache, max-age=0')
 
     def test_static02_not_found(self):
+        session = self.authenticate(None, None)
+        session.db = None
         res = self.nodb_url_open("/test_http/static/i-dont-exist")
         self.assertEqual(res.status_code, 404)
 
@@ -142,7 +149,7 @@ class TestHttpStatic(TestHttpStaticCommon):
             res.headers.get('Location'),
             'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
-    def test_static08_binary_field_attach(self):
+    def test_static08_binary_field(self):
         earth = self.env.ref('test_http.earth')
         attachment = self.env['ir.attachment'].search([
             ('res_model', '=', 'test_http.stargate'),
@@ -151,25 +158,26 @@ class TestHttpStatic(TestHttpStaticCommon):
         ], limit=1)
         attachment_path = opj(config.filestore(self.env.cr.dbname), attachment.store_fname)
 
-        with self.subTest(x_sendfile=False):
-            self.assertDownloadGizeh(
-                f'/web/content/test_http.stargate/{earth.id}/glyph_attach',
-                assert_filename='Earth.png'
-            )
+        for field, is_attachment in (
+            ('glyph_attach', True),
+            ('glyph_inline', False),
+            ('glyph_related', True),
+            ('glyph_compute', False),
+        ):
+            with self.subTest(x_sendfile=False):
+                self.assertDownloadGizeh(
+                    f'/web/content/test_http.earth?field={field}',
+                    assert_filename='Earth.png'
+                )
 
-        with self.subTest(x_sendfile=True), \
-             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
-            self.assertDownloadGizeh(
-                f'/web/content/test_http.stargate/{earth.id}/glyph_attach',
-                x_sendfile=attachment_path,
-                assert_filename='Earth.png'
-            )
-
-    def test_static09_binary_field_inline(self):
-        self.assertDownloadGizeh(
-            '/web/content/test_http.earth?field=glyph_inline',
-            assert_filename='Earth.png'
-        )
+            if is_attachment:
+                with self.subTest(x_sendfile=True), \
+                     patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+                    self.assertDownloadGizeh(
+                        f'/web/content/test_http.earth?field={field}',
+                        x_sendfile=is_attachment and attachment_path,
+                        assert_filename='Earth.png'
+                    )
 
     def test_static10_filename(self):
         with self.subTest("record name"):
@@ -267,10 +275,21 @@ class TestHttpStatic(TestHttpStaticCommon):
             assert_content=self.gizeh_data[100:200]
         )
 
-    def test_static16_public_user_image(self):
-        public_user = self.env.ref('base.public_user')
-        res = self.url_open(f'/web/image/res.users/{public_user.id}/image_128?download=1')
-        self.assertEqual(res.status_code, 404)
+    def test_static16_public_access_rights(self):
+        self.authenticate(None, None)
+        default_user = self.env.ref('base.default_user')
+
+        with self.subTest('model access rights'):
+            res = self.url_open(f'/web/content/res.users/{default_user.id}/image_128')
+            self.assertEqual(res.status_code, 404)
+
+        with self.subTest('attachment + field access rights'):
+            res = self.url_open('/web/content/test_http.pegasus?field=picture')
+            self.assertEqual(res.status_code, 404)
+
+        with self.subTest('related attachment + field access rights'):
+            res = self.url_open('/web/content/test_http.earth?field=galaxy_picture')
+            self.assertEqual(res.status_code, 404)
 
     def test_static17_content_missing_checksum(self):
         att = self.env['ir.attachment'].create({
@@ -319,7 +338,42 @@ class TestHttpStatic(TestHttpStaticCommon):
         self.assertNotEqual(location.path, bad_path, "loop detected")
         self.assertEqual(res.status_code, 404)
 
-    def test_static20_download_false(self):
+    def test_static20_web_assets(self):
+        attachment = self.env['ir.attachment'].search([
+            ('url', 'like', '%/web.assets_frontend_minimal.min.js')
+        ], limit=1)
+        x_sendfile = opj(config.filestore(self.env.cr.dbname), attachment.store_fname)
+        x_accel_redirect = f'/web/filestore/{self.env.cr.dbname}/{attachment.store_fname}'
+
+        with self.subTest(x_sendfile=False):
+            self.assertDownload(
+                attachment.url,
+                headers={},
+                assert_status_code=200,
+                assert_headers={
+                    'Content-Length': str(attachment.file_size),
+                    'Content-Type': 'application/javascript; charset=utf-8',
+                    'Content-Disposition': 'inline; filename=web.assets_frontend_minimal.min.js',
+                },
+                assert_content=attachment.raw
+            )
+
+        with self.subTest(x_sendfile=True), \
+             patch.object(config, 'options', {**config.options, 'x_sendfile': True}):
+            self.assertDownload(
+                attachment.url,
+                headers={},
+                assert_status_code=200,
+                assert_headers={
+                    'X-Sendfile': x_sendfile,
+                    'X-Accel-Redirect': x_accel_redirect,
+                    'Content-Length': '0',
+                    'Content-Type': 'application/javascript; charset=utf-8',
+                    'Content-Disposition': 'inline; filename=web.assets_frontend_minimal.min.js',
+                },
+            )
+
+    def test_static21_download_false(self):
         self.assertDownloadGizeh('/web/content/test_http.gizeh_png?download=0')
         self.assertDownloadGizeh('/web/image/test_http.gizeh_png?download=0')
 
@@ -487,69 +541,66 @@ class TestHttpStaticLogo(TestHttpStaticCommon):
         self.assertDownloadLogoDefault(company=self.company2, user=self.user_of_company_of_superuser)
 
 
+@tagged('post_install', '-at_install')
 class TestHttpStaticCache(TestHttpStaticCommon):
     @freeze_time(datetime.utcnow())
-    def test_static_cache0_standard(self, domain=''):
-        # Wed, 21 Oct 2015 07:28:00 GMT
-        # The timezone should be %Z (instead of 'GMT' hardcoded) but
-        # somehow strftime doesn't set it.
-        http_date_format = '%a, %d %b %Y %H:%M:%S GMT'
-        today = datetime.utcnow().strftime(http_date_format)
-        one_week_away = (datetime.utcnow() + timedelta(weeks=1)).strftime(http_date_format)
+    def test_static_cache0_standard(self):
+        one_week_away = int((datetime.now(timezone.utc) + timedelta(weeks=1)).timestamp())
 
-        res1 = self.nodb_url_open(f'{domain}/test_http/static/src/img/gizeh.png')
+        res1 = self.nodb_url_open('/test_http/static/src/img/gizeh.png')
         res1.raise_for_status()
         self.assertEqual(res1.status_code, 200)
-        self.assertEqual(res1.headers.get('Cache-Control'), 'public, max-age=604800')  # one week
-        self.assertEqual(res1.headers.get('Expires'), one_week_away)
+        self.assertCacheControl(res1, 'public, max-age=604800')  # one week
+        expires = self.parse_http_expires(res1.headers['Expires']).timestamp()
+        self.assertIn(expires, range(one_week_away, one_week_away + 60))  # + 60 for nginx
         self.assertIn('ETag', res1.headers)
 
-        res_etag = self.nodb_url_open(f'{domain}/test_http/static/src/img/gizeh.png', headers={
+        res_etag = self.nodb_url_open('/test_http/static/src/img/gizeh.png', headers={
             'If-None-Match': res1.headers['ETag']
         })
         res_etag.raise_for_status()
         self.assertEqual(res_etag.status_code, 304, "We should not download the file again.")
 
-        res_last_modified = self.nodb_url_open(f'{domain}/test_http/static/src/img/gizeh.png', headers={
-            'If-Modified-Since': today,
+        res_last_modified = self.nodb_url_open('/test_http/static/src/img/gizeh.png', headers={
+            'If-Modified-Since': datetime.now(timezone.utc).strftime(HTTP_DATETIME_FORMAT),
         })
         res_last_modified.raise_for_status()
         self.assertEqual(res_last_modified.status_code, 304, "We should not download the file again.")
 
     @freeze_time(datetime.utcnow())
-    def test_static_cache1_unique(self, domain=''):
+    def test_static_cache1_unique(self):
         # Wed, 21 Oct 2015 07:28:00 GMT
         # The timezone should be %Z (instead of 'GMT' hardcoded) but
         # somehow strftime doesn't set it.
-        http_date_format = '%a, %d %b %Y %H:%M:%S GMT'
-        today = datetime.utcnow().strftime(http_date_format)
-        one_year_away = (datetime.utcnow() + timedelta(days=365)).strftime(http_date_format)
+        now = datetime.now(timezone.utc)
+        one_year_away = int((now + timedelta(days=365)).timestamp())
 
-        res1 = self.assertDownloadGizeh(f'{domain}/web/image/test_http.gizeh_png?unique=1')
-        self.assertEqual(res1.headers.get('Cache-Control'), 'public, max-age=31536000, immutable')  # one year
-        self.assertEqual(res1.headers.get('Expires'), one_year_away)
+        res1 = self.assertDownloadGizeh('/web/image/test_http.gizeh_png?unique=1')
+        self.assertCacheControl(res1, 'public, max-age=31536000, immutable')  # one year
+        expires = self.parse_http_expires(res1.headers['Expires']).timestamp()
+        self.assertIn(expires, range(one_year_away, one_year_away + 60))  # + 60 for nginx
         self.assertIn('ETag', res1.headers)
 
-        res_etag = self.db_url_open(f'{domain}/web/image/test_http.gizeh_png?unique=1', headers={
+        res_etag = self.db_url_open('/web/image/test_http.gizeh_png?unique=1', headers={
             'If-None-Match': res1.headers['ETag']
         })
         res_etag.raise_for_status()
         self.assertEqual(res_etag.status_code, 304, "We should not download the file again.")
 
-        res_last_modified = self.db_url_open(f'{domain}/web/image/test_http.gizeh_png?unique=1', headers={
-            'If-Modified-Since': today,
+        res_last_modified = self.db_url_open('/web/image/test_http.gizeh_png?unique=1', headers={
+            'If-Modified-Since': now.strftime(HTTP_DATETIME_FORMAT),
         })
         res_last_modified.raise_for_status()
         self.assertEqual(res_last_modified.status_code, 304, "We should not download the file again.")
 
     @freeze_time(datetime.utcnow())
-    def test_static_cache2_nocache(self, domain=''):
-        res1 = self.assertDownloadGizeh(f'{domain}/web/content/test_http.gizeh_png?nocache=1')
-        self.assertEqual(res1.headers.get('Cache-Control'), 'no-cache')
+    def test_static_cache2_nocache(self):
+        res1 = self.assertDownloadGizeh('/web/content/test_http.gizeh_png?nocache=1')
+        self.assertCacheControl(res1, 'no-cache')
         self.assertNotIn('Expires', res1.headers)
         self.assertIn('ETag', res1.headers)
 
-        res_etag = self.db_url_open(f'{domain}/web/content/test_http.gizeh_png?nocache=1', headers={
+        res_etag = self.db_url_open('/web/content/test_http.gizeh_png?nocache=1', headers={
             'If-None-Match': res1.headers['ETag']
         })
         res_etag.raise_for_status()
@@ -574,7 +625,78 @@ class TestHttpStaticCache(TestHttpStaticCommon):
         # Admin can get the actual image
         self.authenticate('admin', 'admin')
         res = self.assertDownloadGizeh(url)
-        self.assertEqual(res.headers.get('Cache-Control', ''), 'no-cache, private')
+        self.assertCacheControl(res, 'no-cache, private')
         res_etag = self.db_url_open(url, headers={'If-None-Match': res.headers['ETag']})
         res_etag.raise_for_status()
         self.assertEqual(res_etag.status_code, 304, "The admin should use its cache")
+
+
+@tagged('post_install', '-at_install')
+class TestHttpStaticUpload(TestHttpStaticCommon):
+    def _test_upload_small_file(self):
+        new_test_user(self.env, 'jackoneill')
+        self.authenticate('jackoneill', 'jackoneill')
+
+        with RecordCapturer(self.env['ir.attachment'], []) as capture, \
+             file_open('test_http/static/src/img/gizeh.png', 'rb') as file:
+            file_content = file.read()
+            file_size = len(file_content)
+            file.seek(0)
+            res = self.opener.post(
+                f'{self.base_url()}/web/binary/upload_attachment',
+                files={'ufile': file},
+                data={
+                    'csrf_token': odoo.http.Request.csrf_token(self),
+                    'model': 'test_http.stargate',
+                    'id': self.env.ref('test_http.earth').id,
+                },
+            )
+        res.raise_for_status()
+
+        self.assertEqual(len(capture.records), 1, "An attachment should have been created")
+        self.assertEqual(capture.records.name, 'gizeh.png')
+        self.assertEqual(capture.records.raw, file_content)
+        self.assertEqual(capture.records.mimetype, 'image/png')
+
+        self.assertEqual(res.json(), [{
+            'filename': 'gizeh.png',
+            'mimetype': 'image/png',
+            'id': capture.records.id,
+            'size': file_size,
+        }])
+
+    def test_upload_small_file_without_icp(self):
+        self.env['ir.config_parameter'].sudo().set_param(
+            'web.max_file_upload_size', False,
+        )
+        self._test_upload_small_file()
+
+    def test_upload_small_file_with_icp(self):
+        self.env['ir.config_parameter'].sudo().set_param(
+            'web.max_file_upload_size', 16386,  # gizen.png is smaller
+        )
+        self._test_upload_small_file()
+
+    def test_upload_large_file(self):
+        new_test_user(self.env, 'jackoneill')
+        self.authenticate('jackoneill', 'jackoneill')
+
+        with RecordCapturer(self.env['ir.attachment'], []) as capture, \
+             file_open('test_http/static/src/img/gizeh.png', 'rb') as file:
+            file_size = file.seek(0, 2)
+            file.seek(0)
+            self.env['ir.config_parameter'].sudo().set_param(
+                'web.max_file_upload_size', file_size - 1,
+            )
+            res = self.opener.post(
+                f'{self.base_url()}/web/binary/upload_attachment',
+                files={'ufile': file},
+                data={
+                    'csrf_token': odoo.http.Request.csrf_token(self),
+                    'model': 'test_http.stargate',
+                    'id': self.env.ref('test_http.earth').id,
+                    'callback': 'callmemaybe',
+                },
+            )
+        self.assertFalse(capture.records, "No attachment should have been created")
+        self.assertEqual(res.status_code, HTTPStatus.REQUEST_ENTITY_TOO_LARGE)

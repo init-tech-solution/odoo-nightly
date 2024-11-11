@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -36,14 +35,12 @@ class SaleOrderTemplateLine(models.Model):
     product_id = fields.Many2one(
         comodel_name='product.product',
         check_company=True,
-        domain="[('sale_ok', '=', True), ('company_id', 'in', [company_id, False])]")
+        domain=lambda self: self._product_id_domain())
 
     name = fields.Text(
         string="Description",
-        compute='_compute_name',
-        store=True, readonly=False, precompute=True,
-        required=True,
-        translate=True)
+        translate=True,
+    )
 
     product_uom_id = fields.Many2one(
         comodel_name='uom.uom',
@@ -63,13 +60,6 @@ class SaleOrderTemplateLine(models.Model):
         ('line_note', "Note")], default=False)
 
     #=== COMPUTE METHODS ===#
-
-    @api.depends('product_id')
-    def _compute_name(self):
-        for option in self:
-            if not option.product_id:
-                continue
-            option.name = option.product_id.get_product_multiline_description_sale()
 
     @api.depends('product_id')
     def _compute_product_uom_id(self):
@@ -92,6 +82,11 @@ class SaleOrderTemplateLine(models.Model):
 
     #=== BUSINESS METHODS ===#
 
+    @api.model
+    def _product_id_domain(self):
+        """ Returns the domain of the products that can be added to the template. """
+        return [('sale_ok', '=', True), ('type', '!=', 'combo')]
+
     def _prepare_order_line_values(self):
         """ Give the values to create the corresponding order line.
 
@@ -99,10 +94,13 @@ class SaleOrderTemplateLine(models.Model):
         :rtype: dict
         """
         self.ensure_one()
-        return {
+        vals = {
             'display_type': self.display_type,
-            'name': self.name,
             'product_id': self.product_id.id,
             'product_uom_qty': self.product_uom_qty,
             'product_uom': self.product_uom_id.id,
+            'sequence': self.sequence,
         }
+        if self.name:
+            vals['name'] = self.name
+        return vals

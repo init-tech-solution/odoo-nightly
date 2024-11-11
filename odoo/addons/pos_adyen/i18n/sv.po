@@ -3,16 +3,16 @@
 # 	* pos_adyen
 # 
 # Translators:
-# Kim Asplund <kim.asplund@gmail.com>, 2022
-# Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2024
+# Chrille Hedberg <hedberg.chrille@gmail.com>, 2024
 # Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:31+0000\n"
-"PO-Revision-Date: 2022-09-22 05:54+0000\n"
+"POT-Creation-Date: 2024-09-25 08:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Jakob Krabbe <jakob.krabbe@vertel.se>, 2024\n"
 "Language-Team: Swedish (https://app.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr ""
 #. module: pos_adyen
 #: model_terms:ir.ui.view,arch_db:pos_adyen.res_config_settings_view_form
 msgid "Add tip through payment terminal (Adyen)"
-msgstr ""
+msgstr "Lägg till dricks via betalterminal (Adyen)"
 
 #. module: pos_adyen
 #: model:ir.model.fields,field_description:pos_adyen.field_pos_payment_method__adyen_api_key
@@ -33,15 +33,9 @@ msgstr "Adyen API nyckel"
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid "Adyen Error"
 msgstr "Adyen Fel"
-
-#. module: pos_adyen
-#: model:ir.model.fields,field_description:pos_adyen.field_pos_payment_method__adyen_latest_diagnosis
-msgid "Adyen Latest Diagnosis"
-msgstr "Adyen Senaste Diagnos"
 
 #. module: pos_adyen
 #: model:ir.model.fields,field_description:pos_adyen.field_pos_payment_method__adyen_latest_response
@@ -51,7 +45,7 @@ msgstr "Adyen Senaste Svar"
 #. module: pos_adyen
 #: model:ir.model.fields,field_description:pos_adyen.field_pos_payment_method__adyen_terminal_identifier
 msgid "Adyen Terminal Identifier"
-msgstr ""
+msgstr "Adyen Terminal Identifier"
 
 #. module: pos_adyen
 #: model:ir.model.fields,field_description:pos_adyen.field_pos_payment_method__adyen_test_mode
@@ -60,36 +54,34 @@ msgstr "Adyen Test Läge"
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid "An unexpected error occurred. Message from Adyen: %s"
-msgstr ""
+msgstr "Ett oväntat fel inträffade. Meddelande från Adyen: %s"
 
 #. module: pos_adyen
 #: model:ir.model.fields,field_description:pos_adyen.field_pos_config__adyen_ask_customer_for_tip
 msgid "Ask Customers For Tip"
-msgstr ""
+msgstr "Fråga kunderna om tips"
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid "Authentication failed. Please check your Adyen credentials."
-msgstr ""
+msgstr "Autentiseringen misslyckades. Kontrollera dina Adyen-uppgifter."
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid ""
 "Cancelling the payment failed. Please cancel it manually on the payment "
 "terminal."
 msgstr ""
+"Det gick inte att avbryta betalningen. Avbryt det manuellt på "
+"betalterminalen."
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid "Cannot process transactions with negative amount."
 msgstr "Det går inte att behandla transaktioner med negativt belopp."
 
@@ -100,8 +92,7 @@ msgstr "Inställningar"
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid ""
 "Could not connect to the Odoo server, please check your internet connection "
 "and try again."
@@ -110,27 +101,30 @@ msgstr ""
 "internetanslutning och försök igen."
 
 #. module: pos_adyen
+#: model:ir.model.fields,field_description:pos_adyen.field_pos_payment_method__adyen_event_url
+msgid "Event URL"
+msgstr "Evenemangs URL"
+
+#. module: pos_adyen
 #. odoo-python
 #: code:addons/pos_adyen/models/pos_payment_method.py:0
-#: code:addons/pos_adyen/models/pos_payment_method.py:0
-#, python-format
 msgid "Invalid Adyen request"
-msgstr ""
+msgstr "Ogiltig Adyen-förfrågan"
 
 #. module: pos_adyen
 #. odoo-javascript
-#: code:addons/pos_adyen/static/src/js/payment_adyen.js:0
-#, python-format
+#: code:addons/pos_adyen/static/src/app/payment_adyen.js:0
 msgid "Message from Adyen: %s"
-msgstr ""
+msgstr "Meddelande från Adyen: %s"
 
 #. module: pos_adyen
 #. odoo-python
 #: code:addons/pos_adyen/models/pos_config.py:0
-#, python-format
 msgid ""
 "Please configure a tip product for POS %s to support tipping with Adyen."
 msgstr ""
+"Vänligen konfigurera en tipsprodukt för POS %s för att stödja dricks med "
+"Adyen."
 
 #. module: pos_adyen
 #: model:ir.model,name:pos_adyen.model_pos_config
@@ -143,14 +137,9 @@ msgid "Point of Sale Payment Methods"
 msgstr "Kassa Betalningsmetoder"
 
 #. module: pos_adyen
-#: model:ir.model,name:pos_adyen.model_pos_session
-msgid "Point of Sale Session"
-msgstr "Kassasession"
-
-#. module: pos_adyen
 #: model:ir.model.fields,field_description:pos_adyen.field_res_config_settings__pos_adyen_ask_customer_for_tip
 msgid "Pos Adyen Ask Customer For Tip"
-msgstr ""
+msgstr "Pos Adyen Fråga kunden om tips"
 
 #. module: pos_adyen
 #: model:ir.model.fields,help:pos_adyen.field_pos_payment_method__adyen_test_mode
@@ -160,16 +149,25 @@ msgstr "Kör transaktioner i testmiljön."
 #. module: pos_adyen
 #. odoo-python
 #: code:addons/pos_adyen/models/pos_payment_method.py:0
-#, python-format
-msgid "Terminal %s is already used in company %s on payment method %s."
+msgid ""
+"Terminal %(terminal)s is already used in company %(company)s on payment "
+"method %(payment_method)s."
 msgstr ""
+"Terminal %(terminal)s används redan i företaget %(company)s på "
+"betalningssätt %(payment_method)s."
 
 #. module: pos_adyen
 #. odoo-python
 #: code:addons/pos_adyen/models/pos_payment_method.py:0
-#, python-format
-msgid "Terminal %s is already used on payment method %s."
-msgstr "Terminal %s används redan för betalningsmetod %s."
+msgid ""
+"Terminal %(terminal)s is already used on payment method %(payment_method)s."
+msgstr ""
+"Terminal %(terminal)s används redan på betalningsmetoden %(payment_method)s."
+
+#. module: pos_adyen
+#: model:ir.model.fields,help:pos_adyen.field_pos_payment_method__adyen_event_url
+msgid "This URL needs to be pasted on Adyen's portal terminal settings."
+msgstr "Denna URL måste klistras in i Adyens portalterminalinställningar."
 
 #. module: pos_adyen
 #: model:ir.model.fields,help:pos_adyen.field_pos_payment_method__adyen_api_key
@@ -177,8 +175,10 @@ msgid ""
 "Used when connecting to Adyen: https://docs.adyen.com/user-management/how-"
 "to-get-the-api-key/#description"
 msgstr ""
+"Används vid anslutning till Adyen: https://docs.adyen.com/user-"
+"management/how-to-get-the-api-key/#description"
 
 #. module: pos_adyen
 #: model:ir.model.fields,help:pos_adyen.field_pos_payment_method__adyen_terminal_identifier
 msgid "[Terminal model]-[Serial number], for example: P400Plus-123456789"
-msgstr ""
+msgstr "[Terminal model]-[Serial number], till exempel: P400Plus-123456789"

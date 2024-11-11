@@ -3,19 +3,16 @@
 # 	* website_blog
 # 
 # Translators:
-# Martin Trigaux, 2022
-# Mustafa J. Kadhem <safi2266@gmail.com>, 2022
-# Niyas Raphy, 2023
-# Malaz Abuidris <msea@odoo.com>, 2024
 # Wil Odoo, 2024
+# Malaz Abuidris <msea@odoo.com>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 13:32+0000\n"
-"PO-Revision-Date: 2022-09-22 05:56+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
+"POT-Creation-Date: 2024-09-26 08:56+0000\n"
+"PO-Revision-Date: 2024-09-25 09:42+0000\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2024\n"
 "Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,16 +21,15 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #. module: website_blog
-#. odoo-python
-#: code:addons/website_blog/models/website_blog.py:0
-#, python-format
-msgid "%s (copy)"
-msgstr "%s (نسخة)"
+#: model_terms:ir.ui.view,arch_db:website_blog.date_selector
+msgid "#{year}"
+msgstr "#{year}"
 
 #. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
-msgid "&amp;nbsp;"
-msgstr "&amp;nbsp;"
+#. odoo-python
+#: code:addons/website_blog/models/website_blog.py:0
+msgid "%s (copy)"
+msgstr "%s (نسخة)"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_feed
@@ -88,7 +84,6 @@ msgstr ""
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "<b>Publish your blog post</b> to make it visible to your visitors."
 msgstr "<b>انشر مقال مدونتك</b> حتى يتمكن زوارك من مشاهدته. "
 
@@ -114,7 +109,6 @@ msgstr ""
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid ""
 "<b>Write your story here.</b> Use the top toolbar to style your text: add an"
 " image or table, set bold or italic, etc. Drag and drop building blocks for "
@@ -229,10 +223,15 @@ msgid "<i class=\"fa fa-rss-square\" aria-label=\"RSS\" title=\"RSS\"/>"
 msgstr "<i class=\"fa fa-rss-square\" aria-label=\"RSS\" title=\"RSS \"/>"
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
+msgid "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
+msgstr "<i class=\"fa fa-tiktok text-tiktok\" aria-label=\"TikTok\" title=\"TikTok\"/>"
+
+#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_share_links_display
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
-msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" title=\"Twitter\"/>"
-msgstr "<i class=\"fa fa-twitter text-twitter\" aria-label=\"Twitter\" title=\"تويتر \"/>"
+msgid "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
+msgstr "<i class=\"fa fa-twitter text-twitter\" aria-label=\"X\" title=\"X\"/>"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
@@ -272,6 +271,11 @@ msgstr "<span class=\"me-1\">إظهار:</span> "
 #: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 msgid "<span class=\"nav-link disabled ps-0\">Blogs:</span>"
 msgstr "<span class=\"nav-link disabled ps-0\">المدونات:</span> "
+
+#. module: website_blog
+#: model_terms:web_tour.tour,rainbow_man_message:website_blog.blog
+msgid "<span><b>Good job!</b> You went through all steps of this tour.</span>"
+msgstr "<span><b>عمل رائع!</b> لقد تخطيت كافة مراحل هذه الجولة.</span>"
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_2
@@ -336,7 +340,7 @@ msgstr "الوصول للمنشور "
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_needaction
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__message_needaction
 msgid "Action Needed"
-msgstr "يتطلب اتخاذ إجراء "
+msgstr "إجراء مطلوب"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__active
@@ -355,6 +359,7 @@ msgid "All"
 msgstr "الكل"
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 #: model_terms:ir.ui.view,arch_db:website_blog.post_breadcrumbs
 msgid "All Blogs"
 msgstr "كافة المدونات"
@@ -367,7 +372,6 @@ msgstr "كافة المدونات"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Alone in the ocean"
 msgstr "وحدك في المحيط "
 
@@ -379,9 +383,8 @@ msgstr "على هذا المنوال، ما مدى صعوبة التركيب و�
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/website_blog.js:0
-#, python-format
-msgid "Amazing blog article: %s! Check it live: %s"
-msgstr "مقالة مدونة مذهلة: %s! ألقِ نظرة عليها مباشرةً: %s "
+msgid "Amazing blog article: %(title)s! Check it live: %(url)s"
+msgstr "مقالة مدونة مذهلة: %(title)s! ألقِ نظرة عليها مباشرةً: %(url)s "
 
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_1
@@ -457,8 +460,8 @@ msgid ""
 "knowledge."
 msgstr ""
 "نوادي علم الفلك هي أماكن حيوية مليئة بالهواة المطلعين الذين يحبون مشاركة "
-"معارفهم معك. بالنسبة لسعر فحم الكوك والوجبات الخفيفة ، سوف يذهبون معك إلى "
-"النجوم ويغمرونك بالمعلومات البديهية والمعرفة العظيمة."
+"معارفهم معك. كل ما يتطلبه الأمر هو بعض الكولا والوجبات الخفيفة، وسوف يذهبون "
+"معك إلى النجوم ويغمرونك بالمعلومات البديهية والمعرفة العظيمة. "
 
 #. module: website_blog
 #: model:blog.blog,subtitle:website_blog.blog_blog_2
@@ -478,6 +481,7 @@ msgstr "عدد المرفقات"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__author_id
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 #: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Author"
@@ -496,7 +500,6 @@ msgstr "الصورة الرمزية"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Awesome hotel rooms"
 msgstr "غرف فنادق رائعة "
 
@@ -566,12 +569,12 @@ msgstr "ما وراء العين"
 #: code:addons/website_blog/models/website.py:0
 #: model:ir.model,name:website_blog.model_blog_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__blog_id
+#: model:ir.ui.menu,name:website_blog.menu_website_blog_root_global
 #: model:website.menu,name:website_blog.menu_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_blog_view_search
 #: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_form
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
-#, python-format
 msgid "Blog"
 msgstr "المدونة"
 
@@ -605,8 +608,6 @@ msgstr "صفحات منشور المدونة "
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_view_form_add
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_read_next
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
 msgid "Blog Post Title"
@@ -654,9 +655,10 @@ msgstr "عنوان المدونة"
 #. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.action_blog_blog
 #: model:ir.ui.menu,name:website_blog.menu_blog_global
-#: model:ir.ui.menu,name:website_blog.menu_website_blog_root_global
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_searchbar_input_snippet_options
+#: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_blog_list
+#: model_terms:ir.ui.view,arch_db:website_blog.website_blog
 msgid "Blogs"
 msgstr "المدونات"
 
@@ -734,14 +736,12 @@ msgstr "مرافق الأطفال"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Choose an image from the library."
 msgstr "اختر صورة من المكتبة."
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Click here to add new content to your website."
 msgstr "انقر هنا لإضافة محتوى جديد إلى موقع الويب الخاص بك."
 
@@ -755,9 +755,15 @@ msgstr ""
 "المدونة."
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.blogs_nav
 #: model_terms:ir.ui.view,arch_db:website_blog.posts_loop
 msgid "Close"
-msgstr "إغلاق "
+msgstr "إغلاق"
+
+#. module: website_blog
+#: model:ir.model.fields,field_description:website_blog.field_blog_tag__color
+msgid "Color"
+msgstr "اللون"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_regular_cover
@@ -833,6 +839,11 @@ msgid "Created on"
 msgstr "أنشئ في"
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_searchbar_input_snippet_options
 msgid "Date (new to old)"
 msgstr "التاريخ (من الأحدث إلى الأقدم) "
@@ -859,11 +870,6 @@ msgstr "دكستر"
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__display_name
 msgid "Display Name"
 msgstr "اسم العرض "
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
-msgid "Drop Zone for Building Blocks"
-msgstr "منطقة إفلات الكتل البنائية "
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_2
@@ -907,14 +913,12 @@ msgstr "قم بتحرير ترويسة صفحة \"نتائج التصفية\"."
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Edit your title, the subtitle is optional."
 msgstr "قم بتحرير العنوان، العنوان الفرعي اختياري. "
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Enter your post's title"
 msgstr "أدخل عنوان منشورك "
 
@@ -927,7 +931,7 @@ msgstr "فيسبوك"
 #. module: website_blog
 #: model:blog.post,subtitle:website_blog.blog_post_3
 msgid "Facts you should bear in mind."
-msgstr "حقائق يجب ان تضعها في اعتبارك."
+msgstr "حقائق يجب أن تضعها بعين الاعتبار. "
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_3
@@ -945,19 +949,15 @@ msgstr ""
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_follow_us
+#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
 msgid "Follow Us"
 msgstr "تابعنا"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
-msgid "Follow us"
-msgstr "تابعنا "
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_follower_ids
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__message_follower_ids
 msgid "Followers"
-msgstr "المتابعين "
+msgstr "المتابعين"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_partner_ids
@@ -1031,7 +1031,7 @@ msgstr "الشبكة"
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Group By"
-msgstr "التجميع حسب "
+msgstr "تجميع حسب"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__has_message
@@ -1051,7 +1051,7 @@ msgstr "نصائح العطلة"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
-msgid "Hover effect"
+msgid "Hover Effect"
 msgstr "تأثير التمرير "
 
 #. module: website_blog
@@ -1078,6 +1078,7 @@ msgstr "كيف يجب أن يكون التلسكوب المحمول الخاص �
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_3
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_blog_posts_preview_data
 msgid "How to choose the right hotel"
 msgstr "كيفية اختيار الفندق المناسب"
 
@@ -1129,6 +1130,7 @@ msgstr ""
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_card
+#: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_horizontal
 msgid "In"
 msgstr "في"
 
@@ -1163,7 +1165,6 @@ msgstr "تم نشره "
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Islands"
 msgstr "الجزر "
 
@@ -1220,7 +1221,6 @@ msgstr ""
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Jungle"
 msgstr "الأدغال "
 
@@ -1237,7 +1237,6 @@ msgstr "اعرف متى تنظر "
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
-#, python-format
 msgid "Large"
 msgstr "كبير"
 
@@ -1246,14 +1245,6 @@ msgstr "كبير"
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_search
 msgid "Last Contributor"
 msgstr "المشارك الأخير"
-
-#. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog____last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_post____last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag____last_update
-#: model:ir.model.fields,field_description:website_blog.field_blog_tag_category____last_update
-msgid "Last Modified on"
-msgstr "آخر تعديل في"
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__write_uid
@@ -1269,12 +1260,6 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
-msgid "Latest"
-msgstr "الأحدث"
 
 #. module: website_blog
 #: model:website.snippet.filter,name:website_blog.dynamic_filter_latest_blog_posts
@@ -1332,18 +1317,13 @@ msgid "Location"
 msgstr "الموقع "
 
 #. module: website_blog
-#: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_main_attachment_id
-#: model:ir.model.fields,field_description:website_blog.field_blog_post__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "المرفق الرئيسي"
-
-#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 msgid "Marley"
 msgstr "مارلي"
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_2
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_blog_posts_preview_data
 msgid "Maui helicopter tours"
 msgstr "جولات ماوي المروحية"
 
@@ -1391,7 +1371,6 @@ msgstr ""
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
-#, python-format
 msgid "Medium"
 msgstr "متوسط "
 
@@ -1433,7 +1412,7 @@ msgid ""
 "Molokai Maui helicopter tours will take you to a different island but one that is only nine miles away and easily accessible by air. This island has a very small population with a different culture and scenery. The entire coast of the northeast is lined with cliffs and remote beaches. They are completely inaccessible by any other means of transportation than air.\n"
 "People who live on the island have never even seen this remarkable scenery unless they have taken Maui helicopter tours to view it. When the weather has been rainy and there is a lot of rainfall for he season you will see many astounding waterfalls."
 msgstr ""
-"ستأخذك جولاتملوكي ماوي المروحية إلى جزيرة مختلفة ولكن واحدة على بعد تسعة أميال فقط ويمكن الوصول إليها بسهولة عن طريق الجو. تحتوي هذه الجزيرة على عدد قليل جدًا من السكان لديهم ثقافة ومناظر طبيعية مختلفة. الساحل الشمالي الشرقي بأكمله تصطف على جانبيه المنحدرات والشواطئ النائية. لا يمكن الوصول إليها تمامًا بأي وسيلة نقل أخرى غير الجو.\n"
+"ستأخذك جولات ملوكي ماوي المروحية إلى جزيرة مختلفة ولكن واحدة على بعد تسعة أميال فقط ويمكن الوصول إليها بسهولة عن طريق الجو. تحتوي هذه الجزيرة على عدد قليل جدًا من السكان لديهم ثقافة ومناظر طبيعية مختلفة. الساحل الشمالي الشرقي بأكمله تصطف على جانبيه المنحدرات والشواطئ النائية. لا يمكن الوصول إليها تمامًا بأي وسيلة نقل أخرى غير الجو.\n"
 "الأشخاص الذين يعيشون على الجزيرة لم يروا هذا المشهد الرائع أبدًا إلا إذا قاموا بجولات بطائرة هليكوبتر ماوي لمشاهدته. عندما يكون الطقس ممطرًا وتهطل الأمطار بغزارة في موسمه ، سترى العديد من الشلالات المذهلة."
 
 #. module: website_blog
@@ -1462,11 +1441,6 @@ msgstr "منشورات المدونة الأكثر عرضاً "
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag_category__name
 msgid "Name"
 msgstr "الاسم"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.snippet_options
-msgid "Name / Latest Post"
-msgstr "الاسم / أحدث منشور "
 
 #. module: website_blog
 #: model:ir.actions.act_window,name:website_blog.blog_post_action_add
@@ -1528,6 +1502,16 @@ msgstr ""
 "المشاهد الرائعة في سماء الليل التي تتجاوز العين المجردة."
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
+msgid "Normal"
+msgstr "عادي"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
+msgid "Normal picture"
+msgstr ""
+
+#. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_view_kanban
 msgid "Not Published"
 msgstr "غير منشور "
@@ -1539,9 +1523,9 @@ msgid ""
 "but if you learn when the big meteor showers and other big astronomy events "
 "will happen will make the excitement of astronomy come alive for you."
 msgstr ""
-"لن تضمن معرفة الطقس فقط أن تحديقك في النجوم أمر مجزي ، ولكن إذا علمت متى "
-"ستقع زخات النيزك الكبيرة وغيرها من الأحداث الكبيرة في علم الفلك ، فستجعل "
-"إثارة علم الفلك تنبض بالحياة من أجلك."
+"لن تضمن لك معرفة الطقس أن تحديقك في النجوم أمر مجدٍ فحسب، بل ستعلم أيضاً متى"
+" ستقع زخات النيازك الكبيرة وغيرها من الأحداث الكبيرة في علم الفلك، وستجعلك "
+"إثارة علم الفلك تنبض بالحياة. "
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_needaction_counter
@@ -1577,26 +1561,15 @@ msgid ""
 "geometrically. For many amateur astronomers, we sometimes cannot get enough "
 "of what we can see on this our closest space object."
 msgstr ""
-"بالطبع ، لأخذ عبادة القمر إلى أقصى حد ، فإن رفع أجهزتك إلى تلسكوب بداية جيد "
-"سيمنحك أروع تفاصيل سطح القمر. مع كل من هذه الترقيات ، ستتحسن معرفتك وعمق "
-"ونطاق ما ستتمكن من رؤيته هندسيًا. بالنسبة للعديد من علماء الفلك الهواة ، لا "
-"يمكننا أحيانًا الحصول على ما يكفي مما يمكننا رؤيته على هذا أقرب جسم فضائي."
-
-#. module: website_blog
-#. odoo-python
-#: code:addons/website_blog/models/ir_qweb_fields.py:0
-#, python-format
-msgid ""
-"On your default language, empty the blog post description and save to get an"
-" automated (translated) summary."
-msgstr ""
-"في لغتك الافتراضية، أفرغ وصف منشور المدونة واحفظه للحصول على ملخص آلي "
-"(مترجم). "
+"بالطبع، للاستمتاع بمراقبة القمر إلى أقصى حد، فإن رفع أجهزتك إلى تلسكوب بداية"
+" جيدة سيمكّنك من رؤية أروع تفاصيل سطح القمر. مع كل من هذه الترقيات، ستتحسن "
+"معرفتك وعمق ونطاق ما ستتمكن من رؤيته هندسيًا. بالنسبة للعديد من علماء الفلك "
+"الهواة، لا يمكننا أحيانًا الحصول على ما يكفي مما يمكننا رؤيته على أقرب جسم "
+"فضائي."
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid ""
 "Once you have reviewed the content on mobile, you can switch back to the "
 "normal view by clicking here again"
@@ -1607,7 +1580,13 @@ msgstr ""
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_sidebar_blog_index_tags
 msgid "Others"
-msgstr "آخرون"
+msgstr "غير ذلك"
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
+#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
+msgid "Our Latest Posts"
+msgstr "أحدث منشوراتنا "
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_blogs_display
@@ -1670,6 +1649,11 @@ msgid "Photo by Teddy Kelley, @teddykelley"
 msgstr "تصوير تيدي كيلي ، @teddykelley"
 
 #. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
+msgid "Picture size"
+msgstr ""
+
+#. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__blog_post_count
 #: model:ir.model.fields,field_description:website_blog.field_blog_tag__post_ids
 msgid "Posts"
@@ -1717,19 +1701,15 @@ msgid "Publishing date"
 msgstr "تاريخ النشر"
 
 #. module: website_blog
-#: model:ir.model,name:website_blog.model_ir_qweb_field
-msgid "Qweb Field"
-msgstr "حقل Qweb"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
-msgid "Read more"
-msgstr "قراءة المزيد"
+#: model:ir.model.fields,field_description:website_blog.field_blog_blog__rating_ids
+#: model:ir.model.fields,field_description:website_blog.field_blog_post__rating_ids
+msgid "Ratings"
+msgstr "التقييمات "
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.posts_loop
-msgid "Read more <i class=\"fa fa-chevron-right ms-2\"/>"
-msgstr "قراءة المزيد <i class=\"fa fa-chevron-right ms-2\"/> "
+msgid "Read more <i class=\"oi oi-chevron-right ms-2\"/>"
+msgstr "اقرأ المزيد <i class=\"oi oi-chevron-right ms-2\"/> "
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_3
@@ -1739,8 +1719,8 @@ msgstr "مطاعم ومقاهي وحانات "
 #. module: website_blog
 #: model:ir.model.fields,help:website_blog.field_blog_blog__website_id
 #: model:ir.model.fields,help:website_blog.field_blog_post__website_id
-msgid "Restrict publishing to this website."
-msgstr "قصر إمكانية النشر على هذا الموقع الإلكتروني. "
+msgid "Restrict to a specific website."
+msgstr "التقييد لموقع إلكتروني محدد "
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.view_blog_post_form
@@ -1758,7 +1738,7 @@ msgstr "تم تحسين محركات البحث"
 #: model:ir.model.fields,field_description:website_blog.field_blog_blog__message_has_sms_error
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr "خطأ في تسليم الرسائل القصيرة"
+msgstr "خطأ في تسليم الرسائل النصية القصيرة "
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.dynamic_filter_template_blog_post_big_picture
@@ -1771,28 +1751,24 @@ msgstr "عينة"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Satellites"
 msgstr "الأقمار الصناعية "
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Search for an image. (eg: type \"business\")"
 msgstr "ابحث عن صورة. (على سبيل المثال: اكتب \"أعمال\")"
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Seaside vs mountain side"
 msgstr "بجانب البحر أو بجانب الجبال "
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Seeing the world from above"
 msgstr "رؤية العالم من الأعالي "
 
@@ -1804,14 +1780,12 @@ msgstr "اختر المدونة"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Select the blog you want to add the post to."
 msgstr "حدد المدونة التي تريد إضافة المنشور إليها."
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Select this menu item to create a new blog post."
 msgstr "اختر هذا العنصر من القائمة لإنشاء منشور مدونة جديد. "
 
@@ -1840,7 +1814,6 @@ msgstr "افصل بين كل كلمة مفتاحية بفاصلة "
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Set a blog post <b>cover</b>."
 msgstr "تعيين <b>غلاف</b> لمنشور المدونة. "
 
@@ -1872,8 +1845,8 @@ msgstr "المشاركة على LinkedIn"
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_share_links_display
-msgid "Share on Twitter"
-msgstr "المشاركة على تويتر"
+msgid "Share on X"
+msgstr "المشاركة على X "
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_share_links_display
@@ -1887,6 +1860,7 @@ msgstr "الشريط الجانبي "
 
 #. module: website_blog
 #: model:blog.post,name:website_blog.blog_post_1
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_blog_posts_preview_data
 msgid "Sierra Tarahumara"
 msgstr "سييرا تاراهومارا"
 
@@ -1908,9 +1882,18 @@ msgstr "سيلي-شيكو"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Skies"
 msgstr "السماء "
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
+msgid "Smaller"
+msgstr ""
+
+#. module: website_blog
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
+msgid "Smaller picture"
+msgstr ""
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_6
@@ -1980,14 +1963,12 @@ msgstr "احدهم مشهور في <cite title=\"عنوان المصدر \">ال
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Spotting the fauna"
 msgstr "رؤية الحيوانات البرية "
 
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_blog.py:0
-#, python-format
 msgid "Start writing here..."
 msgstr "ابدأ الكتابة من هنا..."
 
@@ -2004,7 +1985,6 @@ msgstr "العنوان الفرعي"
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_complete
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_read_next
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_regular_cover
 msgid "Subtitle"
@@ -2038,13 +2018,13 @@ msgstr "قائمة علامات التصنيف "
 
 #. module: website_blog
 #: model:ir.model.constraint,message:website_blog.constraint_blog_tag_category_name_uniq
-msgid "Tag category already exists !"
+msgid "Tag category already exists!"
 msgstr "فئة علامة التصنيف موجودة بالفعل! "
 
 #. module: website_blog
 #: model:ir.model.constraint,message:website_blog.constraint_blog_tag_name_uniq
-msgid "Tag name already exists !"
-msgstr "اسم علامة التصنيف موجود بالفعل! "
+msgid "Tag name already exists!"
+msgstr "اسم علامة التصنيف مستخدم بالفعل! "
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__tag_ids
@@ -2064,12 +2044,12 @@ msgstr "قائمة علامات التصنيف "
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Taking pictures in the dark"
 msgstr "التقاط الصور في الظلام "
 
 #. module: website_blog
 #: model:ir.model.fields,field_description:website_blog.field_blog_post__teaser
+#: model_terms:ir.ui.view,arch_db:website_blog.s_dynamic_snippet_options_template
 msgid "Teaser"
 msgstr "العرض التشويقي"
 
@@ -2199,8 +2179,8 @@ msgstr ""
 "، مسبح ، صالة ألعاب رياضية ، ساونا - بالإضافة إلى تفاصيل أي مرافق أخرى قريبة"
 " مثل ملاعب الجولف. 7. الاحتياجات الخاصة: يجب أن يقوم موقع دليل الفنادق "
 "بإبلاغ الزائر بخدمات ذوي الاحتياجات الخاصة وسياسة الوصول الخاصة بكل فندق. في"
-" حين أن هذا لا ينطبق مرة أخرى على كل زائر ، إلا أنه أمر حيوي للغاية بالنسبة "
-"للبعض."
+" حين أن هذا لا ينطبق مرة أخرى على كل زائر ، إلا أنه أمر مهم للغاية بالنسبة "
+"للبعض. "
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_6
@@ -2225,12 +2205,12 @@ msgid ""
 "the island and it is something that is not easily accessible by any other "
 "means than by air."
 msgstr ""
-"منظر هذا مذهل حقًا وهو مشهد لا ينبغي تفويته. إنه أيضًا تعليمي للغاية مع فرصة"
-" لرؤية بركان خامد عن قرب ، وهو شيء لا يمكن رؤيته كل يوم. على الجانبين "
+"هذا المنظر مذهل حقًا وهو مشهد لا ينبغي تفويته. إنه أيضًا تعليمي للغاية مع "
+"فرصة لرؤية بركان خامد عن قرب ، وهو شيء لا يمكن رؤيته كل يوم. على الجانبين "
 "الشمالي والجنوبي من البركان ، سترى منظرًا مختلفًا لا يصدق. هذه الجوانب مورقة"
-" وخضراء وستكون قادرًا على رؤية بعض الشلالات الجميلة والفرشاة الرائعة. تكثر "
+" وخضراء وستكون قادرًا على رؤية بعض الشلالات الجميلة والمناظر الخلابة. تكثر "
 "الغابات الاستوائية المطيرة في هذا الجانب من الجزيرة ولا يمكن الوصول إليها "
-"بسهولة بأي وسيلة أخرى غير الجو."
+"بسهولة بأي وسيلة أخرى غير الجو. "
 
 #. module: website_blog
 #: model_terms:blog.post,content:website_blog.blog_post_3
@@ -2295,14 +2275,12 @@ msgstr "لن يكون هذا المربع مرئيًا للزائرين"
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
-#, python-format
 msgid "This tag already exists"
 msgstr "علامة التصنيف هذه موجودة بالفعل "
 
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/options.js:0
-#, python-format
 msgid "Tiny"
 msgstr "صغير جداً "
 
@@ -2426,7 +2404,6 @@ msgstr "منشور بلا عنوان "
 #. module: website_blog
 #. odoo-javascript
 #: code:addons/website_blog/static/src/js/tours/website_blog.js:0
-#, python-format
 msgid "Use this icon to preview your blog post on <b>mobile devices</b>."
 msgstr ""
 "استخدم هذه الأيقونة لمعاينة كيف يبدو منشور مدونتك على <b>أجهزة الهاتف "
@@ -2440,7 +2417,6 @@ msgstr "مستخدم في:"
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "Viewpoints"
 msgstr "نقاط العرض "
 
@@ -2548,7 +2524,6 @@ msgstr ""
 #. module: website_blog
 #. odoo-python
 #: code:addons/website_blog/models/website_snippet_filter.py:0
-#, python-format
 msgid "With a View"
 msgstr "مع إطلالة "
 
@@ -2608,7 +2583,7 @@ msgstr "مدونة. اضغط هنا للوصول للمدونة:"
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.post_breadcrumbs
 msgid "breadcrumb"
-msgstr "آثار التتبع "
+msgstr "التتبع "
 
 #. module: website_blog
 #: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_post_regular_cover
@@ -2640,16 +2615,6 @@ msgstr "فنادق"
 #: model_terms:ir.ui.view,arch_db:website_blog.blog_post_content
 msgid "in"
 msgstr "في"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post
-msgid "in <i class=\"fa fa-folder-open text-muted\"/>"
-msgstr "في <i class=\"fa fa-folder-open text-muted\"/>"
-
-#. module: website_blog
-#: model_terms:ir.ui.view,arch_db:website_blog.opt_blog_cover_post_fullwidth_design
-msgid "in <i class=\"fa fa-folder-open text-white-75\"/>"
-msgstr "في <i class=\"fa fa-folder-open text-white-75\"/>"
 
 #. module: website_blog
 #: model:blog.tag,name:website_blog.blog_tag_4

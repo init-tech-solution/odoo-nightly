@@ -1,22 +1,19 @@
-# -*- coding: utf-8 -*-
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
 
-from odoo.http import request, route
-from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.http import Controller, request, route
 
 
-class WebsiteSaleWishlist(WebsiteSale):
+class WebsiteSaleWishlist(Controller):
 
-    @route(['/shop/wishlist/add'], type='json', auth="public", website=True)
+    @route('/shop/wishlist/add', type='json', auth='public', website=True)
     def add_to_wishlist(self, product_id, **kw):
         website = request.website
         pricelist = website.pricelist_id
         product = request.env['product.product'].browse(product_id)
 
-        price = product._get_combination_info_variant(
-            pricelist=website.pricelist_id,
-        )['price']
+        price = product._get_combination_info_variant()['price']
 
         Wishlist = request.env['product.wishlist']
         if request.website.is_public_user():
@@ -39,23 +36,29 @@ class WebsiteSaleWishlist(WebsiteSale):
 
         return wish
 
-    @route(['/shop/wishlist'], type='http', auth="public", website=True, sitemap=False)
+    @route('/shop/wishlist', type='http', auth='public', website=True, sitemap=False)
     def get_wishlist(self, count=False, **kw):
-        values = request.env['product.wishlist'].with_context(display_default_code=False).current()
+        wishes = request.env['product.wishlist'].with_context(display_default_code=False).current()
         if count:
-            return request.make_response(json.dumps(values.mapped('product_id').ids))
+            return request.make_response(json.dumps(wishes.product_id.ids))
 
-        if not len(values):
-            return request.redirect("/shop")
+        if not wishes:
+            return request.redirect('/shop')
 
-        return request.render("website_sale_wishlist.product_wishlist", dict(wishes=values))
+        return request.render(
+            'website_sale_wishlist.product_wishlist',
+            {
+                'wishes': wishes,
+            }
+        )
 
-    @route(['/shop/wishlist/remove/<model("product.wishlist"):wish>'], type='json', auth="public", website=True)
-    def rm_from_wishlist(self, wish, **kw):
+    @route('/shop/wishlist/remove/<int:wish_id>', type='json', auth='public', website=True)
+    def remove_from_wishlist(self, wish_id, **kw):
+        wish = request.env['product.wishlist'].browse(wish_id)
         if request.website.is_public_user():
             wish_ids = request.session.get('wishlist_ids') or []
-            if wish.id in wish_ids:
-                request.session['wishlist_ids'].remove(wish.id)
+            if wish_id in wish_ids:
+                request.session['wishlist_ids'].remove(wish_id)
                 request.session.touch()
                 wish.sudo().unlink()
         else:

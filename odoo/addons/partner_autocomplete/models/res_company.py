@@ -6,7 +6,8 @@ import logging
 import threading
 
 from odoo.addons.iap.tools import iap_tools
-from odoo import api, fields, models, tools, _
+from odoo import api, fields, models, _
+from odoo.tools.mail import email_domain_extract, url_domain_extract
 
 _logger = logging.getLogger(__name__)
 
@@ -30,6 +31,16 @@ class ResCompany(models.Model):
         if not getattr(threading.current_thread(), 'testing', False):
             res.iap_enrich_auto()
         return res
+
+    @api.model
+    def _get_view(self, view_id=None, view_type='form', **options):
+        arch, view = super()._get_view(view_id, view_type, **options)
+
+        if view_type == 'form':
+            for node in arch.xpath("//field[@name='name' or @name='vat']"):
+                node.set('widget', 'field_partner_autocomplete')
+
+        return arch, view
 
     def iap_enrich_auto(self):
         """ Enrich company. This method should be called by automatic processes
@@ -65,7 +76,7 @@ class ResCompany(models.Model):
         company_data = {field: value for field, value in company_data.items()
                         if field in self.partner_id._fields and value and (field == 'image_1920' or not self.partner_id[field])}
 
-        # for company and childs: from state_id / country_id name_get like to IDs
+        # for company and childs: from state_id / country_id display_name like to IDs
         company_data.update(self._enrich_extract_m2o_id(company_data, ['state_id', 'country_id']))
         if company_data.get('child_ids'):
             company_data['child_ids'] = [
@@ -81,10 +92,10 @@ class ResCompany(models.Model):
         if additional_data:
             template_values = json.loads(additional_data)
             template_values['flavor_text'] = _("Company auto-completed by Odoo Partner Autocomplete Service")
-            self.partner_id.message_post_with_view(
+            self.partner_id.message_post_with_source(
                 'iap_mail.enrich_company',
-                values=template_values,
-                subtype_id=self.env.ref('mail.mt_note').id,
+                render_values=template_values,
+                subtype_xmlid='mail.mt_note',
             )
         return True
 
@@ -117,11 +128,11 @@ class ResCompany(models.Model):
             - info@proximus.be -> proximus.be """
         self.ensure_one()
 
-        company_domain = tools.email_domain_extract(self.email) if self.email else False
+        company_domain = email_domain_extract(self.email) if self.email else False
         if company_domain and company_domain not in iap_tools._MAIL_PROVIDERS:
             return company_domain
 
-        company_domain = tools.url_domain_extract(self.website) if self.website else False
+        company_domain = url_domain_extract(self.website) if self.website else False
         if not company_domain or company_domain in ['localhost', 'example.com']:
             return False
 

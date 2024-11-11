@@ -1,20 +1,19 @@
-odoo.define('website_mail.follow', function (require) {
-'use strict';
+/** @odoo-module **/
 
-var publicWidget = require('web.public.widget');
-const { ReCaptcha } = require("google_recaptcha.ReCaptchaV3");
-const { _t } = require("web.core");
+import publicWidget from "@web/legacy/js/public/public_widget";
+import { rpc } from "@web/core/network/rpc";
+import { ReCaptcha } from "@google_recaptcha/js/recaptcha";
+import { _t } from "@web/core/l10n/translation";
 
 publicWidget.registry.follow = publicWidget.Widget.extend({
-    selector: '#wrapwrap:has(.js_follow)',
+    selector: '#wrapwrap',
+    selectorHas: '.js_follow',
     disabledInEditableMode: false,
 
-    /**
-     * @constructor
-     */
     init() {
         this._super(...arguments);
         this._recaptcha = new ReCaptcha();
+        this.notification = this.bindService("notification");
     },
 
     async willStart() {
@@ -49,17 +48,14 @@ publicWidget.registry.follow = publicWidget.Widget.extend({
             records[model].push(parseInt(el.dataset.id));
         }
 
-        this._rpc({
-            route: '/website_mail/is_follower',
-            params: {
-                records: records,
-            },
-        }).then(always).guardedCatch(always);
+        rpc('/website_mail/is_follower', {
+            records: records,
+        }).then(always, always);
 
         // not if editable mode to allow designer to edit
         if (!this.editableMode) {
             $('.js_follow > .d-none').removeClass('d-none');
-            this.$target.find('.js_follow_btn, .js_unfollow_btn').on('click', function (event) {
+            this.$el.find('.js_follow_btn, .js_unfollow_btn').on('click', function (event) {
                 event.preventDefault();
                 self._onClick(event);
             });
@@ -130,27 +126,22 @@ publicWidget.registry.follow = publicWidget.Widget.extend({
             const token = tokenCaptcha.token;
 
             if (tokenCaptcha.error) {
-                self.displayNotification({
+                self.notification.add(tokenCaptcha.error, {
                     type: "danger",
                     title: _t("Error"),
-                    message: tokenCaptcha.error,
                     sticky: true
                 });
                 return false;
             }
-            this._rpc({
-                route: '/website_mail/follow',
-                params: {
-                    'id': +$jsFollow.data('id'),
-                    'object': $jsFollow.data('object'),
-                    'message_is_follower': $jsFollow.attr("data-follow") || "off",
-                    'email': email,
-                    'recaptcha_token_response': token,
-                },
-            }).then(function (follow) {
+            rpc("/website_mail/follow", {
+                "id": +$jsFollow.data("id"),
+                "object": $jsFollow.data("object"),
+                "message_is_follower": $jsFollow.attr("data-follow") || "off",
+                "email": email,
+                "recaptcha_token_response": token
+            }).then(function(follow) {
                 self._toggleSubscription(follow, email, $jsFollow);
             });
         }
     },
-});
 });

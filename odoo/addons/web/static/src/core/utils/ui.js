@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 /**
  * @typedef Position
  * @property {number} x
@@ -156,13 +154,30 @@ export function touching(elements, targetRect) {
 //  - redefine this selector in tests env with ":not(#qunit *)" ?
 
 // Following selector is based on this spec: https://html.spec.whatwg.org/multipage/interaction.html#dom-tabindex
-let TABABLE_SELECTOR = "[tabindex], a, area, button, frame, iframe, input, object, select, textarea, details > summary:nth-child(1),"
-    .split(",")
-    .join(':not([tabindex="-1"]):not(:disabled),');
-TABABLE_SELECTOR = TABABLE_SELECTOR.slice(0, TABABLE_SELECTOR.length - 1);
+const TABABLE_SELECTOR = [
+    "[tabindex]",
+    "a",
+    "area",
+    "button",
+    "frame",
+    "iframe",
+    "input",
+    "object",
+    "select",
+    "textarea",
+    "details > summary:nth-child(1)",
+]
+    .map((sel) => `${sel}:not([tabindex="-1"]):not(:disabled)`)
+    .join(",");
 
+/**
+ * Returns all focusable elements in the given container.
+ *
+ * @param {HTMLElement} [container=document.body]
+ */
 export function getTabableElements(container = document.body) {
     const elements = [...container.querySelectorAll(TABABLE_SELECTOR)].filter(isVisible);
+    /** @type {Record<number, HTMLElement[]>} */
     const byTabIndex = {};
     for (const el of [...elements]) {
         if (!byTabIndex[el.tabIndex]) {
@@ -188,4 +203,27 @@ export function getPreviousTabableElement(container = document.body) {
     return index === -1
         ? tabableElements[tabableElements.length - 1]
         : tabableElements[index - 1] || null;
+}
+
+/**
+ * Gives the button a loading effect by disabling it and adding a `fa` spinner
+ * icon. The existing button `fa` icons will be hidden through css.
+ *
+ * @param {HTMLElement} btnEl - the button to disable/load
+ * @return {function} a callback function that will restore the button to its
+ *         initial state
+ */
+export function addLoadingEffect(btnEl) {
+    // Note that pe-none is used alongside "disabled" so that the behavior is
+    // the same on links not using the "btn" class -> pointer-events disabled.
+    btnEl.classList.add("o_btn_loading", "disabled", "pe-none");
+    btnEl.disabled = true;
+    const loaderEl = document.createElement("span");
+    loaderEl.classList.add("fa", "fa-refresh", "fa-spin", "me-2");
+    btnEl.prepend(loaderEl);
+    return () => {
+        btnEl.classList.remove("o_btn_loading", "disabled", "pe-none");
+        btnEl.disabled = false;
+        loaderEl.remove();
+    };
 }

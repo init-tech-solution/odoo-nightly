@@ -1,35 +1,34 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* repair
-# 
+#
 # Translators:
-# KeyVillage, 2023
+# Nikola Iliev, 2023
 # Александра Николова <alexandra1nikolova@gmail.com>, 2023
 # aleksandar ivanov, 2023
 # Anton Vassilev, 2023
 # Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2023
 # Весел Карастоянов <vesel@abv.bg>, 2023
-# Igor Sheludko <igor.sheludko@gmail.com>, 2023
 # Boris Stefanov <borkata@gmail.com>, 2023
 # Ivan Goychev <igoychev.projects@gmail.com>, 2023
 # Albena Mincheva <albena_vicheva@abv.bg>, 2023
 # Martin Trigaux, 2023
 # Ивайло Малинов <iv.malinov@gmail.com>, 2023
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
-# 
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Igor Sheludko <igor.sheludko@gmail.com>, 2023
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 08:22+0000\n"
+"POT-Creation-Date: 2023-05-16 13:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:54+0000\n"
-"Last-Translator: Rumena Georgieva <rumena.georgieva@gmail.com>, 2024\n"
+"Last-Translator: Igor Sheludko <igor.sheludko@gmail.com>, 2023\n"
 "Language-Team: Bulgarian (https://app.transifex.com/odoo/teams/41243/bg/)\n"
+"Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: repair
@@ -65,7 +64,6 @@ msgstr ""
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid ": Insufficient Quantity To Repair"
 msgstr ""
 
@@ -77,7 +75,7 @@ msgid ""
 "        Hello <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br>\n"
 "        Here is your repair order <strong t-out=\"object.name or ''\">RO/00004</strong>\n"
 "        <t t-if=\"object.invoice_method != 'none'\">\n"
-"            amounting in <strong><t t-out=\"format_amount(object.amount_total, object.pricelist_id.currency_id) or ''\">$ 100.00</t>.</strong><br>\n"
+"            amounting in <strong><t t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 100.00</t>.</strong><br>\n"
 "        </t>\n"
 "        <t t-else=\"\">\n"
 "            .<br>\n"
@@ -103,6 +101,11 @@ msgstr "<i>(Добавете)</i>"
 msgid ""
 "<span class=\"o_stat_text\">1</span>\n"
 "                                <span class=\"o_stat_text\">Invoices</span>"
+msgstr ""
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "<span class=\"o_stat_text\">Product Moves</span>"
 msgstr ""
 
 #. module: repair
@@ -137,8 +140,8 @@ msgstr "<strong>Продукт за поправка:</strong>"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
-msgid "<strong>Shipping address :</strong>"
-msgstr "<strong>Адрес на шипинг :</strong>"
+msgid "<strong>Shipping address:</strong>"
+msgstr ""
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.report_repairorder
@@ -245,9 +248,7 @@ msgstr "Категория"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__partner_id
-msgid ""
-"Choose partner for whom the order will be invoiced and delivered. You can "
-"find a partner by its Name, TIN, Email or Internal Reference."
+msgid "Choose partner for whom the order will be invoiced and delivered. You can find a partner by its Name, TIN, Email or Internal Reference."
 msgstr ""
 
 #. module: repair
@@ -284,24 +285,8 @@ msgstr "Потвърдена"
 #: model:ir.model.fields,help:repair.field_repair_fee__product_uom_category_id
 #: model:ir.model.fields,help:repair.field_repair_line__product_uom_category_id
 #: model:ir.model.fields,help:repair.field_repair_order__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Преобразуването на мерните единици може да възникне, само ако те принадлежат"
-" към една и съща категория. Преобразуването ще се извърши въз основа на "
-"съотношенията."
-
-#. module: repair
-#. odoo-python
-#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
-#, python-format
-msgid ""
-"Couldn't find a pricelist line matching this product and quantity.\n"
-"You have to change either the product, the quantity or the pricelist."
-msgstr ""
-"Не се откри ценова листа, съответстваща на този продукт и количество.\n"
-"Трябва да промените или продукта и количеството, или ценовата листа."
+msgid "Conversion between Units of Measure can only occur if they belong to the same category. The conversion will be made based on the ratios."
+msgstr "Преобразуването на мерните единици може да възникне, само ако те принадлежат към една и съща категория. Преобразуването ще се извърши въз основа на съотношенията."
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_make_invoice
@@ -317,7 +302,6 @@ msgstr ""
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/stock_picking.py:0
-#, python-format
 msgid "Create Repair"
 msgstr ""
 
@@ -425,14 +409,8 @@ msgstr "Чернова "
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
-msgid ""
-"Draft invoices for this order will be cancelled. Do you confirm the action?"
+msgid "Draft invoices for this order will be cancelled. Do you confirm the action?"
 msgstr ""
-
-#. module: repair
-#: model:ir.model,name:repair.model_mail_compose_message
-msgid "Email composition wizard"
-msgstr "Помощник за създаване на имейли"
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -488,7 +466,7 @@ msgstr "Групирайте по адрес на фактурата на кон
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__has_message
 msgid "Has Message"
-msgstr "Има съобщение"
+msgstr ""
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -529,8 +507,7 @@ msgstr "Ако е отметнато, някои съобщения имат г�
 #. module: repair
 #: model:ir.model.fields,help:repair.field_stock_picking__is_repairable
 #: model:ir.model.fields,help:repair.field_stock_picking_type__is_repairable
-msgid ""
-"If ticked, you will be able to directly create repair orders from a return."
+msgid "If ticked, you will be able to directly create repair orders from a return."
 msgstr ""
 
 #. module: repair
@@ -594,7 +571,6 @@ msgstr "Адрес за фактуриране и шипинг:"
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Invoice created"
 msgstr ""
 
@@ -625,16 +601,6 @@ msgstr "Записи в Дневника"
 #: model:ir.model,name:repair.model_account_move_line
 msgid "Journal Item"
 msgstr "Счетоводна Операция"
-
-#. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_fee____last_update
-#: model:ir.model.fields,field_description:repair.field_repair_line____last_update
-#: model:ir.model.fields,field_description:repair.field_repair_order____last_update
-#: model:ir.model.fields,field_description:repair.field_repair_order_make_invoice____last_update
-#: model:ir.model.fields,field_description:repair.field_repair_tags____last_update
-#: model:ir.model.fields,field_description:repair.field_stock_warn_insufficient_qty_repair____last_update
-msgid "Last Modified on"
-msgstr "Последна промяна на"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_fee__write_uid
@@ -675,11 +641,6 @@ msgid "Lot/Serial"
 msgstr "Партиден/сериен"
 
 #. module: repair
-#: model:ir.model.fields,field_description:repair.field_repair_order__message_main_attachment_id
-msgid "Main Attachment"
-msgstr "Основен прикачен Файл"
-
-#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__message_has_error
 msgid "Message Delivery error"
 msgstr "Грешка при доставката на съобщение"
@@ -692,7 +653,7 @@ msgstr "Съобщения"
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "Краен срок за моята дейност"
+msgstr ""
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_order__activity_calendar_event_id
@@ -721,35 +682,19 @@ msgstr "Без фактура"
 
 #. module: repair
 #. odoo-python
-#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
-#, python-format
+#: code:addons/repair/models/repair.py:0
 msgid "No account defined for product \"%s\"."
 msgstr "За продукта не е определена сметка \"%s\"."
 
 #. module: repair
 #. odoo-python
-#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
-#, python-format
-msgid "No pricelist found."
-msgstr ""
-
-#. module: repair
-#. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "No product defined on fees."
 msgstr ""
 
 #. module: repair
 #: model_terms:ir.actions.act_window,help:repair.action_repair_order_tree
 msgid "No repair order found. Let's create one!"
-msgstr ""
-
-#. module: repair
-#. odoo-python
-#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
-#, python-format
-msgid "No valid pricelist line found."
 msgstr ""
 
 #. module: repair
@@ -760,9 +705,7 @@ msgstr "Нормален"
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
-msgid ""
-"Note that the warehouses of the return and repair locations don't match!"
+msgid "Note that the warehouses of the return and repair locations don't match!"
 msgstr ""
 
 #. module: repair
@@ -777,8 +720,8 @@ msgstr "Брой грешки"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr ""
+msgid "Number of messages which requires an action"
+msgstr "Брой съобщения, които изискват внимание"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__message_has_error_counter
@@ -793,7 +736,6 @@ msgstr ""
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Only draft repairs can be confirmed."
 msgstr ""
 
@@ -922,6 +864,11 @@ msgid "Quotations"
 msgstr "Оферти"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_order__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Ready To Repair"
 msgstr "Готово за поправка"
@@ -1005,7 +952,6 @@ msgstr "Референция към поръчка за поправка"
 #: model_terms:ir.ui.view,arch_db:repair.stock_production_lot_view_form
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_graph
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_pivot
-#, python-format
 msgid "Repair Orders"
 msgstr "Поръчки за поправки"
 
@@ -1038,29 +984,24 @@ msgstr ""
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Repair must be canceled in order to reset it to draft."
 msgstr "Поправката трябва да е отменена, за да се пренастрои за чернова."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Repair must be confirmed before starting reparation."
 msgstr "Поправката трябва да е потвърдена преди да началото наремонта."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Repair must be repaired in order to make the product moves."
-msgstr ""
-"Поправката трябва да е извършена, за да се предизвикат продуктови движения."
+msgstr "Поправката трябва да е извършена, за да се предизвикат продуктови движения."
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Repair must be under repair in order to end reparation."
 msgstr "Поправката трябва да е извършена, за да се заведе като приключена."
 
@@ -1072,7 +1013,6 @@ msgstr ""
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/stock_lot.py:0
-#, python-format
 msgid "Repair orders of %s"
 msgstr ""
 
@@ -1163,14 +1103,8 @@ msgstr "Потърсете поръчки за поправки"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__invoice_method
-msgid ""
-"Selecting 'Before Repair' or 'After Repair' will allow you to generate "
-"invoice before or after the repair is done respectively. 'No invoice' means "
-"you don't want to generate invoice for this repair order."
-msgstr ""
-"Изборът 'Преди поправка' или 'След поправка' ще Ви позволи да създадете "
-"фактура респективно преди или след извършването на поправката. 'Без фактура'"
-" означава, че не желаете да създавате фактура за тази поръчка за поправка."
+msgid "Selecting 'Before Repair' or 'After Repair' will allow you to generate invoice before or after the repair is done respectively. 'No invoice' means you don't want to generate invoice for this repair order."
+msgstr "Изборът 'Преди поправка' или 'След поправка' ще Ви позволи да създадете фактура респективно преди или след извършването на поправката. 'Без фактура' означава, че не желаете да създавате фактура за тази поръчка за поправка."
 
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
@@ -1185,7 +1119,6 @@ msgstr ""
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "Serial number is required for operation lines with products: %s"
 msgstr ""
 
@@ -1197,9 +1130,7 @@ msgstr "Настройте на чернова"
 #. module: repair
 #: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form_filter
 msgid "Show all records which has next action date is before today"
-msgstr ""
-"Показване на всички записи, на които следващата дата на действие е преди "
-"днес"
+msgstr "Показване на всички записи, на които следващата дата на действие е преди днес"
 
 #. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_line__location_id
@@ -1266,6 +1197,22 @@ msgid "Tax"
 msgstr "Данък"
 
 #. module: repair
+#: model:ir.model.fields,field_description:repair.field_repair_line__tax_calculation_rounding_method
+#: model:ir.model.fields,field_description:repair.field_repair_order__tax_calculation_rounding_method
+msgid "Tax calculation rounding method"
+msgstr ""
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Tax excl."
+msgstr ""
+
+#. module: repair
+#: model_terms:ir.ui.view,arch_db:repair.view_repair_order_form
+msgid "Tax incl."
+msgstr ""
+
+#. module: repair
 #: model:ir.model.fields,field_description:repair.field_repair_fee__tax_id
 #: model:ir.model.fields,field_description:repair.field_repair_line__tax_id
 #: model:ir.model.fields,field_description:repair.field_repair_order__amount_tax
@@ -1281,20 +1228,13 @@ msgstr "Името на поръчката за поправка трябва д
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
-msgid ""
-"The product unit of measure you chose has a different category than the "
-"product unit of measure."
+msgid "The product unit of measure you chose has a different category than the product unit of measure."
 msgstr ""
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_line__state
-msgid ""
-"The status of a repair line is set automatically to the one of the linked "
-"repair order."
-msgstr ""
-"Състоянието на реда на поправката се настройва автоматично към една от "
-"свързаните поръчки за поправка."
+msgid "The status of a repair line is set automatically to the one of the linked repair order."
+msgstr "Състоянието на реда на поправката се настройва автоматично към една от свързаните поръчки за поправка."
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__location_id
@@ -1335,9 +1275,7 @@ msgstr "Прехвърлете"
 
 #. module: repair
 #: model:ir.model.fields,help:repair.field_repair_order__is_returned
-msgid ""
-"True if this repair is linked to a Return Order and the order is 'Done'. "
-"False otherwise."
+msgid "True if this repair is linked to a Return Order and the order is 'Done'. False otherwise."
 msgstr ""
 
 #. module: repair
@@ -1396,8 +1334,7 @@ msgstr ""
 
 #. module: repair
 #. odoo-python
-#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
-#, python-format
+#: code:addons/repair/models/repair.py:0
 msgid "Warning"
 msgstr "Внимание"
 
@@ -1420,57 +1357,36 @@ msgstr "История на комуникацията на уебсайт"
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
-msgid ""
-"You can not delete a repair order once it has been confirmed. You must first"
-" cancel it."
+msgid "You can not delete a repair order once it has been confirmed. You must first cancel it."
 msgstr ""
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
-msgid ""
-"You can not delete a repair order which is linked to an invoice which has "
-"been posted once."
+msgid "You can not delete a repair order which is linked to an invoice which has been posted once."
 msgstr ""
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "You can not enter negative quantities."
 msgstr ""
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "You cannot cancel a completed repair order."
 msgstr ""
 
 #. module: repair
 #. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "You cannot delete a completed repair order."
 msgstr ""
 
 #. module: repair
 #. odoo-python
-#: code:addons/repair/models/repair.py:0 code:addons/repair/models/repair.py:0
-#, python-format
-msgid ""
-"You have to select a pricelist in the Repair form !\n"
-" Please set one before choosing a product."
-msgstr ""
-"Трябва да изберете ценова листа във формата за поправка!\n"
-"Моля, настройте една преди да изберете продукт."
-
-#. module: repair
-#. odoo-python
 #: code:addons/repair/models/repair.py:0
-#, python-format
 msgid "You have to select an invoice address in the repair form."
 msgstr ""
 
@@ -1480,12 +1396,6 @@ msgid "from location"
 msgstr ""
 
 #. module: repair
-#: model:mail.template,report_name:repair.mail_template_repair_quotation
-msgid "{{ (object.name or '').replace('/','_') }}"
-msgstr ""
-
-#. module: repair
 #: model:mail.template,subject:repair.mail_template_repair_quotation
-msgid ""
-"{{ object.partner_id.name }} Repair Orders (Ref {{ object.name or 'n/a' }})"
+msgid "{{ object.partner_id.name }} Repair Orders (Ref {{ object.name or 'n/a' }})"
 msgstr ""

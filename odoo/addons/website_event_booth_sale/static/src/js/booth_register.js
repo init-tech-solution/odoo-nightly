@@ -1,7 +1,6 @@
-odoo.define('website_event_booth_sale.booth_registration', function (require) {
-'use strict';
+/** @odoo-module **/
 
-const BoothRegistration = require('website_event_booth.booth_registration');
+import BoothRegistration from "@website_event_booth/js/booth_register";
 
 /**
  * This class changes the displayed price after selecting the requested booths.
@@ -12,8 +11,14 @@ BoothRegistration.include({
     // Overrides
     //--------------------------------------------------------------------------
 
+    start() {
+        return this._super.apply(this, arguments).then(() => {
+            this.categoryPrice = this.selectedBoothCategory ? this.selectedBoothCategory.dataset.price : undefined;
+        });
+    },
+
     _onChangeBoothType(ev) {
-        this.categoryPrice = parseFloat($(ev.currentTarget).data('price'));
+        this.categoryPrice = parseFloat(ev.currentTarget.dataset.price);
         return this._super.apply(this, arguments);
     },
 
@@ -24,8 +29,8 @@ BoothRegistration.include({
      */
     _updateUiAfterBoothChange(boothCount) {
         this._super.apply(this, arguments);
-        let $elem = this.$('.o_wbooth_booth_total_price');
-        $elem.toggleClass('d-none', !boothCount || !this.categoryPrice);
+        const boothTotalPriceEl = this.el.querySelector(".o_wbooth_booth_total_price");
+        boothTotalPriceEl?.classList.toggle("d-none", !boothCount || !this.categoryPrice);
         this._updatePrice(boothCount);
     },
 
@@ -34,10 +39,10 @@ BoothRegistration.include({
     //--------------------------------------------------------------------------
 
     _updatePrice(boothsCount) {
-        let $elem = this.$('.o_wbooth_booth_total_price .oe_currency_value');
-        $elem.text(boothsCount * this.categoryPrice);
+        const boothCurrencyEl = this.el.querySelector(".o_wbooth_booth_total_price .oe_currency_value");
+        if (boothCurrencyEl) {
+            boothCurrencyEl.textContent = `${boothsCount * this.categoryPrice}`;
+        }
     },
-
-});
 
 });

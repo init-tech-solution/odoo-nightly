@@ -1,10 +1,33 @@
 /** @odoo-module **/
 
 import { formatFloat, formatFloatTime, formatMonetary } from "@web/views/fields/formatters";
-
-const { Component } = owl;
+import { Component } from "@odoo/owl";
 
 export class BomOverviewSpecialLine extends Component {
+    static template = "mrp.BomOverviewSpecialLine";
+    static props = {
+        type: String,
+        isFolded: { type: Boolean, optional: true },
+        showOptions: {
+            type: Object,
+            shape: {
+                availabilities: Boolean,
+                costs: Boolean,
+                operations: Boolean,
+                leadTimes: Boolean,
+                uom: Boolean,
+                attachments: Boolean,
+            },
+        },
+        data: Object,
+        precision: Number,
+        toggleFolded: { type: Function, optional: true },
+    };
+    static defaultProps = {
+        isFolded: true,
+        toggleFolded: () => {},
+    };
+
     setup() {
         this.formatFloat = formatFloat;
         this.formatFloatTime = formatFloatTime;
@@ -42,30 +65,6 @@ export class BomOverviewSpecialLine extends Component {
     }
 
     get showAttachments() {
-        return this.props.showOptions.attachments;
+        return this.data.has_attachments;
     }
 }
-
-BomOverviewSpecialLine.template = "mrp.BomOverviewSpecialLine";
-BomOverviewSpecialLine.props = {
-    type: String,
-    isFolded: { type: Boolean, optional: true },
-    showOptions: {
-        type: Object,
-        shape: {
-            availabilities: Boolean,
-            costs: Boolean,
-            operations: Boolean,
-            leadTimes: Boolean,
-            uom: Boolean,
-            attachments: Boolean,
-        },
-    },
-    data: Object,
-    precision: Number,
-    toggleFolded: { type: Function, optional: true },
-};
-BomOverviewSpecialLine.defaultProps = {
-    isFolded: true,
-    toggleFolded: () => {},
-};

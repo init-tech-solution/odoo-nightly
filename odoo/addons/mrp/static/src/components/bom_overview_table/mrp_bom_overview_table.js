@@ -1,13 +1,36 @@
 /** @odoo-module **/
 
-import { formatMonetary, formatFloat } from "@web/views/fields/formatters";
+import { formatFloat, formatMonetary } from "@web/views/fields/formatters";
 import { useService } from "@web/core/utils/hooks";
 import { BomOverviewLine } from "../bom_overview_line/mrp_bom_overview_line";
 import { BomOverviewComponentsBlock } from "../bom_overview_components_block/mrp_bom_overview_components_block";
-
-const { Component } = owl;
+import { Component } from "@odoo/owl";
 
 export class BomOverviewTable extends Component {
+    static template = "mrp.BomOverviewTable";
+    static components = {
+        BomOverviewLine,
+        BomOverviewComponentsBlock,
+    };
+    static props = {
+        showOptions: {
+            type: Object,
+            shape: {
+                availabilities: Boolean,
+                costs: Boolean,
+                operations: Boolean,
+                leadTimes: Boolean,
+                uom: Boolean,
+                attachments: Boolean,
+            },
+        },
+        uomName: { type: String, optional: true },
+        currentWarehouseId: { type: Number, optional: true },
+        data: Object,
+        precision: Number,
+        changeFolded: Function,
+    };
+
     setup() {
         this.actionService = useService("action");
         this.formatFloat = formatFloat;
@@ -63,27 +86,3 @@ export class BomOverviewTable extends Component {
         return this.props.showOptions.attachments;
     }
 }
-
-BomOverviewTable.template = "mrp.BomOverviewTable";
-BomOverviewTable.components = {
-    BomOverviewLine,
-    BomOverviewComponentsBlock,
-};
-BomOverviewTable.props = {
-    showOptions: {
-        type: Object,
-        shape: {
-            availabilities: Boolean,
-            costs: Boolean,
-            operations: Boolean,
-            leadTimes: Boolean,
-            uom: Boolean,
-            attachments: Boolean,
-        },
-    },
-    uomName: { type: String, optional: true },
-    currentWarehouseId: { type: Number, optional: true },
-    data: Object,
-    precision: Number,
-    changeFolded: Function,
-};

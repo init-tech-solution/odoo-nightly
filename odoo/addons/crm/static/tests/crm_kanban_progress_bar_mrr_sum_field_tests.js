@@ -1,8 +1,7 @@
 /** @odoo-module */
 
-import { registry } from "@web/core/registry";
-import { makeFakeUserService } from "@web/../tests/helpers/mock_services";
 import { makeView, setupViewRegistries } from "@web/../tests/views/helpers";
+import { patchUserWithCleanup } from "@web/../tests/helpers/mock_services";
 import {
     click,
     dragAndDrop,
@@ -11,16 +10,14 @@ import {
     nextTick,
     patchWithCleanup,
 } from '@web/../tests/helpers/utils';
-import { KanbanAnimatedNumber } from "@web/views/kanban/kanban_animated_number";
-
-const serviceRegistry = registry.category("services");
+import { AnimatedNumber } from "@web/views/view_components/animated_number";
 
 let target;
 let serverData;
 
 QUnit.module('Crm Kanban Progressbar', {
     beforeEach: function () {
-        patchWithCleanup(KanbanAnimatedNumber, { enableAnimations: false });
+        patchWithCleanup(AnimatedNumber, { enableAnimations: false });
         serverData = {
             models: {
                 'res.users': {
@@ -48,8 +45,8 @@ QUnit.module('Crm Kanban Progressbar', {
                         display_name: { string: 'Name', type: 'char' },
                         bar: {string: "Bar", type: "boolean"},
                         activity_state: {string: "Activity State", type: "char"},
-                        expected_revenue: { string: 'Revenue', type: 'integer', sortable: true },
-                        recurring_revenue_monthly: { string: 'Recurring Revenue', type: 'integer',  sortable: true },
+                        expected_revenue: { string: 'Revenue', type: 'integer', sortable: true, aggregator: 'sum' },
+                        recurring_revenue_monthly: { string: 'Recurring Revenue', type: 'integer', sortable: true, aggregator: 'sum' },
                         stage_id: { string: 'Stage', type: 'many2one', relation: 'crm.stage' },
                         user_id: { string: 'Salesperson', type: 'many2one', relation: 'res.users' },
                     },
@@ -67,11 +64,7 @@ QUnit.module('Crm Kanban Progressbar', {
         };
         target = getFixture();
         setupViewRegistries();
-        serviceRegistry.add(
-            "user",
-            makeFakeUserService((group) => group === "crm.group_use_recurring_revenues"),
-            { force: true },
-        );
+        patchUserWithCleanup({ hasGroup: (group) => group === "crm.group_use_recurring_revenues" });
     },
 }, function () {
     QUnit.test("Progressbar: do not show sum of MRR if recurring revenues is not enabled", async function (assert) {
@@ -84,15 +77,12 @@ QUnit.module('Crm Kanban Progressbar', {
             groupBy: ['stage_id'],
             arch: `
                 <kanban js_class="crm_kanban">
-                    <field name="stage_id"/>
-                    <field name="expected_revenue"/>
-                    <field name="recurring_revenue_monthly"/>
                     <field name="activity_state"/>
                     <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}' sum_field="expected_revenue" recurring_revenue_sum_field="recurring_revenue_monthly"/>
                     <templates>
-                        <t t-name="kanban-box">
-                            <div><field name="name"/></div>
-                            <div><field name="recurring_revenue_monthly"/></div>
+                        <t t-name="card" class="flex-row justify-content-between">
+                            <field name="name" class="p-2"/>
+                            <field name="recurring_revenue_monthly" class="p-2"/>
                         </t>
                     </templates>
                 </kanban>`,
@@ -113,21 +103,18 @@ QUnit.module('Crm Kanban Progressbar', {
             groupBy: ['stage_id'],
             arch: `
                 <kanban js_class="crm_kanban">
-                    <field name="stage_id"/>
-                    <field name="expected_revenue"/>
-                    <field name="recurring_revenue_monthly"/>
                     <field name="activity_state"/>
                     <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}' sum_field="expected_revenue" recurring_revenue_sum_field="recurring_revenue_monthly"/>
                     <templates>
-                        <t t-name="kanban-box">
-                            <div><field name="name"/></div>
-                            <div><field name="recurring_revenue_monthly"/></div>
+                        <t t-name="card" class="flex-row justify-content-between">
+                            <field name="name" class="p-2"/>
+                            <field name="recurring_revenue_monthly" class="p-2"/>
                         </t>
                     </templates>
                 </kanban>`,
         });
 
-        const reccurringRevenueValues = [...target.querySelectorAll('.o_kanban_counter_side:nth-child(3)')].map((elem) => elem.textContent);
+        const reccurringRevenueValues = [...target.querySelectorAll('.o_animated_number:nth-child(3)')].map((elem) => elem.textContent);
 
         // When no values are given in column it should return 0 and counts value if given.
         assert.deepEqual(reccurringRevenueValues, ["+20", "+0", "+45"],
@@ -144,23 +131,20 @@ QUnit.module('Crm Kanban Progressbar', {
             groupBy: ['bar'],
             arch: `
                 <kanban js_class="crm_kanban">
-                    <field name="stage_id"/>
-                    <field name="expected_revenue"/>
-                    <field name="recurring_revenue_monthly"/>
                     <field name="activity_state"/>
                     <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}' sum_field="expected_revenue" recurring_revenue_sum_field="recurring_revenue_monthly"/>
                     <templates>
-                        <t t-name="kanban-box">
-                            <div><field name="name"/></div>
-                            <div><field name="expected_revenue"/></div>
-                            <div><field name="recurring_revenue_monthly"/></div>
+                        <t t-name="card" class="flex-row justify-content-between">
+                            <field name="name" class="p-2"/>
+                            <field name="expected_revenue" class="p-2"/>
+                            <field name="recurring_revenue_monthly" class="p-2"/>
                         </t>
                     </templates>
                 </kanban>`,
         });
 
         //MRR before state change
-        let reccurringRevenueNoValues = [...target.querySelectorAll('.o_kanban_counter_side:nth-child(3)')].map((elem) => elem.textContent);
+        let reccurringRevenueNoValues = [...target.querySelectorAll('.o_animated_number:nth-child(3)')].map((elem) => elem.textContent);
         assert.deepEqual(reccurringRevenueNoValues, ['+30','+35'],
             "counter should display the sum of recurring_revenue_monthly values");
 
@@ -172,7 +156,7 @@ QUnit.module('Crm Kanban Progressbar', {
         );
 
         //check MRR after drag&drop
-        reccurringRevenueNoValues = [...target.querySelectorAll('.o_kanban_counter_side:nth-child(3)')].map((elem) => elem.textContent);
+        reccurringRevenueNoValues = [...target.querySelectorAll('.o_animated_number:nth-child(3)')].map((elem) => elem.textContent);
         assert.deepEqual(reccurringRevenueNoValues, ['+25', '+40'],
         "counter should display the sum of recurring_revenue_monthly correctly after drag and drop");
 
@@ -180,7 +164,7 @@ QUnit.module('Crm Kanban Progressbar', {
         await click(target.querySelector('.o_kanban_group:nth-child(2) .progress-bar[aria-valuenow="2"]'), null);
 
         //check MRR after applying filter
-        reccurringRevenueNoValues = [...target.querySelectorAll('.o_kanban_counter_side:nth-child(3)')].map((elem) => elem.textContent);
+        reccurringRevenueNoValues = [...target.querySelectorAll('.o_animated_number:nth-child(3)')].map((elem) => elem.textContent);
         assert.deepEqual(reccurringRevenueNoValues, ['+25','+25'],
             "counter should display the sum of recurring_revenue_monthly only of overdue filter in 1st column");
     });
@@ -195,21 +179,18 @@ QUnit.module('Crm Kanban Progressbar', {
             groupBy: ['stage_id'],
             arch: `
                 <kanban js_class="crm_kanban">
-                    <field name="stage_id"/>
-                    <field name="expected_revenue"/>
-                    <field name="recurring_revenue_monthly"/>
                     <field name="activity_state"/>
                     <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}' sum_field="expected_revenue" recurring_revenue_sum_field="recurring_revenue_monthly"/>
                     <templates>
-                        <t t-name="kanban-box">
-                            <div><field name="name"/></div>
-                            <div><field name="expected_revenue"/></div>
-                            <div><field name="recurring_revenue_monthly"/></div>
+                        <t t-name="card" class="flex-row justify-content-between">
+                            <field name="name" class="p-2"/>
+                            <field name="expected_revenue" class="p-2"/>
+                            <field name="recurring_revenue_monthly" class="p-2"/>
                         </t>
                     </templates>
                 </kanban>`,
             async mockRPC(route, args) {
-                if (args.method === "write") {
+                if (args.method === "web_save") {
                     await def;
                 }
             }

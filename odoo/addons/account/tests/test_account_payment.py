@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
+from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged, new_test_user
-from odoo.tests.common import Form
+from odoo.tests import Form, tagged
+from unittest.mock import patch
 
 
 @tagged('post_install', '-at_install')
 class TestAccountPayment(AccountTestInvoicingCommon):
 
     @classmethod
-    def setUpClass(cls, chart_template_ref=None):
-        super().setUpClass(chart_template_ref=chart_template_ref)
+    def setUpClass(cls):
+        super().setUpClass()
 
-        company = cls.company_data['default_journal_bank'].company_id
+        cls.other_currency = cls.setup_other_currency('EUR')
 
-        cls.payment_debit_account_id = cls.copy_account(company.account_journal_payment_debit_account_id)
-        cls.payment_credit_account_id = cls.copy_account(company.account_journal_payment_credit_account_id)
+        cls.payment_debit_account_id = cls.inbound_payment_method_line.payment_account_id
+        cls.payment_credit_account_id = cls.outbound_payment_method_line.payment_account_id
 
         cls.bank_journal_1 = cls.company_data['default_journal_bank']
         cls.bank_journal_2 = cls.company_data['default_journal_bank'].copy()
@@ -40,10 +41,19 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'acc_type': 'bank',
         })
 
-        company.write({
-            'account_journal_payment_debit_account_id': cls.payment_debit_account_id.id,
-            'account_journal_payment_credit_account_id': cls.payment_credit_account_id.id
-        })
+        cls.pay_term_epd = cls.env['account.payment.term'].create([{
+            'name': "test",
+            'early_discount': True,
+            'discount_percentage': 10,
+            'discount_days': 10,
+            'line_ids': [
+                Command.create({
+                    'value': 'percent',
+                    'value_amount': 100,
+                    'nb_days': 30,
+                }),
+            ],
+        }])
 
     def test_payment_move_sync_create_write(self):
         copy_receivable = self.copy_account(self.company_data['default_account_receivable'])
@@ -54,6 +64,7 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'partner_type': 'customer',
             'destination_account_id': copy_receivable.id,
         })
+        payment.action_post()
 
         expected_payment_values = {
             'amount': 50.0,
@@ -87,124 +98,17 @@ class TestAccountPayment(AccountTestInvoicingCommon):
 
         self.assertRecordValues(payment, [expected_payment_values])
         self.assertRecordValues(payment.move_id, [expected_move_values])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
+        self.assertRecordValues(payment.move_id.line_ids.sorted('balance'), [
             expected_counterpart_line,
             expected_liquidity_line,
-        ])
-
-        # ==== Check editing the account.payment ====
-
-        payment.write({
-            'partner_type': 'supplier',
-            'currency_id': self.currency_data['currency'].id,
-            'partner_id': self.partner_a.id,
-        })
-
-        self.assertRecordValues(payment, [{
-            **expected_payment_values,
-            'partner_type': 'supplier',
-            'destination_account_id': self.partner_a.property_account_payable_id.id,
-            'currency_id': self.currency_data['currency'].id,
-            'partner_id': self.partner_a.id,
-        }])
-        self.assertRecordValues(payment.move_id, [{
-            **expected_move_values,
-            'currency_id': self.currency_data['currency'].id,
-            'partner_id': self.partner_a.id,
-        }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                **expected_counterpart_line,
-                'debit': 0.0,
-                'credit': 25.0,
-                'amount_currency': -50.0,
-                'currency_id': self.currency_data['currency'].id,
-                'account_id': self.partner_a.property_account_payable_id.id,
-            },
-            {
-                **expected_liquidity_line,
-                'debit': 25.0,
-                'credit': 0.0,
-                'amount_currency': 50.0,
-                'currency_id': self.currency_data['currency'].id,
-            },
-        ])
-
-        # ==== Check editing the account.move.line ====
-
-        liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
-        payment.move_id.write({
-            'line_ids': [
-                (1, counterpart_lines.id, {
-                    'debit': 0.0,
-                    'credit': 75.0,
-                    'amount_currency': -75.0,
-                    'currency_id': self.company_data['currency'].id,
-                    'account_id': copy_receivable.id,
-                    'partner_id': self.partner_b.id,
-                }),
-                (1, liquidity_lines.id, {
-                    'debit': 100.0,
-                    'credit': 0.0,
-                    'amount_currency': 100.0,
-                    'currency_id': self.company_data['currency'].id,
-                    'partner_id': self.partner_b.id,
-                }),
-
-                # Additional write-off:
-                (0, 0, {
-                    'debit': 0.0,
-                    'credit': 25.0,
-                    'amount_currency': -25.0,
-                    'currency_id': self.company_data['currency'].id,
-                    'account_id': self.company_data['default_account_revenue'].id,
-                    'partner_id': self.partner_b.id,
-                }),
-            ]
-        })
-
-        self.assertRecordValues(payment, [{
-            **expected_payment_values,
-            'amount': 100.0,
-            'partner_id': self.partner_b.id,
-        }])
-        self.assertRecordValues(payment.move_id, [{
-            **expected_move_values,
-            'partner_id': self.partner_b.id,
-        }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                **expected_counterpart_line,
-                'debit': 0.0,
-                'credit': 75.0,
-                'amount_currency': -75.0,
-                'partner_id': self.partner_b.id,
-            },
-            {
-                'debit': 0.0,
-                'credit': 25.0,
-                'amount_currency': -25.0,
-                'currency_id': self.company_data['currency'].id,
-                'account_id': self.company_data['default_account_revenue'].id,
-                'partner_id': self.partner_b.id,
-            },
-            {
-                **expected_liquidity_line,
-                'debit': 100.0,
-                'credit': 0.0,
-                'amount_currency': 100.0,
-                'account_id': self.payment_debit_account_id.id,
-                'partner_id': self.partner_b.id,
-            },
         ])
 
     def test_payment_move_sync_update_journal_custom_accounts(self):
         """The objective is to edit the journal of a payment in order to check if the accounts are updated."""
 
-        company = self.company_data['company']
         # Create two different inbound accounts
-        outstanding_payment_A = company.account_journal_payment_debit_account_id
-        outstanding_payment_B = company.account_journal_payment_debit_account_id.copy()
+        outstanding_payment_A = self.inbound_payment_method_line.payment_account_id
+        outstanding_payment_B = self.inbound_payment_method_line.payment_account_id.copy()
         # Create two different journals with a different account
         journal_A = self.company_data['default_journal_bank']
         journal_A.inbound_payment_method_line_ids.payment_account_id = outstanding_payment_A
@@ -219,6 +123,7 @@ class TestAccountPayment(AccountTestInvoicingCommon):
         pay_form.journal_id = journal_A
         # Save the form (to create move and move line)
         payment = pay_form.save()
+        payment.action_post()
 
         # Check the payment
         self.assertRecordValues(payment, [{
@@ -236,7 +141,7 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'partner_id': self.partner_a.id,
             'journal_id': journal_A.id,
         }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
+        self.assertRecordValues(payment.move_id.line_ids.sorted('balance'), [
             {
                 'debit': 0.0,
                 'credit': 50.0,
@@ -253,44 +158,6 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             },
         ])
 
-        # Change the journal on the form
-        pay_form.journal_id = journal_B
-        # Save the form (to write move and move line)
-        payment = pay_form.save()
-
-        # Check the payment
-        self.assertRecordValues(payment, [{
-            'amount': 50.0,
-            'payment_type': 'inbound',
-            'partner_type': 'customer',
-            'payment_reference': False,
-            'is_reconciled': False,
-            'currency_id': self.company_data['currency'].id,
-            'partner_id': self.partner_a.id,
-            'journal_id': journal_B.id
-        }])
-        self.assertRecordValues(payment.move_id, [{
-            'currency_id': self.company_data['currency'].id,
-            'partner_id': self.partner_a.id,
-            'journal_id': journal_B.id,
-        }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                'debit': 0.0,
-                'credit': 50.0,
-                'amount_currency': -50.0,
-                'currency_id': self.company_data['currency'].id,
-                'account_id': self.company_data['default_account_receivable'].id,
-            },
-            {
-                'debit': 50.0,
-                'credit': 0.0,
-                'amount_currency': 50.0,
-                'currency_id': self.company_data['currency'].id,
-                'account_id': outstanding_payment_B.id,
-            },
-        ])
-
     def test_payment_move_sync_onchange(self):
 
         pay_form = Form(self.env['account.payment'].with_context(
@@ -303,6 +170,7 @@ class TestAccountPayment(AccountTestInvoicingCommon):
         pay_form.payment_type = 'inbound'
         pay_form.partner_id = self.partner_a
         payment = pay_form.save()
+        payment.action_post()
 
         expected_payment_values = {
             'amount': 50.0,
@@ -336,42 +204,40 @@ class TestAccountPayment(AccountTestInvoicingCommon):
 
         self.assertRecordValues(payment, [expected_payment_values])
         self.assertRecordValues(payment.move_id, [expected_move_values])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
+        self.assertRecordValues(payment.move_id.line_ids.sorted('balance'), [
             expected_counterpart_line,
             expected_liquidity_line,
         ])
 
         # ==== Check editing the account.payment ====
-
         # `partner_type` on payment is always invisible. It's supposed to be set through a context `default_` key
         # In this case the goal of the test is to take an existing customer payment and change it to a supplier payment,
         # which is not supposed to be possible through the web interface.
         # So, change the payment partner_type beforehand rather than in the form view.
+        payment.action_draft()
         payment.partner_type = 'supplier'
         pay_form = Form(payment)
-        pay_form.currency_id = self.currency_data['currency']
-        pay_form.partner_id = self.partner_a
+        pay_form.currency_id = self.other_currency
         payment = pay_form.save()
-
         self.assertRecordValues(payment, [{
             **expected_payment_values,
             'partner_type': 'supplier',
             'destination_account_id': self.partner_a.property_account_payable_id.id,
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
             'partner_id': self.partner_a.id,
         }])
         self.assertRecordValues(payment.move_id, [{
             **expected_move_values,
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
             'partner_id': self.partner_a.id,
         }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
+        self.assertRecordValues(payment.move_id.line_ids.sorted('balance'), [
             {
                 **expected_counterpart_line,
                 'debit': 0.0,
                 'credit': 25.0,
                 'amount_currency': -50.0,
-                'currency_id': self.currency_data['currency'].id,
+                'currency_id': self.other_currency.id,
                 'account_id': self.partner_a.property_account_payable_id.id,
             },
             {
@@ -379,401 +245,45 @@ class TestAccountPayment(AccountTestInvoicingCommon):
                 'debit': 25.0,
                 'credit': 0.0,
                 'amount_currency': 50.0,
-                'currency_id': self.currency_data['currency'].id,
+                'currency_id': self.other_currency.id,
             },
         ])
 
-        # ==== Check editing the account.move.line ====
+    def test_payment_journal_onchange(self):
+        # Create a new payment form
+        pay_form = Form(self.env['account.payment'].with_context(
+            default_journal_id=self.company_data['default_journal_bank'].id,
+            default_partner_type='customer'
+        ))
+        pay_form.amount = 50.0
+        pay_form.payment_type = 'inbound'
+        pay_form.partner_id = self.partner_a
+        payment = pay_form.save()
 
-        move_form = Form(payment.move_id)
-        with move_form.line_ids.edit(0) as line_form:
-            line_form.currency_id = self.company_data['currency']
-            line_form.amount_currency = 100.0
-            line_form.partner_id = self.partner_b
-        with move_form.line_ids.edit(1) as line_form:
-            line_form.currency_id = self.company_data['currency']
-            line_form.amount_currency = -75.0
-            line_form.partner_id = self.partner_b
-            line_form.account_id = self.company_data['default_account_receivable']
-        with move_form.line_ids.new() as line_form:
-            line_form.currency_id = self.company_data['currency']
-            line_form.amount_currency = -25.0
-            line_form.partner_id = self.partner_b
-            line_form.account_id = self.company_data['default_account_revenue']
-        move_form.save()
+        with self.assertRaises(AssertionError):
+            pay_form.journal_id = self.env['account.journal']
+            payment = pay_form.save()
 
+        # Check the values of the payment record after the onchange method
         self.assertRecordValues(payment, [{
-            **expected_payment_values,
-            'amount': 100.0,
-            'partner_id': self.partner_b.id,
-        }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                **expected_counterpart_line,
-                'debit': 0.0,
-                'credit': 75.0,
-                'amount_currency': -75.0,
-                'partner_id': self.partner_b.id,
-            },
-            {
-                'debit': 0.0,
-                'credit': 25.0,
-                'amount_currency': -25.0,
-                'currency_id': self.company_data['currency'].id,
-                'account_id': self.company_data['default_account_revenue'].id,
-                'partner_id': self.partner_b.id,
-            },
-            {
-                **expected_liquidity_line,
-                'debit': 100.0,
-                'credit': 0.0,
-                'amount_currency': 100.0,
-                'account_id': self.payment_debit_account_id.id,
-                'partner_id': self.partner_b.id,
-            },
-        ])
-
-    def test_inbound_payment_sync_writeoff_debit_sign(self):
-        payment = self.env['account.payment'].create({
-            'amount': 100.0,
-            'payment_type': 'inbound',
-            'partner_type': 'customer',
-        })
-
-        # ==== Edit the account.move.line ====
-
-        liquidity_lines, counterpart_lines, dummy = payment._seek_for_lines()
-        payment.move_id.write({
-            'line_ids': [
-                (1, liquidity_lines.id, {'debit': 100.0}),
-                (1, counterpart_lines.id, {'credit': 125.0}),
-                (0, 0, {'debit': 25.0, 'account_id': self.company_data['default_account_revenue'].id}),
-            ],
-        })
-
-        self.assertRecordValues(payment, [{
-            'payment_type': 'inbound',
-            'partner_type': 'customer',
-            'amount': 100.0,
-        }])
-
-        # ==== Edit the account.payment amount ====
-
-        payment.write({
-            'partner_type': 'supplier',
-            'amount': 100.1,
-            'destination_account_id': self.company_data['default_account_payable'].id,
-        })
-
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                'debit': 0.0,
-                'credit': 125.1,
-                'account_id': self.company_data['default_account_payable'].id,
-            },
-            {
-                'debit': 25.0,
-                'credit': 0.0,
-                'account_id': self.company_data['default_account_revenue'].id,
-            },
-            {
-                'debit': 100.1,
-                'credit': 0.0,
-                'account_id': self.payment_debit_account_id.id,
-            },
-        ])
-
-    def test_inbound_payment_sync_writeoff_credit_sign(self):
-        payment = self.env['account.payment'].create({
-            'amount': 100.0,
-            'payment_type': 'inbound',
-            'partner_type': 'customer',
-        })
-
-        # ==== Edit the account.move.line ====
-
-        liquidity_lines, counterpart_lines, dummy = payment._seek_for_lines()
-        payment.move_id.write({
-            'line_ids': [
-                (1, liquidity_lines.id, {'debit': 100.0}),
-                (1, counterpart_lines.id, {'credit': 75.0}),
-                (0, 0, {'credit': 25.0, 'account_id': self.company_data['default_account_revenue'].id}),
-            ],
-        })
-
-        self.assertRecordValues(payment, [{
-            'payment_type': 'inbound',
-            'partner_type': 'customer',
-            'amount': 100.0,
-        }])
-
-        # ==== Edit the account.payment amount ====
-
-        payment.write({
-            'partner_type': 'supplier',
-            'amount': 100.1,
-            'destination_account_id': self.company_data['default_account_payable'].id,
-        })
-
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                'debit': 0.0,
-                'credit': 75.1,
-                'account_id': self.company_data['default_account_payable'].id,
-            },
-            {
-                'debit': 0.0,
-                'credit': 25.0,
-                'account_id': self.company_data['default_account_revenue'].id,
-            },
-            {
-                'debit': 100.1,
-                'credit': 0.0,
-                'account_id': self.payment_debit_account_id.id,
-            },
-        ])
-
-    def test_outbound_payment_sync_writeoff_debit_sign(self):
-        payment = self.env['account.payment'].create({
-            'amount': 100.0,
-            'payment_type': 'outbound',
-            'partner_type': 'supplier',
-        })
-
-        # ==== Edit the account.move.line ====
-
-        liquidity_lines, counterpart_lines, dummy = payment._seek_for_lines()
-        payment.move_id.write({
-            'line_ids': [
-                (1, liquidity_lines.id, {'credit': 100.0}),
-                (1, counterpart_lines.id, {'debit': 75.0}),
-                (0, 0, {'debit': 25.0, 'account_id': self.company_data['default_account_revenue'].id}),
-            ],
-        })
-
-        self.assertRecordValues(payment, [{
-            'payment_type': 'outbound',
-            'partner_type': 'supplier',
-            'amount': 100.0,
-        }])
-
-        # ==== Edit the account.payment amount ====
-
-        payment.write({
-            'partner_type': 'customer',
-            'amount': 100.1,
-            'destination_account_id': self.company_data['default_account_receivable'].id,
-        })
-
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                'debit': 0.0,
-                'credit': 100.1,
-                'account_id': self.payment_credit_account_id.id,
-            },
-            {
-                'debit': 25.0,
-                'credit': 0.0,
-                'account_id': self.company_data['default_account_revenue'].id,
-            },
-            {
-                'debit': 75.1,
-                'credit': 0.0,
-                'account_id': self.company_data['default_account_receivable'].id,
-            },
-        ])
-
-    def test_outbound_payment_sync_writeoff_credit_sign(self):
-        payment = self.env['account.payment'].create({
-            'amount': 100.0,
-            'payment_type': 'outbound',
-            'partner_type': 'supplier',
-        })
-
-        # ==== Edit the account.move.line ====
-
-        liquidity_lines, counterpart_lines, dummy = payment._seek_for_lines()
-        payment.move_id.write({
-            'line_ids': [
-                (1, liquidity_lines.id, {'credit': 100.0}),
-                (1, counterpart_lines.id, {'debit': 125.0}),
-                (0, 0, {'credit': 25.0, 'account_id': self.company_data['default_account_revenue'].id}),
-            ],
-        })
-
-        self.assertRecordValues(payment, [{
-            'payment_type': 'outbound',
-            'partner_type': 'supplier',
-            'amount': 100.0,
-        }])
-
-        # ==== Edit the account.payment amount ====
-
-        payment.write({
-            'partner_type': 'customer',
-            'amount': 100.1,
-            'destination_account_id': self.company_data['default_account_receivable'].id,
-        })
-
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                'debit': 0.0,
-                'credit': 100.1,
-                'account_id': self.payment_credit_account_id.id,
-            },
-            {
-                'debit': 0.0,
-                'credit': 25.0,
-                'account_id': self.company_data['default_account_revenue'].id,
-            },
-            {
-                'debit': 125.1,
-                'credit': 0.0,
-                'account_id': self.company_data['default_account_receivable'].id,
-            },
-        ])
-
-    def test_internal_transfer(self):
-        copy_receivable = self.copy_account(self.company_data['default_account_receivable'])
-
-        payment = self.env['account.payment'].create({
-            'amount': 50.0,
-            'is_internal_transfer': True,
-            'destination_journal_id': self.company_data['default_journal_cash'].id,
-        })
-
-        expected_payment_values = {
             'amount': 50.0,
             'payment_type': 'inbound',
-            'currency_id': self.company_data['currency'].id,
-            'partner_id': self.company_data['company'].partner_id.id,
-            'destination_account_id': self.company_data['company'].transfer_account_id.id,
-        }
-        expected_move_values = {
-            'currency_id': self.company_data['currency'].id,
-            'partner_id': self.company_data['company'].partner_id.id,
-        }
-        expected_liquidity_line = {
-            'debit': 50.0,
-            'credit': 0.0,
-            'amount_currency': 50.0,
-            'currency_id': self.company_data['currency'].id,
-            'account_id': self.payment_debit_account_id.id,
-        }
-        expected_counterpart_line = {
-            'debit': 0.0,
-            'credit': 50.0,
-            'amount_currency': -50.0,
-            'currency_id': self.company_data['currency'].id,
-            'account_id': self.company_data['company'].transfer_account_id.id,
-        }
-
-        self.assertRecordValues(payment, [expected_payment_values])
-        self.assertRecordValues(payment.move_id, [expected_move_values])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            expected_counterpart_line,
-            expected_liquidity_line,
-        ])
-
-        # ==== Check editing the account.payment ====
-
-        payment.write({
             'partner_type': 'customer',
+            'payment_reference': False,
+            'is_reconciled': False,
+            'currency_id': self.company_data['currency'].id,
             'partner_id': self.partner_a.id,
-            'destination_account_id': copy_receivable.id,
-        })
-
-        self.assertRecordValues(payment, [{
-            **expected_payment_values,
-            'partner_type': 'customer',
-            'destination_account_id': copy_receivable.id,
-            'partner_id': self.partner_a.id,
-            'is_internal_transfer': False,
+            'destination_account_id': self.partner_a.property_account_receivable_id.id,
+            'payment_method_line_id': self.inbound_payment_method_line.id,
+            'journal_id': self.company_data['default_journal_bank'].id,
         }])
-        self.assertRecordValues(payment.move_id, [{
-            **expected_move_values,
-            'partner_id': self.partner_a.id,
-        }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            {
-                **expected_counterpart_line,
-                'account_id': copy_receivable.id,
-            },
-            expected_liquidity_line,
-        ])
-
-        # ==== Check editing the account.move.line ====
-
-        liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
-        payment.move_id.write({
-            'line_ids': [
-                (1, counterpart_lines.id, {
-                    'account_id': self.company_data['company'].transfer_account_id.id,
-                    'partner_id': self.company_data['company'].partner_id.id,
-                }),
-                (1, liquidity_lines.id, {
-                    'partner_id': self.company_data['company'].partner_id.id,
-                }),
-            ]
-        })
-
-        self.assertRecordValues(payment, [expected_payment_values])
-        self.assertRecordValues(payment.move_id, [expected_move_values])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
-            expected_counterpart_line,
-            expected_liquidity_line,
-        ])
-
-        # ==== Check creation of paired internal transfer payment ====
-
-        payment = self.env['account.payment'].create({
-            'amount': 50.0,
-            'is_internal_transfer': True,
-            'payment_type': 'inbound',
-            'destination_journal_id': self.company_data['default_journal_cash'].id,
-        })
-        payment.action_post()
-        paired_payment = self.env['account.payment'].search([('payment_type', '=', 'outbound')])
-        expected_payment_values = {
-            'amount': 50.0,
-            'payment_type': 'outbound',
-            'currency_id': self.company_data['currency'].id,
-            'partner_id': self.company_data['company'].partner_id.id,
-            'destination_account_id': self.company_data['company'].transfer_account_id.id,
-        }
-        expected_move_values = {
-            'currency_id': self.company_data['currency'].id,
-            'partner_id': self.company_data['company'].partner_id.id,
-        }
-        expected_liquidity_line = {
-            'debit': 0.0,
-            'credit': 50.0,
-            'amount_currency': -50.0,
-            'currency_id': self.company_data['currency'].id,
-            'account_id': self.company_data['default_journal_cash'].company_id.account_journal_payment_credit_account_id.id,
-        }
-        expected_counterpart_line = {
-            'debit': 50.0,
-            'credit': 0.0,
-            'amount_currency': 50.0,
-            'currency_id': self.company_data['currency'].id,
-            'account_id': self.company_data['company'].transfer_account_id.id,
-        }
-
-        self.assertRecordValues(paired_payment, [expected_payment_values])
-        self.assertRecordValues(paired_payment.move_id, [expected_move_values])
-        self.assertRecordValues(paired_payment.line_ids.sorted('balance'), [
-            expected_liquidity_line,
-            expected_counterpart_line,
-        ])
 
     def test_compute_currency_id(self):
         ''' When creating a new account.payment without specifying a currency, the default currency should be the one
         set on the journal.
         '''
-        self.company_data['default_journal_bank'].write({
-            'currency_id': self.currency_data['currency'].id,
-        })
+        self.company_data['default_journal_bank'].currency_id = self.other_currency
+        self.company_data['default_journal_bank'].inbound_payment_method_line_ids.payment_account_id = self.inbound_payment_method_line.payment_account_id
 
         payment = self.env['account.payment'].create({
             'amount': 50.0,
@@ -782,25 +292,26 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'partner_id': self.partner_a.id,
             'journal_id': self.company_data['default_journal_bank'].id,
         })
+        payment.action_post()
 
         self.assertRecordValues(payment, [{
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
         }])
         self.assertRecordValues(payment.move_id, [{
-            'currency_id': self.currency_data['currency'].id,
+            'currency_id': self.other_currency.id,
         }])
-        self.assertRecordValues(payment.line_ids.sorted('balance'), [
+        self.assertRecordValues(payment.move_id.line_ids.sorted('balance'), [
             {
                 'debit': 0.0,
                 'credit': 25.0,
                 'amount_currency': -50.0,
-                'currency_id': self.currency_data['currency'].id,
+                'currency_id': self.other_currency.id,
             },
             {
                 'debit': 25.0,
                 'credit': 0.0,
                 'amount_currency': 50.0,
-                'currency_id': self.currency_data['currency'].id,
+                'currency_id': self.other_currency.id,
             },
         ])
 
@@ -811,6 +322,7 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'partner_type': 'customer',
             'destination_account_id': self.company_data['default_account_receivable'].id,
         })
+        payment.action_post()
         liquidity_lines, counterpart_lines, writeoff_lines = payment._seek_for_lines()
 
         self.assertRecordValues(payment, [{
@@ -828,8 +340,6 @@ class TestAccountPayment(AccountTestInvoicingCommon):
                 'account_id': self.company_data['default_account_revenue'].id,
             })],
         })
-
-        payment.action_post()
         invoice.action_post()
 
         (counterpart_lines + invoice.line_ids.filtered(lambda line: line.account_type == 'asset_receivable'))\
@@ -859,37 +369,39 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'is_matched': True,
         }])
 
-    def test_payment_name(self):
-        AccountPayment = self.env['account.payment']
-        AccountPayment.search([]).unlink()
-
-        payment = AccountPayment.create({
-            'journal_id': self.company_data['default_journal_bank'].id,
+    def test_reconciliation_payment_states_reverse_payment_move(self):
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'invoice_line_ids': [Command.create({'product_id': self.product_a.id})],
         })
-        self.assertRegex(payment.name, r'BNK1/\d{4}/00001')
+        invoice.action_post()
 
-        with Form(AccountPayment.with_context(default_move_journal_types=('bank', 'cash'))) as payment_form:
-            self.assertEqual(payment_form._values['name'], '/')
-            payment_form.journal_id = self.company_data['default_journal_cash']
-            self.assertRegex(payment_form._values['name'], r'CSH1/\d{4}/00001')
-            payment_form.journal_id = self.company_data['default_journal_bank']
-        payment = payment_form.save()
-        self.assertEqual(payment.name, '/')
-        payment.action_post()
-        self.assertRegex(payment.name, r'BNK1/\d{4}/00002')
+        payment = self.env['account.payment.register']\
+            .with_context(active_model='account.move', active_ids=invoice.ids)\
+            .create({})\
+            ._create_payments()
+
+        self.assertTrue(invoice.payment_state in ('paid', 'in_payment'))
+        self.assertRecordValues(payment, [{'reconciled_invoice_ids': invoice.ids}])
+
+        # Reverse the payment move
+        reversal_wizard = self.env['account.move.reversal']\
+            .with_context(active_model='account.move', active_ids=payment.move_id.ids)\
+            .create({'reason': "oopsie", 'journal_id': payment.journal_id.id})
+        reversal_wizard.refund_moves()
+        self.assertRecordValues(invoice, [{'payment_state': 'not_paid'}])
+        self.assertRecordValues(payment.move_id.line_ids, [{'reconciled': True}] * 2)
 
     def test_payment_without_default_company_account(self):
         """ The purpose of this test is to check the specific behavior when duplicating an inbound payment, then change
         the copy to an outbound payment when we set the outstanding accounts (payments and receipts) on a journal but
         not on the company level.
         """
-        company = self.company_data['company']
         bank_journal = self.company_data['default_journal_bank']
 
-        bank_journal.outbound_payment_method_line_ids.payment_account_id = company.account_journal_payment_credit_account_id
-        bank_journal.inbound_payment_method_line_ids.payment_account_id = company.account_journal_payment_debit_account_id
-        company.account_journal_payment_debit_account_id = False
-        company.account_journal_payment_credit_account_id = False
+        bank_journal.outbound_payment_method_line_ids.payment_account_id = self.outbound_payment_method_line.payment_account_id.copy()
+        bank_journal.inbound_payment_method_line_ids.payment_account_id = self.inbound_payment_method_line.payment_account_id.copy()
 
         payment = self.env['account.payment'].create({
             'amount': 5.0,
@@ -952,56 +464,31 @@ class TestAccountPayment(AccountTestInvoicingCommon):
             'partner_bank_id': self.comp_bank_account2.id,
         }])
 
-    def test_internal_transfer_right_accounts(self):
-        """The purpose of this test is to check that the right accounts are computed when making an internal bank transfer"""
-
-        company = self.env.company
-        transfer_account = company.transfer_account_id
-        bank = self.bank_journal_1
-        bank_2 = self.bank_journal_2
+    def test_reconciliation_with_old_oustanding_account(self):
+        """
+        Test the reconciliation of an invoice with a payment after changing the outstanding account of the journal.
+        """
+        outstanding_account_2 = self.inbound_payment_method_line.payment_account_id.copy()
 
         payment = self.env['account.payment'].create({
-            'is_internal_transfer': True,
-            'payment_type': 'outbound',
-            'amount': 100.0,
-            'journal_id': bank.id,
-            'destination_journal_id': bank_2.id,
+            'payment_type': 'inbound',
+            'partner_type': 'customer',
+            'partner_id': self.partner_a.id,
+            'journal_id': self.company_data['default_journal_bank'].id,
+            'amount': 1150,
         })
         payment.action_post()
 
-        self.assertRecordValues(payment.line_ids, [
-            {'account_id': company.account_journal_payment_credit_account_id.id},
-            {'account_id': transfer_account.id},
-        ])
-        self.assertRecordValues(payment.paired_internal_transfer_payment_id.line_ids, [
-            {'account_id': company.account_journal_payment_debit_account_id.id},
-            {'account_id': transfer_account.id},
-        ])
+        self.company_data['default_journal_bank'].inbound_payment_method_line_ids.payment_account_id = outstanding_account_2
+        invoice = self.init_invoice('out_invoice', post=True, amounts=[1000.0], taxes=self.env['account.tax'])
 
-        # We check the behavior when setting specific receipts/payments account on bank journals
-        bank.inbound_payment_method_line_ids.payment_account_id = company.account_journal_payment_debit_account_id.copy({'code': 1001})
-        bank.outbound_payment_method_line_ids.payment_account_id = company.account_journal_payment_credit_account_id.copy({'code': 1002})
+        credit_line = payment.move_id.line_ids.filtered(lambda l: l.credit and l.account_id == self.company_data['default_account_receivable'])
 
-        bank_2.inbound_payment_method_line_ids.payment_account_id = company.account_journal_payment_debit_account_id.copy({'code': 2001})
-        bank_2.outbound_payment_method_line_ids.payment_account_id = company.account_journal_payment_credit_account_id.copy({'code': 2002})
-
-        payment = self.env['account.payment'].create({
-            'is_internal_transfer': True,
-            'payment_type': 'outbound',
-            'amount': 100.0,
-            'journal_id': bank.id,
-            'destination_journal_id': bank_2.id,
-        })
-        payment.action_post()
-
-        self.assertRecordValues(payment.line_ids, [
-            {'account_id': bank.outbound_payment_method_line_ids.payment_account_id.id,},
-            {'account_id': transfer_account.id},
-        ])
-        self.assertRecordValues(payment.paired_internal_transfer_payment_id.line_ids, [
-            {'account_id': bank_2.inbound_payment_method_line_ids.payment_account_id.id},
-            {'account_id': transfer_account.id},
-        ])
+        invoice.js_assign_outstanding_line(credit_line.id)
+        self.assertTrue(invoice.payment_state in ('in_payment', 'paid'), "Invoice should be paid")
+        invoice.button_draft()
+        self.assertTrue(invoice.payment_state == 'not_paid', "Invoice should'nt be paid anymore")
+        self.assertTrue(invoice.state == 'draft', "Invoice should be draft")
 
     def test_journal_onchange(self):
         """Ensure that the payment method line is recomputed when switching journal in form view."""
@@ -1021,3 +508,88 @@ class TestAccountPayment(AccountTestInvoicingCommon):
 
             payment.journal_id = default_journal
             self.assertEqual(payment.payment_method_line_id.journal_id.id, default_journal.id)
+
+    def test_payments_copy_data(self):
+        payment_1, payment_2 = self.env['account.payment'].create([
+            {
+                'partner_id': self.partner_a.id,
+                'amount': 50,
+            },
+            {
+                'partner_id': self.partner_b.id,
+                'amount': 100,
+            },
+        ])
+        duplicate_payment_1, duplicate_payment_2 = (payment_1 + payment_2).copy()
+
+        self.assertEqual(duplicate_payment_1.partner_id, payment_1.partner_id)
+        self.assertEqual(duplicate_payment_2.partner_id, payment_2.partner_id)
+
+        self.assertEqual(duplicate_payment_1.amount, payment_1.amount)
+        self.assertEqual(duplicate_payment_2.amount, payment_2.amount)
+
+    def test_payments_epd_eligible_on_move_with_payment(self):
+        """ Ensures that even if a move has a payment registered, the epd will still be eligible if no outstanding account is set on the payment method"""
+        invoice1 = self.env['account.move'].create([{
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'date': '2024-01-01',
+            'invoice_payment_term_id': self.pay_term_epd.id,
+            'invoice_line_ids': [Command.create({
+                'name': 'test',
+                'quantity': 1,
+                'price_unit': 1000,
+            })],
+        }])
+        invoice1.action_post()
+        # By default, an outstanding account is set on the bank journal, which will result in a journal entry generation
+        self.env['account.payment.register'].with_context(active_model='account.move', active_ids=invoice1.ids).create({})._create_payments()
+        self.assertFalse(invoice1._is_eligible_for_early_payment_discount(invoice1.currency_id, invoice1.invoice_date))
+        # Remove the outstanding account on the payment method line to avoid generating a journal entry on the payment
+        self.company_data['default_journal_bank'].inbound_payment_method_line_ids.payment_account_id = self.env['account.account']
+        invoice2 = invoice1.copy()
+        invoice2.action_post()
+        self.env['account.payment.register'].with_context(active_model='account.move', active_ids=invoice2.ids).create({})._create_payments()
+
+        # In the community edition, a journal entry is created for a payment regardless of whether an outstanding account is set.
+        # This removes the eligibility for early payment discount.
+        is_accounting_installed = invoice1._get_invoice_in_payment_state() == 'in_payment'
+
+        self.assertEqual(invoice2._is_eligible_for_early_payment_discount(invoice2.currency_id, invoice2.invoice_date), is_accounting_installed)
+
+    def test_payments_invoice_payment_state_without_outstanding_accounts(self):
+        """ Ensures that, without outstanding accounts set on the bank journal payment method,
+            the payment of the invoice still gets a journal entry in community edition """
+        def register_payment_and_assert_state(move, amount, is_community):
+            def patched_get_invoice_in_payment_state(self):
+                return 'paid' if is_community else 'in_payment'
+
+            with patch.object(self.env.registry['account.move'], '_get_invoice_in_payment_state', patched_get_invoice_in_payment_state):
+                payment = self.env['account.payment.register'].with_context(
+                    active_model='account.move',
+                    active_ids=move.ids
+                ).create({'amount': amount})._create_payments()
+
+                self.assertEqual(payment.state, 'paid' if is_community else 'in_process')
+
+        # Remove the outstanding account on the payment method line to avoid generating a journal entry on the payment
+        self.company_data['default_journal_bank'].inbound_payment_method_line_ids.payment_account_id = self.env['account.account']
+
+        invoice_1 = self.env['account.move'].create([{
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'date': '2024-01-01',
+            'invoice_line_ids': [Command.create({
+                'name': 'test',
+                'quantity': 1,
+                'price_unit': 100.0,
+            })],
+        }])
+        invoice_1.action_post()
+        register_payment_and_assert_state(invoice_1, 100.0, is_community=True)
+        self.assertTrue(invoice_1.matched_payment_ids.move_id)
+
+        invoice_2 = invoice_1.copy()
+        invoice_2.action_post()
+        register_payment_and_assert_state(invoice_2, 100.0, is_community=False)
+        self.assertFalse(invoice_2.matched_payment_ids.move_id)

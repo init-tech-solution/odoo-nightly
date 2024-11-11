@@ -3,23 +3,22 @@
 # 	* auth_totp
 # 
 # Translators:
-# Miika Nissi <miika.nissi@tawasta.fi>, 2022
-# LINUX-SAUNA, 2022
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2022
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2022
-# Martin Trigaux, 2022
-# Antti Oksman <antti.oksman@web-veistamo.fi>, 2022
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
-# Jesse Järvi <me@jessejarvi.net>, 2023
+# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
+# LINUX-SAUNA, 2024
+# Antti Oksman <antti.oksman@web-veistamo.fi>, 2024
+# Kari Lindgren <kari.lindgren@emsystems.fi>, 2024
+# Martin Trigaux, 2024
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024
+# Jesse Järvi <me@jessejarvi.net>, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 10:22+0000\n"
-"PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Jesse Järvi <me@jessejarvi.net>, 2023\n"
+"POT-Creation-Date: 2024-09-25 08:40+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"Last-Translator: Jesse Järvi <me@jessejarvi.net>, 2024\n"
 "Language-Team: Finnish (https://app.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,8 +27,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/controllers/home.py:0
-#, python-format
 msgid "%(browser)s on %(platform)s"
 msgstr "Selain %(browser)s käyttöjärjestelmässä %(platform)s"
 
@@ -39,46 +38,10 @@ msgid "2-Factor Setup Wizard"
 msgstr "Kaksivaiheisen tunnistautumisen käyttöönotto"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
-#, python-format
 msgid "2-Factor authentication is now enabled."
 msgstr "Kaksivaiheinen tunnistautuminen otettu käyttöön onnistuneesti."
-
-#. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
-msgid ""
-"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
-"                                    Learn More"
-msgstr ""
-"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
-"                                    Lue lisää"
-
-#. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
-msgid ""
-"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
-"                            Learn More"
-msgstr ""
-"<i title=\"Documentation\" class=\"fa fa-fw o_button_icon fa-info-circle\"/>\n"
-"                            Lue lisää"
-
-#. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
-msgid ""
-"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
-"muted\">This account is protected!</span>"
-msgstr ""
-"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
-"muted\">Tili suojattu!</span>"
-
-#. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
-msgid ""
-"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
-"muted\">Your account is protected!</span>"
-msgstr ""
-"<span attrs=\"{'invisible': [('totp_enabled', '=', False)]}\" class=\"text-"
-"muted\">Tilisi on suojattu!</span>"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -109,8 +72,21 @@ msgstr ""
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
-msgid "Account Security"
-msgstr "Tilin tietoturva"
+msgid ""
+"<span invisible=\"not totp_enabled\" class=\"text-muted\">This account is "
+"protected!</span>"
+msgstr ""
+"<span invisible=\"not totp_enabled\" class=\"text-muted\">Tämä tili on "
+"suojattu!</span>"
+
+#. module: auth_totp
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
+msgid ""
+"<span invisible=\"not totp_enabled\" class=\"text-muted\">Your account is "
+"protected!</span>"
+msgstr ""
+"<span invisible=\"not totp_enabled\" class=\"text-muted\">Tilisi on "
+"suojattu!</span>"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_wizard
@@ -232,9 +208,9 @@ msgid "Enter your six-digit code below"
 msgstr "Kirjoita kuusinumeroinen koodi alle"
 
 #. module: auth_totp
-#: model:ir.model,name:auth_totp.model_ir_http
-msgid "HTTP Routing"
-msgstr "HTTP-reititys"
+#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__expiration_date
+msgid "Expiration Date"
+msgstr "Viim. voimassaolo"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device__id
@@ -243,16 +219,10 @@ msgid "ID"
 msgstr "ID"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/controllers/home.py:0
-#, python-format
 msgid "Invalid authentication code format."
 msgstr "Virheellinen autentikointikoodi."
-
-#. module: auth_totp
-#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_device____last_update
-#: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard____last_update
-msgid "Last Modified on"
-msgstr "Viimeksi muokattu"
 
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__write_uid
@@ -319,8 +289,8 @@ msgid "Secret"
 msgstr "Salausavain"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
-#, python-format
 msgid "The verification code should only contain numbers"
 msgstr "Vahvistuskoodissa tulee olla pekkiä numeroita"
 
@@ -346,8 +316,8 @@ msgid "Trusted Devices"
 msgstr "Luotetut laitteet"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
-#, python-format
 msgid "Two-Factor Authentication Activation"
 msgstr "Kaksivaiheisen tunnistautumisen aktivointi"
 
@@ -359,18 +329,8 @@ msgid "Two-factor Authentication"
 msgstr "Kaksivaiheinen tunnistautuminen"
 
 #. module: auth_totp
-#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
-msgid ""
-"Two-factor Authentication (\"2FA\") is a system of double authentication.\n"
-"                                The first one is done with your password and the second one with a code you get from a dedicated mobile app.\n"
-"                                Popular ones include Authy, Google Authenticator or the Microsoft Authenticator."
-msgstr ""
-"Kaksivaiheinen tunnistautuminen (\"2FA\") on tapa tunnistautua kahdesti.\n"
-"Kirjautuessa syötetään salasanan lisäksi koodi vahvistussovelluksesta.\n"
-"Suosittuja sovelluksia ovat esimerkiksi Microsoft Authenticator, Authy sekä Google Authenticator."
-
-#. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_field
+#: model_terms:ir.ui.view,arch_db:auth_totp.view_totp_form
 msgid ""
 "Two-factor Authentication (\"2FA\") is a system of double authentication.\n"
 "                        The first one is done with your password and the second one with a code you get from a dedicated mobile app.\n"
@@ -383,7 +343,7 @@ msgstr ""
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_res_users__totp_enabled
 msgid "Two-factor authentication"
-msgstr "2-vaiheinen todennus"
+msgstr "Kaksivaiheinen todennus"
 
 #. module: auth_totp
 #: model_terms:ir.ui.view,arch_db:auth_totp.res_users_view_search
@@ -396,20 +356,20 @@ msgid "Two-factor authentication Enabled"
 msgstr "Kaksivaiheinen tunnistautuminen käytössä"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
-#, python-format
 msgid "Two-factor authentication already enabled"
 msgstr "Kaksivaiheinen tunnistautuminen on jo käytössä"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
-#, python-format
 msgid "Two-factor authentication can only be enabled for yourself"
 msgstr "Voit ottaa kaksivaiheisen tunnistautumisen käyttöön vain itsellesi"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
-#, python-format
 msgid "Two-factor authentication disabled for the following user(s): %s"
 msgstr ""
 "Kaksivaiheinen tunnistautuminen on poissa käytöstä seuraavilla käyttäjillä: "
@@ -418,7 +378,7 @@ msgstr ""
 #. module: auth_totp
 #: model:ir.model.fields,field_description:auth_totp.field_auth_totp_wizard__url
 msgid "Url"
-msgstr "Verkko-osoite"
+msgstr "URL"
 
 #. module: auth_totp
 #: model:ir.model,name:auth_totp.model_res_users
@@ -434,9 +394,9 @@ msgid "Verification Code"
 msgstr "Vahvistuskoodi"
 
 #. module: auth_totp
+#. odoo-python
 #: code:addons/auth_totp/models/res_users.py:0
 #: code:addons/auth_totp/wizard/auth_totp_wizard.py:0
-#, python-format
 msgid "Verification failed, please double-check the 6-digit code"
 msgstr "Vahvistus epäonnistui, tarkista kuusinumeroinen koodi"
 

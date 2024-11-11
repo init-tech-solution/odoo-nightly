@@ -1,3 +1,5 @@
+/** @odoo-module */
+
 import {
     BasicEditor,
     testEditor,
@@ -11,7 +13,7 @@ import {
     pasteOdooEditorHtml,
     unformat,
 } from "../utils.js";
-import {CLIPBOARD_WHITELISTS} from "../../src/OdooEditor.js";
+import { CLIPBOARD_WHITELISTS, setSelection } from "../../src/OdooEditor.js";
 
 describe('Copy', () => {
     describe('range collapsed', async () => {
@@ -123,7 +125,7 @@ describe('Copy', () => {
                     window.chai.expect(clipboardData.getData('text/odoo-editor')).to.be.equal('<span style="font-size: 48px;"><font style="color: rgb(255, 0, 0);">First</font></span>');
                 },
             });
-        })
+        });
         it('should copy the selection as a list with multiple list items', async () => {
             await testEditor(BasicEditor, {
                 contentBefore: '<ul><li>[First</li><li>Second]</li>',
@@ -133,6 +135,18 @@ describe('Copy', () => {
                     window.chai.expect(clipboardData.getData('text/plain')).to.be.equal('First\nSecond');
                     window.chai.expect(clipboardData.getData('text/html')).to.be.equal('<ul><li>First</li><li>Second</li></ul>');
                     window.chai.expect(clipboardData.getData('text/odoo-editor')).to.be.equal('<ul><li>First</li><li>Second</li></ul>');
+                },
+            });
+        });
+        it('should remove uFEFF characters from selection', async () => {
+            await testEditor(BasicEditor, {
+                contentBefore: '<p>[content\ufeff]</p>',
+                stepFunction: async editor => {
+                    const clipboardData = new DataTransfer();
+                    triggerEvent(editor.editable, 'copy', { clipboardData });
+                    window.chai.expect(clipboardData.getData('text/plain')).to.be.equal('content');
+                    window.chai.expect(clipboardData.getData('text/html')).to.be.equal('<p>content</p>');
+                    window.chai.expect(clipboardData.getData('text/odoo-editor')).to.be.equal('<p>content</p>');
                 },
             });
         });
@@ -1118,66 +1132,6 @@ describe('Paste', () => {
                     contentAfter: '<h1><font style="background-color: rgb(255, 0, 0);">mnabc</font></h1><h1>def</h1><h1>ghi[]</h1>',
                 });
             });
-            it('should paste all nodes as blockquote when pasting in blockquote', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<blockquote>[]<br></blockquote>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<blockquote>abc</blockquote><blockquote>def</blockquote><blockquote>ghi[]</blockquote>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<blockquote>x[]</blockquote>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<blockquote>xabc</blockquote><blockquote>def</blockquote><blockquote>ghi[]</blockquote>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<blockquote>[]x</blockquote>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<blockquote>abc</blockquote><blockquote>def</blockquote><blockquote>ghi[]x</blockquote>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<blockquote>x[]y</blockquote>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<blockquote>xabc</blockquote><blockquote>def</blockquote><blockquote>ghi[]y</blockquote>',
-                });
-            });
-            it('should paste all nodes as pre when pasting in pre', async () => {
-                await testEditor(BasicEditor, {
-                    contentBefore: '<pre>[]<br></pre>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<pre>abc</pre><pre>def</pre><pre>ghi[]</pre>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<pre>x[]</pre>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<pre>xabc</pre><pre>def</pre><pre>ghi[]</pre>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<pre>[]x</pre>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<pre>abc</pre><pre>def</pre><pre>ghi[]x</pre>',
-                });
-                await testEditor(BasicEditor, {
-                    contentBefore: '<pre>x[]y</pre>',
-                    stepFunction: async editor => {
-                        await pasteHtml(editor, '<h1>abc</h1><h2>def</h2><h3>ghi</h3>');
-                    },
-                    contentAfter: '<pre>xabc</pre><pre>def</pre><pre>ghi[]y</pre>',
-                });
-            });
             it('should not unwrap empty block nodes even when pasting on same node', async () => {
                 await testEditor(BasicEditor, {
                     contentBefore: '<p>a[]</p>',
@@ -1188,7 +1142,7 @@ describe('Paste', () => {
                 });
             });
         });
-    })
+    });
     describe('Complex html span', () => {
         const complexHtmlData = '<span style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, &quot;Noto Sans&quot;, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">1</span><b style="box-sizing: border-box; font-weight: bolder; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, &quot;Noto Sans&quot;, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">23</b><span style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, &quot;Noto Sans&quot;, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;"><span> </span>4</span>';
         describe('range collapsed', async () => {
@@ -2409,15 +2363,15 @@ describe('Paste', () => {
                     stepFunction: async editor => {
                         await pasteText(editor, 'abc www.odoo.com xyz');
                     },
-                    contentAfter: '<p>abc <a href="https://www.odoo.com">www.odoo.com</a> xyz[]</p>',
+                    contentAfter: '<p>abc <a href="http://www.odoo.com">www.odoo.com</a> xyz[]</p>',
                 });
                 await testEditor(BasicEditor, {
                     contentBefore: '<p><a href="#">[]\u200B</a></p>',
                     stepFunction: async editor => {
                         await pasteText(editor, 'odoo.com\ngoogle.com');
                     },
-                    contentAfter: '<p style="margin-bottom: 0px;"><a href="https://odoo.com">odoo.com</a></p>' +
-                                  '<p><a href="https://google.com">google.com</a>[]</p>'
+                    contentAfter: '<p style="margin-bottom: 0px;"><a href="http://odoo.com">odoo.com</a></p>' +
+                                  '<p><a href="http://google.com">google.com</a>[]</p>'
                 });
             });
             it('should paste html content over an empty link', async () => {
@@ -2623,14 +2577,14 @@ describe('Paste', () => {
                     stepFunction: async editor => {
                         await pasteText(editor, 'www.odoo.com');
                     },
-                    contentAfter: '<p><a href="https://www.odoo.com">www.odoo.com</a>[]</p>',
+                    contentAfter: '<p><a href="http://www.odoo.com">www.odoo.com</a>[]</p>',
                 });
                 await testEditor(BasicEditor, {
                     contentBefore: '<p><a href="#">[xyz]</a></p>',
                     stepFunction: async editor => {
                         await pasteText(editor, 'abc www.odoo.com xyz');
                     },
-                    contentAfter: '<p>abc <a href="https://www.odoo.com">www.odoo.com</a> xyz[]</p>',
+                    contentAfter: '<p>abc <a href="http://www.odoo.com">www.odoo.com</a> xyz[]</p>',
                 });
                 const imageUrl = 'https://download.odoocdn.com/icons/website/static/description/icon.png';
                 await testEditor(BasicEditor, {
@@ -3060,6 +3014,35 @@ describe('Paste', () => {
                 },
                 contentAfter: '<p>a[]b</p>',
             });
+        });
+    });
+    describe('editable in iframe', () => {
+        it('should paste odoo-editor html', async () => {
+            // Setup
+            const testContainer = document.querySelector('#editor-test-container');
+            const iframe = document.createElement('iframe');
+            testContainer.append(iframe);
+            const iframeDocument = iframe.contentDocument;
+            const editable = iframeDocument.createElement('div');
+            iframeDocument.body.append(editable);
+            const editor = new BasicEditor(editable, { document: iframeDocument });
+
+            // Action: paste
+            setSelection(editable.querySelector('p'), 0);
+            const clipboardData = new DataTransfer();
+            clipboardData.setData('text/odoo-editor', '<p>text<b>bold text</b>more text</p>');
+            await triggerEvent(editor.editable, 'paste', { clipboardData });
+
+            // Clean-up
+            editor.clean();
+            editor.destroy();
+            iframe.remove();
+
+            // Assertion
+            window.chai.expect(editable.innerHTML).to.be.equal(
+                '<p>text<b>bold text</b>more text</p>',
+                'should paste content in the paragraph'
+            );
         });
     });
 });

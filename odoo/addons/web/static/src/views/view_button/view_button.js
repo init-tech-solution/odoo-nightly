@@ -1,10 +1,7 @@
-/** @odoo-module */
-
-import { DROPDOWN } from "@web/core/dropdown/dropdown";
+import { Component } from "@odoo/owl";
+import { useDropdownCloser } from "@web/core/dropdown/dropdown_hooks";
 import { pick } from "@web/core/utils/objects";
 import { debounce as debounceFn } from "@web/core/utils/timing";
-
-import { Component } from "@odoo/owl";
 
 const explicitRankClasses = [
     "btn-primary",
@@ -25,7 +22,10 @@ function iconFromString(iconString) {
     const icon = {};
     if (iconString.startsWith("fa-")) {
         icon.tag = "i";
-        icon.class = `fa fa-fw o_button_icon ${iconString}`;
+        icon.class = `o_button_icon fa fa-fw ${iconString}`;
+    } else if (iconString.startsWith("oi-")) {
+        icon.tag = "i";
+        icon.class = `o_button_icon oi oi-fw ${iconString}`;
     } else {
         icon.tag = "img";
         icon.src = iconString;
@@ -34,6 +34,33 @@ function iconFromString(iconString) {
 }
 
 export class ViewButton extends Component {
+    static template = "web.views.ViewButton";
+    static props = [
+        "id?",
+        "tag?",
+        "record?",
+        "attrs?",
+        "className?",
+        "context?",
+        "clickParams?",
+        "icon?",
+        "defaultRank?",
+        "disabled?",
+        "size?",
+        "tabindex?",
+        "title?",
+        "style?",
+        "string?",
+        "slots?",
+        "onClick?",
+    ];
+    static defaultProps = {
+        tag: "button",
+        className: "",
+        clickParams: {},
+        attrs: {},
+    };
+
     setup() {
         if (this.props.icon) {
             this.icon = iconFromString(this.props.icon);
@@ -48,15 +75,19 @@ export class ViewButton extends Component {
                 string: this.props.string,
                 help: this.clickParams.help,
                 context: this.clickParams.context,
-                modifiers: this.clickParams.modifiers,
+                invisible: this.props.attrs.invisible,
+                column_invisible: this.props.attrs.column_invisible,
+                readonly: this.props.attrs.readonly,
+                required: this.props.attrs.required,
                 special: this.clickParams.special,
                 type: this.clickParams.type,
                 name: this.clickParams.name,
                 title: this.props.title,
             },
             context: this.props.record && this.props.record.context,
-            model: (this.props.record && this.props.record.resModel) || this.props.resModel,
+            model: this.props.record && this.props.record.resModel,
         });
+        this.dropdownControl = useDropdownCloser();
     }
 
     get clickParams() {
@@ -91,14 +122,15 @@ export class ViewButton extends Component {
         this.env.onClickViewButton({
             clickParams: this.clickParams,
             getResParams: () =>
-                pick(this.props.record, "context", "evalContext", "resModel", "resId", "resIds"),
-            beforeExecute: () => {
-                if (this.env[DROPDOWN]) {
-                    this.env[DROPDOWN].close();
-                }
-            },
-            disableAction: this.props.disable,
-            enableAction: this.props.enable,
+                pick(
+                    this.props.record || {},
+                    "context",
+                    "evalContext",
+                    "resModel",
+                    "resId",
+                    "resIds"
+                ),
+            beforeExecute: () => this.dropdownControl.close(),
         });
     }
 
@@ -129,32 +161,3 @@ export class ViewButton extends Component {
         return classNames.join(" ");
     }
 }
-ViewButton.template = "views.ViewButton";
-ViewButton.props = [
-    "id?",
-    "tag?",
-    "record?",
-    "attrs?",
-    "className?",
-    "context?",
-    "clickParams?",
-    "icon?",
-    "defaultRank?",
-    "disable?",
-    "disabled?",
-    "enable?",
-    "size?",
-    "tabindex?",
-    "title?",
-    "style?",
-    "string?",
-    "slots?",
-    "onClick?",
-];
-ViewButton.defaultProps = {
-    tag: "button",
-    className: "",
-    clickParams: {},
-    disable: () => {},
-    enable: () => {},
-};

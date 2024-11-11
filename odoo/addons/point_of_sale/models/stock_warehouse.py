@@ -12,8 +12,8 @@ class Warehouse(models.Model):
         sequence_values = super(Warehouse, self)._get_sequence_values(name=name, code=code)
         sequence_values.update({
             'pos_type_id': {
-                'name': self.name + ' ' + _('Picking POS'),
-                'prefix': self.code + '/POS/',
+                'name': _('%(name)s Picking POS', name=self.name),
+                'prefix': self.code + '/' + (self.pos_type_id.sequence_code or 'POS') + '/',
                 'padding': 5,
                 'company_id': self.company_id.id,
             }
@@ -38,14 +38,13 @@ class Warehouse(models.Model):
                 'sequence': max_sequence + 1,
                 'sequence_code': 'POS',
                 'company_id': self.company_id.id,
-                'show_operations': False,
             }
         })
         return picking_type_create_values, max_sequence + 2
 
     @api.model
     def _create_missing_pos_picking_types(self):
-        warehouses = self.env['stock.warehouse'].search([('pos_type_id', '=', False)])
+        warehouses = self.env['stock.warehouse'].with_context(active_test=False).search([('pos_type_id', '=', False)])
         for warehouse in warehouses:
             new_vals = warehouse._create_or_update_sequences_and_picking_types()
             warehouse.write(new_vals)

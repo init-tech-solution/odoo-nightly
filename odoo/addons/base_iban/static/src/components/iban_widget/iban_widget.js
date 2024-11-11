@@ -1,14 +1,15 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { CharField } from "@web/views/fields/char/char_field";
+import { CharField, charField } from "@web/views/fields/char/char_field";
 import { useDebounced } from "@web/core/utils/timing";
 import { useService } from "@web/core/utils/hooks";
+import { useState } from "@odoo/owl";
 
-const { useState } = owl;
 export const DELAY = 400;
 
 export class IbanWidget extends CharField {
+    static template = "base_iban.iban";
     setup() {
         super.setup();
         this.state = useState({ isValidIBAN: null });
@@ -25,6 +26,10 @@ export class IbanWidget extends CharField {
         }, DELAY);
     }
 }
-IbanWidget.template = "base_iban.iban";
 
-registry.category("fields").add("iban", IbanWidget);
+export const ibanWidget = {
+    ...charField,
+    component: IbanWidget,
+};
+
+registry.category("fields").add("iban", ibanWidget);

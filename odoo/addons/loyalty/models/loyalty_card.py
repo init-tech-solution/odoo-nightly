@@ -21,8 +21,10 @@ class LoyaltyCard(models.Model):
         """
         return '044' + str(uuid4())[7:-18]
 
-    def name_get(self):
-        return [(card.id, f'{card.program_id.name}: {card.code}') for card in self]
+    @api.depends('program_id', 'code')
+    def _compute_display_name(self):
+        for card in self:
+            card.display_name = f'{card.program_id.name}: {card.code}'
 
     program_id = fields.Many2one('loyalty.program', ondelete='restrict', default=lambda self: self.env.context.get('active_id', None))
     program_type = fields.Selection(related='program_id.program_type')
@@ -38,6 +40,12 @@ class LoyaltyCard(models.Model):
     expiration_date = fields.Date()
 
     use_count = fields.Integer(compute='_compute_use_count')
+    active = fields.Boolean(default=True)
+    history_ids = fields.One2many(
+        comodel_name='loyalty.history',
+        inverse_name='card_id',
+        readonly=True,
+    )
 
     _sql_constraints = [
         ('card_code_unique', 'UNIQUE(code)', 'A coupon/loyalty card must have a unique code.')
@@ -91,12 +99,10 @@ class LoyaltyCard(models.Model):
         compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
         ctx = dict(
             default_model='loyalty.card',
-            default_res_id=self.id,
-            default_use_template=bool(default_template),
+            default_res_ids=self.ids,
             default_template_id=default_template and default_template.id,
             default_composition_mode='comment',
             default_email_layout_xmlid='mail.mail_notification_light',
-            mark_coupon_as_sent=True,
             force_email=True,
         )
         return {
@@ -172,3 +178,15 @@ class LoyaltyCard(models.Model):
             points_changes = {coupon: {'old': points_before[coupon], 'new': coupon.points} for coupon in self}
             self._send_points_reach_communication(points_changes)
         return res
+
+    def action_loyalty_update_balance(self):
+        return {
+            'name': _("Update Balance"),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'loyalty.card.update.balance',
+            'target': 'new',
+            'context': {
+                'default_card_id': self.id,
+            },
+        }

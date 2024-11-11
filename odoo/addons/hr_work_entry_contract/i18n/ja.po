@@ -3,19 +3,16 @@
 # 	* hr_work_entry_contract
 # 
 # Translators:
-# Noma Yuki, 2022
-# Martin Trigaux, 2023
-# Andy Yiu, 2023
-# Ryoko Tsuda <ryoko@quartile.co>, 2023
-# Junko Augias, 2023
+# Wil Odoo, 2024
+# Junko Augias, 2024
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 05:51+0000\n"
-"PO-Revision-Date: 2022-09-22 05:52+0000\n"
-"Last-Translator: Junko Augias, 2023\n"
+"POT-Creation-Date: 2024-09-25 08:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:41+0000\n"
+"Last-Translator: Junko Augias, 2024\n"
 "Language-Team: Japanese (https://app.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,7 +35,7 @@ msgstr ""
 "\n"
 "        作業エントリ生成元を定義します\n"
 "\n"
-"        勤務スケジュール: 作業エントリは以下の作業時間から生成されます\n"
+"        勤務スケジュール: 作業エントリは以下の勤務時間から生成されます\n"
 "        勤怠管理: 作業エントリは従業員の勤怠管理から生成されます（勤怠管理アプリが必要）\n"
 "        計画: 作業エントリは従業員の計画から生成されます（計画アプリが必要）\n"
 "    "
@@ -46,18 +43,19 @@ msgstr ""
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_work_entry.py:0
-#, python-format
-msgid "%s does not have a contract from %s to %s."
-msgstr "%sは%s から %sへの契約書を持っていません。"
+msgid ""
+"%(employee)s does not have a contract from %(date_start)s to %(date_end)s."
+msgstr "%(employee)sには %(date_start)s から %(date_end)sまでの契約書がありません。"
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_work_entry.py:0
-#, python-format
 msgid ""
-"%s has multiple contracts from %s to %s. A work entry cannot overlap "
-"multiple contracts."
-msgstr "%sは%s から%sへの複数契約を持っています。作業エントリは複数の契約で重複することはできません。 "
+"%(employee)s has multiple contracts from %(date_start)s to %(date_end)s. A "
+"work entry cannot overlap multiple contracts."
+msgstr ""
+"%(employee)sは%(date_start)s "
+"から%(date_end)sへの複数契約を持っています。作業エントリは複数の契約で重複することはできません。 "
 
 #. module: hr_work_entry_contract
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
@@ -123,7 +121,7 @@ msgstr "最短利用可能日メッセージ"
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__earliest_available_date
 msgid "Earliest date"
-msgstr "最短日"
+msgstr "最短日付"
 
 #. module: hr_work_entry_contract
 #: model:ir.model,name:hr_work_entry_contract.model_hr_employee
@@ -144,7 +142,6 @@ msgstr "従業員"
 #. module: hr_work_entry_contract
 #. odoo-javascript
 #: code:addons/hr_work_entry_contract/static/src/views/work_entry_calendar/work_entry_calendar_model.js:0
-#, python-format
 msgid "Everybody's work entries"
 msgstr "全員の作業エントリ"
 
@@ -156,13 +153,17 @@ msgstr "時間外労働"
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__date_from
 msgid "From"
-msgstr "開始日"
+msgstr "from"
+
+#. module: hr_work_entry_contract
+#: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_contract_view_form_inherit_work_entry
+msgid "Fully Flexible"
+msgstr "完全フレックス"
 
 #. module: hr_work_entry_contract
 #: model:ir.actions.server,name:hr_work_entry_contract.ir_cron_generate_missing_work_entries_ir_actions_server
-#: model:ir.cron,cron_name:hr_work_entry_contract.ir_cron_generate_missing_work_entries
 msgid "Generate Missing Work Entries"
-msgstr "欠勤エントリの作成"
+msgstr "欠落している作業エントリの作成"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__date_generated_from
@@ -202,7 +203,6 @@ msgstr "ID"
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/wizard/hr_work_entry_regeneration_wizard.py:0
-#, python-format
 msgid ""
 "In order to regenerate the work entries, you need to provide the wizard with"
 " an employee_id, a date_from and a date_to. In addition to that, the time "
@@ -212,14 +212,17 @@ msgstr ""
 "作業エントリを再生成するには、ウィザードに従業員ID、date_from、date_toを指定する必要があります。さらに、date_fromとdate_toで定義された時間間隔には、検証済の作業エントリが含まれていてはいけません。"
 
 #. module: hr_work_entry_contract
-#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__last_generation_date
-msgid "Last Generation Date"
-msgstr "最終生成日"
+#. odoo-javascript
+#: code:addons/hr_work_entry_contract/static/src/components/work_entry_source_field/work_entry_source_field.js:0
+msgid ""
+"Invalid option: For fully flexible calendars, the work entry source cannot "
+"be 'Working Hours'."
+msgstr " 無効なオプション: 完全フレックスのカレンダの場合、作業エントリ元は'就業時間'にはできません。"
 
 #. module: hr_work_entry_contract
-#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard____last_update
-msgid "Last Modified on"
-msgstr "最終更新日"
+#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__last_generation_date
+msgid "Last Generation Date"
+msgstr "最終生成日付"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__write_uid
@@ -239,7 +242,7 @@ msgstr "最終利用可能日メッセージ"
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__latest_available_date
 msgid "Latest date"
-msgstr "最終日"
+msgstr "最新日付"
 
 #. module: hr_work_entry_contract
 #: model:hr.work.entry.type,name:hr_work_entry_contract.work_entry_type_long_leave
@@ -259,12 +262,15 @@ msgstr "従業員作業エントリを再生成"
 
 #. module: hr_work_entry_contract
 #. odoo-javascript
-#: code:addons/hr_work_entry_contract/static/src/js/work_entries_controller_mixin.js:0
 #: code:addons/hr_work_entry_contract/static/src/views/work_entry_calendar/work_entry_calendar.xml:0
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_regeneration_wizard
-#, python-format
 msgid "Regenerate Work Entries"
 msgstr "作業エントリの再生成"
+
+#. module: hr_work_entry_contract
+#: model:ir.model,name:hr_work_entry_contract.model_resource_calendar
+msgid "Resource Working Time"
+msgstr "リソース作業時間"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry_regeneration_wizard__search_criteria_completed
@@ -279,22 +285,20 @@ msgstr "病気休暇"
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/models/hr_contract.py:0
-#, python-format
 msgid ""
 "Sorry, generating work entries from cancelled contracts is not allowed."
-msgstr "キャンセル済の契約書からの作業エントリは許可されていません。"
+msgstr "申し訳ありませんが、取消済の契約書からの作業エントリは許可されていません。"
 
 #. module: hr_work_entry_contract
 #. odoo-python
 #: code:addons/hr_work_entry_contract/wizard/hr_work_entry_regeneration_wizard.py:0
-#, python-format
 msgid ""
 "The from date must be >= '%(earliest_available_date)s' and the to date must "
 "be <= '%(latest_available_date)s', which correspond to the generated work "
 "entries time interval."
 msgstr ""
 "開始日付は >= '%(earliest_available_date)s'である必要があり、終了日付は  <= "
-"'%(latest_available_date)s'である必要があり、 生成されたワークエントリーの時間間隔に対応します。"
+"'%(latest_available_date)s'である必要があり、 生成された作業エントリの時間間隔に対応します。"
 
 #. module: hr_work_entry_contract
 #: model_terms:ir.ui.view,arch_db:hr_work_entry_contract.hr_work_entry_contract_view_form_inherit
@@ -341,6 +345,11 @@ msgstr "作業エントリ再生成"
 #: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_work_entry__work_entry_source
 msgid "Work Entry Source"
 msgstr "作業エントリ元"
+
+#. module: hr_work_entry_contract
+#: model:ir.model.fields,field_description:hr_work_entry_contract.field_hr_contract__work_entry_source_calendar_invalid
+msgid "Work Entry Source Calendar Invalid"
+msgstr "作業エントリ元カレンダが無効です"
 
 #. module: hr_work_entry_contract
 #: model:ir.model.fields.selection,name:hr_work_entry_contract.selection__hr_contract__work_entry_source__calendar

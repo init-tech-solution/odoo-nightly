@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { useService } from "@web/core/utils/hooks";
 import { fuzzyLookup } from "@web/core/utils/search";
@@ -8,6 +6,17 @@ import { _t } from "@web/core/l10n/translation";
 import { Component, onWillStart } from "@odoo/owl";
 
 export class ModelSelector extends Component {
+    static template = "web.ModelSelector";
+    static components = { AutoComplete };
+    static props = {
+        onModelSelected: Function,
+        id: { type: String, optional: true },
+        value: { type: String, optional: true },
+        // list of models technical name, if not set
+        // we will fetch all models we have access to
+        models: { type: Array, optional: true },
+    };
+
     setup() {
         this.orm = useService("orm");
 
@@ -30,10 +39,6 @@ export class ModelSelector extends Component {
         });
     }
 
-    get placeholder() {
-        return _t("Search a Model...");
-    }
-
     get sources() {
         return [this.optionsSource];
     }
@@ -53,9 +58,17 @@ export class ModelSelector extends Component {
 
     filterModels(name) {
         if (!name) {
-            return this.models.slice(0, 8);
+            const visibleModels = this.models.slice(0, 8);
+            if (this.models.length - visibleModels.length > 0) {
+                visibleModels.push({
+                    label: _t("Start typing..."),
+                    unselectable: true,
+                    classList: "o_m2o_start_typing",
+                });
+            }
+            return visibleModels;
         }
-        return fuzzyLookup(name, this.models, (model) => model.technical + model.label).slice(0, 8);
+        return fuzzyLookup(name, this.models, (model) => model.technical + model.label);
     }
 
     loadOptionsSource(request) {
@@ -80,14 +93,3 @@ export class ModelSelector extends Component {
         return result || [];
     }
 }
-
-ModelSelector.template = "web.ModelSelector";
-ModelSelector.components = { AutoComplete };
-ModelSelector.props = {
-    onModelSelected: Function,
-    id: { type: String, optional: true },
-    value: { type: String, optional: true },
-    // list of models technical name, if not set
-    // we will fetch all models we have access to
-    models: { type: Array, optional: true },
-};

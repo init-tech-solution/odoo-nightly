@@ -1,10 +1,7 @@
-/** @odoo-module **/
-
-import { isBrowserFirefox } from "@web/core/browser/feature_detection";
 import { browser } from "../browser/browser";
-import { _lt } from "../l10n/translation";
 import { registry } from "../registry";
 import { completeUncaughtError, getErrorTechnicalName } from "./error_utils";
+import { isBrowserFirefox, isBrowserChrome } from "@web/core/browser/feature_detection";
 
 /**
  * Uncaught Errors have 4 properties:
@@ -23,22 +20,20 @@ export class UncaughtError extends Error {
 }
 
 export class UncaughtClientError extends UncaughtError {
-    constructor(message = _lt("Uncaught Javascript Error")) {
+    constructor(message = "Uncaught Javascript Error") {
         super(message);
     }
 }
 
 export class UncaughtPromiseError extends UncaughtError {
-    constructor(message = _lt("Uncaught Promise")) {
+    constructor(message = "Uncaught Promise") {
         super(message);
         this.unhandledRejectionEvent = null;
     }
 }
 
-// FIXME: this error is misnamed and actually represends errors in third-party scripts
-// rename this in master
-export class UncaughtCorsError extends UncaughtError {
-    constructor(message = _lt("Uncaught CORS Error")) {
+export class ThirdPartyScriptError extends UncaughtError {
+    constructor(message = "Third-Party Script Error") {
         super(message);
     }
 }
@@ -50,24 +45,24 @@ export const errorService = {
             while (originalError instanceof Error && "cause" in originalError) {
                 originalError = originalError.cause;
             }
-            const services = env.services;
-            if (!services.dialog || !services.notification || !services.rpc) {
-                // here, the environment is not ready to provide feedback to the user.
-                // We simply wait 1 sec and try again, just in case the application can
-                // recover.
-                if (retry) {
-                    browser.setTimeout(() => {
-                        handleError(uncaughtError, false);
-                    }, 1000);
-                }
-                return;
-            }
-            for (const handler of registry.category("error_handlers").getAll()) {
-                if (handler(env, uncaughtError, originalError)) {
-                    break;
+            for (const [name, handler] of registry.category("error_handlers").getEntries()) {
+                try {
+                    if (handler(env, uncaughtError, originalError)) {
+                        break;
+                    }
+                } catch (e) {
+                    console.error(
+                        `A crash occured in error handler ${name} while handling ${uncaughtError}:`,
+                        e
+                    );
+                    return;
                 }
             }
-            if (uncaughtError.event && !uncaughtError.event.defaultPrevented) {
+            if (
+                uncaughtError.event &&
+                !uncaughtError.event.defaultPrevented &&
+                uncaughtError.traceback
+            ) {
                 // Log the full traceback instead of letting the browser log the incomplete one
                 uncaughtError.event.preventDefault();
                 console.error(uncaughtError.traceback);
@@ -96,13 +91,11 @@ export const errorService = {
             }
             let uncaughtError;
             if (isRedactedError) {
-                uncaughtError = new UncaughtCorsError();
-                uncaughtError.traceback = env._t(
-                    `Unknown CORS error\n\n` +
-                        `An unknown CORS error occured.\n` +
-                        `The error probably originates from a JavaScript file served from a different origin.\n` +
-                        `(Opening your browser console might give you a hint on the error.)`
-                );
+                uncaughtError = new ThirdPartyScriptError();
+                uncaughtError.traceback =
+                    `An error whose details cannot be accessed by the Odoo framework has occurred.\n` +
+                    `The error probably originates from a JavaScript file served from a different origin.\n` +
+                    `The full error is available in the browser console.`;
             } else {
                 uncaughtError = new UncaughtClientError();
                 uncaughtError.event = ev;
@@ -118,9 +111,27 @@ export const errorService = {
 
         browser.addEventListener("unhandledrejection", async (ev) => {
             const error = ev.reason;
+            let traceback;
+            if (isBrowserChrome() && ev instanceof CustomEvent && error === undefined) {
+                // This fix is ad-hoc to a bug in the Honey Paypal extension
+                // They throw a CustomEvent instead of the specified PromiseRejectionEvent
+                // https://developer.mozilla.org/en-US/docs/Web/API/Window/unhandledrejection_event
+                // Moreover Chrome doesn't seem to sandbox enough the extension, as it seems irrelevant
+                // to have extension's errors in the main business page.
+                // We want to ignore those errors as they are not produced by us, and are parasiting
+                // the navigation. We do this according to the heuristic expressed in the if.
+                if (!odoo.debug) {
+                    return;
+                }
+                traceback =
+                    `Uncaught unknown Error\n` +
+                    `An unknown error occured. This may be due to a Chrome extension meddling with Odoo.\n` +
+                    `(Opening your browser console might give you a hint on the error.)`;
+            }
             const uncaughtError = new UncaughtPromiseError();
             uncaughtError.unhandledRejectionEvent = ev;
             uncaughtError.event = ev;
+            uncaughtError.traceback = traceback;
             if (error instanceof Error) {
                 error.errorEvent = ev;
                 const annotated = env.debug && env.debug.includes("assets");
