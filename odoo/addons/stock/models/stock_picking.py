@@ -373,7 +373,8 @@ class PickingType(models.Model):
             }
             for p_date in dates:
                 date_category = self.env["stock.picking"].calculate_date_category(p_date)
-                summaries[picking_type_id]['total_' + date_category] += 1
+                if date_category:
+                    summaries[picking_type_id]['total_' + date_category] += 1
 
         self._prepare_graph_data(summaries)
 
@@ -1053,8 +1054,20 @@ class Picking(models.Model):
                     'message': partner.picking_warn_msg
                 }}
 
+    @api.onchange('location_dest_id')
+    def _onchange_location_dest_id(self):
+        moves = self.move_ids_without_package
+        if any(not move._origin for move in moves):
+            # Because of an ORM limitation, the new SM defined in self.move_ids_without_package are not set in
+            # self.move_ids. Since the user edits the destination location, the ORM will check which SM must be
+            # recomputed (cf dependencies of SM._compute_location_dest_id). But, to do so, the ORM will look at
+            # self.move_ids, i.e.: it will not call the compute method for the new SM. We therefore have to
+            # manually trigger the compute method
+            self.env.add_to_compute(moves._fields['location_dest_id'], moves)
+
     @api.onchange('location_id')
     def _onchange_location_id(self):
+        (self.move_ids | self.move_ids_without_package).location_id =  self.location_id
         for move in self.move_ids.filtered(lambda m: m.move_orig_ids):
             for ml in move.move_line_ids:
                 parent_path = [int(loc_id) for loc_id in ml.location_id.parent_path.split('/')[:-1]]
@@ -1143,12 +1156,15 @@ class Picking(models.Model):
         return super(Picking, self).unlink()
 
     def do_print_picking(self):
+        picking_operations_report = self.env.ref('stock.action_report_picking',raise_if_not_found=False)
+        if not picking_operations_report:
+            raise UserError(_("The Picking Operations report has been deleted so you cannot print at this time unless the report is restored."))
         self.write({'printed': True})
-        return self.env.ref('stock.action_report_picking').report_action(self)
+        return picking_operations_report.report_action(self)
 
     def should_print_delivery_address(self):
         self.ensure_one()
-        return self.move_ids and self.move_ids[0].partner_id and self._is_to_external_location()
+        return self.move_ids and (self.move_ids[0].partner_id or self.partner_id) and self._is_to_external_location()
 
     def _is_to_external_location(self):
         self.ensure_one()
@@ -1288,9 +1304,9 @@ class Picking(models.Model):
                             'move_line_ids': [(6, 0, move_lines_to_pack.ids)],
                             'company_id': pickings.company_id.id,
                         })
-                    # Propagate the result package in the next move for disposable packages only.
-                    if package.package_use == 'disposable':
-                        move_lines_to_pack.write({'result_package_id': package.id})
+                        # Propagate the result package in the next move for disposable packages only.
+                        if package.package_use == 'disposable':
+                            move_lines_to_pack.write({'result_package_id': package.id})
                 else:
                     move_lines_in_package_level = move_lines_to_pack.filtered(lambda ml: ml.move_id.package_level_id)
                     move_lines_without_package_level = move_lines_to_pack - move_lines_in_package_level
@@ -1866,7 +1882,7 @@ class Picking(models.Model):
 
         The categories are based on current user's timezone (e.g. "today" will last
         between 00:00 and 23:59 local time). The datetime itself is assumed to be
-        in UTC. If the datetime is falsy, this function returns "none".
+        in UTC. If the datetime is falsy, this function returns "".
         """
         start_today = fields.Datetime.context_timestamp(
             self.env.user, fields.Datetime.now()
@@ -1877,7 +1893,7 @@ class Picking(models.Model):
         start_day_2 = start_today + timedelta(days=2)
         start_day_3 = start_today + timedelta(days=3)
 
-        date_category = "none"
+        date_category = ""
 
         if datetime:
             datetime = datetime.astimezone(pytz.UTC)

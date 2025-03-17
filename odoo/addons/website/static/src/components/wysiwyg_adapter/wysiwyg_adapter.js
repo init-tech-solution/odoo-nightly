@@ -985,7 +985,7 @@ export class WysiwygAdapterComponent extends Wysiwyg {
         this.__savedCovers[resModel].push(resID);
 
         const imageEl = el.querySelector('.o_record_cover_image');
-        let cssBgImage = imageEl.style.backgroundImage;
+        let cssBgImage = getComputedStyle(imageEl)["backgroundImage"];
         if (imageEl.classList.contains("o_b64_image_to_save")) {
             imageEl.classList.remove("o_b64_image_to_save");
             const groups = cssBgImage.match(/url\("data:(?<mimetype>.*);base64,(?<imageData>.*)"\)/)?.groups;
@@ -1184,25 +1184,24 @@ export class WysiwygAdapterComponent extends Wysiwyg {
         const isDirty = this._isDirty();
         let callback = () => {
             this.leaveEditMode({ forceLeave: true });
-            const canPublish = this.websiteService.currentWebsite.metadata.canPublish;
-            if (
-                isDirty &&
-                (!canPublish ||
-                    (canPublish && this.websiteService.currentWebsite.metadata.isPublished)) &&
-                this.websiteService.currentWebsite.metadata.canOptimizeSeo
-            ) {
+            if (isDirty) {
                 const {
                     mainObject: { id, model },
+                    canPublish,
                 } = this.websiteService.currentWebsite.metadata;
                 rpc("/website/get_seo_data", {
                     res_id: id,
                     res_model: model,
                 }).then(
-                    (seo_data) =>
+                    (seo_data) => {
+                        if (!(seo_data.website_is_published && canPublish)) {
+                            return;
+                        }
                         checkAndNotifySEO(seo_data, OptimizeSEODialog, {
                             notification: this.notificationService,
                             dialog: this.dialogs,
-                        }),
+                        });
+                    },
                     (error) => {
                         throw error;
                     }

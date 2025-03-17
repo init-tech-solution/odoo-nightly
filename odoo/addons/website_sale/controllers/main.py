@@ -13,6 +13,7 @@ from odoo.fields import Command
 from odoo.http import request, route
 from odoo.osv import expression
 from odoo.tools import clean_context, float_round, groupby, lazy, single_email_re, str2bool, SQL
+from odoo.tools.image import image_data_uri
 from odoo.tools.json import scriptsafe as json_scriptsafe
 from odoo.tools.translate import _
 
@@ -204,7 +205,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
         return fuzzy_search_term, product_count, search_result
 
     def _shop_get_query_url_kwargs(
-        self, category, search, min_price, max_price, order=None, tags=None, **post
+        self, category, search, min_price, max_price, order=None, tags=None, attribute_value=None, **post
     ):
         return {
             'category': category,
@@ -213,6 +214,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
             'min_price': min_price,
             'max_price': max_price,
             'order': order,
+            'attribute_value': attribute_value,
         }
 
     def _get_additional_shop_values(self, values):
@@ -269,6 +271,8 @@ class WebsiteSale(payment_portal.PaymentPortal):
         attrib_values = [[int(x) for x in v.split("-")] for v in attrib_list if v]
         attributes_ids = {v[0] for v in attrib_values}
         attrib_set = {v[1] for v in attrib_values}
+        if attrib_list:
+            post['attribute_value'] = attrib_list
 
         filter_by_tags_enabled = website.is_view_active('website_sale.filter_products_tags')
         if filter_by_tags_enabled:
@@ -448,7 +452,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
         values.update(self._get_additional_extra_shop_values(values, **post))
         return request.render("website_sale.products", values)
 
-    @route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=sitemap_products)
+    @route(['/shop/<model("product.template"):product>'], type='http', auth="public", website=True, sitemap=sitemap_products, readonly=True)
     def product(self, product, category='', search='', **kwargs):
         if not request.website.has_ecommerce_access():
             return request.redirect('/web/login')
@@ -461,6 +465,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
         auth='public',
         website=True,
         sitemap=False,
+        readonly=True,
     )
     def product_document(self, product_template, document_id):
         product_template.check_access('read')
@@ -512,7 +517,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
             product_product = product_template._get_variant_for_combination(combination)
             if not product_product:
                 product_product = product_template._create_product_variant(combination)
-        if product_template.has_configurable_attributes and product_product:
+        if product_template.has_configurable_attributes and product_product and not all(pa.create_variant == 'no_variant' for pa in product_template.attribute_line_ids.attribute_id):
             product_product.write({
                 'product_variant_image_ids': image_create_data
             })
@@ -959,8 +964,18 @@ class WebsiteSale(payment_portal.PaymentPortal):
 
     def _get_additional_notification_information(self, line):
         # Only set the linked line id for combo items, not for optional products.
-        if line.combo_item_id:
-            return {'linked_line_id': line.linked_line_id.id}
+        if combo_item := line.combo_item_id:
+            infos = {'linked_line_id': line.linked_line_id.id}
+            # To sell a product type 'combo', one doesn't need to publish all combo choices. This
+            # causes an issue when public users access the image of each choice via the /web/image
+            # route. To bypass this access check, we send the raw image URL if the product is
+            # inaccessible to the current user.
+            if (
+                not combo_item.product_id.sudo(False).has_access('read')
+                and combo_item.product_id.image_128
+            ):
+                infos['image_url'] = image_data_uri(combo_item.product_id.image_128)
+            return infos
         return {}
 
     # ------------------------------------------------------
@@ -1593,7 +1608,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
                 use_delivery_as_billing=False,
                 order_sudo=order_sudo,
             )
-            with request.env.protecting(['pricelist_id'], order_sudo):
+            with request.env.protecting([order_sudo._fields['pricelist_id']], order_sudo):
                 order_sudo.partner_id = new_partner_sudo
 
             # Add the new partner as follower of the cart
@@ -1690,11 +1705,15 @@ class WebsiteSale(payment_portal.PaymentPortal):
         :return None:
         """
         country = request.env["res.country"].search([
-            ('code', '=', address.pop('country'))
+            ('code', '=', address.pop('country')),
         ], limit=1)
-        state = request.env["res.country.state"].search([
-            ('code', '=', address.pop('state', ''))
-        ], limit=1)
+        if state_code := address.pop('state', None):
+            state = request.env['res.country.state'].search([
+                ('code', '=', state_code),
+                ('country_id', '=', country.id),
+            ], limit=1)
+        else:
+            state = request.env['res.country.state']
         address.update(country_id=country.id, state_id=state.id)
 
     @route('/shop/update_address', type='json', auth='public', website=True)
@@ -2172,7 +2191,7 @@ class WebsiteSale(payment_portal.PaymentPortal):
             tracking_cart_dict['shipping'] = delivery_line.price_unit
         return tracking_cart_dict
 
-    @route(['/shop/country_info/<model("res.country"):country>'], type='json', auth="public", methods=['POST'], website=True)
+    @route(['/shop/country_info/<model("res.country"):country>'], type='json', auth="public", methods=['POST'], website=True, readonly=True)
     def shop_country_info(self, country, address_type, **kw):
         address_fields = country.get_address_fields()
         if address_type == 'billing':

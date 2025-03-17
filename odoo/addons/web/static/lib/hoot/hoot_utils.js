@@ -24,7 +24,10 @@ import { getRunner } from "./main_runner";
  *  | "regex"
  *  | "string"
  *  | "symbol"
+ *  | "url"
  *  | "undefined"} ArgumentPrimitive
+ *
+ * @typedef {[string, ArgumentType]} Label
  *
  * @typedef {string | RegExp | { new(): any }} Matcher
  *
@@ -87,6 +90,7 @@ const {
     setTimeout,
     String,
     TypeError,
+    WeakSet,
     window,
 } = globalThis;
 /** @type {Storage["getItem"]} */
@@ -103,6 +107,42 @@ const $writeText = $clipboard?.writeText.bind($clipboard);
 //-----------------------------------------------------------------------------
 // Internal
 //-----------------------------------------------------------------------------
+
+/**
+ * Returns the constructor of the given value, and if it is "Object": tries to
+ * infer the actual constructor name from the string representation of the object.
+ *
+ * This is needed for cursed JavaScript objects such as "Arguments", which is an
+ * array-like object without a proper constructor.
+ *
+ * @param {any} value
+ */
+const getConstructor = (value) => {
+    const { constructor } = value;
+    if (constructor !== Object) {
+        return constructor || { name: null };
+    }
+    const str = value.toString();
+    const match = str.match(R_OBJECT);
+    if (!match || match[1] === "Object") {
+        return constructor;
+    }
+
+    // Custom constructor
+    const className = match[1];
+    if (!objectConstructors.has(className)) {
+        objectConstructors.set(
+            className,
+            class {
+                static name = className;
+                constructor(...values) {
+                    Object.assign(this, ...values);
+                }
+            }
+        );
+    }
+    return objectConstructors.get(className);
+};
 
 /**
  * @param {(...args: any[]) => any} fn
@@ -172,7 +212,7 @@ const _formatHumanReadable = (value, length) => {
     } else if (typeof value === "function") {
         humanReadableValue = getFunctionString(value);
     } else if (value && typeof value === "object") {
-        if (value instanceof RegExp) {
+        if (value instanceof RegExp || value instanceof URL) {
             humanReadableValue = truncate(value);
         } else if (value instanceof Date) {
             humanReadableValue = value.toISOString();
@@ -187,8 +227,9 @@ const _formatHumanReadable = (value, length) => {
                 humanReadableValue = hValue;
                 length += hValue.length;
             } else {
+                const constructor = getConstructor(value);
                 const constructorPrefix =
-                    value.constructor.name === "Array" ? "" : `${value.constructor.name} `;
+                    constructor.name === "Array" ? "" : `${constructor.name} `;
                 const content = [];
                 if (values.length) {
                     const bitSize = $max(
@@ -209,10 +250,10 @@ const _formatHumanReadable = (value, length) => {
             }
         } else {
             const keys = $keys(value);
-            const constructorPrefix =
-                value.constructor.name === "Object" ? "" : `${value.constructor.name} `;
+            const constructor = getConstructor(value);
+            const constructorPrefix = constructor.name === "Object" ? "" : `${constructor.name} `;
             const content = [];
-            if (value.constructor.name !== "Window" && keys.length) {
+            if (constructor.name !== "Window" && keys.length) {
                 const bitSize = $max(
                     MIN_HUMAN_READABLE_SIZE,
                     $floor(MAX_HUMAN_READABLE_SIZE / keys.length)
@@ -255,11 +296,13 @@ const R_ASYNC_FUNCTION = /^\s*async/;
 const R_CLASS = /^[A-Z][a-z]/;
 const R_NAMED_FUNCTION = /^\s*(async\s+)?function/;
 const R_INVISIBLE_CHARACTERS = /[\u00a0\u200b-\u200d\ufeff]/g;
-const R_OBJECT = /^\[object \w+\]$/;
+const R_OBJECT = /^\[object ([\w-]+)\]$/;
 
 const dmp = new DiffMatchPatch();
 const { DIFF_INSERT, DIFF_DELETE } = DiffMatchPatch;
 
+const labelObjects = new WeakSet();
+const objectConstructors = new Map();
 const windowTarget = {
     addEventListener: window.addEventListener.bind(window),
     removeEventListener: window.removeEventListener.bind(window),
@@ -423,6 +466,7 @@ export function deepCopy(value) {
             return "<anonymous function>";
         }
     }
+
     if (typeof value === "object" && !Markup.isMarkup(value)) {
         if (value instanceof String || value instanceof Number || value instanceof Boolean) {
             return value;
@@ -430,20 +474,16 @@ export function deepCopy(value) {
         if (isNode(value)) {
             // Nodes
             return value.cloneNode(true);
-        } else if (isIterable(value)) {
-            // Iterables
-            const copy = [...value].map(deepCopy);
-            if (value instanceof Set || value instanceof Map) {
-                return new value.constructor(copy);
-            } else {
-                return copy;
-            }
         } else if (value instanceof Date) {
             // Dates
-            return new value.constructor(value);
+            return new (getConstructor(value))(value);
+        } else if (isIterable(value)) {
+            // Iterables
+            const values = [...value].map(deepCopy);
+            return $isArray(value) ? values : new (getConstructor(value))(values);
         } else {
             // Other objects
-            return $fromEntries($entries(value).map(([key, value]) => [key, deepCopy(value)]));
+            return $fromEntries($ownKeys(value).map((key) => [key, deepCopy(value[key])]));
         }
     }
     return value;
@@ -641,6 +681,7 @@ export function formatTechnical(
             cache.add(value);
             const startIndent = " ".repeat((depth + 1) * 2);
             const endIndent = " ".repeat(depth * 2);
+            const constructor = getConstructor(value);
             if (value instanceof RegExp || value instanceof Error) {
                 return `${baseIndent}${value.toString()}`;
             } else if (value instanceof Date) {
@@ -648,8 +689,7 @@ export function formatTechnical(
             } else if (isNode(value)) {
                 return `<${toSelector(value)} />`;
             } else if (isIterable(value)) {
-                const proto =
-                    value.constructor.name === "Array" ? "" : `${value.constructor.name} `;
+                const proto = constructor.name === "Array" ? "" : `${constructor.name} `;
                 const content = [...value].map(
                     (val) =>
                         `${startIndent}${formatTechnical(val, {
@@ -662,13 +702,12 @@ export function formatTechnical(
                     content.length ? `\n${content.join("")}${endIndent}` : ""
                 }]`;
             } else {
-                const proto =
-                    value.constructor.name === "Object" ? "" : `${value.constructor.name} `;
-                const content = $entries(value)
-                    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+                const proto = constructor.name === "Object" ? "" : `${constructor.name} `;
+                const content = $ownKeys(value)
+                    .sort()
                     .map(
-                        ([k, v]) =>
-                            `${startIndent}${k}: ${formatTechnical(v, {
+                        (key) =>
+                            `${startIndent}${key}: ${formatTechnical(value[key], {
                                 cache,
                                 depth: depth + 1,
                                 isObjectValue: true,
@@ -800,7 +839,10 @@ export function getTypeOf(value) {
             if (value instanceof RegExp) {
                 return "regex";
             }
-            if (Array.isArray(value)) {
+            if (value instanceof URL) {
+                return "url";
+            }
+            if ($isArray(value)) {
                 const types = [...value].map(getTypeOf);
                 const arrayType = new Set(types).size === 1 ? types[0] : "any";
                 if (arrayType.endsWith("[]")) {
@@ -819,6 +861,13 @@ export function getTypeOf(value) {
 
 export function hasClipboard() {
     return Boolean($clipboard);
+}
+
+/**
+ * @param {[string, ArgumentType]} label
+ */
+export function isLabel(label) {
+    return labelObjects.has(label);
 }
 
 /**
@@ -859,6 +908,8 @@ export function isOfType(value, type) {
             return isNode(value);
         case "regex":
             return value instanceof RegExp;
+        case "url":
+            return value instanceof URL;
         default:
             return typeof value === type;
     }
@@ -943,27 +994,32 @@ export function lookup(pattern, items, property = "key") {
 }
 
 /**
- * @param {EventTarget} target
- * @param {string[]} types
+ * @template [T=any]
+ * @param {T} value
+ * @param {ArgumentType} type
  */
-export function makePublicListeners(target, types) {
-    for (const type of types) {
-        let listener = null;
-        $defineProperty(target, `on${type}`, {
-            get() {
-                return listener;
-            },
-            set(value) {
-                if (listener) {
-                    target.removeEventListener(type, listener);
-                }
-                listener = value;
-                if (listener) {
-                    target.addEventListener(type, listener);
-                }
-            },
-        });
+export function makeLabel(value, type) {
+    if (isLabel(value)) {
+        [value, type] = value;
+    } else if (type === undefined) {
+        type = getTypeOf(value);
     }
+    if (type !== null) {
+        value = formatHumanReadable(value);
+    }
+    const label = [value, type];
+    labelObjects.add(label);
+    return label;
+}
+
+/**
+ * Special label type used in test results
+ * @param {string} className
+ */
+export function makeLabelIcon(className) {
+    const label = [className, "icon"];
+    labelObjects.add(label);
+    return label;
 }
 
 /**
@@ -1012,7 +1068,7 @@ export function match(value, ...matchers) {
         }
         let strValue = String(value);
         if (R_OBJECT.test(strValue)) {
-            strValue = value.constructor.name;
+            strValue = getConstructor(value).name;
         }
         if (matcher instanceof RegExp) {
             return matcher.test(strValue);
@@ -1384,10 +1440,10 @@ export class Markup {
                         const classList = ["no-underline"];
                         let tagName = "t";
                         if (diff[0] === DIFF_INSERT) {
-                            classList.push("text-pass", "bg-pass-900");
+                            classList.push("text-emerald", "bg-emerald-900");
                             tagName = "ins";
                         } else if (diff[0] === DIFF_DELETE) {
-                            classList.push("text-fail", "bg-fail-900");
+                            classList.push("text-rose", "bg-rose-900");
                             tagName = "del";
                         }
                         return new this({
@@ -1405,7 +1461,7 @@ export class Markup {
      * @param {unknown} value
      */
     static green(content, value) {
-        return [new this({ className: "text-pass", content }), deepCopy(value)];
+        return [new this({ className: "text-emerald", content }), deepCopy(value)];
     }
 
     /**
@@ -1420,7 +1476,7 @@ export class Markup {
      * @param {unknown} value
      */
     static red(content, value) {
-        return [new this({ className: "text-fail", content }), deepCopy(value)];
+        return [new this({ className: "text-rose", content }), deepCopy(value)];
     }
 
     /**
@@ -1433,34 +1489,69 @@ export class Markup {
     }
 }
 
-export class FormattedString extends String {
-    static RAW = "raw";
+/**
+ * Centralized version of {@link EventTarget} to make cleanups more streamlined.
+ */
+export class MockEventTarget extends EventTarget {
+    /** @type {string[]} */
+    static publicListeners = [];
 
-    /** @type {string} */
-    type;
+    constructor() {
+        super(...arguments);
 
-    /**
-     * @param {unknown} value
-     * @param {string} [type]
-     */
-    constructor(value, type) {
-        if (!type) {
-            if (value instanceof FormattedString) {
-                type = value.type;
-            } else {
-                type = getTypeOf(value);
-            }
+        for (const type of this.constructor.publicListeners) {
+            let listener = null;
+            $defineProperty(this, `on${type}`, {
+                get() {
+                    return listener;
+                },
+                set(value) {
+                    if (listener) {
+                        this.removeEventListener(type, listener);
+                    }
+                    listener = value;
+                    if (listener) {
+                        this.addEventListener(type, listener);
+                    }
+                },
+            });
         }
-
-        if (type !== FormattedString.RAW) {
-            value = formatHumanReadable(value);
-        }
-
-        super(value);
-
-        this.type = type;
     }
 }
+
+export const CASE_EVENT_TYPES = {
+    assertion: {
+        value: 0b1,
+        icon: "fa-check",
+        color: "emerald",
+    },
+    error: {
+        value: 0b10,
+        icon: "fa-exclamation",
+        color: "rose",
+    },
+    interaction: {
+        value: 0b100,
+        icon: "fa-bolt",
+        color: "purple",
+    },
+    query: {
+        value: 0b1000,
+        icon: "fa-search text-sm",
+        color: "amber",
+    },
+    server: {
+        value: 0b10000,
+        icon: "fa-globe",
+        color: "lime",
+    },
+    step: {
+        value: 0b100000,
+        icon: "fa-arrow-right text-sm",
+        color: "orange",
+    },
+};
+export const DEFAULT_EVENT_TYPES = CASE_EVENT_TYPES.assertion.value | CASE_EVENT_TYPES.error.value;
 
 export const INCLUDE_LEVEL = {
     url: 1,

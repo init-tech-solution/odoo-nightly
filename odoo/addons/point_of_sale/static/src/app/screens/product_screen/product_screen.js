@@ -3,7 +3,7 @@ import { useService } from "@web/core/utils/hooks";
 import { useBarcodeReader } from "@point_of_sale/app/barcode/barcode_reader_hook";
 import { _t } from "@web/core/l10n/translation";
 import { usePos } from "@point_of_sale/app/store/pos_hook";
-import { Component, onMounted, useState, reactive, onWillRender } from "@odoo/owl";
+import { Component, onMounted, useEffect, useState, reactive, onWillRender } from "@odoo/owl";
 import { CategorySelector } from "@point_of_sale/app/generic_components/category_selector/category_selector";
 import { Input } from "@point_of_sale/app/generic_components/inputs/input/input";
 import {
@@ -17,7 +17,6 @@ import { Orderline } from "@point_of_sale/app/generic_components/orderline/order
 import { OrderWidget } from "@point_of_sale/app/generic_components/order_widget/order_widget";
 import { OrderSummary } from "@point_of_sale/app/screens/product_screen/order_summary/order_summary";
 import { ProductInfoPopup } from "./product_info_popup/product_info_popup";
-import { fuzzyLookup } from "@web/core/utils/search";
 import { ProductCard } from "@point_of_sale/app/generic_components/product_card/product_card";
 import {
     ControlButtons,
@@ -53,7 +52,9 @@ export class ProductScreen extends Component {
         this.state = useState({
             previousSearchWord: "",
             currentOffset: 0,
+            quantityByProductTmplId: {},
         });
+        this._searchTriggered = false;
         onMounted(() => {
             this.pos.openOpeningControl();
             this.pos.addPendingOrder([this.currentOrder.id]);
@@ -85,6 +86,18 @@ export class ProductScreen extends Component {
         this.numberBuffer.use({
             useWithBarcode: true,
         });
+
+        useEffect(
+            () => {
+                this.state.quantityByProductTmplId = this.currentOrder?.lines?.reduce((acc, ol) => {
+                    acc[ol.product_id.raw.product_tmpl_id]
+                        ? (acc[ol.product_id.raw.product_tmpl_id] += ol.qty)
+                        : (acc[ol.product_id.raw.product_tmpl_id] = ol.qty);
+                    return acc;
+                }, {});
+            },
+            () => [this.currentOrder, this.currentOrder.totalQuantity]
+        );
     }
     getAncestorsAndCurrent() {
         const selectedCategory = this.pos.selectedCategory;
@@ -180,7 +193,10 @@ export class ProductScreen extends Component {
         return this.env.utils.formatCurrency(this.currentOrder?.get_total_with_tax() ?? 0);
     }
     get items() {
-        return this.currentOrder.lines?.reduce((items, line) => items + line.qty, 0) ?? 0;
+        return this.env.utils.formatProductQty(
+            this.currentOrder.lines?.reduce((items, line) => items + line.qty, 0) ?? 0,
+            false
+        );
     }
     getProductName(product) {
         const productTmplValIds = product.attribute_line_ids
@@ -329,11 +345,18 @@ export class ProductScreen extends Component {
         let list = [];
 
         if (this.searchWord !== "") {
+            if (!this._searchTriggered) {
+                this.pos.setSelectedCategory(0);
+                this._searchTriggered = true;
+            }
             list = this.addMainProductsToDisplay(this.getProductsBySearchWord(this.searchWord));
-        } else if (this.pos.selectedCategory?.id) {
-            list = this.getProductsByCategory(this.pos.selectedCategory);
         } else {
-            list = this.products;
+            this._searchTriggered = false;
+            if (this.pos.selectedCategory?.id) {
+                list = this.getProductsByCategory(this.pos.selectedCategory);
+            } else {
+                list = this.products;
+            }
         }
 
         if (!list || list.length === 0) {
@@ -346,20 +369,29 @@ export class ProductScreen extends Component {
             ...this.pos.session._pos_special_products_ids,
         ];
 
-        list = list
-            .filter(
-                (product) => !excludedProductIds.includes(product.id) && product.available_in_pos
-            )
-            .slice(0, 100);
+        const filteredList = [];
+        for (const product of list) {
+            if (filteredList.length >= 100) {
+                break;
+            }
+            if (!excludedProductIds.includes(product.id) && product.canBeDisplayed) {
+                filteredList.push(product);
+            }
+        }
 
         return this.searchWord !== ""
-            ? list
-            : list.sort((a, b) => a.display_name.localeCompare(b.display_name));
+            ? filteredList
+            : filteredList.sort((a, b) => a.display_name.localeCompare(b.display_name));
     }
 
     getProductsBySearchWord(searchWord) {
-        return fuzzyLookup(unaccent(searchWord, false), this.products, (product) =>
-            unaccent(product.searchString, false)
+        const words = unaccent(searchWord.toLowerCase(), false);
+        const products = this.pos.selectedCategory?.id
+            ? this.getProductsByCategory(this.pos.selectedCategory)
+            : this.products;
+
+        return products.filter((p) =>
+            unaccent(p.searchString, false).toLowerCase().includes(words)
         );
     }
 
@@ -394,13 +426,8 @@ export class ProductScreen extends Component {
             this.state.currentOffset = 0;
         }
         const result = await this.loadProductFromDB();
-        if (result.length > 0) {
-            this.notification.add(
-                _t('%s product(s) found for "%s".', result.length, searchProductWord),
-                3000
-            );
-        } else {
-            this.notification.add(_t('No more product found for "%s".', searchProductWord));
+        if (result.length === 0) {
+            this.notification.add(_t('No other products found for "%s".', searchProductWord), 3000);
         }
         if (this.state.previousSearchWord === searchProductWord) {
             this.state.currentOffset += result.length;
@@ -410,14 +437,8 @@ export class ProductScreen extends Component {
         }
     }
 
-    async loadProductFromDB() {
-        const { searchProductWord } = this.pos;
-        if (!searchProductWord) {
-            return;
-        }
-
-        this.pos.setSelectedCategory(0);
-        const domain = [
+    loadProductFromDBDomain(searchProductWord) {
+        return [
             "|",
             "|",
             ["name", "ilike", searchProductWord],
@@ -426,6 +447,16 @@ export class ProductScreen extends Component {
             ["available_in_pos", "=", true],
             ["sale_ok", "=", true],
         ];
+    }
+
+    async loadProductFromDB() {
+        const { searchProductWord } = this.pos;
+        if (!searchProductWord) {
+            return;
+        }
+
+        this.pos.setSelectedCategory(0);
+        const domain = this.loadProductFromDBDomain(searchProductWord);
 
         const { limit_categories, iface_available_categ_ids } = this.pos.config;
         if (limit_categories && iface_available_categ_ids.length > 0) {

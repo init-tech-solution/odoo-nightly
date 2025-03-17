@@ -10,6 +10,7 @@ import {
 } from "@odoo/owl";
 import { isNode, toSelector } from "@web/../lib/hoot-dom/helpers/dom";
 import { isIterable } from "@web/../lib/hoot-dom/hoot_dom_utils";
+import { logger } from "../core/logger";
 import { getTypeOf, Markup, stringify, toExplicitString } from "../hoot_utils";
 
 /**
@@ -24,7 +25,6 @@ import { getTypeOf, Markup, stringify, toExplicitString } from "../hoot_utils";
 
 const {
     Object: { keys: $keys },
-    console: { log: $log },
 } = globalThis;
 
 //-----------------------------------------------------------------------------
@@ -96,14 +96,14 @@ export class HootTechnicalValue extends Component {
                 >
                     <t t-if="labelSize[1] > 0">
                         <i
-                            class="fa fa-caret-right flex justify-center w-2 transition"
+                            class="fa fa-caret-right"
                             t-att-class="{ 'rotate-90': state.open }"
                         />
                     </t>
                     <t t-esc="labelSize[0]" />
                     <t t-if="state.promiseState">
                         &lt;
-                        <span class="text-muted" t-esc="state.promiseState[0]" />
+                        <span class="text-gray" t-esc="state.promiseState[0]" />
                         <t t-if="state.promiseState[0] !== 'pending'">
                             : <HootTechnicalValue value="state.promiseState[1]" />
                         </t>
@@ -212,7 +212,7 @@ export class HootTechnicalValue extends Component {
             return;
         }
         this.logged = true;
-        $log(this.value);
+        logger.debug(this.value);
     }
 
     wrapPromiseValue(promise) {

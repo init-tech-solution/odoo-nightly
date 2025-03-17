@@ -42,7 +42,7 @@ class ProjectProject(models.Model):
     partner_id = fields.Many2one(compute="_compute_partner_id", store=True, readonly=False)
     display_sales_stat_buttons = fields.Boolean(compute='_compute_display_sales_stat_buttons', export_string_translation=False)
     sale_order_state = fields.Selection(related='sale_order_id.state', export_string_translation=False)
-    reinvoiced_sale_order_id = fields.Many2one('sale.order', string='Sales Order', groups='sales_team.group_sale_salesman', domain="[('partner_id', '=', partner_id)]",
+    reinvoiced_sale_order_id = fields.Many2one('sale.order', string='Sales Order', groups='sales_team.group_sale_salesman', copy=False, domain="[('partner_id', '=', partner_id)]",
         help="Products added to stock pickings, whose operation type is configured to generate analytic costs, will be re-invoiced in this sales order if they are set up for it.",
     )
 
@@ -146,6 +146,36 @@ class ProjectProject(models.Model):
         if not self.reinvoiced_sale_order_id and self.sale_line_id:
             self.reinvoiced_sale_order_id = self.sale_line_id.order_id
 
+    def _ensure_sale_order_linked(self, sol_ids):
+        """ Orders created from project/task are supposed to be confirmed to match the typical flow from sales, but since
+        we allow SO creation from the project/task itself we want to confirm newly created SOs immediately after creation.
+        However this would leads to SOs being confirmed without a single product, so we'd rather do it on record save.
+        """
+        quotations = self.env['sale.order.line'].sudo()._read_group(
+            domain=[('state', '=', 'draft'), ('id', 'in', sol_ids)],
+            aggregates=['order_id:recordset'],
+        )[0][0]
+        if quotations:
+            quotations.action_confirm()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        projects = super().create(vals_list)
+        sol_ids = {
+            vals['sale_line_id']
+            for vals in vals_list
+            if vals.get('sale_line_id')
+        }
+        if sol_ids:
+            projects._ensure_sale_order_linked(list(sol_ids))
+        return projects
+
+    def write(self, vals):
+        project = super().write(vals)
+        if sol_id := vals.get('sale_line_id'):
+            self._ensure_sale_order_linked([sol_id])
+        return project
+
     def action_view_sols(self):
         self.ensure_one()
         all_sale_order_lines = self._fetch_sale_order_items({'project.task': [('is_closed', '=', False)]})
@@ -189,7 +219,7 @@ class ProjectProject(models.Model):
                 "show_sale": True,
                 'default_partner_id': self.partner_id.id,
                 'default_project_id': self.id,
-                "create_for_project_id": self.id if embedded_action_context else False,
+                "create_for_project_id": self.id if not embedded_action_context else False,
                 "from_embedded_action": embedded_action_context
             },
             'help': "<p class='o_view_nocontent_smiling_face'>%s</p><p>%s<br/>%s</p>" %
@@ -346,7 +376,7 @@ class ProjectProject(models.Model):
             ])
         project_query = self.env['project.project']._where_calc(project_domain)
         self._apply_ir_rules(project_query, 'read')
-        project_sql = project_query.select('id', 'sale_line_id')
+        project_sql = project_query.select(f'{self._table}.id ', f'{self._table}.sale_line_id')
 
         Task = self.env['project.task']
         task_domain = [('project_id', 'in', self.ids), ('sale_line_id', '!=', False)]

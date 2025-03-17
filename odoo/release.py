@@ -36,4 +36,6 @@ license = 'LGPL-3'
 
 nt_service_name = "odoo-server-" + series.replace('~','-')
 
-version += '-20241111'
+version += '-20250317'
+
+repos_heads = {'odoo': '80aae5e46ab7e315acb3c009206e17587961b77d', 'enterprise': '667bd9bd4acd110597247baf3ab0cd2e99e1e037', 'design-themes': '9279c33bba146ef32a3ce95a1dafbf967a8530d7'}

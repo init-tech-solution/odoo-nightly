@@ -2,6 +2,7 @@
 
 export ODOO_VERSION="18.0"
 export ODOO_DATE=$(date '+%Y%m%d')
+# export ODOO_DATE="20241111-311"
 export ODOO_IMGTAG="v$ODOO_VERSION.$ODOO_DATE"
 curl https://nightly.odoo.com/$ODOO_VERSION/nightly/tgz/odoo_$ODOO_VERSION.$ODOO_DATE.tar.gz --output odoo_$ODOO_VERSION.$ODOO_DATE.tar.gz
 

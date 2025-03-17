@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import pypdf
 from pypdf import errors, filters, generic, PdfReader as _Reader, PdfWriter as _Writer
 from pypdf.generic import create_string_object
@@ -40,8 +42,16 @@ class PdfReader(_Reader):
     def getDocumentInfo(self):
         return self.metadata
 
+    def getFormTextFields(self):
+        return self.get_form_text_fields()
+
 
 class PdfWriter(_Writer):
+    def add_metadata(self, infos: Dict[str, Any]) -> None:
+        if hasattr(self, '_info') and self._info is None:
+            self._info = generic.DictionaryObject()
+        super().add_metadata(infos)
+
     def getPage(self, pageNumber):
         return self.pages[pageNumber]
 

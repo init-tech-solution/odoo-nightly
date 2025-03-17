@@ -995,13 +995,19 @@ export class Record extends DataPoint {
                 this.data[fieldName]._abandonRecords();
             }
         }
+        if (!this._checkValidity({ displayNotification: true })) {
+            return false;
+        }
         const changes = this._getChanges();
         delete changes.id; // id never changes, and should not be written
         if (!creation && !Object.keys(changes).length) {
+            if (nextId) {
+                return this.model.load({ resId: nextId });
+            }
+            this._changes = markRaw({});
+            this.data = { ...this._values };
+            this.dirty = false;
             return true;
-        }
-        if (!this._checkValidity({ displayNotification: true })) {
-            return false;
         }
         if (
             this.model._urgentSave &&
@@ -1024,7 +1030,10 @@ export class Record extends DataPoint {
             const data = { jsonrpc: "2.0", method: "call", params };
             const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
             const succeeded = navigator.sendBeacon(route, blob);
-            if (!succeeded) {
+            if (succeeded) {
+                this._changes = markRaw({});
+                this.dirty = false;
+            } else {
                 this.model._closeUrgentSaveNotification = this.model.notification.add(
                     markup(
                         _t(

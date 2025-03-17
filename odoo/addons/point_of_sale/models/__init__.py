@@ -13,6 +13,7 @@ from . import barcode_rule
 from . import binary
 from . import digest
 from . import ir_binary
+from . import ir_http
 from . import pos_category
 from . import pos_config
 from . import pos_order
@@ -43,3 +44,4 @@ from . import account_fiscal_position_tax
 from . import res_currency
 from . import ir_ui_view
 from . import mail_compose_message
+from . import product_tag

@@ -11,57 +11,56 @@ const macroSchema = {
     steps: {
         type: Array,
         element: {
-            initialDelay: { type: Function, optional: true },
-            action: { type: Function },
-            trigger: { type: [Function, String], optional: true },
-            timeout: { type: Number, optional: true },
-            onTimeout: { type: Function, optional: true },
+            type: Object,
+            shape: {
+                action: { type: [Function, String], optional: true },
+                initialDelay: { type: Function, optional: true },
+                timeout: { type: Number, optional: true },
+                trigger: { type: [Function, String], optional: true },
+                value: { type: [String, Number], optional: true },
+            },
+            validate: (step) => {
+                return step.action || step.trigger;
+            },
         },
     },
     onComplete: { type: Function, optional: true },
     onStep: { type: Function, optional: true },
     onError: { type: Function, optional: true },
-    onTimeout: { type: Function, optional: true },
-};
-
-/**
- * @typedef MacroStep
- * @property {string} [trigger]
- * - An action returning a "truthy" value means that the step isn't successful.
- * - Current step index won't be incremented.
- * @property {string | (el: Element, step: MacroStep) => undefined | string} [action]
- * @property {*} [*] - any payload to the step.
- *
- * @typedef MacroDescriptor
- * @property {() => Element | undefined} trigger
- * @property {() => {}} action
- */
-
-export const ACTION_HELPERS = {
-    click(el, _step) {
-        el.dispatchEvent(new MouseEvent("mouseover"));
-        el.dispatchEvent(new MouseEvent("mouseenter"));
-        el.dispatchEvent(new MouseEvent("mousedown"));
-        el.dispatchEvent(new MouseEvent("mouseup"));
-        el.click();
-        el.dispatchEvent(new MouseEvent("mouseout"));
-        el.dispatchEvent(new MouseEvent("mouseleave"));
-    },
-    text(el, step) {
-        // simulate an input (probably need to add keydown/keyup events)
-        this.click(el, step);
-        el.value = step.value;
-        el.dispatchEvent(new InputEvent("input", { bubbles: true }));
-        el.dispatchEvent(new InputEvent("change", { bubbles: true }));
-    },
 };
 
 const mutex = new Mutex();
 
-class Macro {
+class MacroError extends Error {
+    constructor(type, message, options) {
+        super(message, options);
+        this.type = type;
+    }
+}
+
+export async function waitForStable(target = document, timeout = 1000 / 16) {
+    return new Promise((resolve) => {
+        let observer;
+        let timer;
+        const mutationList = [];
+        function onMutation(mutations) {
+            mutationList.push(...(mutations || []));
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                observer.disconnect();
+                resolve(mutationList);
+            }, timeout);
+        }
+        observer = new MacroMutationObserver(onMutation);
+        observer.observe(target);
+        onMutation([]);
+    });
+}
+
+export class Macro {
     currentIndex = 0;
     isComplete = false;
-    errored = false;
+    calledBack = false;
     constructor(descr) {
         try {
             validate(descr, macroSchema);
@@ -74,32 +73,58 @@ class Macro {
         this.name = this.name || "anonymous";
         this.onComplete = this.onComplete || (() => {});
         this.onStep = this.onStep || (() => {});
+        this.onError =
+            this.onError ||
+            ((e) => {
+                console.error(e);
+            });
         this.stepElFound = new Array(this.steps.length).fill(false);
+        this.stepHasStarted = new Array(this.steps.length).fill(false);
+        this.observer = new MacroMutationObserver(() => this.debounceAdvance("mutation"));
+    }
+
+    async start(target = document) {
+        this.observer.observe(target);
+        this.debounceAdvance("next");
+    }
+
+    getDebounceDelay() {
+        let delay = Math.max(this.checkDelay ?? 750, 50);
+        // Called only once per step.
+        if (!this.stepHasStarted[this.currentIndex]) {
+            delay = this.currentIndex === 0 ? 0 : 50;
+            this.stepHasStarted[this.currentIndex] = true;
+            if (this.currentStep?.initialDelay) {
+                const initialDelay = parseFloat(this.currentStep.initialDelay());
+                delay = initialDelay >= 0 ? initialDelay : delay;
+            }
+        }
+        return delay;
     }
 
     async advance() {
-        //Only one case, when browser refresh just after the last step.
-        if (!this.currentStep && this.currentIndex === 0) {
-            await delay(300);
-            this.stop();
-        }
         if (this.isComplete) {
             return;
         }
-        this.setTimer();
+        if (this.currentStep.trigger) {
+            this.setTimer();
+        }
         let proceedToAction = true;
         if (this.currentStep.trigger) {
             proceedToAction = this.findTrigger();
         }
         if (proceedToAction) {
-            this.safeCall(this.onStep, this.currentElement, this.currentStep);
-            const actionResult = await this.performAction();
+            this.onStep(this.currentElement, this.currentStep, this.currentIndex);
             this.clearTimer();
+            const actionResult = await this.stepAction(this.currentElement);
             if (!actionResult) {
                 // If falsy action result, it means the action worked properly.
                 // So we can proceed to the next step.
-                this.increment();
-                await this.advance();
+                this.currentIndex++;
+                if (this.currentIndex >= this.steps.length) {
+                    this.stop();
+                }
+                this.debounceAdvance("next");
             }
         }
     }
@@ -109,13 +134,13 @@ class Macro {
      * @returns {boolean}
      */
     findTrigger() {
+        const { trigger } = this.currentStep;
         if (this.isComplete) {
             return;
         }
-        const trigger = this.currentStep.trigger;
         try {
             if (typeof trigger === "function") {
-                this.currentElement = this.safeCall(trigger);
+                this.currentElement = trigger();
             } else if (typeof trigger === "string") {
                 const triggerEl = document.querySelector(trigger);
                 this.currentElement = isVisible(triggerEl) && triggerEl;
@@ -123,27 +148,32 @@ class Macro {
                 throw new Error(`Trigger can only be string or function.`);
             }
         } catch (error) {
-            this.stop(`Error when trying to find trigger: ${error.message}`);
+            this.stop(
+                new MacroError("Trigger", `ERROR during find trigger:\n${error.message}`, {
+                    cause: error,
+                })
+            );
         }
         return !!this.currentElement;
     }
 
     /**
-     * Calls the `step.action` expecting no return to be successful.
+     * Must not return anything for macro to continue.
      */
-    async performAction() {
-        let actionResult;
-        try {
-            const action = this.currentStep.action;
-            if (action in ACTION_HELPERS) {
-                actionResult = ACTION_HELPERS[action](this.currentElement, this.currentStep);
-            } else if (typeof action === "function") {
-                actionResult = await this.safeCall(action, this.currentElement);
-            }
-        } catch (error) {
-            this.stop(`ERROR IN ACTION: ${error.message}`);
+    async stepAction(element) {
+        const { action } = this.currentStep;
+        if (this.isComplete || !action) {
+            return;
         }
-        return actionResult;
+        try {
+            return await action(element);
+        } catch (error) {
+            this.stop(
+                new MacroError("Action", `ERROR during perform action:\n${error.message}`, {
+                    cause: error,
+                })
+            );
+        }
     }
 
     get currentStep() {
@@ -158,24 +188,6 @@ class Macro {
         this.stepElFound[this.currentIndex] = value;
     }
 
-    increment() {
-        this.currentIndex++;
-        if (this.currentIndex >= this.steps.length) {
-            this.stop();
-        }
-    }
-
-    safeCall(fn, ...args) {
-        if (this.isComplete) {
-            return;
-        }
-        try {
-            return fn(...args);
-        } catch (e) {
-            this.stop(e);
-        }
-    }
-
     /**
      * Timer for findTrigger only (not for doing action)
      */
@@ -184,114 +196,75 @@ class Macro {
         const timeout = this.currentStep.timeout || this.timeout;
         if (timeout > 0) {
             this.timer = browser.setTimeout(() => {
-                if (this.currentStep.onTimeout) {
-                    this.safeCall(this.currentStep.onTimeout, this.currentStep, this.currentIndex);
-                } else {
-                    this.stop("Step timeout");
-                }
+                this.stop(
+                    new MacroError(
+                        "Timeout",
+                        `TIMEOUT step failed to complete within ${timeout} ms.`
+                    )
+                );
             }, timeout);
         }
     }
 
     clearTimer() {
+        this.resetDebounce();
         if (this.timer) {
             browser.clearTimeout(this.timer);
+        }
+    }
+
+    resetDebounce() {
+        if (this.debouncedAdvance) {
+            browser.clearTimeout(this.debouncedAdvance);
+        }
+    }
+
+    /**
+     * @param {"next"|"mutation"} from
+     */
+    async debounceAdvance(from) {
+        this.resetDebounce();
+        // Make sure to take the only possible path.
+        // A step always starts with "next".
+        // A step can only be continued with "mutation".
+        // We abort when the macro is finished or if a mutex occurs afterwards.
+        if (
+            this.isComplete ||
+            (from === "next" && this.stepHasStarted[this.currentIndex]) ||
+            (from === "mutation" && !this.stepHasStarted[this.currentIndex]) ||
+            (from === "mutation" && this.currentElement)
+        ) {
+            return;
+        }
+        // When browser refresh just after the last step.
+        if (!this.currentStep && this.currentIndex === 0) {
+            await delay(300);
+            this.stop();
+        } else if (from === "next" && !this.currentStep.trigger) {
+            this.advance();
+        } else {
+            this.debouncedAdvance = browser.setTimeout(
+                () => mutex.exec(() => this.advance()),
+                this.getDebounceDelay()
+            );
         }
     }
 
     stop(error) {
         this.clearTimer();
         this.isComplete = true;
-        if (error) {
-            this.errored = true;
-            if (this.onError) {
+        this.observer.disconnect();
+        if (!this.calledBack) {
+            this.calledBack = true;
+            if (error) {
                 this.onError(error, this.currentStep, this.currentIndex);
-            } else {
-                console.error(error);
+            } else if (this.currentIndex === this.steps.length) {
+                mutex.getUnlockedDef().then(() => {
+                    this.onComplete();
+                });
             }
-        } else if (this.currentIndex === this.steps.length && !this.errored) {
-            mutex.getUnlockedDef().then(() => {
-                this.onComplete();
-            });
         }
         return;
-    }
-}
-
-export class MacroEngine {
-    constructor(params = {}) {
-        this.isRunning = false;
-        this.timeout = null;
-        this.target = params.target || document.body;
-        this.defaultCheckDelay = params.defaultCheckDelay ?? 750;
-        this.macros = new Set();
-        this.macroMutationObserver = new MacroMutationObserver(() => this.delayedCheck());
-    }
-
-    async activate(descr, exclusive = false) {
-        if (this.exclusive) {
-            return;
-        }
-        this.exclusive = exclusive;
-        // micro task tick to make sure we add the macro in a new call stack,
-        // so we are guaranteed that we are not iterating on the current macros
-        await Promise.resolve();
-        const macro = new Macro(descr);
-        if (exclusive) {
-            this.macros = new Set([macro]);
-        } else {
-            this.macros.add(macro);
-        }
-        this.start();
-    }
-
-    start() {
-        if (!this.isRunning) {
-            this.isRunning = true;
-            this.macroMutationObserver.observe(this.target);
-        }
-        this.delayedCheck();
-    }
-
-    stop() {
-        if (this.isRunning) {
-            this.isRunning = false;
-            browser.clearTimeout(this.timeout);
-            this.timeout = null;
-            this.macroMutationObserver.disconnect();
-        }
-    }
-
-    delayedCheck() {
-        if (this.timeout) {
-            browser.clearTimeout(this.timeout);
-        }
-        this.timeout = browser.setTimeout(
-            () => mutex.exec(this.advanceMacros.bind(this)),
-            this.getCheckDelay() || this.defaultCheckDelay
-        );
-    }
-
-    getCheckDelay() {
-        // If a macro has a checkDelay different from 0, use it. Select the minimum.
-        // For example knowledge has a macro with a delay of 10ms. We don't want to wait
-        // longer because of other running tours.
-        return [...this.macros]
-            .map((m) => m.checkDelay)
-            .filter((delay) => delay > 0)
-            .reduce((m, v) => Math.min(m, v), this.defaultCheckDelay);
-    }
-
-    async advanceMacros() {
-        await Promise.all([...this.macros].map((macro) => macro.advance()));
-        for (const macro of this.macros) {
-            if (macro.isComplete) {
-                this.macros.delete(macro);
-            }
-        }
-        if (this.macros.size === 0) {
-            this.stop();
-        }
     }
 }
 
@@ -305,7 +278,7 @@ export class MacroMutationObserver {
     constructor(callback) {
         this.callback = callback;
         this.observer = new MutationObserver((mutationList, observer) => {
-            callback();
+            callback(mutationList);
             mutationList.forEach((mutationRecord) =>
                 Array.from(mutationRecord.addedNodes).forEach((node) => {
                     let iframes = [];
